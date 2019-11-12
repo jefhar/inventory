@@ -1,0 +1,8 @@
+{
+    "_comment": {
+        "comment": "Go to https://github.com/settings/tokens and get an auth token for all the repo scopes and replace the fake key below with your real PAT."
+    },
+    "github-oauth": {
+        "github.com": "afafafafafafafafafafafafafafafafafafafaf"
+    }
+}
