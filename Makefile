@@ -52,9 +52,7 @@ phpcbf:
 
 pretest:
 	rm -rf tests/coverage*
-	docker run --rm -v "$(CURDIR):/app:delegated" registry.gitlab.com/c11k/c11k sh -c 'cd /app \
-		&& composer pretest'
+	docker run --rm -v"$(CURDIR):/app:delegated" registry.gitlab.com/c11k/c11k sh -c 'cd /app && composer pretest'
 
-test: pretest
-	# docker-compose exec php-fpm vendor/bin/phpunit
-	docker run --rm -v "$(CURDIR):/app:delegated" registry.gitlab.com/c11k/inventory sh -c 'cd /app && composer test'
+test:
+	docker run --rm -v"$(CURDIR):/app:delegated" registry.gitlab.com/c11k/c11k sh -c 'cd /app && composer pretest && composer test'
