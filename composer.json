@@ -69,7 +69,7 @@
             "rm -rf tests/coverage*",
             "composer phpcs"
         ],
-        "test": "vendor/bin/phpunit",
+        "test": "vendor/bin/phpunit --coverage-text --colors=never -d memory_limit=2048M",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

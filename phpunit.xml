@@ -27,6 +27,10 @@
             <directory suffix="Test.php">./tests/App</directory>
         </testsuite>
     </testsuites>
+    <logging>
+	<log type="coverage-text" target="./tests/coverage-text" showUncoveredFiles="true"/>
+	<log type="coverage-html" target="./tests/coverage" showUncoveredFiles="true"/>
+    </logging>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./app</directory>
