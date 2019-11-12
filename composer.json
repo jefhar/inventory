@@ -1,14 +1,12 @@
 {
-    "name": "laravel/laravel",
+    "name": "c11k/c11k",
     "type": "project",
-    "description": "The Laravel Framework.",
+    "description": "The thing I'm working on.",
     "keywords": [
-        "framework",
-        "laravel"
     ],
-    "license": "MIT",
+    "license": "Proprietary",
     "require": {
-        "php": "^7.2",
+        "php": "^7.4",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.2",
         "laravel/tinker": "^1.0"
