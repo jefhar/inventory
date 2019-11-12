@@ -10,7 +10,6 @@ test:
     - cp .env.testing .env
     - composer install --no-plugins --no-scripts
     - php artisan key:generate
-    - grep APP_KEY .env
     - composer pretest
     - composer test
   cache:
