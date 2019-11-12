@@ -1,8 +1,8 @@
 @servers(['web' => 'deploy@c11k.com'])
 
 @setup
-    $repository = 'git@gitlab.com:c11k/inventory.git';
-    $app_dir = '/var/www/inventory';
+    $repository = 'git@gitlab.com:c11k/c11k.git';
+    $app_dir = '/var/www/c11k/';
     $releases_dir = $app_dir . '/releases';
     $release = date('YmdHis');
     $new_release_dir = $releases_dir . '/' . $release;
@@ -67,16 +67,6 @@
 @task('update_docroot')
     echo 'Linking current release.'
     ln -nfs {{ $new_release_dir }} {{ $app_dir }}/current
-@endtask
-
-@task('passport_install')
-    if [ ! -f {{ $new_release_dir }}/storage/oauth-public.key ]; then
-        echo 'Installing Passport.'
-        cd {{ $new_release_dir }}
-        php artisan passport:install
-    else
-        echo 'Passport already installed.'
-    fi
 @endtask
 
 @finished
