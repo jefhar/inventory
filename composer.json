@@ -1,24 +1,30 @@
 {
-    "name": "laravel/laravel",
+    "name": "c11k/c11k",
     "type": "project",
-    "description": "The Laravel Framework.",
+    "description": "The thing I'm working on.",
     "keywords": [
-        "framework",
-        "laravel"
     ],
-    "license": "MIT",
+    "license": "Proprietary",
     "require": {
-        "php": "^7.2",
+        "php": "^7.4",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.2",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "spatie/data-transfer-object": "^1.10",
+        "spatie/laravel-permission": "^3.2.0"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.1",
+        "barryvdh/laravel-ide-helper": "^2.4",
         "facade/ignition": "^1.4",
         "fzaninotto/faker": "^1.4",
+        "laravel/ui": "^1.1",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^8.0"
+        "nunomaduro/larastan": "^0.4.3",
+        "phpunit/phpunit": "^8.0",
+        "sensiolabs/security-checker": "^6.0",
+        "squizlabs/php_codesniffer": "3.*"
     },
     "config": {
         "optimize-autoloader": true,
@@ -32,7 +38,9 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/"
+            "App\\": "app/App/",
+            "Domain\\": "app/Domain/",
+            "Support\\": "app/Support/"
         },
         "classmap": [
             "database/seeds",
@@ -47,6 +55,21 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
+        "phpcs": [
+            "rm -rf tests/coverage",
+            "vendor/bin/phpcs --standard=PSR12 -sn app tests"
+        ],
+        "phpcbf": [
+            "rm -rf tests/coverage",
+            "vendor/bin/phpcbf --standard=PSR12 app tests"
+        ],
+        "pretest": [
+            "vendor/bin/security-checker security:check composer.lock",
+            "php artisan code:analyse",
+            "rm -rf tests/coverage*",
+            "composer phpcs"
+        ],
+        "test": "vendor/bin/phpunit",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
