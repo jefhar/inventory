@@ -1,0 +1,66 @@
+image: registry.gitlab.com/c11k/c11k:latest
+
+stages:
+  - test
+  - stage
+
+test:
+  stage: test
+  script:
+    - cp .env.testing .env
+    - composer install --no-plugins --no-scripts
+    - php artisan key:generate
+    - composer pretest
+    - composer test
+  cache:
+    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_NAME"
+    paths:
+    - vendor/
+  artifacts:
+    paths:
+    - tests/coverage
+  except: ci
+  interruptible: true
+
+deploy_staging:
+  stage: stage
+  script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ~/.composer/vendor/bin/envoy run deploy --web_hook=$LOG_SLACK_WEBHOOK_URL --release_url=$CI_ENVIRONMENT_URL
+  environment:
+    name: staging
+    url: https://c11k.c11k.com
+  only:
+    - tags
+
+build_image:
+  image: docker:git
+  services:
+  - docker:dind
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME .
+    - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
+  when: manual
+  only:
+    changes:
+      - Dockerfile
+
+pages:
+  stage: stage
+  dependencies:
+    - test
+  script:
+    - rm -rf public
+    - mv tests/coverage public
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  only:
+    - master
+    - develop
