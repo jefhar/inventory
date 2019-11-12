@@ -19,7 +19,8 @@ test:
   artifacts:
     paths:
     - tests/coverage
-  except: ci
+  except:
+    - ci
   interruptible: true
 
 deploy_staging:
