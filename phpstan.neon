@@ -1,0 +1,5 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+parameters:
+    ignoreErrors:
+            - '#Access to an undefined property Spatie\\DataTransferObject\\ImmutableDataTransferObject::\$[a-zA-Z0-9\\_]+\.#'

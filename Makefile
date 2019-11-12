@@ -1,5 +1,5 @@
 build:
-	docker build -t registry.gitlab.com/c11k/c11k:latest .
+	docker build -t registry.gitlab.com/c11k/c11k .
 
 docker:
 	docker-compose up -d --build
@@ -17,10 +17,13 @@ clean:
 	docker system prune
 
 composerinstall:
-	docker run --rm -v "$(CURDIR):/app:delegated" registry.gitlab.com/c11k/c11k:latest sh -c 'cd /app && composer install'
+	docker run --rm -v "$(CURDIR):/app:delegated" registry.gitlab.com/c11k/c11k sh -c 'cd /app && composer install'
+
+composerupdate:
+	docker run --rm -v "$(CURDIR):/app:delegated" registry.gitlab.com/c11k/c11k sh -c 'cd /app && composer update'
 
 checkcomposer:
-	docker run --rm -v "$(CURDIR):/app:delegated" registry.gitlab.com/c11k/c11k:latest sh -c 'cd /app && vendor/bin/security-checker security:check composer.lock'
+	docker run --rm -v "$(CURDIR):/app:delegated" registry.gitlab.com/c11k/c11k sh -c 'cd /app && vendor/bin/security-checker security:check composer.lock'
 
 ci:
 	docker login registry.gitlab.com
@@ -40,3 +43,18 @@ npmwatch:
 
 swagger:
 	docker run --rm -p 8088:8080 swaggerapi/swagger-editor
+
+phpcs:
+	docker run --rm -v "$(CURDIR):/app:delegated" registry.gitlab.com/c11k/c11k sh -c 'cd /app && composer phpcs'
+
+phpcbf:
+	docker run --rm -v "$(CURDIR):/app:delegated" registry.gitlab.com/c11k/c11k sh -c 'cd /app && composer phpcbf'
+
+pretest:
+	rm -rf tests/coverage*
+	docker run --rm -v "$(CURDIR):/app:delegated" registry.gitlab.com/c11k/c11k sh -c 'cd /app \
+		&& composer pretest'
+
+test: pretest
+	# docker-compose exec php-fpm vendor/bin/phpunit
+	docker run --rm -v "$(CURDIR):/app:delegated" registry.gitlab.com/c11k/inventory sh -c 'cd /app && composer test'
