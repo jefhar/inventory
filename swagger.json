@@ -1,0 +1,112 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is the documentation for all routes of the C11K Project. Unless specified, all `string`s default to 100 characters and `integers` default to the base 10 `UNSIGNED INTEGER` specification of your database.  For this sample, you can not use the api key `special-key` to test the authorization filters.",
+    "version": "0.1.0",
+    "title": "C11K",
+    "contact": {
+      "email": "jeff@c11k.com"
+    },
+    "license": {
+      "name": "Proprietary"
+    }
+  },
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Domain1",
+      "description": "Domain1 paths"
+    },
+    {
+      "name": "Domain2",
+      "description": "Domain2 paths"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/foo": {
+      "post": {
+        "tags": [
+          "Domain1"
+        ],
+        "summary": "Store Foo",
+        "description": "",
+        "operationId": "foo.store",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "foo",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "description": "Foo name of the foo."
+          }
+        ],
+        "responses": {
+          "303": {
+            "description": "Redirect to created /foo/{foo}",
+            "schema": {
+              "$ref": "#/definitions/Foo"
+            }
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/foo/{foo}": {
+      "get": {
+        "tags": [
+          "Domain1"
+        ],
+        "summary": "Returns the foo view.",
+        "description": "",
+        "operationId": "foo.show",
+        "produces": [
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "foo",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns foo view."
+          },
+          "403": {
+            "description": "Not authorized."
+          },
+          "404": {
+            "description": "Foo ID {foo} does not exist."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Foo": {
+      "type": "object",
+      "properties": {
+        "foo": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about C11k",
+    "url": "https://gitlab.com/c11k"
+  }
+}
