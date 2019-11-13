@@ -30,7 +30,7 @@ $app = new App\BaseApplication(
 
 $app->singleton(
     Illuminate\Contracts\Http\Kernel::class,
-    App\Http\Kernel::class
+    App\Admin\Kernel::class
 );
 
 $app->singleton(
@@ -40,7 +40,7 @@ $app->singleton(
 
 $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
-    App\Exceptions\Handler::class
+    App\Admin\Exceptions\Handler::class
 );
 
 /*
