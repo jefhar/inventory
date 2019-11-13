@@ -23,6 +23,27 @@ test:
     - ci
   interruptible: true
 
+dusktest:
+  stage: test
+  services:
+    - name: selenium/standalone-chrome
+      alias: selenium
+    - name: nginx:alpine
+      alias: webserver
+  script:
+    - apt-get update -y && apt-get install chromium-browser -y
+    - composer install --no-plugins --no-scripts
+    - cp .env.dusk.local .env
+    - php artisan key:generate
+    - php artisan dusk
+  cache:
+    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_NAME"
+    paths:
+      - vendor/
+  except:
+    - ci
+  interruptible: true
+
 deploy_staging:
   stage: stage
   script:
