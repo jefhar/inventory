@@ -56,3 +56,6 @@ pretest:
 
 test:
 	docker run --rm -v"$(CURDIR):/app:delegated" registry.gitlab.com/c11k/c11k sh -c 'cd /app && composer pretest && composer test'
+
+testdusk:
+	docker-compose exec php-fpm php artisan dusk
