@@ -12,11 +12,21 @@ namespace Tests;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\App;
 use Laravel\Dusk\TestCase as BaseTestCase;
 
 abstract class DuskTestCase extends BaseTestCase
 {
     use CreatesApplication;
+    use DatabaseMigrations;
+
+    protected function setUp(): void
+    {
+        echo '### ' . env('DUSK_DRIVER') . ' - ' . env('APP_NAME', 'no_name');
+        echo '### ' . env('DB_CONNECTION') . '::`' . env('DB_DATABASE') . '`';
+        parent::setUp();
+    }
 
     /**
      * Prepare for Dusk test execution.
@@ -26,7 +36,7 @@ abstract class DuskTestCase extends BaseTestCase
      */
     public static function prepare()
     {
-        // static::startChromeDriver();
+        static::startChromeDriver();
     }
 
     /**
@@ -36,12 +46,14 @@ abstract class DuskTestCase extends BaseTestCase
      */
     protected function driver()
     {
-        $options = (new ChromeOptions())->addArguments([
-            '--disable-gpu',
-            '--headless',
-            '--window-size=1920,1080',
-            '--no-sandbox',
-        ]);
+        $options = (new ChromeOptions())->addArguments(
+            [
+                '--disable-gpu',
+                '--headless',
+                '--window-size=1440,900',
+                '--no-sandbox',
+            ]
+        );
 
         switch (config('dusk.driver')) {
             case 'container':

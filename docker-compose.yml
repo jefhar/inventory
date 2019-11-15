@@ -25,6 +25,7 @@ services:
     volumes:
       - .:/application:delegated
       - ./mysql-data:/var/lib/mysql:delegated
+      - ./phpdocker/mysql/default-authentication-plugin:/etc/mysql/mysql.conf.d/default-authentication-plugin.cnf
     environment:
       - MYSQL_ROOT_PASSWORD=rootpw
       - MYSQL_DATABASE=c11k
@@ -60,7 +61,7 @@ services:
         condition: service_started
 
   php-fpm:
-    build: phpdocker/php-fpm
+    image: registry.gitlab.com/c11k/serviceandgoods:dusk
     container_name: c11k-php-fpm
     restart: unless-stopped
     working_dir: /application

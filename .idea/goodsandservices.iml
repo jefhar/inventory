@@ -5,9 +5,8 @@
       <sourceFolder url="file://$MODULE_DIR$/app/App" isTestSource="false" packagePrefix="App\" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" packagePrefix="Tests\" />
       <sourceFolder url="file://$MODULE_DIR$/app/Domain" isTestSource="false" packagePrefix="Domain\" />
-      <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/app/Support" isTestSource="false" packagePrefix="Support\" />
-      <excludeFolder url="file://$MODULE_DIR$/mysql-data" />
+      <sourceFolder url="file://$MODULE_DIR$/../servicesAndGoods/spec" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../servicesAndGoods/app/Support" isTestSource="false" packagePrefix="Support\" />
       <excludeFolder url="file://$MODULE_DIR$/phpdocker" />
       <excludeFolder url="file://$MODULE_DIR$/public" />
       <excludeFolder url="file://$MODULE_DIR$/storage" />
@@ -129,6 +128,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/tijsverkoyen/css-to-inline-styles" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/vlucas/phpdotenv" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/../servicesAndGoods/mysql-data" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

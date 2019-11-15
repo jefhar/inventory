@@ -20,5 +20,7 @@ Auth::routes(['register' => false]);
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('workorders', 'WorkOrdersController')->only([
-    'create'
-]);
+                                                                'create',
+                                                                'show',
+                                                                'store',
+                                                            ])->middleware('auth');

@@ -1,4 +1,4 @@
-image: registry.gitlab.com/c11k/c11k:latest
+image: registry.gitlab.com/c11k/serviceandgoods:latest
 
 stages:
   - test
@@ -13,7 +13,7 @@ test:
     - composer pretest
     - composer test
   cache:
-    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_NAME"
+    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_STAGE"
     paths:
     - vendor/
   artifacts:
@@ -24,20 +24,22 @@ test:
   interruptible: true
 
 dusktest:
-  stage: test
+  image: registry.gitlab.com/c11k/serviceandgoods:dusk
   services:
-    - name: selenium/standalone-chrome
-      alias: selenium
-    - name: nginx:alpine
-      alias: webserver
+    - selenium/standalone-chrome
+  stage: test
   script:
-    - apt-get update -y && apt-get install chromium-browser -y
-    - composer install --no-plugins --no-scripts
-    - cp .env.dusk.local .env
+    - composer install --no-plugins --no-scripts --no-progress --no-suggest --prefer-dist --optimize-autoloader
+    - cp .env.dusk.ci .env
     - php artisan key:generate
+    - php artisan dusk:chrome-driver
+    - ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
+    - php artisan serve > /dev/null 2>&1 &
+    - php artisan migrate
+    - php artisan db:seed --class UsersTableSeeder
     - php artisan dusk
   cache:
-    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_NAME"
+    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_STAGE"
     paths:
       - vendor/
   except:
@@ -59,14 +61,16 @@ deploy_staging:
   only:
     - tags
 
-build_image:
+build_images:
   image: docker:git
   services:
   - docker:dind
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME .
+    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest .
+    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk phpdocker/dusk
     - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
+    - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk
   when: manual
   only:
     changes:
