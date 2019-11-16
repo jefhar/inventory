@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
+@push('scripts')
+    <script src="{{ mix('js/app.js') }}" defer></script>
+@endpush
+
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
