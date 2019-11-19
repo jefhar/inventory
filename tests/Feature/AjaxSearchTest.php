@@ -13,6 +13,7 @@ use App\Admin\Permissions\UserRoles;
 use App\User;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class AjaxSearchTest extends TestCase
@@ -84,6 +85,16 @@ class AjaxSearchTest extends TestCase
                 ]
             )
         )->assertOk();
+    }
+
+    /**
+     * @test
+     */
+    public function unknownFieldIsBad()
+    {
+        $this->actingAs($this->authorizedUser)
+            ->get(route(AjaxSearchController::SHOW_NAME, ['field' => 'flarp']))
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     /**

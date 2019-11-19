@@ -40,6 +40,6 @@ class AjaxSearchController extends Controller
             return $options->toJson();
         }
 
-        abort(Response::HTTP_UNAUTHORIZED, Response::$statusTexts[Response::HTTP_UNAUTHORIZED]);
+        abort(Response::HTTP_UNPROCESSABLE_ENTITY, Response::$statusTexts[Response::HTTP_UNPROCESSABLE_ENTITY]);
     }
 }
