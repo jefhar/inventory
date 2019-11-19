@@ -35,10 +35,9 @@ class AjaxSearchController extends Controller
             && $user->hasPermissionTo(UserPermissions::IS_EMPLOYEE)
         ) {
             $searchString = $request->get('q', '');
+            $options = \Domain\AjaxSearch\Actions\AjaxSearch::findBy($field, $searchString);
 
-            $options = \Domain\AjaxSearch\Actions\Search::findBy($field, $searchString);
-
-            return response()->json($options);
+            return $options->toJson();
         }
 
         abort(Response::HTTP_UNAUTHORIZED, Response::$statusTexts[Response::HTTP_UNAUTHORIZED]);

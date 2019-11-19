@@ -14,15 +14,15 @@ use Domain\WorkOrders\Person;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\Response;
 
-class Search
+class AjaxSearch
 {
 
     /**
      * @param string $field ENUM {Client::COMPANY_NAME|}
      * @param $searchString
-     * @return mixed
+     * @return Collection
      */
-    public static function findBy(string $field, $searchString)
+    public static function findBy(string $field, $searchString): Collection
     {
         switch ($field) {
             case Client::COMPANY_NAME:
@@ -30,7 +30,7 @@ class Search
 
                 break;
             default:
-                return Response::HTTP_NOT_ACCEPTABLE;
+                return collect([Response::HTTP_NOT_ACCEPTABLE]);
         }
     }
 
@@ -47,14 +47,14 @@ class Search
 
     /**
      * @param string $searchString
-     * @return mixed
+     * @return Collection
      */
-    private static function ClientsAndPeopleByCompanyName(string $searchString)
+    private static function ClientsAndPeopleByCompanyName(string $searchString): Collection
     {
         $client_ids = self::findClientsByCompanyName($searchString);
         $clients = Client::whereIn(Client::ID, $client_ids)->with('person')->get();
 
-        return $clients->map(
+        $map =  $clients->map(
             function ($item, $key) {
                 return [
                     Client::COMPANY_NAME => $item->company_name,
@@ -63,5 +63,6 @@ class Search
                 ];
             }
         );
+        return $map;
     }
 }

@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static Model|static where(string $field, string $value, string $value))
  * @method static Model|static first()
  * @method static Model|static firstOrNew(array $array)
+ * @method static Model|static whereIn(string $ID, \Illuminate\Support\Collection $client_ids)
+ * @method static Model|static with(string $relationship)
  */
 class Client extends Model
 {
