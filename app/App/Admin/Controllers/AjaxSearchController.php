@@ -12,7 +12,6 @@ namespace App\Admin\Controllers;
 use App\Admin\Permissions\UserPermissions;
 use Domain\WorkOrders\Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AjaxSearchController extends Controller
@@ -29,22 +28,19 @@ class AjaxSearchController extends Controller
         $availableFields = [
             Client::COMPANY_NAME => Client::COMPANY_NAME,
         ];
-        if (Auth::user() === null) {
-            abort(Response::HTTP_UNAUTHORIZED, Response::$statusTexts[Response::HTTP_UNAUTHORIZED]);
-        }
-        if (!$request->user()->hasPermissionTo(UserPermissions::IS_EMPLOYEE)) {
-            abort(Response::HTTP_UNAUTHORIZED, Response::$statusTexts[Response::HTTP_UNAUTHORIZED]);
-        }
-        if (array_key_exists($field, $availableFields)
-            && $request->user()->hasPermissionTo(UserPermissions::IS_EMPLOYEE)
+        $user = $request->user();
+        if (
+            ($user !== null)
+            && array_key_exists($field, $availableFields)
+            && $user->hasPermissionTo(UserPermissions::IS_EMPLOYEE)
         ) {
-            $searchString = $request->get('q');
+            $searchString = $request->get('q', '');
 
             $options = \Domain\AjaxSearch\Actions\Search::findBy($field, $searchString);
 
             return response()->json($options);
         }
 
-        abort(Response::HTTP_UNAUTHORIZED);
+        abort(Response::HTTP_UNAUTHORIZED, Response::$statusTexts[Response::HTTP_UNAUTHORIZED]);
     }
 }
