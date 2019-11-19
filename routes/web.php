@@ -11,16 +11,25 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+use App\Admin\Controllers\AjaxSearchController;
+
+Route::get(
+    '/',
+    function () {
+        return view('welcome');
+    }
+);
 
 Auth::routes(['register' => false]);
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::resource('workorders', 'WorkOrdersController')->only([
-                                                                'create',
-                                                                'show',
-                                                                'store',
-                                                            ])->middleware('auth');
+Route::resource('workorders', 'WorkOrdersController')->only(
+    [
+        'create',
+        'show',
+        'store',
+    ]
+)->middleware('auth');
+Route::get(AjaxSearchController::SHOW_PATH, 'AjaxSearchController@show')
+->name(AjaxSearchController::SHOW_NAME);

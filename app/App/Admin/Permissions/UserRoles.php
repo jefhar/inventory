@@ -14,4 +14,5 @@ final class UserRoles
     public const SUPER_ADMIN = 'super admin';
     public const OWNER = 'owner';
     public const SALES_REP = 'sales representative';
+    public const EMPLOYEE = 'employee';
 }

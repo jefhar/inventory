@@ -119,12 +119,13 @@ class CreatePermissionTables extends Migration
     /**
      *
      */
-    private function addRolesAndPermissions()
+    private function addRolesAndPermissions(): void
     {
         // 1. Clear the cache:
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // 2. Create permissions:
+        $employeePermission = Permission::create(['name' => UserPermissions::IS_EMPLOYEE]);
         $workOrderOptionalPerson = Permission::create(['name' => UserPermissions::WORK_ORDER_OPTIONAL_PERSON]);
         $workOrderStore = Permission::create(['name' => WorkOrdersController::STORE_NAME]);
         $workOrderCreate = Permission::create(['name' => WorkOrdersController::CREATE_NAME]);
@@ -137,6 +138,7 @@ class CreatePermissionTables extends Migration
         // Owner
         $owner = Role::create(['name' => UserRoles::OWNER]);
         $owner->givePermissionTo(
+            $employeePermission,
             $workOrderStore,
             $workOrderCreate
         );
@@ -144,6 +146,7 @@ class CreatePermissionTables extends Migration
         // SalesRep
         $salesRep = Role::create(['name' => UserRoles::SALES_REP]);
         $salesRep->givePermissionTo(
+            $employeePermission,
             $workOrderStore,
             $workOrderCreate,
             );
@@ -151,13 +154,17 @@ class CreatePermissionTables extends Migration
         // Technician
         $tech = Role::create(['name' => UserRoles::TECHNICIAN]);
         $tech->givePermissionTo(
+            $employeePermission,
             $workOrderOptionalPerson,
             $workOrderStore,
             $workOrderCreate
         );
 
-        // Employee
-        // $employee = Role::create(['name' => UserRoles::EMPLOYEE]);
+        // Employee - has minimum permissions to separate Employee from Unauthorized User
+        $employee = Role::create(['name' => UserRoles::EMPLOYEE]);
+        $employee->givePermissionTo(
+            $employeePermission
+        );
 
         // Shredder
         // $shredder = Role::create(['name' => UserRoles::SHREDDER]);
