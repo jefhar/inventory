@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property \Carbon\Carbon|null $updated_at
  * @method static Model|static find($value)
  * @method static Model|static firstOrCreate($value)
- * @method static Model|static where(string $field, string $value)
+ * @method static Model|static where(string $field, string $value, string $value))
  * @method static Model|static first()
  * @method static Model|static firstOrNew(array $array)
  */
