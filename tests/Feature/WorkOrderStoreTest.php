@@ -37,12 +37,14 @@ class WorkOrderStoreTest extends TestCase
         $this->actingAs($this->anonymousUser)
             ->get(
                 route(WorkOrdersController::CREATE_NAME)
-            )->assertUnauthorized();
+            )->assertUnauthorized()
+            ->assertCookieMissing('techUser');
 
         $this->actingAs($this->unauthorizedUser)
             ->get(
                 route(WorkOrdersController::CREATE_NAME)
-            )->assertUnauthorized();
+            )->assertUnauthorized()
+            ->assertCookieMissing('techUser');
     }
 
     /**
@@ -53,13 +55,20 @@ class WorkOrderStoreTest extends TestCase
         $this->actingAs($this->authorizedUser)
             ->get(
                 route(WorkOrdersController::CREATE_NAME)
-            )->assertOk();
+            )->assertOk()
+            ->assertCookieMissing('techUser');
+
+        $this->actingAs($this->technicianUser)
+            ->get(
+                route(WorkOrdersController::CREATE_NAME)
+            )->assertOK()
+            ->assertCookie('techUser', true);
     }
 
     /**
      * @test
      */
-    public function unauthorizedStoreIsUnauthorized()
+    public function unauthorizedStoreIsUnauthorized(): void
     {
         $this->actingAs($this->anonymousUser)
             ->post(
@@ -97,7 +106,7 @@ class WorkOrderStoreTest extends TestCase
      */
     public function technicianCanAddClientWithPerson(): void
     {
-        $company_name = self::COMPANY_NAME . uniqid('b');
+        $company_name = self::COMPANY_NAME . uniqid('b', true);
         $person = factory(Person::class)->make();
         $this->withoutExceptionHandling()
             ->actingAs($this->technicianUser)
@@ -131,7 +140,7 @@ class WorkOrderStoreTest extends TestCase
      */
     public function authorizedUserCannotAddClientOnly(): void
     {
-        $company_name = self::COMPANY_NAME . uniqid('c');
+        $company_name = self::COMPANY_NAME . uniqid('c', true);
         $this->withExceptionHandling()
             ->actingAs($this->authorizedUser)
             ->post(
@@ -153,7 +162,7 @@ class WorkOrderStoreTest extends TestCase
      */
     public function authorizedUserCanAddClientWithPerson(): void
     {
-        $company_name = self::COMPANY_NAME . uniqid('d');
+        $company_name = self::COMPANY_NAME . uniqid('d', true);
         $person = factory(Person::class)->make();
         $this->actingAs($this->authorizedUser)
             ->post(

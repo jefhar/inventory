@@ -12,6 +12,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
+        /** @var User $user */
         $user = User::create([
             User::NAME => config('seeder.user_name', 'Default Admin'),
             User::EMAIL => config('seeder.user_email', 'test@example.com'),

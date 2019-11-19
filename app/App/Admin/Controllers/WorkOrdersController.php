@@ -4,11 +4,13 @@ namespace App\Admin\Controllers;
 
 use App\Admin\DataTransferObjects\ClientObject;
 use App\Admin\DataTransferObjects\PersonObject;
+use App\Admin\Permissions\UserPermissions;
 use App\Admin\Requests\WorkOrderStoreRequest;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Person;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
 class WorkOrdersController extends Controller
@@ -38,6 +40,9 @@ class WorkOrdersController extends Controller
             Response::HTTP_UNAUTHORIZED,
             Response::$statusTexts[Response::HTTP_UNAUTHORIZED]
         );
+        if (Auth::user()->hasPermissionTo(UserPermissions::WORK_ORDER_OPTIONAL_PERSON)) {
+            Cookie::queue('techUser', true, 1, '/', '', false, false);
+        }
 
         return view('workorders.create');
     }
