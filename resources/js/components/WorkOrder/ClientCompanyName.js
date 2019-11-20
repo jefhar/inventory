@@ -10,21 +10,6 @@ class ClientCompanyName extends Component {
         };
     }
 
-    getCookie(cname) {
-        var name = cname + "=";
-        var ca = document.cookie.split(";");
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == " ") {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    }
-
     render() {
         return (
             <AsyncTypeahead
@@ -44,13 +29,20 @@ class ClientCompanyName extends Component {
                         });
                 }}
                 defaultSelected={[]}
-                id="client.company_name"
-                name="client_company_name"
-                required="required"
-                placeholder="Client's company name"
-                className=" form-control form-control-sm"
                 options={this.state.options}
                 labelKey="company_name"
+                allowNew={true}
+                autoFocus={true}
+                bsSize="sm"
+                inputProps={{
+                    name: "company_name",
+                    required: "required",
+                    className: "form-control form-control-sm"
+                }}
+                placeholder="Client's company name"
+                newSelectionPrefix="New Client:"
+                id="client.company_name"
+                selectHintOnEnter={true}
             />
         );
     }

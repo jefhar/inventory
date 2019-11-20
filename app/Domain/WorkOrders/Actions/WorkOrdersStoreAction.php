@@ -32,7 +32,7 @@ class WorkOrdersStoreAction
         }
 
         if ($personObject === null) {
-            abort(Response::HTTP_UNPROCESSABLE_ENTITY, Response::$statusTexts[Response::HTTP_UNPROCESSABLE_ENTITY]);
+            abort(Response::HTTP_FORBIDDEN, Response::$statusTexts[Response::HTTP_FORBIDDEN]);
         }
 
         /** @var Client $client */

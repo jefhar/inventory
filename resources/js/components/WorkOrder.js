@@ -1,32 +1,32 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import {
-    Card,
-    CardBody,
-    CardHeader,
     Container,
     FormGroup,
-    Input,
     InputGroup,
     InputGroupAddon,
-    InputGroupText,
-    Label,
-    Row
+    InputGroupText
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faCloudDownloadAlt,
-    faPhone,
-    faShareSquare
-} from "@fortawesome/free-solid-svg-icons";
+import { faCloudDownloadAlt } from "@fortawesome/free-solid-svg-icons";
 import ClientCompanyName from "./WorkOrder/ClientCompanyName";
 
 function WorkOrder() {
     return (
         <Container>
-            <Row>
-                <ClientCompanyName />
-            </Row>
+            <FormGroup row={true}>
+                <InputGroup>
+                    <ClientCompanyName />
+                    <InputGroupAddon addonType="append">
+                        <InputGroupText id="checkClientExists">
+                            <FontAwesomeIcon
+                                className="text-muted"
+                                icon={faCloudDownloadAlt}
+                            />
+                        </InputGroupText>
+                    </InputGroupAddon>
+                </InputGroup>
+            </FormGroup>
         </Container>
     );
 }
