@@ -43,6 +43,6 @@ class AjaxSearchController extends Controller
         $searchString = $request->get('q', '');
         $options = \Domain\AjaxSearch\Actions\AjaxSearch::findBy($field, $searchString);
 
-        return $options->toJson();
+        return response()->json($options);
     }
 }

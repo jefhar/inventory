@@ -57,6 +57,7 @@ class AjaxSearch
         $map =  $clients->map(
             function ($item, $key) {
                 return [
+                    Person::CLIENT_ID => $item->id,
                     Client::COMPANY_NAME => $item->company_name,
                     Person::FIRST_NAME => $item->person->first_name,
                     Person::LAST_NAME => $item->person->last_name,
