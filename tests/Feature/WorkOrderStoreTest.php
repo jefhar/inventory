@@ -148,7 +148,7 @@ class WorkOrderStoreTest extends TestCase
                 [
                     Client::COMPANY_NAME => $company_name,
                 ]
-            )->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+            )->assertStatus(Response::HTTP_FORBIDDEN);
         $this->assertDatabaseMissing(
             Client::TABLE,
             [
