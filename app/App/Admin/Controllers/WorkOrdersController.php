@@ -8,6 +8,7 @@ use App\Admin\Permissions\UserPermissions;
 use App\Admin\Requests\WorkOrderStoreRequest;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Person;
+use Domain\WorkOrders\WorkOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -24,6 +25,7 @@ class WorkOrdersController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
+     * @noinspection PhpInconsistentReturnPointsInspection
      */
     public function index()
     {
@@ -35,11 +37,13 @@ class WorkOrdersController extends Controller
      */
     public function create()
     {
+        /** @noinspection NullPointerExceptionInspection */
         abort_unless(
             Auth::user()->hasPermissionTo(self::CREATE_NAME),
             Response::HTTP_UNAUTHORIZED,
             Response::$statusTexts[Response::HTTP_UNAUTHORIZED]
         );
+        /** @noinspection NullPointerExceptionInspection */
         if (Auth::user()->hasPermissionTo(UserPermissions::WORK_ORDER_OPTIONAL_PERSON)) {
             Cookie::queue('techUser', true, 1, '/', '', false, false);
         }
@@ -71,12 +75,12 @@ class WorkOrdersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param WorkOrder $workorder
+     * @return WorkOrder
      */
-    public function show(WorkOrder $workOrder)
+    public function show(WorkOrder $workorder): WorkOrder
     {
-        //
+        return $workorder;
     }
 
     /**
@@ -84,6 +88,7 @@ class WorkOrdersController extends Controller
      *
      * @param int $id
      * @return \Illuminate\Http\Response
+     * @noinspection PhpInconsistentReturnPointsInspection
      */
     public function edit($id)
     {
@@ -96,6 +101,7 @@ class WorkOrdersController extends Controller
      * @param \Illuminate\Http\Request $request
      * @param int $id
      * @return \Illuminate\Http\Response
+     * @noinspection PhpInconsistentReturnPointsInspection
      */
     public function update(Request $request, $id)
     {
@@ -107,6 +113,7 @@ class WorkOrdersController extends Controller
      *
      * @param int $id
      * @return \Illuminate\Http\Response
+     * @noinspection PhpInconsistentReturnPointsInspection
      */
     public function destroy($id)
     {

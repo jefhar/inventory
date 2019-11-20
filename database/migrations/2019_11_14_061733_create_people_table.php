@@ -44,6 +44,6 @@ class CreatePeopleTable extends Migration
                 $table->dropForeign([Person::CLIENT_ID]);
             }
         );
-        Schema::dropIfExists('People');
+        Schema::dropIfExists(Person::TABLE);
     }
 }

@@ -19,14 +19,14 @@ class AjaxSearch
 
     /**
      * @param string $field ENUM {Client::COMPANY_NAME|}
-     * @param $searchString
+     * @param string $searchString
      * @return Collection
      */
-    public static function findBy(string $field, $searchString): Collection
+    public static function findBy(string $field, string $searchString): Collection
     {
         switch ($field) {
             case Client::COMPANY_NAME:
-                return self::ClientsAndPeopleByCompanyName($searchString);
+                return self::clientsAndPeopleByCompanyName($searchString);
 
                 break;
             default:
@@ -49,13 +49,13 @@ class AjaxSearch
      * @param string $searchString
      * @return Collection
      */
-    private static function ClientsAndPeopleByCompanyName(string $searchString): Collection
+    private static function clientsAndPeopleByCompanyName(string $searchString): Collection
     {
         $client_ids = self::findClientsByCompanyName($searchString);
         $clients = Client::whereIn(Client::ID, $client_ids)->with('person')->get();
 
-        $map =  $clients->map(
-            function ($item, $key) {
+        $map = $clients->map(
+            function ($item) {
                 return [
                     Person::CLIENT_ID => $item->id,
                     Client::COMPANY_NAME => $item->company_name,
@@ -64,6 +64,7 @@ class AjaxSearch
                 ];
             }
         );
+
         return $map;
     }
 }

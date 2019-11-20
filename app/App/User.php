@@ -21,6 +21,12 @@ class User extends Authenticatable
     use HasRoles;
     use Notifiable;
 
+    public const EMAIL = 'email';
+    public const ID = 'ID';
+    public const NAME = 'name';
+    public const PASSWORD = 'password';
+    public const TABLE = 'users';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -50,7 +56,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    public const NAME = 'name';
-    public const EMAIL = 'email';
-    public const PASSWORD = 'password';
+
+    protected $table = self::TABLE;
 }

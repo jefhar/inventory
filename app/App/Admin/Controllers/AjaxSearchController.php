@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace App\Admin\Controllers;
 
 use App\Admin\Permissions\UserPermissions;
+use Domain\AjaxSearch\Actions\AjaxSearch;
 use Domain\WorkOrders\Client;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,9 +24,9 @@ class AjaxSearchController extends Controller
     /**
      * @param Request $request
      * @param string $field
-     * @return string
+     * @return JsonResponse
      */
-    public function show(Request $request, string $field)
+    public function show(Request $request, string $field): JsonResponse
     {
         $availableFields = [
             Client::COMPANY_NAME => Client::COMPANY_NAME,
@@ -41,7 +43,7 @@ class AjaxSearchController extends Controller
         }
 
         $searchString = $request->get('q', '');
-        $options = \Domain\AjaxSearch\Actions\AjaxSearch::findBy($field, $searchString);
+        $options = AjaxSearch::findBy($field, $searchString);
 
         return response()->json($options);
     }

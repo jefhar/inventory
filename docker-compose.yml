@@ -8,19 +8,19 @@ services:
   mailhog:
     image: mailhog/mailhog:latest
     container_name: c11k-mailhog
-    restart: unless-stopped
+    restart: always
     ports:
       - "8025:8025"
 
   redis:
     image: redis:alpine
     container_name: c11k-redis
-    restart: unless-stopped
+    restart: always
 
   mysql:
     image: mysql:8.0
     container_name: c11k-mysql
-    restart: unless-stopped
+    restart: always
     working_dir: /application
     volumes:
       - .:/application:delegated
@@ -47,7 +47,7 @@ services:
   webserver:
     image: nginx:alpine
     container_name: c11k-webserver
-    restart: unless-stopped
+    restart: always
     working_dir: /application
     volumes:
       - .:/application:delegated
@@ -61,9 +61,9 @@ services:
         condition: service_started
 
   php-fpm:
-    image: registry.gitlab.com/c11k/serviceandgoods:dusk
+    build: phpdocker/dusk
     container_name: c11k-php-fpm
-    restart: unless-stopped
+    restart: always
     working_dir: /application
     volumes:
       - .:/application:delegated

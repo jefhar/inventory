@@ -134,5 +134,4 @@ class AjaxSearchTest extends TestCase
                 ]
             );
     }
-
 }

@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\Admin\Controllers\WorkOrdersController;
 use App\Admin\DataTransferObjects\ClientObject;
 use App\Admin\DataTransferObjects\PersonObject;
 use App\Admin\Permissions\UserRoles;
@@ -15,6 +16,7 @@ use App\User;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
+use Domain\WorkOrders\WorkOrder;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
@@ -29,6 +31,9 @@ class WorkOrderStoreActionTest extends TestCase
      */
     public function workOrderAddsCompanyNameToStorage(): void
     {
+        $user = factory(User::class)->create();
+        $user->givePermissionTo(WorkOrdersController::STORE_NAME);
+        $this->actingAs($user);
         WorkOrdersStoreAction::execute($this->clientObject, $this->personObject);
         $this->assertDatabaseHas(
             Client::TABLE,
@@ -43,6 +48,9 @@ class WorkOrderStoreActionTest extends TestCase
      */
     public function workOrderAddsPersonToClient(): void
     {
+        $user = factory(User::class)->create();
+        $user->givePermissionTo(WorkOrdersController::STORE_NAME);
+        $this->actingAs($user);
         WorkOrdersStoreAction::execute($this->clientObject, $this->personObject);
         $this->assertDatabaseHas(
             Person::TABLE,
@@ -63,7 +71,7 @@ class WorkOrderStoreActionTest extends TestCase
      */
     public function clientPersonIsOptionalForTech()
     {
-        $clientName = self::COMPANY_NAME . uniqid('a');
+        $clientName = self::COMPANY_NAME . uniqid('a', false);
         $this->actingAs(factory(User::class)->create()->assignRole(UserRoles::TECHNICIAN));
 
         WorkOrdersStoreAction::execute(
@@ -75,7 +83,7 @@ class WorkOrderStoreActionTest extends TestCase
             [Client::COMPANY_NAME => $clientName,]
         );
 
-        $clientWithPerson = self::COMPANY_NAME . uniqid('b');
+        $clientWithPerson = self::COMPANY_NAME . uniqid('b', false);
         WorkOrdersStoreAction::execute(
             new ClientObject([Client::COMPANY_NAME => $clientWithPerson]),
             $this->personObject
@@ -123,5 +131,41 @@ class WorkOrderStoreActionTest extends TestCase
         $this->withoutExceptionHandling()->actingAs(factory(User::class)->create()->assignRole(UserRoles::SALES_REP));
         $this->expectException(HttpException::class);
         WorkOrdersStoreAction::execute($this->clientObject);
+    }
+
+    /**
+     * @test
+     */
+    public function storingWorkOrderStoresWorkOrderClientAlreadyExists(): void
+    {
+        $authorizedUser = factory(User::class)->create();
+        $authorizedUser->givePermissionTo(WorkOrdersController::STORE_NAME);
+        $this->actingAs($authorizedUser);
+
+        $client = factory(Client::class)->create();
+        $person = factory(Person::class)->make();
+        $client->person()->save($person);
+
+        $clientObject = new ClientObject(
+            [
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
+        $personObject = new PersonObject(
+            [
+                Person::FIRST_NAME => $person->first_name,
+                Person::LAST_NAME => $person->last_name,
+                Person::EMAIL => $person->email,
+                Person::PHONE_NUMBER => $person->phone_number,
+            ]
+        );
+        WorkOrdersStoreAction::execute(
+            $clientObject,
+            $personObject
+        );
+        $this->assertDatabaseHas(
+            WorkOrder::TABLE,
+            [WorkOrder::CLIENT_ID => $client->id]
+        );
     }
 }

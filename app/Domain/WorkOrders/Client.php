@@ -11,7 +11,9 @@ declare(strict_types=1);
 namespace Domain\WorkOrders;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Collection;
 
 /**
  * Class Client
@@ -26,10 +28,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property \Carbon\Carbon|null $updated_at
  * @method static Model|static find($value)
  * @method static Model|static firstOrCreate($value)
- * @method static Model|static where(string $field, string $value, string $value))
+ * @method static Model|static where(string $field, string $value, string $value = null)
  * @method static Model|static first()
  * @method static Model|static firstOrNew(array $array)
- * @method static Model|static whereIn(string $ID, \Illuminate\Support\Collection $client_ids)
+ * @method static Model|static whereIn(string $ID, Collection $client_ids)
  * @method static Model|static with(string $relationship)
  */
 class Client extends Model
@@ -49,5 +51,13 @@ class Client extends Model
     public function person(): HasOne
     {
         return $this->hasOne(Person::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function workOrders(): HasMany
+    {
+        return $this->hasMany(WorkOrder::class);
     }
 }
