@@ -1,11 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import {
+    Card,
+    CardBody,
+    CardHeader,
     Container,
     FormGroup,
+    Input,
     InputGroup,
     InputGroupAddon,
-    InputGroupText
+    InputGroupText,
+    Label,
+    Row
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudDownloadAlt } from "@fortawesome/free-solid-svg-icons";
@@ -15,12 +21,30 @@ class WorkOrder extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: false
+            isLoading: false,
+            first_name: "",
+            last_name: ""
         };
-        this.handleSearch = this.handleSearch.bind(this);
     }
 
-    handleSearch(query) {
+    handleChange = selected => {
+        console.log("onChange");
+        if (selected[0]) {
+            console.log(selected[0].first_name);
+            this.setState({
+                first_name: selected[0].first_name,
+                last_name: selected[0].last_name
+            });
+        } else {
+            this.setState({
+                first_name: "",
+                last_name: ""
+            });
+        }
+    };
+
+    handleSearch = query => {
+        console.log("handleSearch");
         this.setState({ isLoading: true });
         axios
             .get(`/ajaxsearch/company_name?q=${query}`)
@@ -33,35 +57,91 @@ class WorkOrder extends React.Component {
             .catch(error => {
                 console.debug(error);
             });
-    }
+    };
+
+    handleNameChange = event => {
+        console.log("handleNameChange");
+        console.log(event);
+        console.log(event.target.name);
+        const target = event.target;
+        const value =
+            target.type === "checkbox" ? target.checked : target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        });
+    };
 
     render() {
         return (
             <Container>
-                <FormGroup row={true}>
-                    <InputGroup>
-                        <ClientCompanyName
-                            onSearch={this.handleSearch}
-                            isLoading={this.state.isLoading}
-                            options={this.state.options}
-                            labelKey="company_name"
-                            name="company_name"
-                            required="required"
-                            className="form-control form-control-sm"
-                            placeholder="Client's company name"
-                            newSelectionPrefix="New Client:"
-                            id="client.company_name"
-                        />
-                        <InputGroupAddon addonType="append">
-                            <InputGroupText id="checkClientExists">
-                                <FontAwesomeIcon
-                                    className="text-muted"
-                                    icon={faCloudDownloadAlt}
-                                />
-                            </InputGroupText>
-                        </InputGroupAddon>
-                    </InputGroup>
-                </FormGroup>
+                <Row>
+                    <h1 className="text-center">Create Work Order</h1>
+                </Row>
+                <Row className="shadow-sm">
+                    <Card className="col-md">
+                        <CardHeader>
+                            <h2>Client Information</h2>
+                        </CardHeader>
+                        <CardBody>
+                            <FormGroup row={true}>
+                                <InputGroup>
+                                    <ClientCompanyName
+                                        className="form-control form-control-sm"
+                                        id="company_name"
+                                        isLoading={this.state.isLoading}
+                                        handleChange={this.handleChange}
+                                        labelKey="company_name"
+                                        name="company_name"
+                                        newSelectionPrefix="New Client:"
+                                        onSearch={this.handleSearch}
+                                        options={this.state.options}
+                                        placeholder="Client's company name"
+                                        required="required"
+                                    />
+                                    <InputGroupAddon addonType="append">
+                                        <InputGroupText id="checkClientExists">
+                                            <FontAwesomeIcon
+                                                className="text-muted"
+                                                icon={faCloudDownloadAlt}
+                                            />
+                                        </InputGroupText>
+                                    </InputGroupAddon>
+                                </InputGroup>
+                            </FormGroup>
+                            <FormGroup row={true}>
+                                <Label
+                                    className="col-sm-2 d-md-none col-form-label"
+                                    for="first_name"
+                                >
+                                    Name:
+                                </Label>
+                                <div className="col">
+                                    <Input
+                                        className="form-control form-control-sm"
+                                        id="first_name"
+                                        name="first_name"
+                                        onChange={this.handleNameChange}
+                                        placeholder="Joe"
+                                        type="text"
+                                        value={this.state.first_name}
+                                    />
+                                </div>
+                                <div className="col">
+                                    <Input
+                                        className="form-control form-control-sm"
+                                        id="last_name"
+                                        name="last_name"
+                                        onChange={this.handleNameChange}
+                                        placeholder="Smith"
+                                        type="text"
+                                        value={this.state.last_name}
+                                    />
+                                </div>
+                            </FormGroup>
+                        </CardBody>
+                    </Card>
+                </Row>
             </Container>
         );
     }
