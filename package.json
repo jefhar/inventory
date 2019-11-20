@@ -20,6 +20,7 @@
         "browser-sync": "^2.26.7",
         "browser-sync-webpack-plugin": "^2.0.1",
         "cross-env": "^6.0.3",
+        "eslint-plugin-prettier": "^3.1.1",
         "jquery": "^3.2",
         "laravel-mix": "^5.0.0",
         "lodash": "^4.17.13",
@@ -37,7 +38,7 @@
     },
     "lint-staged": {
         "resources/{js,sass}/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-            "prettier --write",
+            "prettier --write --tab-width 2",
             "git add"
         ]
     },

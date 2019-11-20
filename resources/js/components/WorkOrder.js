@@ -1,150 +1,176 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import {
-    Card,
-    CardBody,
-    CardHeader,
-    Container,
-    FormGroup,
-    Input,
-    InputGroup,
-    InputGroupAddon,
-    InputGroupText,
-    Label,
-    Row
+  Card,
+  CardBody,
+  CardHeader,
+  Container,
+  FormGroup,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  Label,
+  Row
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudDownloadAlt } from "@fortawesome/free-solid-svg-icons";
 import ClientCompanyName from "./WorkOrder/ClientCompanyName";
 
+const axios = require("axios").default;
+
 class WorkOrder extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoading: false,
-            first_name: "",
-            last_name: ""
-        };
-    }
-
-    handleChange = selected => {
-        console.log("onChange");
-        if (selected[0]) {
-            console.log(selected[0].first_name);
-            this.setState({
-                first_name: selected[0].first_name,
-                last_name: selected[0].last_name
-            });
-        } else {
-            this.setState({
-                first_name: "",
-                last_name: ""
-            });
-        }
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: false,
+      first_name: "",
+      last_name: ""
     };
+  }
 
-    handleSearch = query => {
-        console.log("handleSearch");
-        this.setState({ isLoading: true });
-        axios
-            .get(`/ajaxsearch/company_name?q=${query}`)
-            .then(response => {
-                this.setState({
-                    isLoading: false,
-                    options: response.data
-                });
-            })
-            .catch(error => {
-                console.debug(error);
-            });
-    };
-
-    handleNameChange = event => {
-        console.log("handleNameChange");
-        console.log(event);
-        console.log(event.target.name);
-        const target = event.target;
-        const value =
-            target.type === "checkbox" ? target.checked : target.value;
-        const name = target.name;
-        this.setState({
-            [name]: value
+  handleChange = selected => {
+    console.log("onChange");
+    if (selected[0]) {
+      axios
+        .post("/workorders", {
+          company_name: selected[0].company_name,
+          first_name: selected[0].first_name,
+          last_name: selected[0].last_name
+        })
+        .then(response => {
+          const { headers, status } = response;
+          console.log("then");
+          console.log(headers);
+          console.log(status);
+          console.log(response);
+        })
+        .catch(error => {
+          console.log("error");
+          console.log(error);
         });
-    };
-
-    render() {
-        return (
-            <Container>
-                <Row>
-                    <h1 className="text-center">Create Work Order</h1>
-                </Row>
-                <Row className="shadow-sm">
-                    <Card className="col-md">
-                        <CardHeader>
-                            <h2>Client Information</h2>
-                        </CardHeader>
-                        <CardBody>
-                            <FormGroup row={true}>
-                                <InputGroup>
-                                    <ClientCompanyName
-                                        className="form-control form-control-sm"
-                                        id="company_name"
-                                        isLoading={this.state.isLoading}
-                                        handleChange={this.handleChange}
-                                        labelKey="company_name"
-                                        name="company_name"
-                                        newSelectionPrefix="New Client:"
-                                        onSearch={this.handleSearch}
-                                        options={this.state.options}
-                                        placeholder="Client's company name"
-                                        required="required"
-                                    />
-                                    <InputGroupAddon addonType="append">
-                                        <InputGroupText id="checkClientExists">
-                                            <FontAwesomeIcon
-                                                className="text-muted"
-                                                icon={faCloudDownloadAlt}
-                                            />
-                                        </InputGroupText>
-                                    </InputGroupAddon>
-                                </InputGroup>
-                            </FormGroup>
-                            <FormGroup row={true}>
-                                <Label
-                                    className="col-sm-2 d-md-none col-form-label"
-                                    for="first_name"
-                                >
-                                    Name:
-                                </Label>
-                                <div className="col">
-                                    <Input
-                                        className="form-control form-control-sm"
-                                        id="first_name"
-                                        name="first_name"
-                                        onChange={this.handleNameChange}
-                                        placeholder="Joe"
-                                        type="text"
-                                        value={this.state.first_name}
-                                    />
-                                </div>
-                                <div className="col">
-                                    <Input
-                                        className="form-control form-control-sm"
-                                        id="last_name"
-                                        name="last_name"
-                                        onChange={this.handleNameChange}
-                                        placeholder="Smith"
-                                        type="text"
-                                        value={this.state.last_name}
-                                    />
-                                </div>
-                            </FormGroup>
-                        </CardBody>
-                    </Card>
-                </Row>
-            </Container>
-        );
+      console.log("id:" + selected[0].client_id);
+      console.log("first:" + selected[0].first_name);
+      this.setState({
+        first_name: selected[0].first_name,
+        last_name: selected[0].last_name
+      });
+    } else {
+      this.setState({
+        first_name: "",
+        last_name: ""
+      });
     }
+  };
+
+  handleBlur = event => {
+    console.log("onBlur");
+    console.log(event.target.name);
+  };
+  handleSearch = query => {
+    console.log("handleSearch");
+    this.setState({ isLoading: true });
+    axios
+      .get(`/ajaxsearch/company_name?q=${query}`)
+      .then(response => {
+        this.setState({
+          isLoading: false,
+          options: response.data
+        });
+      })
+      .catch(error => {
+        console.debug(error);
+      });
+  };
+
+  handleNameChange = event => {
+    console.log("handleNameChange");
+    console.log(event);
+    console.log(event.target.name);
+    const target = event.target;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    const name = target.name;
+    this.setState({
+      [name]: value
+    });
+  };
+
+  render() {
+    return (
+      <Container>
+        <Row>
+          <h1 className="text-center">Create Work Order</h1>
+        </Row>
+        <Row className="shadow-sm">
+          <Card className="col-md">
+            <CardHeader>
+              <h2>Client Information</h2>
+            </CardHeader>
+            <CardBody>
+              <FormGroup row={true}>
+                <InputGroup>
+                  <ClientCompanyName
+                    className="form-control form-control-sm"
+                    id="company_name"
+                    isLoading={this.state.isLoading}
+                    handleChange={this.handleChange}
+                    labelKey="company_name"
+                    name="company_name"
+                    newSelectionPrefix="New Client:"
+                    onSearch={this.handleSearch}
+                    onBlur={this.handleBlur}
+                    options={this.state.options}
+                    placeholder="Client's company name"
+                    required="required"
+                  />
+                  <InputGroupAddon addonType="append">
+                    <InputGroupText id="checkClientExists">
+                      <FontAwesomeIcon
+                        className="text-muted"
+                        icon={faCloudDownloadAlt}
+                      />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </FormGroup>
+              <FormGroup row={true}>
+                <Label
+                  className="col-sm-2 d-md-none col-form-label"
+                  for="first_name"
+                >
+                  Name:
+                </Label>
+                <div className="col">
+                  <Input
+                    className="form-control form-control-sm"
+                    id="first_name"
+                    name="first_name"
+                    onChange={this.handleNameChange}
+                    placeholder="Joe"
+                    type="text"
+                    value={this.state.first_name}
+                    onBlur={this.handleBlur}
+                  />
+                </div>
+                <div className="col">
+                  <Input
+                    className="form-control form-control-sm"
+                    id="last_name"
+                    name="last_name"
+                    onChange={this.handleNameChange}
+                    placeholder="Smith"
+                    type="text"
+                    value={this.state.last_name}
+                    onBlur={this.handleBlur}
+                  />
+                </div>
+              </FormGroup>
+            </CardBody>
+          </Card>
+        </Row>
+      </Container>
+    );
+  }
 }
 
 /*
@@ -570,5 +596,5 @@ function FullWorkOrder () {
 export default WorkOrder;
 
 if (document.getElementById("workorder")) {
-    ReactDOM.render(<WorkOrder />, document.getElementById("workorder"));
+  ReactDOM.render(<WorkOrder />, document.getElementById("workorder"));
 }

@@ -5,6 +5,7 @@ module.exports = {
   },
   extends: [
     'airbnb',
+    'plugin:prettier/recommended'
   ],
   globals: {
     Atomics: 'readonly',
@@ -20,6 +21,5 @@ module.exports = {
   plugins: [
     'react',
   ],
-  rules: {
-  },
-};
+  rules: {},
+}
