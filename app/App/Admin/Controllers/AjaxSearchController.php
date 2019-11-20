@@ -22,6 +22,7 @@ class AjaxSearchController extends Controller
     /**
      * @param Request $request
      * @param string $field
+     * @return string
      */
     public function show(Request $request, string $field)
     {
@@ -29,17 +30,19 @@ class AjaxSearchController extends Controller
             Client::COMPANY_NAME => Client::COMPANY_NAME,
         ];
         $user = $request->user();
-        if (
-            ($user !== null)
-            && array_key_exists($field, $availableFields)
-            && $user->hasPermissionTo(UserPermissions::IS_EMPLOYEE)
-        ) {
-            $searchString = $request->get('q', '');
-            $options = \Domain\AjaxSearch\Actions\AjaxSearch::findBy($field, $searchString);
-
-            return $options->toJson();
+        if ($user === null) {
+            abort(Response::HTTP_UNAUTHORIZED, Response::$statusTexts[Response::HTTP_UNAUTHORIZED]);
+        }
+        if ($user->cant(UserPermissions::IS_EMPLOYEE)) {
+            abort(Response::HTTP_UNAUTHORIZED, Response::$statusTexts[Response::HTTP_UNAUTHORIZED]);
+        }
+        if (!array_key_exists($field, $availableFields)) {
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY, Response::$statusTexts[Response::HTTP_UNPROCESSABLE_ENTITY]);
         }
 
-        abort(Response::HTTP_UNPROCESSABLE_ENTITY, Response::$statusTexts[Response::HTTP_UNPROCESSABLE_ENTITY]);
+        $searchString = $request->get('q', '');
+        $options = \Domain\AjaxSearch\Actions\AjaxSearch::findBy($field, $searchString);
+
+        return $options->toJson();
     }
 }

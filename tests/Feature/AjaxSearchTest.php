@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Admin\Controllers\AjaxSearchController;
+use App\Admin\Permissions\UserPermissions;
 use App\Admin\Permissions\UserRoles;
 use App\User;
 use Domain\WorkOrders\Client;
@@ -26,6 +27,7 @@ class AjaxSearchTest extends TestCase
         /** @var User $authorizedUser */
         parent::setUp();
         $unauthorizedUser = factory(User::class)->create();
+        $unauthorizedUser->revokePermissionTo(UserPermissions::IS_EMPLOYEE);
         $authorizedUser = factory(User::class)->create();
         $authorizedUser->assignRole(UserRoles::EMPLOYEE);
         $this->unauthorizedUser = $unauthorizedUser;
@@ -37,6 +39,7 @@ class AjaxSearchTest extends TestCase
      */
     public function anonymousIsUnauthorized(): void
     {
+        $this->actingAs($this->unauthorizedUser);
         $this->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))->assertUnauthorized();
     }
 
