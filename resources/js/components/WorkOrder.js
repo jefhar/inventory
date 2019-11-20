@@ -11,24 +11,60 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudDownloadAlt } from "@fortawesome/free-solid-svg-icons";
 import ClientCompanyName from "./WorkOrder/ClientCompanyName";
 
-function WorkOrder() {
-    return (
-        <Container>
-            <FormGroup row={true}>
-                <InputGroup>
-                    <ClientCompanyName />
-                    <InputGroupAddon addonType="append">
-                        <InputGroupText id="checkClientExists">
-                            <FontAwesomeIcon
-                                className="text-muted"
-                                icon={faCloudDownloadAlt}
-                            />
-                        </InputGroupText>
-                    </InputGroupAddon>
-                </InputGroup>
-            </FormGroup>
-        </Container>
-    );
+class WorkOrder extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: false
+        };
+        this.handleSearch = this.handleSearch.bind(this);
+    }
+
+    handleSearch(query) {
+        this.setState({ isLoading: true });
+        axios
+            .get(`/ajaxsearch/company_name?q=${query}`)
+            .then(response => {
+                this.setState({
+                    isLoading: false,
+                    options: response.data
+                });
+            })
+            .catch(error => {
+                console.debug(error);
+            });
+    }
+
+    render() {
+        return (
+            <Container>
+                <FormGroup row={true}>
+                    <InputGroup>
+                        <ClientCompanyName
+                            onSearch={this.handleSearch}
+                            isLoading={this.state.isLoading}
+                            options={this.state.options}
+                            labelKey="company_name"
+                            name="company_name"
+                            required="required"
+                            className="form-control form-control-sm"
+                            placeholder="Client's company name"
+                            newSelectionPrefix="New Client:"
+                            id="client.company_name"
+                        />
+                        <InputGroupAddon addonType="append">
+                            <InputGroupText id="checkClientExists">
+                                <FontAwesomeIcon
+                                    className="text-muted"
+                                    icon={faCloudDownloadAlt}
+                                />
+                            </InputGroupText>
+                        </InputGroupAddon>
+                    </InputGroup>
+                </FormGroup>
+            </Container>
+        );
+    }
 }
 
 /*
