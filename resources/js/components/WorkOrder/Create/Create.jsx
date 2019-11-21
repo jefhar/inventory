@@ -26,7 +26,81 @@ class Create extends React.Component {
   }
 
   handleChange = selected => {
-    console.log("onChange");
+    // console.log('onChange')
+    // console.log(selected[0])
+    const postData = {
+      company_name: selected[0].company_name,
+      first_name: selected[0].first_name || this.state.first_name,
+      last_name: selected[0].last_name || this.state.last_name
+    };
+    this.setState(postData);
+    this.tryPost(postData);
+  };
+
+  tryPost = postData => {
+    console.log("tryPost:");
+    console.log(postData);
+    axios.interceptors.response.use(
+      function(response) {
+        console.log("intercepted response");
+        console.log(response);
+        if (response.data.id) {
+          console.log("redirect to /workorders/" + response.data.id + "/edit");
+          window.location = "/workorders/" + response.data.id + "/edit";
+        }
+        return response;
+      },
+      function(error) {
+        console.log("intercepted error");
+        console.log(error);
+        return Promise.reject(error);
+      }
+    );
+    axios
+      .post("/workorders", {
+        company_name: postData.company_name,
+        first_name: postData.first_name,
+        last_name: postData.last_name
+      })
+      .then(response => {
+        console.log("response");
+        console.log(response.data);
+        console.log(response.status);
+        console.log(response.statusText);
+        console.log(response.headers);
+        console.log(response.config);
+      })
+      .catch(error => {
+        console.debug(error);
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+          if (error.response.status === 422) {
+            // Something missing
+            this.handle422();
+          }
+          if (error.response.status === 401) {
+            // Unauthorized
+            this.handle401();
+          }
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and
+          // an instance of http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error", error.message);
+        }
+        console.log(error.config);
+      });
+  };
+
+  oldHandleChange = selected => {
+    console.log("onOldChange");
     if (selected[0]) {
       axios
         .post("/workorders", {
@@ -58,12 +132,31 @@ class Create extends React.Component {
       });
     }
   };
+
+  /**
+   * Handles when form field blurs.
+   * @param event
+   */
   handleBlur = event => {
-    console.log("onBlur");
-    console.log(event.target.name);
+    // console.log('handleBlur');
+    let company_name = "";
+    if (event.target.name === "company_name") {
+      company_name = event.target.defaultValue;
+    }
+
+    this.tryPost({
+      company_name: company_name,
+      first_name: this.state.first_name,
+      last_name: this.state.last_name
+    });
   };
+
+  /**
+   * Handles api search
+   * @param query
+   */
   handleSearch = query => {
-    console.log("handleSearch");
+    // console.log('handleSearch')
     this.setState({ isLoading: true });
     axios
       .get(`/ajaxsearch/company_name?q=${query}`)
@@ -77,10 +170,13 @@ class Create extends React.Component {
         console.debug(error);
       });
   };
+
+  /**
+   * Handles changing of Name fields
+   * @param event
+   */
   handleNameChange = event => {
-    console.log("handleNameChange");
-    console.log(event);
-    console.log(event.target.name);
+    // console.log('handleNameChange')
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
@@ -218,6 +314,10 @@ class Create extends React.Component {
       </Row>
     );
   }
+
+  handle422() {}
+
+  handle401() {}
 }
 
 export default Create;

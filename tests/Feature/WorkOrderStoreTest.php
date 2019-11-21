@@ -19,6 +19,12 @@ use Spatie\Permission\Models\Permission;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
+/**
+ * Class WorkOrderStoreTest
+ *
+ * @package Tests\Feature
+ * Need to change tests to check each type of user or enumerate
+ */
 class WorkOrderStoreTest extends TestCase
 {
     use RefreshDatabase;
