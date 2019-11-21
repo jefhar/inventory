@@ -13,6 +13,7 @@ import {
 } from "reactstrap";
 
 import CompanyName from "../Elements/CompanyName";
+import FormHeader from "../Elements/FormHeader";
 
 class Create extends React.Component {
   constructor(props) {
@@ -92,9 +93,7 @@ class Create extends React.Component {
     return (
       <Row className="shadow-sm">
         <Card className="col-md">
-          <CardHeader tag="h1" className="text-center">
-            Create Work Order
-          </CardHeader>
+          <FormHeader workOrderId="-----" />
           <CardBody>
             <Form>
               <FormGroup row={true}>
