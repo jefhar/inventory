@@ -6,11 +6,10 @@
 
 @section('content')
     <div id="workorder"></div>
+@endsection
 
-
+@section('future_workorder_content')
     <form class="container">
-
-
         <div class="row">
             <div class="col-sm card">
                 <h2 class="card-header">Product Information</h2>
@@ -19,7 +18,8 @@
                         <div class="input-group">
                             <label for="workorder.row" class="col-sm-2">Quick Add Sku:</label>
                             <div class="col-sm-4 input-group">
-                                <input type="text" class="form-control form-control-sm" id="workorder.row" name="workorder.row"
+                                <input type="text" class="form-control form-control-sm" id="workorder.row"
+                                       name="workorder.row"
                                        placeholder="10000"/>
                                 <div class="input-group-append">
                                     <span class="input-group-text" id="quickAddSku">

@@ -11,8 +11,9 @@ const mix = require('laravel-mix')
  |
  */
 
-mix.react('resources/js/app.js', 'public/js')
-  .react('resources/js/entrypoints/workorders/createWorkOrder.js', 'public/js/workorders/create.js')
+mix.react('resources/js/app.js', 'public/js').
+  react('resources/js/entrypoints/workorders/create.js',
+    'public/js/workorders/create.js')
   .sourceMaps()
   .sass('resources/sass/app.scss', 'public/css')
 mix.browserSync('localhost:8080')

@@ -2,7 +2,7 @@ import React from "react";
 import { AsyncTypeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
-function ClientCompanyName(props) {
+function CompanyName(props) {
   return (
     <AsyncTypeahead
       allowNew={true}
@@ -28,4 +28,4 @@ function ClientCompanyName(props) {
   );
 }
 
-export default ClientCompanyName;
+export default CompanyName;
