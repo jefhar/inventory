@@ -59,7 +59,7 @@ class AjaxSearch
         $clients = Client::whereIn(Client::ID, $client_ids)->with('person')->get();
 
         $map = $clients->map(
-            function ($item) {
+            static function ($item) {
                 return [
                     Person::CLIENT_ID => $item->id,
                     Client::COMPANY_NAME => $item->company_name,

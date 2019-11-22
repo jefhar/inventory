@@ -13,6 +13,7 @@ class WorkOrderCreateTest extends DuskTestCase
 
     /**
      * @test
+     * @throws \Throwable
      */
     public function pageExists(): void
     {
@@ -20,7 +21,7 @@ class WorkOrderCreateTest extends DuskTestCase
         $user->givePermissionTo(WorkOrdersController::CREATE_NAME);
 
         $this->browse(
-            function (Browser $browser) use ($user) {
+            static function (Browser $browser) use ($user) {
                 $browser->visit('/login')
                     ->type('email', $user->email)
                     ->type('password', 'password')
