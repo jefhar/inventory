@@ -1,13 +1,13 @@
 import React from "react";
 import {
+  Alert,
+  Button,
   Card,
   CardBody,
-  CardHeader,
   Col,
   Form,
   FormGroup,
   Input,
-  InputGroup,
   Label,
   Row
 } from "reactstrap";
@@ -19,72 +19,81 @@ class Create extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false,
+      company_name: "",
       first_name: "",
-      last_name: ""
+      isLoading: false,
+      last_name: "",
+      invalid_company_name: false
     };
   }
 
   handleChange = selected => {
-    // console.log('onChange')
+    console.log("onChange");
     // console.log(selected[0])
-    const postData = {
+    this.setState({
       company_name: selected[0].company_name,
       first_name: selected[0].first_name || this.state.first_name,
+      invalid_company_name: false,
       last_name: selected[0].last_name || this.state.last_name
-    };
-    this.setState(postData);
-    this.tryPost(postData);
+    });
   };
 
-  tryPost = postData => {
+  handleButtonClick = () => {
     console.log("tryPost:");
-    console.log(postData);
-    axios.interceptors.response.use(
-      function(response) {
-        console.log("intercepted response");
-        console.log(response);
-        if (response.data.id) {
-          console.log("redirect to /workorders/" + response.data.id + "/edit");
-          window.location = "/workorders/" + response.data.id + "/edit";
+    /*axios.interceptors.response.use(
+      function (response) {
+        console.log('intercepted response')
+        console.log(response.data)
+        console.log(response.headers);
+        if (response.data.workorder_id) {
+          console.log(
+            'redirect to /workorders/' + response.data.workorder_id + '/edit')
+          window.location = '/workorders/' + response.data.workorder_id +
+            '/edit'
         }
-        return response;
+        return response
       },
-      function(error) {
-        console.log("intercepted error");
-        console.log(error);
-        return Promise.reject(error);
+      function (error) {
+        console.log('intercepted error')
+        console.log(error)
+        return Promise.reject(error)
       }
-    );
+    )*/
     axios
       .post("/workorders", {
-        company_name: postData.company_name,
-        first_name: postData.first_name,
-        last_name: postData.last_name
+        company_name: this.state.company_name,
+        first_name: this.state.first_name,
+        last_name: this.state.last_name
       })
       .then(response => {
-        console.log("response");
         console.log(response.data);
         console.log(response.status);
         console.log(response.statusText);
         console.log(response.headers);
         console.log(response.config);
+        if (response.data.workorder_id) {
+          window.location =
+            "/workorders/" + response.data.workorder_id + "/edit";
+        }
       })
       .catch(error => {
         console.debug(error);
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
+          // console.log(error.response.data)
+          // console.log(error.response.status)
+          // console.log(error.response.headers)
           if (error.response.status === 422) {
-            // Something missing
-            this.handle422();
-          }
-          if (error.response.status === 401) {
-            // Unauthorized
-            this.handle401();
+            console.log(error.response.data.errors);
+            if (error.response.data.errors.company_name) {
+              this.setState({
+                invalid_company_name: true
+              });
+              console.log(
+                "company_name error: " + error.response.data.errors.company_name
+              );
+            }
           }
         } else if (error.request) {
           // The request was made but no response was received
@@ -138,13 +147,15 @@ class Create extends React.Component {
    * @param event
    */
   handleBlur = event => {
-    // console.log('handleBlur');
-    let company_name = "";
+    console.log("handleBlur");
+    let company_name = this.state.company_name || "";
     if (event.target.name === "company_name") {
       company_name = event.target.defaultValue;
+      this.setState({
+        invalid_company_name: false
+      });
     }
-
-    this.tryPost({
+    this.setState({
       company_name: company_name,
       first_name: this.state.first_name,
       last_name: this.state.last_name
@@ -156,14 +167,15 @@ class Create extends React.Component {
    * @param query
    */
   handleSearch = query => {
-    // console.log('handleSearch')
-    this.setState({ isLoading: true });
+    console.log("handleSearch");
+    this.setState({ isLoading: true, company_name: query });
     axios
       .get(`/ajaxsearch/company_name?q=${query}`)
       .then(response => {
         this.setState({
           isLoading: false,
-          options: response.data
+          options: response.data,
+          company_name: query
         });
       })
       .catch(error => {
@@ -192,26 +204,33 @@ class Create extends React.Component {
           <FormHeader workOrderId="-----" />
           <CardBody>
             <Form>
-              <FormGroup row={true}>
+              <FormGroup>
                 <Label className="col-form-label" for="company_name">
                   Client Name
                 </Label>
-                <InputGroup>
-                  <CompanyName
-                    className="form-control form-control-sm"
-                    id="company_name"
-                    isLoading={this.state.isLoading}
-                    handleChange={this.handleChange}
-                    labelKey="company_name"
-                    name="company_name"
-                    newSelectionPrefix="New Client:"
-                    onSearch={this.handleSearch}
-                    onBlur={this.handleBlur}
-                    options={this.state.options}
-                    placeholder="Client's company name"
-                    required="required"
-                  />
-                </InputGroup>
+                <CompanyName
+                  className={
+                    (this.state.invalid_company_name
+                      ? "is-invalid"
+                      : "is-valid") + " form-control form-control-sm"
+                  }
+                  id="company_name"
+                  isLoading={this.state.isLoading}
+                  handleChange={this.handleChange}
+                  labelKey="company_name"
+                  name="company_name"
+                  newSelectionPrefix="New Client:"
+                  onSearch={this.handleSearch}
+                  onBlur={this.handleBlur}
+                  options={this.state.options}
+                  placeholder="Client's company name"
+                  invalid={this.state.invalid_company_name}
+                  selectHintOnEnter={true}
+                />
+
+                <Alert color="danger" isOpen={this.state.invalid_company_name}>
+                  The Company Name field is required.
+                </Alert>
               </FormGroup>
               <FormGroup row={true}>
                 <Label
@@ -244,6 +263,16 @@ class Create extends React.Component {
                     onBlur={this.handleBlur}
                   />
                 </Col>
+              </FormGroup>
+              <FormGroup row={true}>
+                <Button
+                  block
+                  outline
+                  color="success"
+                  onClick={this.handleButtonClick}
+                >
+                  Create New Work Order
+                </Button>
               </FormGroup>
             </Form>
           </CardBody>
@@ -314,10 +343,6 @@ class Create extends React.Component {
       </Row>
     );
   }
-
-  handle422() {}
-
-  handle401() {}
 }
 
 export default Create;
