@@ -8,9 +8,9 @@ function FormHeader(props) {
         <Col tag="h1" className="text-center">
           Create Work Order
         </Col>
-        <Col xs={2} sm={3} md={2}>
-          <Row>Work Order #</Row>
-          <Row>{props.workOrderId}</Row>
+        <Col xs={2} sm={3} md={2} className="shadow-sm">
+          <Row className="justify-content-center">Work Order #</Row>
+          <Row className="justify-content-center">{props.workOrderId}</Row>
         </Col>
       </Row>
     </CardHeader>

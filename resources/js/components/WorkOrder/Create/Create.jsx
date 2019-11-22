@@ -30,8 +30,8 @@ class Create extends React.Component {
   }
 
   /**
-   * @param selected The array of item objects. selected[0] is the chosen
-   *   object.
+   * @param selected The array of item objects. selected[0] is the
+   * chosen object.
    */
   handleChange = selected => {
     this.setState({
@@ -70,9 +70,6 @@ class Create extends React.Component {
             this.setState({ login: false });
           }
         } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and
-          // an instance of http.ClientRequest in node.js
           console.log(error.request);
         } else {
           // Something happened in setting up the request that triggered an Error
@@ -106,7 +103,6 @@ class Create extends React.Component {
    * @param query
    */
   handleSearch = query => {
-    console.log("handleSearch");
     this.setState({ isLoading: true, company_name: query });
     axios
       .get(`/ajaxsearch/company_name?q=${query}`)
@@ -127,7 +123,6 @@ class Create extends React.Component {
    * @param event
    */
   handleNameChange = event => {
-    // console.log('handleNameChange')
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
