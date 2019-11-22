@@ -13,6 +13,11 @@ use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Class WorkOrder
+ *
+ * @package Domain\WorkOrders
+ */
 class WorkOrder extends Model
 {
     public const CLIENT_ID = 'client_id';

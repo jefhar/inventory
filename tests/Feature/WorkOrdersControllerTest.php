@@ -39,7 +39,7 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function techUserCreateIsOk(): void
     {
-        $this->actingAs($this->technicianUser)
+        $this->withExceptionHandling()->actingAs($this->technicianUser)
             ->get(
                 route(WorkOrdersController::CREATE_NAME)
             )->assertOK();

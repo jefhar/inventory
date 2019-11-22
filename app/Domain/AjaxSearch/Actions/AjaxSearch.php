@@ -14,6 +14,11 @@ use Domain\WorkOrders\Person;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class AjaxSearch
+ *
+ * @package Domain\AjaxSearch\Actions
+ */
 class AjaxSearch
 {
 

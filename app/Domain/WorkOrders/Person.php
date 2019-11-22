@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class Person
  *
+ * @package Domain\WorkOrders
+ *
  * @property int $client_id
  * @property int $id
  * @property string $email

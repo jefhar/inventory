@@ -15,6 +15,11 @@ use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class WorkOrdersStoreAction
+ *
+ * @package Domain\WorkOrders\Actions
+ */
 class WorkOrdersStoreAction
 {
 

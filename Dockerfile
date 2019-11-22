@@ -21,6 +21,7 @@ RUN apt-get update \
 		php7.4-mbstring \
         php7.4-mysql \
         php7.4-opcache \
+        php7.4-pdo \
         php7.4-zip \
         php-redis \
         php7.4-sqlite3 \
@@ -39,13 +40,11 @@ RUN apt-get update \
     && echo 'extension=redis.so' > /etc/php/7.4/mods-available/redis.ini \
     && ln /etc/php/7.4/mods-available/redis.ini /etc/php/7.4/cli/conf.d/20-redis.ini \
     && ln /etc/php/7.4/mods-available/redis.ini /etc/php/7.4/fpm/conf.d/20-redis.ini \
+    && cd / \
     && rm -rf /src/ \
     && apt-get purge php7.4-dev make -y\
     && apt-get autoremove -y \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
-
-# Install needed extensions
-# Here you can install any other extension that you need during the test and deployment process
 
 # Install Laravel Envoy
 RUN  composer self-update \
