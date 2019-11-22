@@ -3,6 +3,9 @@
  * includes React and other helpers. It's a great starting point while
  * building robust, powerful web applications using React + Laravel.
  */
+import React from "react";
+import ReactDOM from "react-dom";
+import Create from "../../components/WorkOrder/Create";
 
 require("../../bootstrap");
 
@@ -12,4 +15,7 @@ require("../../bootstrap");
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-require("../../components/WorkOrder");
+if (document.getElementById("workorders_create")) {
+  console.log("got workorders_create");
+  ReactDOM.render(<Create />, document.getElementById("workorders_create"));
+}

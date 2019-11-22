@@ -5,6 +5,7 @@ import {
   Card,
   CardBody,
   Col,
+  Container,
   Form,
   FormFeedback,
   FormGroup,
@@ -19,6 +20,7 @@ import FormHeader from "../Elements/FormHeader";
 class Create extends React.Component {
   constructor(props) {
     super(props);
+    console.log("constructor");
     this.state = {
       company_name: "",
       first_name: "",
@@ -132,104 +134,110 @@ class Create extends React.Component {
   };
 
   render() {
+    console.log("rendering");
     return (
-      <Row className="shadow-sm">
-        <Card className="col-md">
-          <FormHeader workOrderId="-----" />
-          <CardBody>
-            <Form>
-              <FormGroup>
-                <Label className="col-form-label" for="company_name">
-                  Client Name
-                </Label>
-                <CompanyName
-                  className={
-                    (this.state.invalid_company_name
-                      ? "is-invalid"
-                      : "is-valid") + " form-control form-control-sm"
-                  }
-                  id="company_name"
-                  isLoading={this.state.isLoading}
-                  handleChange={this.handleChange}
-                  labelKey="company_name"
-                  name="company_name"
-                  newSelectionPrefix="New Client:"
-                  onSearch={this.handleSearch}
-                  onBlur={this.handleBlur}
-                  options={this.state.options}
-                  placeholder="Client's company name"
-                  invalid={this.state.invalid_company_name}
-                  selectHintOnEnter={true}
-                />
-                <FormFeedback valid={!this.state.invalid_company_name}>
-                  Company Name is required.
-                </FormFeedback>
-                <Alert color="info" isOpen={this.state.invalid_company_name}>
-                  The Company Name field is required.
-                </Alert>
-              </FormGroup>
-              <FormGroup row={true}>
-                <Label
-                  className="col-sm-2 d-md-none col-form-label"
-                  for="first_name"
-                >
-                  Name:
-                </Label>
-                <Col>
-                  <Input
-                    className="form-control form-control-sm"
-                    id="first_name"
-                    name="first_name"
-                    onChange={this.handleNameChange}
-                    placeholder="Joe"
-                    type="text"
-                    value={this.state.first_name}
+      <Container>
+        <Row className="shadow-sm">
+          <Card className="col-md">
+            <FormHeader workOrderId="-----" />
+            <CardBody>
+              <Form>
+                <FormGroup>
+                  <Label className="col-form-label" for="company_name">
+                    Client Name
+                  </Label>
+                  <CompanyName
+                    className={
+                      (this.state.invalid_company_name
+                        ? "is-invalid"
+                        : "is-valid") + " form-control form-control-sm"
+                    }
+                    id="company_name"
+                    isLoading={this.state.isLoading}
+                    handleChange={this.handleChange}
+                    labelKey="company_name"
+                    name="company_name"
+                    newSelectionPrefix="New Client:"
+                    onSearch={this.handleSearch}
                     onBlur={this.handleBlur}
+                    options={this.state.options}
+                    placeholder="Client's company name"
+                    invalid={this.state.invalid_company_name}
+                    selectHintOnEnter={true}
                   />
-                </Col>
-                <Col>
-                  <Input
-                    className="form-control form-control-sm"
-                    id="last_name"
-                    name="last_name"
-                    onChange={this.handleNameChange}
-                    placeholder="Smith"
-                    type="text"
-                    value={this.state.last_name}
-                    onBlur={this.handleBlur}
-                  />
-                </Col>
-              </FormGroup>
-              <FormGroup row={true}>
-                <Button
-                  block
-                  outline
-                  color="success"
-                  onClick={this.handleButtonClick}
-                >
-                  Create New Work Order
-                </Button>
-              </FormGroup>
-              <FormGroup>
-                <Alert
-                  className="row"
-                  color="danger"
-                  isOpen={!this.state.login}
-                >
-                  <h3 className="alert-heading">User Not Logged In</h3>
-                  <div>
-                    You are not logged in to the application. Please{" "}
-                    <a className="alert-link" href="/login">
-                      login
-                    </a>{" "}
-                    and try again.
-                  </div>
-                </Alert>
-              </FormGroup>
-            </Form>
-          </CardBody>
-        </Card>
-      </Row>
+                  <FormFeedback valid={!this.state.invalid_company_name}>
+                    Company Name is required.
+                  </FormFeedback>
+                  <Alert
+                    color="warning"
+                    isOpen={this.state.invalid_company_name}
+                  >
+                    The Company Name field is required.
+                  </Alert>
+                </FormGroup>
+                <FormGroup row={true}>
+                  <Label
+                    className="col-sm-2 d-md-none col-form-label"
+                    for="first_name"
+                  >
+                    Name:
+                  </Label>
+                  <Col>
+                    <Input
+                      className="form-control form-control-sm"
+                      id="first_name"
+                      name="first_name"
+                      onChange={this.handleNameChange}
+                      placeholder="Joe"
+                      type="text"
+                      value={this.state.first_name}
+                      onBlur={this.handleBlur}
+                    />
+                  </Col>
+                  <Col>
+                    <Input
+                      className="form-control form-control-sm"
+                      id="last_name"
+                      name="last_name"
+                      onChange={this.handleNameChange}
+                      placeholder="Smith"
+                      type="text"
+                      value={this.state.last_name}
+                      onBlur={this.handleBlur}
+                    />
+                  </Col>
+                </FormGroup>
+                <FormGroup row={true}>
+                  <Button
+                    block
+                    outline
+                    color="success"
+                    onClick={this.handleButtonClick}
+                  >
+                    Create New Work Order
+                  </Button>
+                </FormGroup>
+                <FormGroup>
+                  <Alert
+                    className="row"
+                    color="danger"
+                    isOpen={!this.state.login}
+                  >
+                    <h3 className="alert-heading">User Not Logged In</h3>
+                    <div>
+                      You are not logged in to the application. Please{" "}
+                      <a className="alert-link" href="/login">
+                        login
+                      </a>{" "}
+                      and try again.
+                    </div>
+                  </Alert>
+                </FormGroup>
+              </Form>
+            </CardBody>
+          </Card>
+        </Row>
+      </Container>
     );
   }
 }

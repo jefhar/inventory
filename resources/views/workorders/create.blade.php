@@ -5,7 +5,7 @@
 @endpush
 
 @section('content')
-    <div id="workorder"></div>
+    <div id="workorders_create"></div>
 @endsection
 
 @section('future_workorder_content')
