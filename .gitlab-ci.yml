@@ -30,6 +30,7 @@ test:
   interruptible: true
 
 dusktest:
+  allow_failure: true
   image: registry.gitlab.com/c11k/serviceandgoods:dusk
   services:
     - selenium/standalone-chrome
