@@ -23,6 +23,7 @@ class WorkOrdersController extends Controller
     public const CREATE_PATH = '/workorders/create';
     public const SHOW_NAME = 'workorders.show';
     public const STORE_NAME = 'workorders.store';
+    public const INDEX_NAME = 'workorders.index';
 
     /**
      * Display a listing of the resource.

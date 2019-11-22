@@ -27,9 +27,10 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('workorders', 'WorkOrdersController')->only(
     [
         'create',
+        'edit',
+        'index',
         'show',
         'store',
-        'edit',
     ]
 )->middleware('auth');
 Route::get(AjaxSearchController::SHOW_PATH, 'AjaxSearchController@show')

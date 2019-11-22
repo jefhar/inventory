@@ -118,6 +118,15 @@ class WorkOrdersControllerTest extends TestCase
         );
     }
 
+    /**
+     * @test
+     */
+    public function guestIndexIsUnauthorized(): void
+    {
+        $this->get(route(WorkOrdersController::INDEX_NAME))
+            ->assertRedirect('/login');
+    }
+
     protected function setUp(): void
     {
         /** @var User $guestUser */
