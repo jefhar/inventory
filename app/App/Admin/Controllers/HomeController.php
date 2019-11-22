@@ -2,8 +2,12 @@
 
 namespace App\Admin\Controllers;
 
-use Illuminate\Http\Request;
-
+/**
+ * Class HomeController
+ *
+ * @package App\Admin\Controllers
+ * @codeCoverageIgnore
+ */
 class HomeController extends Controller
 {
     /**

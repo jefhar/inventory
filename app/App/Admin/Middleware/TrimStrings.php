@@ -4,6 +4,12 @@ namespace App\Admin\Middleware;
 
 use Illuminate\Foundation\Http\Middleware\TrimStrings as Middleware;
 
+/**
+ * Class TrimStrings
+ *
+ * @package App\Admin\Middleware
+ * @codeCoverageIgnore
+ */
 class TrimStrings extends Middleware
 {
     /**

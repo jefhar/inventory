@@ -4,6 +4,12 @@ namespace App\Admin\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 
+/**
+ * Class Authenticate
+ *
+ * @package App\Admin\Middleware
+ * @codeCoverageIgnore
+ */
 class Authenticate extends Middleware
 {
     /**

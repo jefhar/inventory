@@ -5,6 +5,12 @@ namespace App\Admin\Controllers\Auth;
 use App\Admin\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 
+/**
+ * Class ResetPasswordController
+ *
+ * @package App\Admin\Controllers\Auth
+ * @codeCoverageIgnore
+ */
 class ResetPasswordController extends Controller
 {
     /**

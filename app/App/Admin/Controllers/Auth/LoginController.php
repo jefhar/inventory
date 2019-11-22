@@ -5,6 +5,12 @@ namespace App\Admin\Controllers\Auth;
 use App\Admin\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
+/**
+ * Class LoginController
+ *
+ * @package App\Admin\Controllers\Auth
+ * @codeCoverageIgnore
+ */
 class LoginController extends Controller
 {
     /**

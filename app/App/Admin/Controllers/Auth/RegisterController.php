@@ -8,6 +8,12 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * Class RegisterController
+ *
+ * @package App\Admin\Controllers\Auth
+ * @codeCoverageIgnore
+ */
 class RegisterController extends Controller
 {
     /**

@@ -4,16 +4,19 @@ namespace App\Admin\Controllers;
 
 use App\Admin\DataTransferObjects\ClientObject;
 use App\Admin\DataTransferObjects\PersonObject;
-use App\Admin\Permissions\UserPermissions;
 use App\Admin\Requests\WorkOrderStoreRequest;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class WorkOrdersController
+ *
+ * @package App\Admin\Controllers
+ */
 class WorkOrdersController extends Controller
 {
     public const CREATE_NAME = 'workorders.create';
@@ -26,6 +29,7 @@ class WorkOrdersController extends Controller
      *
      * @return \Illuminate\Http\Response
      * @noinspection PhpInconsistentReturnPointsInspection
+     * @codeCoverageIgnore
      */
     public function index()
     {
@@ -37,17 +41,6 @@ class WorkOrdersController extends Controller
      */
     public function create()
     {
-        /** @noinspection NullPointerExceptionInspection */
-        abort_unless(
-            Auth::user()->hasPermissionTo(self::CREATE_NAME),
-            Response::HTTP_UNAUTHORIZED,
-            Response::$statusTexts[Response::HTTP_UNAUTHORIZED]
-        );
-        /** @noinspection NullPointerExceptionInspection */
-        if (Auth::user()->hasPermissionTo(UserPermissions::WORK_ORDER_OPTIONAL_PERSON)) {
-            Cookie::queue('techUser', true, 1, '/', '', false, false);
-        }
-
         return view('workorders.create');
     }
 
@@ -55,9 +48,9 @@ class WorkOrdersController extends Controller
      * Store a newly created resource in storage.
      *
      * @param WorkOrderStoreRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return JsonResponse
      */
-    public function store(WorkOrderStoreRequest $request)
+    public function store(WorkOrderStoreRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
@@ -67,32 +60,38 @@ class WorkOrdersController extends Controller
             $personObject = PersonObject::fromRequest($request->validated());
         }
 
-        $client = WorkOrdersStoreAction::execute(ClientObject::fromRequest($validated), $personObject);
+        $workOrder = WorkOrdersStoreAction::execute(ClientObject::fromRequest($validated), $personObject);
 
-        return redirect()->route(WorkOrdersController::SHOW_NAME, $client);
+        return response()
+            ->json(['workorder_id' => $workOrder->id, 'created' => true], Response::HTTP_CREATED)
+            ->header(
+                'Location',
+                route(self::SHOW_NAME, ['workorder' => $workOrder])
+            );
     }
 
     /**
      * Display the specified resource.
      *
-     * @param WorkOrder $workorder
+     * @param WorkOrder $workOrder
      * @return WorkOrder
+     * @codeCoverageIgnore
      */
-    public function show(WorkOrder $workorder): WorkOrder
+    public function show(WorkOrder $workOrder): WorkOrder
     {
-        return $workorder;
+        return $workOrder;
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     * @noinspection PhpInconsistentReturnPointsInspection
+     * @param WorkOrder $workOrder
+     * @return WorkOrder
+     * @codeCoverageIgnore
      */
-    public function edit($id)
+    public function edit(WorkOrder $workOrder): WorkOrder
     {
-        //
+        return $workOrder;
     }
 
     /**
@@ -102,6 +101,7 @@ class WorkOrdersController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      * @noinspection PhpInconsistentReturnPointsInspection
+     * @codeCoverageIgnore
      */
     public function update(Request $request, $id)
     {
@@ -114,6 +114,7 @@ class WorkOrdersController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      * @noinspection PhpInconsistentReturnPointsInspection
+     * @codeCoverageIgnore
      */
     public function destroy($id)
     {

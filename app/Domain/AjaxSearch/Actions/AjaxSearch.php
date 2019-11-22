@@ -24,14 +24,18 @@ class AjaxSearch
      */
     public static function findBy(string $field, string $searchString): Collection
     {
-        switch ($field) {
-            case Client::COMPANY_NAME:
-                return self::clientsAndPeopleByCompanyName($searchString);
-
-                break;
-            default:
-                return collect([Response::HTTP_NOT_ACCEPTABLE]);
+        $availableFields = [
+            Client::COMPANY_NAME => Client::COMPANY_NAME,
+        ];
+        if (!array_key_exists($field, $availableFields)) {
+            abort(Response::HTTP_NOT_ACCEPTABLE);
         }
+
+        //switch ($field) {
+        //    case Client::COMPANY_NAME:
+        return self::clientsAndPeopleByCompanyName($searchString);
+        //        break;
+        //}
     }
 
     /**

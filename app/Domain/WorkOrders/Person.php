@@ -34,6 +34,10 @@ class Person extends Model
     public const PHONE_NUMBER = 'phone_number';
     public const TABLE = 'people';
 
+    protected $attributes = [
+        self::PHONE_NUMBER => '000-000-0000',
+    ];
+
     public $fillable = [
         self::EMAIL,
         self::FIRST_NAME,
@@ -47,7 +51,7 @@ class Person extends Model
      */
     public function setPhoneNumberAttribute(string $phoneNumber): void
     {
-        $this->attributes[self::PHONE_NUMBER] = $this->unformatPhoneNumber($phoneNumber);
+        $this->attributes[self::PHONE_NUMBER] = self::unformatPhoneNumber($phoneNumber);
     }
 
     /**
@@ -65,16 +69,19 @@ class Person extends Model
      */
     public function getPhoneNumberAttribute(string $phoneNumber): string
     {
-        return $this->formatPhoneNumber($phoneNumber);
+        return static::formatPhoneNumber($phoneNumber);
     }
 
     /**
      * @param string $phoneNumber
      * @return string
      */
-    public function formatPhoneNumber(string $phoneNumber): string
+    public static function formatPhoneNumber(string $phoneNumber): string
     {
-        $phoneNumber = $this->unformatPhoneNumber($phoneNumber);
+        $phoneNumber = static::unformatPhoneNumber($phoneNumber);
+        if (empty($phoneNumber)) {
+            $phoneNumber = '0000000000';
+        }
         preg_match("/(\d\d\d)(\d\d\d)(\d\d\d\d)(\d*)/", $phoneNumber, $outputArray);
         $output = '(' . $outputArray[1] . ') ' . $outputArray[2] . '-' . $outputArray[3];
         if ($outputArray[4] !== '') {

@@ -5,6 +5,12 @@ namespace App\Admin\Controllers\Auth;
 use App\Admin\Controllers\Controller;
 use Illuminate\Foundation\Auth\ConfirmsPasswords;
 
+/**
+ * Class ConfirmPasswordController
+ *
+ * @package App\Admin\Controllers\Auth
+ * @codeCoverageIgnore
+ */
 class ConfirmPasswordController extends Controller
 {
     /**

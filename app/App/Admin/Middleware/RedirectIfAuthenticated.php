@@ -5,6 +5,12 @@ namespace App\Admin\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class RedirectIfAuthenticated
+ *
+ * @package App\Admin\Middleware
+ * @codeCoverageIgnore
+ */
 class RedirectIfAuthenticated
 {
     /**

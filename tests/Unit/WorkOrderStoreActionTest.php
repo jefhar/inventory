@@ -11,13 +11,11 @@ namespace Tests\Unit;
 use App\Admin\Controllers\WorkOrdersController;
 use App\Admin\DataTransferObjects\ClientObject;
 use App\Admin\DataTransferObjects\PersonObject;
-use App\Admin\Permissions\UserRoles;
 use App\User;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
 class WorkOrderStoreActionTest extends TestCase
@@ -29,7 +27,7 @@ class WorkOrderStoreActionTest extends TestCase
     /**
      * @test
      */
-    public function workOrderAddsCompanyNameToStorage(): void
+    public function workOrderStoreActionAddsCompanyNameToStorage(): void
     {
         $user = factory(User::class)->create();
         $user->givePermissionTo(WorkOrdersController::STORE_NAME);
@@ -46,7 +44,7 @@ class WorkOrderStoreActionTest extends TestCase
     /**
      * @test
      */
-    public function workOrderAddsPersonToClient(): void
+    public function workOrderStoreActionAddsGivenPersonToClient(): void
     {
         $user = factory(User::class)->create();
         $user->givePermissionTo(WorkOrdersController::STORE_NAME);
@@ -66,44 +64,7 @@ class WorkOrderStoreActionTest extends TestCase
         $this->assertEquals($this->personObject->last_name, $client->person->last_name);
     }
 
-    /**
-     * @test
-     */
-    public function clientPersonIsOptionalForTech()
-    {
-        $clientName = self::COMPANY_NAME . uniqid('a', false);
-        $this->actingAs(factory(User::class)->create()->assignRole(UserRoles::TECHNICIAN));
 
-        WorkOrdersStoreAction::execute(
-            new ClientObject([Client::COMPANY_NAME => $clientName]),
-            null
-        );
-        $this->assertDatabaseHas(
-            Client::TABLE,
-            [Client::COMPANY_NAME => $clientName,]
-        );
-
-        $clientWithPerson = self::COMPANY_NAME . uniqid('b', false);
-        WorkOrdersStoreAction::execute(
-            new ClientObject([Client::COMPANY_NAME => $clientWithPerson]),
-            $this->personObject
-        );
-        $this->assertDatabaseHas(
-            Client::TABLE,
-            [Client::COMPANY_NAME => $clientWithPerson]
-        );
-        $this->assertDatabaseHas(
-            Person::TABLE,
-            [
-                Person::FIRST_NAME => $this->personObject->first_name,
-                Person::LAST_NAME => $this->personObject->last_name,
-            ]
-        );
-        /** @var Client $storedClientWithPerson */
-        $storedClientWithPerson = Client::where(Client::COMPANY_NAME, $clientWithPerson)->first();
-        $this->assertEquals($storedClientWithPerson->person->first_name, $this->personObject->first_name);
-        $this->assertEquals($storedClientWithPerson->person->last_name, $this->personObject->last_name);
-    }
 
     protected function setUp(): void
     {
@@ -126,17 +87,7 @@ class WorkOrderStoreActionTest extends TestCase
     /**
      * @test
      */
-    public function personIsNotOptionalIfNotATech(): void
-    {
-        $this->withoutExceptionHandling()->actingAs(factory(User::class)->create()->assignRole(UserRoles::SALES_REP));
-        $this->expectException(HttpException::class);
-        WorkOrdersStoreAction::execute($this->clientObject);
-    }
-
-    /**
-     * @test
-     */
-    public function storingWorkOrderStoresWorkOrderClientAlreadyExists(): void
+    public function storingWorkOrderStoresWorkOrderSuccessfullyIfClientAlreadyExists(): void
     {
         $authorizedUser = factory(User::class)->create();
         $authorizedUser->givePermissionTo(WorkOrdersController::STORE_NAME);

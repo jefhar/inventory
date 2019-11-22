@@ -4,6 +4,12 @@ namespace App\Admin;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
+/**
+ * Class Kernel
+ *
+ * @package App\Admin
+ * @codeCoverageIgnore
+ */
 class Kernel extends HttpKernel
 {
     /**

@@ -29,7 +29,8 @@ Route::resource('workorders', 'WorkOrdersController')->only(
         'create',
         'show',
         'store',
+        'edit',
     ]
 )->middleware('auth');
 Route::get(AjaxSearchController::SHOW_PATH, 'AjaxSearchController@show')
-->name(AjaxSearchController::SHOW_NAME);
+    ->name(AjaxSearchController::SHOW_NAME)->middleware('auth');

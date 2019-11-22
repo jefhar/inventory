@@ -39,8 +39,7 @@ class AjaxSearchTest extends TestCase
      */
     public function anonymousIsUnauthorized(): void
     {
-        $this->actingAs($this->unauthorizedUser);
-        $this->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))->assertUnauthorized();
+        $this->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))->assertRedirect('/login');
     }
 
     /**
@@ -48,7 +47,6 @@ class AjaxSearchTest extends TestCase
      */
     public function unauthorizedIsUnauthorized(): void
     {
-        $this->withExceptionHandling()->actingAs($this->unauthorizedUser);
         $this->get(
             route(
                 AjaxSearchController::SHOW_NAME,
@@ -57,7 +55,7 @@ class AjaxSearchTest extends TestCase
                 ]
             )
         )
-            ->assertUnauthorized();
+            ->assertRedirect('/login');
     }
 
     /**
@@ -93,11 +91,11 @@ class AjaxSearchTest extends TestCase
     /**
      * @test
      */
-    public function unknownFieldIsBad()
+    public function unknownFieldIsBad(): void
     {
         $this->actingAs($this->authorizedUser)
             ->get(route(AjaxSearchController::SHOW_NAME, ['field' => 'flarp']))
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+            ->assertStatus(Response::HTTP_NOT_ACCEPTABLE);
     }
 
     /**

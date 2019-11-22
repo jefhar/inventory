@@ -3,8 +3,13 @@
 namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Gate;
 
+/**
+ * Class AuthServiceProvider
+ *
+ * @package App\Providers
+ * @codeCoverageIgnore
+ */
 class AuthServiceProvider extends ServiceProvider
 {
     /**

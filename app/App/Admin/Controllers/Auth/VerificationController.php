@@ -5,6 +5,12 @@ namespace App\Admin\Controllers\Auth;
 use App\Admin\Controllers\Controller;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 
+/**
+ * Class VerificationController
+ *
+ * @package App\Admin\Controllers\Auth
+ * @codeCoverageIgnore
+ */
 class VerificationController extends Controller
 {
     /**

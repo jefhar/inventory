@@ -9,6 +9,11 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class WorkOrderStoreRequest
+ *
+ * @package App\Admin\Requests
+ */
 class WorkOrderStoreRequest extends FormRequest
 {
     /**
@@ -18,6 +23,7 @@ class WorkOrderStoreRequest extends FormRequest
      */
     public function authorize()
     {
+        /** @noinspection NullPointerExceptionInspection */
         abort_unless(
             Auth::user()->hasPermissionTo(WorkOrdersController::STORE_NAME),
             Response::HTTP_UNAUTHORIZED,
