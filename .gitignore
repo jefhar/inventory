@@ -126,5 +126,5 @@ public/fonts
 public/mix-manifest.json
 .phpunit.result.cache
 _ide_helper_models.php
-
+resources/js/draftComponents
 !/.idea
