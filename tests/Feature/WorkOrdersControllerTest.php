@@ -127,6 +127,16 @@ class WorkOrdersControllerTest extends TestCase
             ->assertRedirect('/login');
     }
 
+    /**
+     * @test
+     */
+    public function technicianIndexIsOK(): void
+    {
+        $this->actingAs($this->technicianUser)
+            ->get(route(WorkOrdersController::INDEX_NAME))
+            ->assertOk();
+    }
+
     protected function setUp(): void
     {
         /** @var User $guestUser */
