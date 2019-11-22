@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import Create from "./Create";
-import { Container, Row } from "reactstrap";
+import { Container } from "reactstrap";
 
 class WorkOrder extends Component {
   constructor(props) {
@@ -13,9 +13,6 @@ class WorkOrder extends Component {
     console.log("rendering.");
     return (
       <Container>
-        <Row>
-          <h1 className="text-center"></h1>
-        </Row>
         <Create />
       </Container>
     );

@@ -33,11 +33,6 @@ class Person extends Model
     public const LAST_NAME = 'last_name';
     public const PHONE_NUMBER = 'phone_number';
     public const TABLE = 'people';
-
-    protected $attributes = [
-        self::PHONE_NUMBER => '000-000-0000',
-    ];
-
     public $fillable = [
         self::EMAIL,
         self::FIRST_NAME,
@@ -45,6 +40,10 @@ class Person extends Model
         self::PHONE_NUMBER,
     ];
     public $table = self::TABLE;
+    protected $attributes = [
+        self::PHONE_NUMBER => '000-000-0000',
+        self::FIRST_NAME => 'first',
+    ];
 
     /**
      * @param string $phoneNumber

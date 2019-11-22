@@ -72,25 +72,25 @@ class WorkOrdersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param WorkOrder $workOrder
+     * @param WorkOrder $workorder
      * @return WorkOrder
      * @codeCoverageIgnore
      */
-    public function show(WorkOrder $workOrder): WorkOrder
+    public function show(WorkOrder $workorder): WorkOrder
     {
-        return $workOrder;
+        return $workorder;
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param WorkOrder $workOrder
+     * @param WorkOrder $workorder
      * @return WorkOrder
      * @codeCoverageIgnore
      */
-    public function edit(WorkOrder $workOrder): WorkOrder
+    public function edit(WorkOrder $workorder): WorkOrder
     {
-        return $workOrder;
+        return $workorder;
     }
 
     /**

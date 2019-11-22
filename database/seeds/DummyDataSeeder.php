@@ -11,7 +11,7 @@ class DummyDataSeeder extends Seeder
      */
     public function run()
     {
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 200; $i++) {
             $client = factory(\Domain\WorkOrders\Client::class)->create();
             $person = factory(\Domain\WorkOrders\Person::class)->make();
             $client->person()->save($person);
