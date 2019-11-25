@@ -12,6 +12,7 @@
 */
 
 use App\Admin\Controllers\AjaxSearchController;
+use App\Admin\Permissions\UserPermissions;
 
 Route::get(
     '/',
@@ -21,17 +22,18 @@ Route::get(
 );
 
 Auth::routes(['register' => false]);
+Route::group(['middlware' => ['permission:' . UserPermissions::IS_EMPLOYEE]], function ()
+{
+    Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/home', 'HomeController@index')->name('home');
-
-Route::resource('workorders', 'WorkOrdersController')->only(
-    [
-        'create',
-        'edit',
-        'index',
-        'show',
-        'store',
-    ]
-)->middleware('auth');
-Route::get(AjaxSearchController::SHOW_PATH, 'AjaxSearchController@show')
-    ->name(AjaxSearchController::SHOW_NAME)->middleware('auth');
+    Route::resource('workorders', 'WorkOrdersController')->only(
+        [
+            'create',
+            'show',
+            'store',
+            'edit',
+        ]
+    )->middleware('auth');
+    Route::get(AjaxSearchController::SHOW_PATH, 'AjaxSearchController@show')
+        ->name(AjaxSearchController::SHOW_NAME)->middleware('auth');
+});
