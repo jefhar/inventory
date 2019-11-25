@@ -13,6 +13,7 @@ use App\Admin\Permissions\UserRoles;
 use App\User;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
+use Domain\WorkOrders\WorkOrder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -31,6 +32,23 @@ class WorkOrdersControllerTest extends TestCase
     {
         $this->get(
             route(WorkOrdersController::CREATE_NAME)
+        )->assertRedirect('/login');
+    }
+
+    /**
+     * @test
+     * @SE-20 Testing that a locked user cannot access pages.
+     */
+    public function lockedUserIsUnAuthorized(): void
+    {
+        $user = factory(User::class)->create();
+        $this->get(
+            route(WorkOrdersController::CREATE_NAME)
+        )->assertRedirect('/login');
+        $workOrder = factory(WorkOrder::class)->create();
+
+        $this->get(
+            route(WorkOrdersController::SHOW_NAME, $workOrder)
         )->assertRedirect('/login');
     }
 

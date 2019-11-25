@@ -126,9 +126,6 @@ class CreatePermissionTables extends Migration
 
         // 2. Create permissions:
         $employeePermission = Permission::create(['name' => UserPermissions::IS_EMPLOYEE]);
-        $workOrderOptionalPerson = Permission::create(['name' => UserPermissions::WORK_ORDER_OPTIONAL_PERSON]);
-        $workOrderStore = Permission::create(['name' => WorkOrdersController::STORE_NAME]);
-        $workOrderCreate = Permission::create(['name' => WorkOrdersController::CREATE_NAME]);
 
         // 3. Create Roles
         // SuperAdmin
@@ -139,28 +136,21 @@ class CreatePermissionTables extends Migration
         $owner = Role::create(['name' => UserRoles::OWNER]);
         $owner->givePermissionTo(
             $employeePermission,
-            $workOrderStore,
-            $workOrderCreate
         );
 
         // SalesRep
         $salesRep = Role::create(['name' => UserRoles::SALES_REP]);
         $salesRep->givePermissionTo(
             $employeePermission,
-            $workOrderStore,
-            $workOrderCreate,
             );
 
         // Technician
         $tech = Role::create(['name' => UserRoles::TECHNICIAN]);
         $tech->givePermissionTo(
             $employeePermission,
-            $workOrderOptionalPerson,
-            $workOrderStore,
-            $workOrderCreate
         );
 
-        // Employee - has minimum permissions to separate Employee from Unauthorized User
+        // Employee - has minimum permissions to separate Employee from Locked User
         $employee = Role::create(['name' => UserRoles::EMPLOYEE]);
         $employee->givePermissionTo(
             $employeePermission
