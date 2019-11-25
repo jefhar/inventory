@@ -22,9 +22,10 @@ class WorkOrdersController extends Controller
 {
     public const CREATE_NAME = 'workorders.create';
     public const CREATE_PATH = '/workorders/create';
+    public const EDIT_NAME = 'workorders.edit';
+    public const INDEX_NAME = 'workorders.index';
     public const SHOW_NAME = 'workorders.show';
     public const STORE_NAME = 'workorders.store';
-    public const INDEX_NAME = 'workorders.index';
 
     /**
      * Display a listing of the resource.
@@ -96,12 +97,11 @@ class WorkOrdersController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param WorkOrder $workorder
-     * @return WorkOrder
-     * @codeCoverageIgnore
+     * @return \Illuminate\Contracts\View\Factory|View
      */
-    public function edit(WorkOrder $workorder): WorkOrder
+    public function edit(WorkOrder $workorder)
     {
-        return $workorder;
+        return view('workorders.edit')->with(['workOrder' => $workorder]);
     }
 
     /**

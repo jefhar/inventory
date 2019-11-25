@@ -22,8 +22,8 @@ class WorkOrdersControllerTest extends TestCase
     use RefreshDatabase;
 
     private const COMPANY_NAME = 'George Q. Client';
-    private User $guestUser;
-    private User $technicianUser;
+    private User $transient;
+    private User $user;
 
     /**
      * @test
@@ -57,7 +57,7 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function techUserCreateIsOk(): void
     {
-        $this->withExceptionHandling()->actingAs($this->technicianUser)
+        $this->withExceptionHandling()->actingAs($this->user)
             ->get(
                 route(WorkOrdersController::CREATE_NAME)
             )->assertOK();
@@ -79,7 +79,7 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function technicianCanStoreWorkOrderWithCompanyNameOnly(): void
     {
-        $this->actingAs($this->technicianUser)
+        $this->actingAs($this->user)
             ->post(
                 route(
                     WorkOrdersController::STORE_NAME
@@ -110,7 +110,7 @@ class WorkOrdersControllerTest extends TestCase
         $company_name = self::COMPANY_NAME . uniqid('b', true);
         $person = factory(Person::class)->make();
         $this->withoutExceptionHandling()
-            ->actingAs($this->technicianUser)
+            ->actingAs($this->user)
             ->post(
                 route(WorkOrdersController::STORE_NAME),
                 [
@@ -150,10 +150,21 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function technicianIndexIsOK(): void
     {
-        $this->actingAs($this->technicianUser)->withoutExceptionHandling()
+        $this->actingAs($this->user)->withoutExceptionHandling()
             ->get(route(WorkOrdersController::INDEX_NAME))
             ->assertOk()
             ->assertSeeText('Work Orders');
+    }
+
+    /**
+     * @test
+     */
+    public function editPageExists(): void
+    {
+        $workOrder = factory(WorkOrder::class)->create();
+        $this->actingAs($this->user)
+            ->get(route(WorkOrdersController::EDIT_NAME, $workOrder))
+            ->assertOk();
     }
 
     protected function setUp(): void
@@ -161,7 +172,7 @@ class WorkOrdersControllerTest extends TestCase
         /** @var User $guestUser */
         /** @var User $authorizedUser */
         parent::setUp();
-        $this->guestUser = factory(User::class)->make();
-        $this->technicianUser = factory(User::class)->create()->assignRole(UserRoles::TECHNICIAN);
+        $this->transient = factory(User::class)->make();
+        $this->user = factory(User::class)->create()->assignRole(UserRoles::TECHNICIAN);
     }
 }
