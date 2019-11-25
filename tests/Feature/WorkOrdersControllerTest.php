@@ -132,9 +132,10 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function technicianIndexIsOK(): void
     {
-        $this->actingAs($this->technicianUser)
+        $this->actingAs($this->technicianUser)->withoutExceptionHandling()
             ->get(route(WorkOrdersController::INDEX_NAME))
-            ->assertOk();
+            ->assertOk()
+            ->assertSeeText('Work Orders');
     }
 
     protected function setUp(): void

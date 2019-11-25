@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Domain\WorkOrders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -21,8 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $first_name
  * @property string $last_name
  * @property string $phone_number
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static findOrFail(array $array)
  * @method static where(string $field, string $value)
  */

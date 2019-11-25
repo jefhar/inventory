@@ -10,6 +10,7 @@ use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -28,12 +29,21 @@ class WorkOrdersController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return void
-     * @codeCoverageIgnore
+     * @param Request $request
+     * @return View
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $showLocked = 'no';
+        if ($request->get('showlocked', $showLocked) === 'yes') {
+            $workOrders = WorkOrder::paginate(15);
+            $showLocked = 'yes';
+        } else {
+            $workOrders = WorkOrder::where(WorkOrder::IS_LOCKED, false)->paginate(15);
+            $showLocked = 'no';
+        }
+
+        return view('workorders.index')->with(['workOrders' => $workOrders, 'showlocked' => $showLocked]);
     }
 
     /**

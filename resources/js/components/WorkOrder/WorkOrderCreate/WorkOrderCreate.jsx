@@ -17,7 +17,7 @@ import {
 import CompanyName from "../Elements/CompanyName";
 import FormHeader from "../Elements/FormHeader";
 
-class Create extends React.Component {
+class WorkOrderCreate extends React.Component {
   constructor(props) {
     super(props);
     console.log("constructor");
@@ -242,4 +242,4 @@ class Create extends React.Component {
   }
 }
 
-export default Create;
+export default WorkOrderCreate;

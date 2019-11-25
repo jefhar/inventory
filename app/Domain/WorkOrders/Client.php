@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Domain\WorkOrders;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -35,6 +36,7 @@ use Illuminate\Support\Collection;
  * @method static Model|static firstOrNew(array $array)
  * @method static Model|static whereIn(string $ID, Collection $client_ids)
  * @method static Model|static with(string $relationship)
+ * @method static Builder inRandomOrder()
  */
 class Client extends Model
 {
@@ -53,5 +55,10 @@ class Client extends Model
     public function person(): HasOne
     {
         return $this->hasOne(Person::class);
+    }
+
+    public function workOrders(): HasMany
+    {
+        return $this->hasMany(WorkOrder::class);
     }
 }

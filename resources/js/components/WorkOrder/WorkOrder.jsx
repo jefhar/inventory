@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import Create from "./Create";
+import WorkOrderCreate from "./WorkOrderCreate";
 import { Container } from "reactstrap";
 
 class WorkOrder extends Component {
@@ -13,7 +13,7 @@ class WorkOrder extends Component {
     console.log("rendering.");
     return (
       <Container>
-        <Create />
+        <WorkOrderCreate />
       </Container>
     );
   }
