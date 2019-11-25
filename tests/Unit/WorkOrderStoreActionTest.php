@@ -11,6 +11,8 @@ namespace Tests\Unit;
 use App\Admin\Controllers\WorkOrdersController;
 use App\Admin\DataTransferObjects\ClientObject;
 use App\Admin\DataTransferObjects\PersonObject;
+use App\Admin\Permissions\UserPermissions;
+use App\Admin\Permissions\UserRoles;
 use App\User;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Client;
@@ -30,7 +32,7 @@ class WorkOrderStoreActionTest extends TestCase
     public function workOrderStoreActionAddsCompanyNameToStorage(): void
     {
         $user = factory(User::class)->create();
-        $user->givePermissionTo(WorkOrdersController::STORE_NAME);
+        $user->assignRole(UserRoles::EMPLOYEE);
         $this->actingAs($user);
         WorkOrdersStoreAction::execute($this->clientObject, $this->personObject);
         $this->assertDatabaseHas(
@@ -47,7 +49,7 @@ class WorkOrderStoreActionTest extends TestCase
     public function workOrderStoreActionAddsGivenPersonToClient(): void
     {
         $user = factory(User::class)->create();
-        $user->givePermissionTo(WorkOrdersController::STORE_NAME);
+        $user->assignRole(UserRoles::EMPLOYEE);
         $this->actingAs($user);
         WorkOrdersStoreAction::execute($this->clientObject, $this->personObject);
         $this->assertDatabaseHas(
@@ -90,7 +92,7 @@ class WorkOrderStoreActionTest extends TestCase
     public function storingWorkOrderStoresWorkOrderSuccessfullyIfClientAlreadyExists(): void
     {
         $authorizedUser = factory(User::class)->create();
-        $authorizedUser->givePermissionTo(WorkOrdersController::STORE_NAME);
+        $authorizedUser->assignRole(UserRoles::EMPLOYEE);
         $this->actingAs($authorizedUser);
 
         $client = factory(Client::class)->create();

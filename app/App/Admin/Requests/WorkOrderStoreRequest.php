@@ -23,12 +23,6 @@ class WorkOrderStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        /** @noinspection NullPointerExceptionInspection */
-        abort_unless(
-            Auth::user()->hasPermissionTo(WorkOrdersController::STORE_NAME),
-            Response::HTTP_UNAUTHORIZED,
-            Response::$statusTexts[Response::HTTP_UNAUTHORIZED]
-        );
 
         return true;
     }
