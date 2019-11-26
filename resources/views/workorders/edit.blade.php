@@ -140,8 +140,7 @@
                                 class="btn btn-outline-primary col-6 offset-1"
                                 id="add_inventory_button"
                                 type="button"
-                        >
-                            Add Inventory Item
+                        >Add Inventory Item
                         </button>
                         <button
                                 class="btn btn-sm col-1 offset-4"
