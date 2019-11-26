@@ -41,7 +41,7 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function lockedUserIsUnAuthorized(): void
     {
-        $user = factory(User::class)->create();
+        factory(User::class)->create();
         $this->get(
             route(WorkOrdersController::CREATE_NAME)
         )->assertRedirect('/login');
@@ -164,7 +164,8 @@ class WorkOrdersControllerTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $this->actingAs($this->user)
             ->get(route(WorkOrdersController::EDIT_NAME, $workOrder))
-            ->assertOk();
+            ->assertOk()
+            ->assertSeeText('Edit Work Order');
     }
 
     protected function setUp(): void

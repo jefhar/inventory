@@ -144,7 +144,7 @@ class WorkOrderCreate extends React.Component {
               <Form>
                 <FormGroup>
                   <Label className="col-form-label" for="company_name">
-                    Client Name
+                    Client Company Name
                   </Label>
                   <CompanyName
                     className={
