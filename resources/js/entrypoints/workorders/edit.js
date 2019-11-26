@@ -54,26 +54,85 @@ function update() {
   }
 }
 
-function toggleLock() {
-  const isLockedButton = document.getElementById("lock_button");
-  const wantOrderToBeLocked = !(isLockedButton.dataset.isLocked === "true");
-  const data = { is_locked: wantOrderToBeLocked };
-  const url = "/workorders/" + isLockedButton.dataset.workOrderId;
-  axios
-    .patch(url, data)
-    .then(response => {
-      isLockedButton.dataset.isLocked = response.data.is_locked;
-      update();
-    })
-    .catch(error => {
-      console.log(error.response);
-    });
-}
-
 $(function() {
   $('[data-toggle="tooltip"]').tooltip();
 
-  const isLockedButton = document.getElementById("lock_button");
-  isLockedButton.addEventListener("click", toggleLock);
+  // Lock/Unlock work order
+  document.getElementById("lock_button").addEventListener("click", () => {
+    const isLockedButton = document.getElementById("lock_button");
+    const wantOrderToBeLocked = !(isLockedButton.dataset.isLocked === "true");
+    const data = { is_locked: wantOrderToBeLocked };
+    const url = `/workorders/${isLockedButton.dataset.workOrderId}`;
+    axios
+      .patch(url, data)
+      .then(response => {
+        isLockedButton.dataset.isLocked = response.data.is_locked;
+        update();
+      })
+      .catch(error => {
+        console.log(error.response.data);
+      });
+  });
+
+  // Submit changed field data to UPDATE
+  document.getElementById("update_button").addEventListener("click", event => {
+    console.log("update_button clicked.");
+    const isLockedButton = document.getElementById("lock_button");
+    const updateAlert = document.createElement("div");
+
+    // Remove any previous alerts
+    const alertRow = document.getElementById("alert_row");
+    while (alertRow.hasChildNodes()) {
+      alertRow.removeChild(alertRow.lastChild);
+    }
+
+    // Gather the information
+    const url = `/workorders/${isLockedButton.dataset.workOrderId}`;
+    const data = {
+      company_name: document.getElementById("company_name").value,
+      first_name: document.getElementById("first_name").value,
+      last_name: document.getElementById("last_name").value,
+      phone_number: document.getElementById("phone_number").value,
+      email: document.getElementById("email").value,
+      intake: document.getElementById("intake").value
+    };
+    // send PATCH via axios
+
+    axios
+      .patch(url, data)
+      .then(response => {
+        console.log("response");
+        console.log(response.data);
+        // Give user a visual indication that fields have been updated.
+        // Even better, add onChange to the fields, and if they're dirty, give
+        // visual indication.
+        updateAlert.classList.add(
+          "alert",
+          "alert-success",
+          "mt-3",
+          "col-6",
+          "offset-3"
+        );
+        updateAlert.innerHTML =
+          '<h4 class="alert-heading">Success</h4><p>Work Order successfully updated.</p>';
+      })
+      .catch(error => {
+        console.debug(error);
+        updateAlert.innerText = error.toString();
+        updateAlert.classList.add(
+          "alert",
+          "alert-warning",
+          "mt-3",
+          "col-6",
+          "offset-3"
+        );
+      })
+      .finally(() => {
+        alertRow.appendChild(updateAlert);
+      });
+
+    event.preventDefault();
+  });
+
   update();
 });

@@ -61,7 +61,7 @@
                             <div class="col">
                                 <input
                                         class="form-control form-control-sm"
-                                        id="first_name"
+                                        id="last_name"
                                         name="last_name"
                                         value="{{ $workOrder->client->person->last_name }}"
                                 />
@@ -106,8 +106,13 @@
                             >{{ $workOrder->intake }}</textarea>
                         </div>
                         <div class="row">
-                            <button class="btn btn-outline-success col-4 offset-1" type="submit">Update</button>
+                            <button class="btn btn-outline-success col-4 offset-1" id="update_button" type="submit">
+                                Update
+                            </button>
                             <button class="btn btn-warning col-4 offset-2" type="reset">Reset</button>
+                        </div>
+                        <div id='alert_row' class="row">
+
                         </div>
                     </form>
                     <h2>Inventory Items:</h2>
