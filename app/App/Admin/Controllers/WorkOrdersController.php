@@ -26,6 +26,7 @@ class WorkOrdersController extends Controller
     public const INDEX_NAME = 'workorders.index';
     public const SHOW_NAME = 'workorders.show';
     public const STORE_NAME = 'workorders.store';
+    public const UPDATE_NAME = 'workorders.update';
 
     /**
      * Display a listing of the resource.
@@ -107,14 +108,18 @@ class WorkOrdersController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return void
-     * @codeCoverageIgnore
+     * @param Request $request
+     * @param WorkOrder $workorder
+     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, WorkOrder $workorder): JsonResponse
     {
-        //
+        return response()->json(
+            [
+                WorkOrder::ID => $workorder->id,
+                WorkOrder::IS_LOCKED => true,
+            ]
+        );
     }
 
     /**
