@@ -6,6 +6,7 @@ use App\Admin\DataTransferObjects\ClientObject;
 use App\Admin\DataTransferObjects\PersonObject;
 use App\Admin\Requests\WorkOrderStoreRequest;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
+use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
 use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
 use Illuminate\Http\JsonResponse;
@@ -114,12 +115,14 @@ class WorkOrdersController extends Controller
      */
     public function update(Request $request, WorkOrder $workorder): JsonResponse
     {
-        return response()->json(
+        $workOrderAction = WorkOrdersUpdateAction::execute(
+            $workorder,
             [
-                WorkOrder::ID => $workorder->id,
-                WorkOrder::IS_LOCKED => true,
+                WorkOrder::IS_LOCKED => $request->get(WorkOrder::IS_LOCKED, $workorder->is_locked),
             ]
         );
+
+        return response()->json($workOrderAction);
     }
 
     /**

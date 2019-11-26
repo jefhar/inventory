@@ -174,7 +174,7 @@ class WorkOrdersControllerTest extends TestCase
     /**
      * @test
      */
-    public function canUnlockLockedWorkOrder(): void
+    public function canToggleLockedWorkOrder(): void
     {
         $workOrder = factory(WorkOrder::class)->make();
         $workOrder->is_locked = false;
@@ -190,6 +190,32 @@ class WorkOrdersControllerTest extends TestCase
                     WorkOrder::IS_LOCKED => true,
                 ]
             )->assertOk();
+        $this->assertDatabaseHas(
+            WorkOrder::TABLE,
+            [
+                WorkOrder::ID => $workOrder->id,
+                WorkOrder::IS_LOCKED => true,
+            ]
+        );
+
+        $this
+            ->actingAs($this->user)
+            ->patch(
+                route(WorkOrdersController::UPDATE_NAME, ['workorder' => $workOrder]),
+                [WorkOrder::IS_LOCKED => false]
+            )->assertJson(
+                [
+                    WorkOrder::ID => $workOrder->id,
+                    WorkOrder::IS_LOCKED => false,
+                ]
+            )->assertOk();
+        $this->assertDatabaseHas(
+            WorkOrder::TABLE,
+            [
+                WorkOrder::ID => $workOrder->id,
+                WorkOrder::IS_LOCKED => false,
+            ]
+        );
     }
 
     protected function setUp(): void

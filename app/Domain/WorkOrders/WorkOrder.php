@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class WorkOrder
  *
  * @package Domain\WorkOrders
- * @property boolean|null inventory_complete
+ * @property boolean is_locked
  * @property int user_id
  * @method static Model|static where(mixed $field, ?string $value = null, ?string $value = null)
  * @method static paginate(int $int)
