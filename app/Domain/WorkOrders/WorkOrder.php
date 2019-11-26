@@ -17,8 +17,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class WorkOrder
  *
  * @package Domain\WorkOrders
- * @property boolean is_locked
- * @property int user_id
+ * @property bool $is_locked
+ * @property int $user_id
  * @method static Model|static where(mixed $field, ?string $value = null, ?string $value = null)
  * @method static paginate(int $int)
  * @method static Model|static whereNotIn(string $field, array $searchArray)

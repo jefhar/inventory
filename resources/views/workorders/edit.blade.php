@@ -136,20 +136,24 @@
                         </tbody>
                     </table>
                     <div class="row">
-                        <button type="button"
-                                class="btn btn-outline-primary col-6 offset-1" {{($workOrder->is_locked) ? 'disabled' : '' }}>
+                        <button
+                                class="btn btn-outline-primary col-6 offset-1"
+                                id="add_inventory_button"
+                                type="button"
+                        >
                             Add Inventory Item
                         </button>
-                        @if($workOrder->is_locked)
-                            <button type="button" class="btn btn-outline-warning btn-sm col-1 offset-4"
-                                    data-toggle="tooltip" data-placement="bottom" title="unlock work order"><i
-                                        class="fas fa-unlock-alt"></i></button>
-                        @else
-                            <button type="button" class="btn btn-outline-success btn-sm col-1 offset-4"
-                                    data-toggle="tooltip" data-placement="bottom" title="lock work order"><i
-                                        class="fas fa-lock"></i></button>
-                        @endif
-
+                        <button
+                                class="btn btn-sm col-1 offset-4"
+                                data-placement="bottom"
+                                data-toggle="tooltip"
+                                data-is-locked="{{ ($workOrder->is_locked) ? 'true' : 'false' }}"
+                                data-work-order-id="{{ $workOrder->id }}"
+                                id="lock_button"
+                                title="unlock work order"
+                                type="button"
+                        ><i id="lock-icon" class="fas"></i>
+                        </button>
                     </div>
                 </div>
             </div>
