@@ -26,10 +26,10 @@ class PersonObject extends DataTransferObject
     {
         return new self(
             [
-                Person::EMAIL => $validated[Person::EMAIL] ?? '',
-                Person::FIRST_NAME => $validated[Person::FIRST_NAME],
-                Person::LAST_NAME => $validated[Person::LAST_NAME],
-                Person::PHONE_NUMBER => $validated[Person::PHONE_NUMBER] ?? '',
+                Person::EMAIL => $validated[Person::EMAIL] ?? Person::DEFAULT_EMAIL,
+                Person::FIRST_NAME => $validated[Person::FIRST_NAME] ?? Person::DEFAULT_FIRST_NAME,
+                Person::LAST_NAME => $validated[Person::LAST_NAME] ?? Person::DEFAULT_LAST_NAME,
+                Person::PHONE_NUMBER => $validated[Person::PHONE_NUMBER] ?? Person::DEFAULT_PHONE_NUMBER,
             ]
         );
     }

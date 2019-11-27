@@ -20,8 +20,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool $is_locked
  * @property int $id
  * @property int $user_id
- * @property Client client
- * @property string|null intake
+ * @property Client $client
+ * @property string|null $intake
  * @method static Model|static where(mixed $field, ?string $value = null, ?string $value = null)
  * @method static paginate(int $int)
  * @method static Model|static whereNotIn(string $field, array $searchArray)

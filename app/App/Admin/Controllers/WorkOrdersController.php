@@ -9,7 +9,6 @@ use App\Admin\Requests\WorkOrderStoreRequest;
 use App\Admin\Requests\WorkOrderUpdateRequest;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
-use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -69,11 +68,7 @@ class WorkOrdersController extends Controller
     {
         $validated = $request->validated();
 
-        if (empty($validated[Person::FIRST_NAME]) || (empty($validated[Person::LAST_NAME]))) {
-            $personObject = null;
-        } else {
-            $personObject = PersonObject::fromRequest($request->validated());
-        }
+        $personObject = PersonObject::fromRequest($request->validated());
 
         $workOrder = WorkOrdersStoreAction::execute(ClientObject::fromRequest($validated), $personObject);
 
@@ -111,7 +106,7 @@ class WorkOrdersController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param WorkOrderUpdateRequest $request
      * @param WorkOrder $workorder
      * @return JsonResponse
      */

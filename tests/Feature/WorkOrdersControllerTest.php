@@ -28,7 +28,7 @@ class WorkOrdersControllerTest extends TestCase
     /**
      * @test
      */
-    public function guestCreateIsUnAuthorized(): void
+    public function guestCreateIsUnauthorized(): void
     {
         $this->get(
             route(WorkOrdersController::CREATE_NAME)
@@ -39,7 +39,7 @@ class WorkOrdersControllerTest extends TestCase
      * @test
      * @SE-20 Testing that a locked user cannot access pages.
      */
-    public function lockedUserIsUnAuthorized(): void
+    public function lockedUserIsUnauthorized(): void
     {
         factory(User::class)->create();
         $this->get(
@@ -148,7 +148,7 @@ class WorkOrdersControllerTest extends TestCase
     /**
      * @test
      */
-    public function technicianIndexIsOK(): void
+    public function technicianIndexIsOk(): void
     {
         $this->actingAs($this->user)->withoutExceptionHandling()
             ->get(route(WorkOrdersController::INDEX_NAME))
