@@ -18,7 +18,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @package Domain\WorkOrders
  * @property bool $is_locked
+ * @property int $id
  * @property int $user_id
+ * @property Client client
  * @method static Model|static where(mixed $field, ?string $value = null, ?string $value = null)
  * @method static paginate(int $int)
  * @method static Model|static whereNotIn(string $field, array $searchArray)
@@ -27,6 +29,7 @@ class WorkOrder extends Model
 {
     public const CLIENT_ID = 'client_id';
     public const ID = 'id';
+    public const INTAKE = 'intake';
     public const IS_LOCKED = 'is_locked';
     public const TABLE = 'workorders';
     public const USER_ID = 'user_id';
@@ -35,6 +38,7 @@ class WorkOrder extends Model
 
     protected $attributes = [
         self::IS_LOCKED => false,
+        self::INTAKE => '',
     ];
     protected $casts = [
         self::IS_LOCKED => 'boolean',

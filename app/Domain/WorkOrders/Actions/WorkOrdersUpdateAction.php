@@ -9,16 +9,58 @@ declare(strict_types=1);
 
 namespace Domain\WorkOrders\Actions;
 
+use App\Admin\DataTransferObjects\WorkOrderUpdateObject;
+use Domain\WorkOrders\Client;
+use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
 
 class WorkOrdersUpdateAction
 {
 
-    public static function execute(WorkOrder $workOrder, array $array): WorkOrder
+    public static function execute(WorkOrder $workOrder, WorkOrderUpdateObject $workOrderUpdateObject): array
     {
-        $workOrder->is_locked = $array[WorkOrder::IS_LOCKED];
+        $changedFields[WorkOrder::ID] = $workOrder->id;
+        $client = $workOrder->client->get();
+        $client->loadCount('person');
+        $client = $client[0];
+        if ($client->person_count === '0') {
+            $person = new Person();
+            $client->person()->save($person);
+        } else {
+            $person = $client->person->get();
+        }
+        if (isset($workOrderUpdateObject->is_locked)) {
+            $workOrder->is_locked = $workOrderUpdateObject->is_locked;
+            $changedFields[WorkOrder::IS_LOCKED] = $workOrderUpdateObject->is_locked;
+        }
+        if (isset($workOrderUpdateObject->intake)) {
+            $workOrder->intake = $workOrderUpdateObject->intake;
+            $changedFields[WorkOrder::INTAKE] = $workOrderUpdateObject->intake;
+        }
+        if (isset($workOrderUpdateObject->company_name)) {
+            $client->company_name = $workOrderUpdateObject->company_name;
+            $changedFields[Client::COMPANY_NAME] = $workOrderUpdateObject->company_name;
+        }
+        if (isset($workOrderUpdateObject->first_name)) {
+            $person->first_name = $workOrderUpdateObject->first_name;
+            $changedFields[Person::FIRST_NAME] = $workOrderUpdateObject->first_name;
+        }
+        if (isset($workOrderUpdateObject->last_name)) {
+            $person->last_name = $workOrderUpdateObject->last_name;
+            $changedFields[Person::LAST_NAME] = $workOrderUpdateObject->last_name;
+        }
+        if (isset($workOrderUpdateObject->phone_number)) {
+            $person->phone_number = $workOrderUpdateObject->phone_number;
+            $changedFields[Person::PHONE_NUMBER] = $workOrderUpdateObject->phone_number;
+        }
+        if (isset($workOrderUpdateObject->email)) {
+            $person->email = $workOrderUpdateObject->email;
+            $changedFields[Person::EMAIL] = $workOrderUpdateObject->email;
+        }
         $workOrder->save();
+        $person->save();
+        $client->save();
 
-        return $workOrder;
+        return $changedFields;
     }
 }

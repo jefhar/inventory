@@ -46,6 +46,8 @@ class Person extends Model
     protected $attributes = [
         self::PHONE_NUMBER => '000-000-0000',
         self::FIRST_NAME => 'first',
+        self::LAST_NAME => 'last',
+        self::EMAIL => '',
     ];
 
     /**

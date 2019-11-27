@@ -4,7 +4,9 @@ namespace App\Admin\Controllers;
 
 use App\Admin\DataTransferObjects\ClientObject;
 use App\Admin\DataTransferObjects\PersonObject;
+use App\Admin\DataTransferObjects\WorkOrderUpdateObject;
 use App\Admin\Requests\WorkOrderStoreRequest;
+use App\Admin\Requests\WorkOrderUpdateRequest;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
 use Domain\WorkOrders\Person;
@@ -113,13 +115,12 @@ class WorkOrdersController extends Controller
      * @param WorkOrder $workorder
      * @return JsonResponse
      */
-    public function update(Request $request, WorkOrder $workorder): JsonResponse
+    public function update(WorkOrderUpdateRequest $request, WorkOrder $workorder): JsonResponse
     {
+        $workOrderObject = WorkOrderUpdateObject::fromRequest($request->validated());
         $workOrderAction = WorkOrdersUpdateAction::execute(
             $workorder,
-            [
-                WorkOrder::IS_LOCKED => $request->get(WorkOrder::IS_LOCKED, $workorder->is_locked),
-            ]
+            $workOrderObject
         );
 
         return response()->json($workOrderAction);

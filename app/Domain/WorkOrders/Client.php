@@ -29,14 +29,15 @@ use Illuminate\Support\Collection;
  * @property Person $person
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @method static Builder inRandomOrder()
  * @method static Model|static find($value)
- * @method static Model|static firstOrCreate($value)
- * @method static Model|static where(string $field, string $value, string $value = null)
  * @method static Model|static first()
+ * @method static Model|static firstOrCreate($value)
  * @method static Model|static firstOrNew(array $array)
+ * @method Model|static get()
+ * @method static Model|static where(string $field, string $value, string $value = null)
  * @method static Model|static whereIn(string $ID, Collection $client_ids)
  * @method static Model|static with(string $relationship)
- * @method static Builder inRandomOrder()
  */
 class Client extends Model
 {

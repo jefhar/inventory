@@ -218,6 +218,29 @@ class WorkOrdersControllerTest extends TestCase
         );
     }
 
+    /**
+     * @test
+     */
+    public function updateUpdatesCompanyName()
+    {
+        $newClient = factory(Client::class)->make();
+        $workOrder = factory(WorkOrder::class)->create();
+        $this->withoutExceptionHandling()
+            ->actingAs($this->user)
+            ->patch(
+                route(WorkOrdersController::UPDATE_NAME, $workOrder),
+                [
+                    Client::COMPANY_NAME => $newClient->company_name,
+                ]
+            )->assertOk();
+        $this->assertDatabaseHas(
+            Client::TABLE,
+            [
+                Client::COMPANY_NAME => $newClient->company_name,
+            ]
+        );
+    }
+
     protected function setUp(): void
     {
         /** @var User $guestUser */

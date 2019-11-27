@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\Admin\DataTransferObjects\WorkOrderUpdateObject;
 use App\Admin\Permissions\UserPermissions;
 use App\User;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
@@ -26,12 +27,17 @@ class WorkOrderUpdateActionTest extends TestCase
         $workOrder = factory(WorkOrder::class)->make();
         $workOrder->is_locked = false;
         $workOrder->save();
-        WorkOrdersUpdateAction::execute(
-            $workOrder,
+        $workOrderUpdateObjectLocked = WorkOrderUpdateObject::fromRequest(
             [
                 WorkOrder::IS_LOCKED => true,
             ]
         );
+        $workOrderUpdateObjectUnLocked = WorkOrderUpdateObject::fromRequest(
+            [
+                WorkOrder::IS_LOCKED => false,
+            ]
+        );
+        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObjectLocked);
         $this->assertDatabaseHas(
             WorkOrder::TABLE,
             [
@@ -39,12 +45,7 @@ class WorkOrderUpdateActionTest extends TestCase
                 WorkOrder::IS_LOCKED => true,
             ]
         );
-        WorkOrdersUpdateAction::execute(
-            $workOrder,
-            [
-                WorkOrder::IS_LOCKED => false,
-            ]
-        );
+        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObjectUnLocked);
         $this->assertDatabaseHas(
             WorkOrder::TABLE,
             [

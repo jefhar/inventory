@@ -23,6 +23,7 @@ class CreateWorkordersTable extends Migration
                 $table->unsignedBigInteger(WorkOrder::CLIENT_ID);
                 $table->unsignedBigInteger(WorkOrder::USER_ID);
                 $table->boolean(WorkOrder::IS_LOCKED)->default(false);
+                $table->string(WorkOrder::INTAKE);
                 $table->timestamps();
                 $table->foreign(WorkOrder::CLIENT_ID)->references(Client::ID)->on(Client::TABLE);
                 $table->foreign(WorkOrder::USER_ID)->references(User::ID)->on(User::TABLE);
