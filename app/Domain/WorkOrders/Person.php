@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Domain\WorkOrders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -21,14 +22,18 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $first_name
  * @property string $last_name
  * @property string $phone_number
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static findOrFail(array $array)
  * @method static where(string $field, string $value)
  */
 class Person extends Model
 {
     public const CLIENT_ID = 'client_id';
+    public const DEFAULT_EMAIL = '';
+    public const DEFAULT_FIRST_NAME = 'first';
+    public const DEFAULT_LAST_NAME = 'last';
+    public const DEFAULT_PHONE_NUMBER = '000-000-0000';
     public const EMAIL = 'email';
     public const FIRST_NAME = 'first_name';
     public const ID = 'id';
@@ -43,8 +48,10 @@ class Person extends Model
     ];
     public $table = self::TABLE;
     protected $attributes = [
-        self::PHONE_NUMBER => '000-000-0000',
-        self::FIRST_NAME => 'first',
+        self::EMAIL => self::DEFAULT_EMAIL,
+        self::FIRST_NAME => self::DEFAULT_FIRST_NAME,
+        self::LAST_NAME => self::DEFAULT_LAST_NAME,
+        self::PHONE_NUMBER => self::DEFAULT_PHONE_NUMBER,
     ];
 
     /**

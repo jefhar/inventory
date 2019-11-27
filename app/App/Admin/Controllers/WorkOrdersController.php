@@ -4,12 +4,15 @@ namespace App\Admin\Controllers;
 
 use App\Admin\DataTransferObjects\ClientObject;
 use App\Admin\DataTransferObjects\PersonObject;
+use App\Admin\DataTransferObjects\WorkOrderUpdateObject;
 use App\Admin\Requests\WorkOrderStoreRequest;
+use App\Admin\Requests\WorkOrderUpdateRequest;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
-use Domain\WorkOrders\Person;
+use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
 use Domain\WorkOrders\WorkOrder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -21,18 +24,30 @@ class WorkOrdersController extends Controller
 {
     public const CREATE_NAME = 'workorders.create';
     public const CREATE_PATH = '/workorders/create';
+    public const EDIT_NAME = 'workorders.edit';
+    public const INDEX_NAME = 'workorders.index';
     public const SHOW_NAME = 'workorders.show';
     public const STORE_NAME = 'workorders.store';
+    public const UPDATE_NAME = 'workorders.update';
 
     /**
      * Display a listing of the resource.
      *
-     * @return void
-     * @codeCoverageIgnore
+     * @param Request $request
+     * @return View
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $showLocked = 'no';
+        if ($request->get('showlocked', $showLocked) === 'yes') {
+            $workOrders = WorkOrder::paginate(15);
+            $showLocked = 'yes';
+        } else {
+            $workOrders = WorkOrder::where(WorkOrder::IS_LOCKED, false)->paginate(15);
+            $showLocked = 'no';
+        }
+
+        return view('workorders.index')->with(['workOrders' => $workOrders, 'showlocked' => $showLocked]);
     }
 
     /**
@@ -53,11 +68,7 @@ class WorkOrdersController extends Controller
     {
         $validated = $request->validated();
 
-        if (empty($validated[Person::FIRST_NAME]) || (empty($validated[Person::LAST_NAME]))) {
-            $personObject = null;
-        } else {
-            $personObject = PersonObject::fromRequest($request->validated());
-        }
+        $personObject = PersonObject::fromRequest($request->validated());
 
         $workOrder = WorkOrdersStoreAction::execute(ClientObject::fromRequest($validated), $personObject);
 
@@ -85,25 +96,29 @@ class WorkOrdersController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param WorkOrder $workorder
-     * @return WorkOrder
-     * @codeCoverageIgnore
+     * @return \Illuminate\Contracts\View\Factory|View
      */
-    public function edit(WorkOrder $workorder): WorkOrder
+    public function edit(WorkOrder $workorder)
     {
-        return $workorder;
+        return view('workorders.edit')->with(['workOrder' => $workorder]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return void
-     * @codeCoverageIgnore
+     * @param WorkOrderUpdateRequest $request
+     * @param WorkOrder $workorder
+     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(WorkOrderUpdateRequest $request, WorkOrder $workorder): JsonResponse
     {
-        //
+        $workOrderObject = WorkOrderUpdateObject::fromRequest($request->validated());
+        $workOrderAction = WorkOrdersUpdateAction::execute(
+            $workorder,
+            $workOrderObject
+        );
+
+        return response()->json($workOrderAction);
     }
 
     /**

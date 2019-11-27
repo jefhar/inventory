@@ -29,9 +29,11 @@ Route::group(['middlware' => ['permission:' . UserPermissions::IS_EMPLOYEE]], fu
     Route::resource('workorders', 'WorkOrdersController')->only(
         [
             'create',
+            'edit',
             'show',
             'store',
-            'edit',
+            'update',
+            'index',
         ]
     )->middleware('auth');
     Route::get(AjaxSearchController::SHOW_PATH, 'AjaxSearchController@show')

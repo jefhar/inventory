@@ -22,13 +22,13 @@ class WorkOrdersControllerTest extends TestCase
     use RefreshDatabase;
 
     private const COMPANY_NAME = 'George Q. Client';
-    private User $guestUser;
-    private User $technicianUser;
+    private User $transient;
+    private User $user;
 
     /**
      * @test
      */
-    public function guestCreateIsUnAuthorized(): void
+    public function guestCreateIsUnauthorized(): void
     {
         $this->get(
             route(WorkOrdersController::CREATE_NAME)
@@ -39,9 +39,9 @@ class WorkOrdersControllerTest extends TestCase
      * @test
      * @SE-20 Testing that a locked user cannot access pages.
      */
-    public function lockedUserIsUnAuthorized(): void
+    public function lockedUserIsUnauthorized(): void
     {
-        $user = factory(User::class)->create();
+        factory(User::class)->create();
         $this->get(
             route(WorkOrdersController::CREATE_NAME)
         )->assertRedirect('/login');
@@ -57,7 +57,7 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function techUserCreateIsOk(): void
     {
-        $this->withExceptionHandling()->actingAs($this->technicianUser)
+        $this->withExceptionHandling()->actingAs($this->user)
             ->get(
                 route(WorkOrdersController::CREATE_NAME)
             )->assertOK();
@@ -79,7 +79,7 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function technicianCanStoreWorkOrderWithCompanyNameOnly(): void
     {
-        $this->actingAs($this->technicianUser)
+        $this->actingAs($this->user)
             ->post(
                 route(
                     WorkOrdersController::STORE_NAME
@@ -110,7 +110,7 @@ class WorkOrdersControllerTest extends TestCase
         $company_name = self::COMPANY_NAME . uniqid('b', true);
         $person = factory(Person::class)->make();
         $this->withoutExceptionHandling()
-            ->actingAs($this->technicianUser)
+            ->actingAs($this->user)
             ->post(
                 route(WorkOrdersController::STORE_NAME),
                 [
@@ -136,12 +136,117 @@ class WorkOrdersControllerTest extends TestCase
         );
     }
 
+    /**
+     * @test
+     */
+    public function guestIndexIsUnauthorized(): void
+    {
+        $this->get(route(WorkOrdersController::INDEX_NAME))
+            ->assertRedirect('/login');
+    }
+
+    /**
+     * @test
+     */
+    public function technicianIndexIsOk(): void
+    {
+        $this->actingAs($this->user)->withoutExceptionHandling()
+            ->get(route(WorkOrdersController::INDEX_NAME))
+            ->assertOk()
+            ->assertSeeText('Work Orders');
+    }
+
+    /**
+     * @test
+     */
+    public function editPageExists(): void
+    {
+        $workOrder = factory(WorkOrder::class)->create();
+        $client = factory(Client::class)->create();
+        $person = factory(Person::class)->make();
+        $client->person()->save($person);
+        $client->workOrders()->save($workOrder);
+        $this->actingAs($this->user)->withoutExceptionHandling()
+            ->get(route(WorkOrdersController::EDIT_NAME, $workOrder))
+            ->assertOk()->assertSeeText('Edit Work Order');
+    }
+
+    /**
+     * @test
+     */
+    public function canToggleLockedWorkOrder(): void
+    {
+        $workOrder = factory(WorkOrder::class)->make();
+        $workOrder->is_locked = false;
+        $workOrder->save();
+        $this
+            ->actingAs($this->user)
+            ->patch(
+                route(WorkOrdersController::UPDATE_NAME, ['workorder' => $workOrder]),
+                [WorkOrder::IS_LOCKED => true]
+            )->assertJson(
+                [
+                    WorkOrder::ID => $workOrder->id,
+                    WorkOrder::IS_LOCKED => true,
+                ]
+            )->assertOk();
+        $this->assertDatabaseHas(
+            WorkOrder::TABLE,
+            [
+                WorkOrder::ID => $workOrder->id,
+                WorkOrder::IS_LOCKED => true,
+            ]
+        );
+
+        $this
+            ->actingAs($this->user)
+            ->patch(
+                route(WorkOrdersController::UPDATE_NAME, ['workorder' => $workOrder]),
+                [WorkOrder::IS_LOCKED => false]
+            )->assertJson(
+                [
+                    WorkOrder::ID => $workOrder->id,
+                    WorkOrder::IS_LOCKED => false,
+                ]
+            )->assertOk();
+        $this->assertDatabaseHas(
+            WorkOrder::TABLE,
+            [
+                WorkOrder::ID => $workOrder->id,
+                WorkOrder::IS_LOCKED => false,
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function updateUpdatesCompanyName()
+    {
+        $newClient = factory(Client::class)->make();
+        $workOrder = factory(WorkOrder::class)->create();
+        $this->withoutExceptionHandling()
+            ->actingAs($this->user)
+            ->patch(
+                route(WorkOrdersController::UPDATE_NAME, $workOrder),
+                [
+                    Client::COMPANY_NAME => $newClient->company_name,
+                ]
+            )->assertOk();
+        $this->assertDatabaseHas(
+            Client::TABLE,
+            [
+                Client::COMPANY_NAME => $newClient->company_name,
+            ]
+        );
+    }
+
     protected function setUp(): void
     {
         /** @var User $guestUser */
         /** @var User $authorizedUser */
         parent::setUp();
-        $this->guestUser = factory(User::class)->make();
-        $this->technicianUser = factory(User::class)->create()->assignRole(UserRoles::TECHNICIAN);
+        $this->transient = factory(User::class)->make();
+        $this->user = factory(User::class)->create()->assignRole(UserRoles::TECHNICIAN);
     }
 }

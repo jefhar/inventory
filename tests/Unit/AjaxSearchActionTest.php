@@ -18,7 +18,7 @@ class AjaxSearchActionTest extends TestCase
     /**
      * @test
      */
-    public function searchActionReturnsSomething(): void
+    public function searchActionReturnsACollection(): void
     {
         for ($i = 0; $i < 50; $i++) {
             $client = factory(Client::class)->create();

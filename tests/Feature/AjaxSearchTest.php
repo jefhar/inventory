@@ -61,7 +61,7 @@ class AjaxSearchTest extends TestCase
     /**
      * @test
      */
-    public function authorizedIsOK(): void
+    public function authorizedIsOk(): void
     {
         $this->actingAs($this->authorizedUser)->withoutExceptionHandling();
         $this->get(
@@ -75,7 +75,7 @@ class AjaxSearchTest extends TestCase
     /**
      * @test
      */
-    public function knownFieldIsOK(): void
+    public function knownFieldIsOk(): void
     {
         $this->actingAs($this->authorizedUser);
         $this->get(

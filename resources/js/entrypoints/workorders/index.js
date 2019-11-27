@@ -5,7 +5,7 @@
  */
 import React from "react";
 import ReactDOM from "react-dom";
-import WorkOrderCreate from "../../components/WorkOrder/WorkOrderCreate";
+import WorkOrderIndex from "../../components/WorkOrder/WorkOrderIndex";
 
 require("../../bootstrap");
 
@@ -15,10 +15,10 @@ require("../../bootstrap");
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-if (document.getElementById("workorders_create")) {
-  console.log("got workorders_create");
+if (document.getElementById("workorders_index")) {
+  console.log("got workorders_index");
   ReactDOM.render(
-    <WorkOrderCreate />,
-    document.getElementById("workorders_create")
+    <WorkOrderIndex />,
+    document.getElementById("workorders_index")
   );
 }
