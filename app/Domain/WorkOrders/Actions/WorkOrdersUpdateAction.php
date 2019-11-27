@@ -20,15 +20,18 @@ class WorkOrdersUpdateAction
     public static function execute(WorkOrder $workOrder, WorkOrderUpdateObject $workOrderUpdateObject): array
     {
         $changedFields[WorkOrder::ID] = $workOrder->id;
-        $client = $workOrder->client->get();
-        $client->loadCount('person');
-        $client = $client[0];
-        if ($client->person_count === '0') {
-            $person = new Person();
-            $client->person()->save($person);
-        } else {
-            $person = $client->person->get();
+        $workOrder->client->loadCount('person');
+        $client = $workOrder->client;
+
+        $person = new Person();
+
+        if ($workOrder->client->person_count !== '0') {
+            $person = $client->person;
         }
+
+        /**** does this need to be here? ****/
+        $client->person()->save($person);
+
         if (isset($workOrderUpdateObject->is_locked)) {
             $workOrder->is_locked = $workOrderUpdateObject->is_locked;
             $changedFields[WorkOrder::IS_LOCKED] = $workOrderUpdateObject->is_locked;
@@ -43,6 +46,7 @@ class WorkOrdersUpdateAction
         }
         if (isset($workOrderUpdateObject->first_name)) {
             $person->first_name = $workOrderUpdateObject->first_name;
+            $person->save();
             $changedFields[Person::FIRST_NAME] = $workOrderUpdateObject->first_name;
         }
         if (isset($workOrderUpdateObject->last_name)) {
@@ -57,9 +61,11 @@ class WorkOrdersUpdateAction
             $person->email = $workOrderUpdateObject->email;
             $changedFields[Person::EMAIL] = $workOrderUpdateObject->email;
         }
+
+        $client->person()->save($person);
+        $workOrder->client()->associate($client);
         $workOrder->save();
-        $person->save();
-        $client->save();
+        $client->push();
 
         return $changedFields;
     }
