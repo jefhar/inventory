@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package Domain\AjaxSearch\Actions
  */
-class AjaxSearch
+class AjaxSearchAction
 {
 
     /**

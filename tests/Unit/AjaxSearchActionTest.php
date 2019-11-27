@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Domain\AjaxSearch\Actions\AjaxSearch;
+use Domain\AjaxSearch\Actions\AjaxSearchAction;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Tests\TestCase;
@@ -49,7 +49,7 @@ class AjaxSearchActionTest extends TestCase
         $client->save();
         $client->person()->save($person);
 
-        $options = AjaxSearch::findBy(Client::COMPANY_NAME, 'J');
+        $options = AjaxSearchAction::findBy(Client::COMPANY_NAME, 'J');
         // dd($options->pluck(Client::COMPANY_NAME));
 
         $this->assertContains($company_name, $options->pluck(Client::COMPANY_NAME));

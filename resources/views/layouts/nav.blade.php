@@ -52,15 +52,17 @@
 
             </ul>
             @auth
-                <form class="form-inline">
-                    <div class="input-group">
-                        <input class="form-control" type="search" placeholder="Search" aria-label="Search">
-                        <div class="input-group-append">
-                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <!-- AutoComplete Search Bar -->
+                    <form class="form-inline">
+                        <div class="input-group">
+                            <input id="site-search" class="form-control" type="search" placeholder="Search"
+                                   aria-label="Search">
+                            <div class="input-group-append">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            </div>
                         </div>
-                    </div>
-                </form>
-            @endauth
+                    </form>
+                @endauth
         </div>
     </div>
 </nav>

@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Admin\Controllers\AjaxSearchController;
 use App\Admin\Permissions\UserPermissions;
 use App\Admin\Permissions\UserRoles;
+use App\AjaxSearch\Controllers\AjaxSearchController;
 use App\User;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
@@ -131,5 +131,17 @@ class AjaxSearchTest extends TestCase
                     Person::LAST_NAME => $client->person->last_name,
                 ]
             );
+    }
+
+    /**
+     * @test
+     */
+    public function indexReturnsSomething(): void
+    {
+        $client = factory(Client::class)->create();
+        $this->actingAs($this->authorizedUser)->withoutExceptionHandling()
+            ->get(route(AjaxSearchController::INDEX_NAME, ['q' => $client->company_name]))
+            ->assertOk()
+            ->assertJson([Client::COMPANY_NAME => $client->company_name]);
     }
 }
