@@ -22,15 +22,10 @@ class WorkOrdersUpdateAction
         $changedFields[WorkOrder::ID] = $workOrder->id;
         $workOrder->client->loadCount('person');
         $client = $workOrder->client;
-
         $person = new Person();
-
         if ($workOrder->client->person_count !== '0') {
             $person = $client->person;
         }
-
-        /**** does this need to be here? ****/
-        $client->person()->save($person);
 
         if (isset($workOrderUpdateObject->is_locked)) {
             $workOrder->is_locked = $workOrderUpdateObject->is_locked;
@@ -46,7 +41,6 @@ class WorkOrdersUpdateAction
         }
         if (isset($workOrderUpdateObject->first_name)) {
             $person->first_name = $workOrderUpdateObject->first_name;
-            $person->save();
             $changedFields[Person::FIRST_NAME] = $workOrderUpdateObject->first_name;
         }
         if (isset($workOrderUpdateObject->last_name)) {
