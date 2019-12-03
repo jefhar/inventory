@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Domain\WorkOrders\Actions;
 
-use App\Admin\DataTransferObjects\ClientObject;
-use App\Admin\DataTransferObjects\PersonObject;
+use App\WorkOrders\DataTransferObjects\ClientObject;
+use App\WorkOrders\DataTransferObjects\PersonObject;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;

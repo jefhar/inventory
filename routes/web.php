@@ -13,6 +13,9 @@
 
 use App\Admin\Permissions\UserPermissions;
 use App\AjaxSearch\Controllers\AjaxSearchController;
+use App\WorkOrders\Controllers\ClientsController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 Route::get(
     '/',
@@ -35,7 +38,7 @@ Route::group(
             }
         );
 
-        Route::namespace('Admin\\Controllers\\')->group(
+        Route::namespace('WorkOrders\\Controllers\\')->group(
             function () {
                 Route::resource('workorders', 'WorkOrdersController')->only(
                     [
@@ -56,6 +59,12 @@ Route::group(
                     ->name(AjaxSearchController::SHOW_NAME)->middleware('auth');
                 Route::get(AjaxSearchController::INDEX_PATH, 'AjaxSearchController@index')
                     ->name(AjaxSearchController::INDEX_NAME)->middleware('auth');
+            }
+        );
+        Route::namespace('WorkOrders\\Controllers\\')->group(
+            function () {
+                Route::get(ClientsController::SHOW_PATH, 'ClientsController@show')
+                    ->name(ClientsController::SHOW_NAME)->middleware('auth');
             }
         );
     }

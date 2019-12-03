@@ -142,6 +142,6 @@ class AjaxSearchTest extends TestCase
         $this->actingAs($this->authorizedUser)->withoutExceptionHandling()
             ->get(route(AjaxSearchController::INDEX_NAME, ['q' => $client->company_name]))
             ->assertOk()
-            ->assertJson([Client::COMPANY_NAME => $client->company_name]);
+            ->assertJsonFragment(['name' => $client->company_name]);
     }
 }

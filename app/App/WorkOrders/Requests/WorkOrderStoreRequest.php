@@ -1,13 +1,10 @@
 <?php
 
-namespace App\Admin\Requests;
+namespace App\WorkOrders\Requests;
 
-use App\Admin\Controllers\WorkOrdersController;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class WorkOrderStoreRequest

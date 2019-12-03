@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Admin\Controllers;
+namespace App\WorkOrders\Controllers;
 
-use App\Admin\DataTransferObjects\ClientObject;
-use App\Admin\DataTransferObjects\PersonObject;
-use App\Admin\DataTransferObjects\WorkOrderUpdateObject;
-use App\Admin\Requests\WorkOrderStoreRequest;
-use App\Admin\Requests\WorkOrderUpdateRequest;
+use App\Admin\Controllers\Controller;
+use App\WorkOrders\DataTransferObjects\ClientObject;
+use App\WorkOrders\DataTransferObjects\PersonObject;
+use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
+use App\WorkOrders\Requests\WorkOrderStoreRequest;
+use App\WorkOrders\Requests\WorkOrderUpdateRequest;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
 use Domain\WorkOrders\WorkOrder;
