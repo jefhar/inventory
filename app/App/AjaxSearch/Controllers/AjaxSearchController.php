@@ -36,8 +36,9 @@ class AjaxSearchController extends Controller
 
     /**
      * @param Request $request
+     * @return JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $results = AjaxSearchAction::findAll($request->get('q'));
 
