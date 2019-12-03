@@ -12,7 +12,10 @@ namespace Domain\AjaxSearch\Actions;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
+
+use function strtolower;
 
 /**
  * Class AjaxSearch
@@ -47,20 +50,9 @@ class AjaxSearchAction
      * @param string $searchString
      * @return Collection
      */
-    private static function findClientsByCompanyName(string $searchString): Collection
-    {
-        return Client::where(Client::COMPANY_NAME, 'like', '%' . $searchString . '%')
-            ->get()
-            ->pluck(Client::ID, Client::ID);
-    }
-
-    /**
-     * @param string $searchString
-     * @return Collection
-     */
     private static function clientsAndPeopleByCompanyName(string $searchString): Collection
     {
-        $client_ids = self::findClientsByCompanyName($searchString);
+        $client_ids = Client::findByCompanyName($searchString);
         $clients = Client::whereIn(Client::ID, $client_ids)->with('person')->get();
 
         $map = $clients->map(
@@ -75,5 +67,46 @@ class AjaxSearchAction
         );
 
         return $map;
+    }
+
+    public static function findAll(string $searchString): Collection
+    {
+        $client_ids = Client::findByCompanyName($searchString);
+        $clients = Client::whereIn(Client::ID, $client_ids)->get();
+
+        $people_ids = Person::findByName($searchString);
+        $people = Person::whereIn(Person::ID, $people_ids)->get();
+
+        $peopleMap = $people->map(
+            static function ($person) use ($searchString) {
+                $name = $person->first_name;
+                if (Str::contains(strtolower($person->last_name), strtolower($searchString))) {
+                    $name = $person->last_name;
+                }
+
+                return [
+                    'name' => $name,
+                    'search' => $searchString,
+                    'type' => 'person',
+                    'url' => '/clients/' . $person->client_id,
+                ];
+            }
+        );
+
+        $clientsMap = $clients->map(
+            static function ($client) use ($searchString) {
+                return [
+                    'name' => $client->company_name,
+                    'search' => $searchString,
+                    'type' => 'client',
+                    'url' => '/clients/' . $client->id,
+                ];
+            }
+        );
+        $collection = collect();
+        $collection = $collection->concat($clientsMap);
+        $collection = $collection->concat($peopleMap);
+
+        return $collection;
     }
 }

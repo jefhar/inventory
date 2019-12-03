@@ -54,4 +54,29 @@ class AjaxSearchActionTest extends TestCase
 
         $this->assertContains($company_name, $options->pluck(Client::COMPANY_NAME));
     }
+
+    /**
+     * @test
+     */
+    public function ajaxSearchIndexFindsCompanyName(): void
+    {
+        factory(Client::class, 50)->create();
+        $client = factory(Client::class)->create();
+        $options = AjaxSearchAction::findAll(substr($client->company_name, 0, 2));
+        $this->assertStringContainsString($client->company_name, $options->toJson());
+    }
+
+    /**
+     * @test
+     */
+    public function ajaxSearchIndexFindsLastName(): void
+    {
+        $client = factory(Client::class)->create();
+        $people = factory(Person::class, 50)->make([Person::CLIENT_ID => 1]);
+        $client->person()->saveMany($people);
+
+        $person = factory(Person::class)->create([Person::CLIENT_ID => 1]);
+        $options = AjaxSearchAction::findAll(substr($person->last_name, 0, 2));
+        $this->assertStringContainsString($person->last_name, $options->toJson());
+    }
 }
