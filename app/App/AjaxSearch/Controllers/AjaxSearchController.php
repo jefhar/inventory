@@ -11,7 +11,6 @@ namespace App\AjaxSearch\Controllers;
 
 use App\Admin\Controllers\Controller;
 use Domain\AjaxSearch\Actions\AjaxSearchAction;
-use Domain\WorkOrders\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -37,10 +36,11 @@ class AjaxSearchController extends Controller
 
     /**
      * @param Request $request
-     * @return JsonResponse
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
-        return response()->json([Client::COMPANY_NAME => $request->get('q')]);
+        $results = AjaxSearchAction::findAll($request->get('q'));
+
+        return response()->json($results);
     }
 }

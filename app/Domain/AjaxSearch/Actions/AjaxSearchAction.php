@@ -12,10 +12,7 @@ namespace Domain\AjaxSearch\Actions;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
-
-use function strtolower;
 
 /**
  * Class AjaxSearch
@@ -79,15 +76,8 @@ class AjaxSearchAction
 
         $peopleMap = $people->map(
             static function ($person) use ($searchString) {
-                $name = $person->first_name;
-                if (Str::contains(strtolower($person->last_name), strtolower($searchString))) {
-                    $name = $person->last_name;
-                }
-
                 return [
-                    'name' => $name,
-                    'search' => $searchString,
-                    'type' => 'person',
+                    'name' => $person->first_name . ' ' . $person->last_name,
                     'url' => '/clients/' . $person->client_id,
                 ];
             }
@@ -97,8 +87,6 @@ class AjaxSearchAction
             static function ($client) use ($searchString) {
                 return [
                     'name' => $client->company_name,
-                    'search' => $searchString,
-                    'type' => 'client',
                     'url' => '/clients/' . $client->id,
                 ];
             }
