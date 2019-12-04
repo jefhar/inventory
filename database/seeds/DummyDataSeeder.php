@@ -14,6 +14,7 @@ class DummyDataSeeder extends Seeder
      */
     public function run()
     {
+        $faker = Faker\Factory::create();
         /** @var Client $client */
         for ($i = 0; $i < 20; $i++) {
             $client = factory(Client::class)->create();
@@ -26,6 +27,7 @@ class DummyDataSeeder extends Seeder
 
             /** @noinspection RandomApiMigrationInspection */
             $workOrder->is_locked = (bool)rand(0, 1);
+            $workOrder->intake = $faker->text();
             $workOrder->user_id = 1;
             $client->workOrders()->save($workOrder);
         }

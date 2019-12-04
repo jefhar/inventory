@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace App\Admin\DataTransferObjects;
+namespace App\WorkOrders\DataTransferObjects;
 
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;

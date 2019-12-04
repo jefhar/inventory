@@ -1,13 +1,10 @@
 <?php
 
-namespace App\Admin\Requests;
+namespace App\WorkOrders\Requests;
 
-use App\Admin\Controllers\WorkOrdersController;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class WorkOrderStoreRequest
@@ -21,9 +18,8 @@ class WorkOrderStoreRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-
         return true;
     }
 
@@ -32,7 +28,7 @@ class WorkOrderStoreRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             Client::COMPANY_NAME => ['required', 'string'],
@@ -43,7 +39,7 @@ class WorkOrderStoreRequest extends FormRequest
         ];
     }
 
-    public function attributes()
+    public function attributes(): array
     {
         return [
             Client::COMPANY_NAME => 'Company Name',

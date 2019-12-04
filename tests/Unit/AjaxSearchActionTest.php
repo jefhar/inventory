@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Domain\AjaxSearch\Actions\AjaxSearch;
+use Domain\AjaxSearch\Actions\AjaxSearchAction;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Tests\TestCase;
@@ -49,9 +49,34 @@ class AjaxSearchActionTest extends TestCase
         $client->save();
         $client->person()->save($person);
 
-        $options = AjaxSearch::findBy(Client::COMPANY_NAME, 'J');
+        $options = AjaxSearchAction::findBy(Client::COMPANY_NAME, 'J');
         // dd($options->pluck(Client::COMPANY_NAME));
 
         $this->assertContains($company_name, $options->pluck(Client::COMPANY_NAME));
+    }
+
+    /**
+     * @test
+     */
+    public function ajaxSearchIndexFindsCompanyName(): void
+    {
+        factory(Client::class, 50)->create();
+        $client = factory(Client::class)->create();
+        $options = AjaxSearchAction::findAll(substr($client->company_name, 0, 2));
+        $this->assertStringContainsString($client->company_name, $options->toJson());
+    }
+
+    /**
+     * @test
+     */
+    public function ajaxSearchIndexFindsLastName(): void
+    {
+        $client = factory(Client::class)->create();
+        $people = factory(Person::class, 50)->make([Person::CLIENT_ID => 1]);
+        $client->person()->saveMany($people);
+
+        $person = factory(Person::class)->create([Person::CLIENT_ID => 1]);
+        $options = AjaxSearchAction::findAll(substr($person->last_name, 0, 2));
+        $this->assertStringContainsString($person->last_name, $options->toJson());
     }
 }

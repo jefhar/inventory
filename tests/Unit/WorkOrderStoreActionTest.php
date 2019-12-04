@@ -8,10 +8,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\Admin\DataTransferObjects\ClientObject;
-use App\Admin\DataTransferObjects\PersonObject;
 use App\Admin\Permissions\UserRoles;
 use App\User;
+use App\WorkOrders\DataTransferObjects\ClientObject;
+use App\WorkOrders\DataTransferObjects\PersonObject;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
