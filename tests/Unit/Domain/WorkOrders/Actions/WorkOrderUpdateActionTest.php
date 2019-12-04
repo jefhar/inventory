@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Unit\Domain\WorkOrders\Actions;
 
 use App\Admin\Permissions\UserPermissions;
 use App\User;
