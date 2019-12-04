@@ -27,9 +27,10 @@ if (document.getElementById("workorders_edit")) {
 */
 
 function update() {
-  const isLockedButton = document.getElementById("lock_button");
   const inventoryButton = document.getElementById("add_inventory_button");
+  const isLockedButton = document.getElementById("lock_button");
   const lockIcon = document.getElementById("lock-icon");
+  const outline = document.getElementById("outline");
 
   if (isLockedButton.dataset.isLocked === "true") {
     inventoryButton.disabled = true;
@@ -37,6 +38,8 @@ function update() {
     isLockedButton.classList.remove("btn-outline-success");
     lockIcon.classList.add("fa-unlock-alt");
     lockIcon.classList.remove("fa-lock");
+    outline.classList.add("border-warning");
+    outline.classList.remove("border-success");
     $('[data-toggle="tooltip"]')
       .tooltip("hide")
       .attr("data-original-title", "Unlock work order.")
@@ -47,6 +50,8 @@ function update() {
     isLockedButton.classList.remove("btn-outline-warning");
     lockIcon.classList.add("fa-lock");
     lockIcon.classList.remove("fa-unlock-alt");
+    outline.classList.add("border-success");
+    outline.classList.remove("border-warning");
     $('[data-toggle="tooltip"]')
       .tooltip("hide")
       .attr("data-original-title", "Lock work order.")
@@ -90,14 +95,14 @@ $(function() {
     const url = `/workorders/${isLockedButton.dataset.workOrderId}`;
     const data = {
       company_name: document.getElementById("company_name").value,
-      first_name: document.getElementById("first_name").value,
-      last_name: document.getElementById("last_name").value,
-      phone_number: document.getElementById("phone_number").value,
       email: document.getElementById("email").value,
-      intake: document.getElementById("intake").value
+      first_name: document.getElementById("first_name").value,
+      intake: document.getElementById("intake").value,
+      last_name: document.getElementById("last_name").value,
+      phone_number: document.getElementById("phone_number").value
     };
-    // send PATCH via axios
 
+    // send PATCH via axios
     axios
       .patch(url, data)
       .then(response => {
@@ -109,8 +114,8 @@ $(function() {
         updateAlert.classList.add(
           "alert",
           "alert-success",
-          "mt-3",
           "col-6",
+          "mt-3",
           "offset-3"
         );
         updateAlert.innerHTML =

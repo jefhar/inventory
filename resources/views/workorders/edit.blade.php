@@ -4,14 +4,16 @@
     <script src="{{ mix('js/workorders/edit.js') }}" defer></script>
 @endpush
 
+@section('title', 'Edit Work Order #' . $workOrder->id . ': ' . $workOrder->client->company_name )
+
 @section('content')
     <div id="workorders_edit"></div>
     <div class="container">
-        <div class="row shadow-sm">
+        <div id="outline" class="row shadow-sm border border-{{ $workOrder->is_locked ? 'warning' : 'success' }}">
             <div class="card col-md">
                 <div class="card-header row">
                     <div class="col">
-                        <h1 class="text-center">Edit Work Order</h1>
+                        <h1 class="text-center">Work Order</h1>
                     </div>
                     <div class="col-sm-3 col-md-2 shadow-sm">
                         <div class="row justify-content-center">
@@ -156,7 +158,7 @@
                                 id="lock_button"
                                 title="unlock work order"
                                 type="button"
-                        ><i id="lock-icon" class="fas"></i>
+                        ><small><i id="lock-icon" class="fas"></i></small>
                         </button>
                     </div>
                 </div>

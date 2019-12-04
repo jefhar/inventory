@@ -11,14 +11,19 @@ namespace App\WorkOrders\Controllers;
 
 use App\Admin\Controllers\Controller;
 use Domain\WorkOrders\Client;
+use Illuminate\View\View;
 
 class ClientsController extends Controller
 {
     public const SHOW_PATH = '/clients/{client}';
     public const SHOW_NAME = 'clients.show';
 
-    public function show(Client $client)
+    /**
+     * @param Client $client
+     * @return View
+     */
+    public function show(Client $client): View
     {
-        return $client->company_name . ' WorkOrder list';
+        return view('clients.show')->with(['client' => $client]);
     }
 }
