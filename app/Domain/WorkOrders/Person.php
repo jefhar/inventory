@@ -9,23 +9,27 @@ declare(strict_types=1);
 namespace Domain\WorkOrders;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 /**
  * Class Person
  *
  * @package Domain\WorkOrders
  *
+ * @method Builder|static get()
+ * @method static Builder|static where(string $field, string $value, string $value = null)
+ * @method static Builder|static whereIn(string $ID, $people_ids)
+ * @method static findOrFail(array $array)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $client_id
  * @property int $id
  * @property string $email
  * @property string $first_name
  * @property string $last_name
  * @property string $phone_number
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @method static findOrFail(array $array)
- * @method static where(string $field, string $value)
  */
 class Person extends Model
 {
@@ -53,6 +57,18 @@ class Person extends Model
         self::LAST_NAME => self::DEFAULT_LAST_NAME,
         self::PHONE_NUMBER => self::DEFAULT_PHONE_NUMBER,
     ];
+
+    /**
+     * @param string $searchString
+     * @return Collection
+     */
+    public static function findByName(string $searchString): Collection
+    {
+        return self::where(self::FIRST_NAME, 'like', '%' . $searchString . '%')
+            ->orWhere(self::LAST_NAME, 'like', '%' . $searchString . '%')
+            ->get()
+            ->pluck(self::ID, self::ID);
+    }
 
     /**
      * @param string $phoneNumber

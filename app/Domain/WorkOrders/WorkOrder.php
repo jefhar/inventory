@@ -34,8 +34,6 @@ class WorkOrder extends Model
     public const IS_LOCKED = 'is_locked';
     public const TABLE = 'workorders';
     public const USER_ID = 'user_id';
-    public $table = self::TABLE;
-    public $with = ['client.person', 'user'];
 
     protected $attributes = [
         self::IS_LOCKED => false,
@@ -44,6 +42,8 @@ class WorkOrder extends Model
     protected $casts = [
         self::IS_LOCKED => 'boolean',
     ];
+    public $table = self::TABLE;
+    public $with = ['client.person', 'user'];
 
     /**
      * @return BelongsTo
@@ -53,6 +53,9 @@ class WorkOrder extends Model
         return $this->belongsTo(Client::class);
     }
 
+    /**
+     * @return BelongsTo
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

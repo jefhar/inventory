@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Domain\WorkOrders\Actions;
 
-use App\Admin\DataTransferObjects\ClientObject;
-use App\Admin\DataTransferObjects\PersonObject;
+use App\WorkOrders\DataTransferObjects\ClientObject;
+use App\WorkOrders\DataTransferObjects\PersonObject;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
@@ -33,16 +33,16 @@ class WorkOrdersStoreAction
         /** @var Client $client */
         $client = Client::firstOrCreate([Client::COMPANY_NAME => $clientObject->company_name]);
 
-        $person = new Person(
-            [
-                Person::FIRST_NAME => $personObject->first_name,
-                Person::LAST_NAME => $personObject->last_name,
-                Person::EMAIL => $personObject->email,
-                Person::PHONE_NUMBER => $personObject->phone_number,
-            ]
+        $client->person()->save(
+            new Person(
+                [
+                    Person::FIRST_NAME => $personObject->first_name,
+                    Person::LAST_NAME => $personObject->last_name,
+                    Person::EMAIL => $personObject->email,
+                    Person::PHONE_NUMBER => $personObject->phone_number,
+                ]
+            )
         );
-
-        $client->person()->save($person);
         $workOrder = new WorkOrder();
         $workOrder->client()->associate($client);
         $workOrder->user()->associate(Auth::user());

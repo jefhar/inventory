@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Admin\Controllers;
+namespace App\WorkOrders\Controllers;
 
-use App\Admin\DataTransferObjects\ClientObject;
-use App\Admin\DataTransferObjects\PersonObject;
-use App\Admin\DataTransferObjects\WorkOrderUpdateObject;
-use App\Admin\Requests\WorkOrderStoreRequest;
-use App\Admin\Requests\WorkOrderUpdateRequest;
+use App\Admin\Controllers\Controller;
+use App\WorkOrders\DataTransferObjects\ClientObject;
+use App\WorkOrders\DataTransferObjects\PersonObject;
+use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
+use App\WorkOrders\Requests\WorkOrderStoreRequest;
+use App\WorkOrders\Requests\WorkOrderUpdateRequest;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
 use Domain\WorkOrders\WorkOrder;
@@ -33,10 +34,11 @@ class WorkOrdersController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @codeCoverageIgnore
      * @param Request $request
      * @return View
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $showLocked = 'no';
         if ($request->get('showlocked', $showLocked) === 'yes') {
@@ -52,8 +54,10 @@ class WorkOrdersController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     *
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         return view('workorders.create');
     }
@@ -96,9 +100,9 @@ class WorkOrdersController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param WorkOrder $workorder
-     * @return \Illuminate\Contracts\View\Factory|View
+     * @return View
      */
-    public function edit(WorkOrder $workorder)
+    public function edit(WorkOrder $workorder): View
     {
         return view('workorders.edit')->with(['workOrder' => $workorder]);
     }

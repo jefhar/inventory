@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Domain\WorkOrders\Actions;
 
-use App\Admin\DataTransferObjects\WorkOrderUpdateObject;
+use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
@@ -23,7 +23,7 @@ class WorkOrdersUpdateAction
         $workOrder->client->loadCount('person');
         $client = $workOrder->client;
         $person = new Person();
-        if ($workOrder->client->person_count !== '0') {
+        if ($workOrder->client->person_count > '0') {
             $person = $client->person;
         }
 

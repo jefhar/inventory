@@ -7,9 +7,10 @@
 
 declare(strict_types=1);
 
-namespace App\Admin\Controllers;
+namespace App\AjaxSearch\Controllers;
 
-use Domain\AjaxSearch\Actions\AjaxSearch;
+use App\Admin\Controllers\Controller;
+use Domain\AjaxSearch\Actions\AjaxSearchAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,8 @@ class AjaxSearchController extends Controller
 {
     public const SHOW_NAME = 'ajaxsearch.show';
     public const SHOW_PATH = '/ajaxsearch/{field}';
+    public const INDEX_PATH = '/ajaxsearch';
+    public const INDEX_NAME = 'ajaxsearch.index';
 
     /**
      * @param Request $request
@@ -26,8 +29,19 @@ class AjaxSearchController extends Controller
     public function show(Request $request, string $field): JsonResponse
     {
         $searchString = $request->get('q', '');
-        $options = AjaxSearch::findBy($field, $searchString);
+        $options = AjaxSearchAction::findBy($field, $searchString);
 
         return response()->json($options);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $results = AjaxSearchAction::findAll($request->get('q'));
+
+        return response()->json($results);
     }
 }

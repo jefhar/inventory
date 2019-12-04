@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Admin\Controllers\WorkOrdersController;
 use App\Admin\Permissions\UserRoles;
 use App\User;
+use App\WorkOrders\Controllers\WorkOrdersController;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;

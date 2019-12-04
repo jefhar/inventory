@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace App\Admin\Requests;
+namespace App\WorkOrders\Requests;
 
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;

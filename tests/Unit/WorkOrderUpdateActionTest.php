@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\Admin\DataTransferObjects\WorkOrderUpdateObject;
 use App\Admin\Permissions\UserPermissions;
 use App\User;
+use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
