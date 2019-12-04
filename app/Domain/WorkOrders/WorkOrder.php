@@ -10,8 +10,10 @@ declare(strict_types=1);
 namespace Domain\WorkOrders;
 
 use App\User;
+use Domain\Products\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class WorkOrder
@@ -34,7 +36,8 @@ class WorkOrder extends Model
     public const IS_LOCKED = 'is_locked';
     public const TABLE = 'workorders';
     public const USER_ID = 'user_id';
-
+    public $table = self::TABLE;
+    public $with = ['client.person', 'user'];
     protected $attributes = [
         self::IS_LOCKED => false,
         self::INTAKE => '',
@@ -42,8 +45,6 @@ class WorkOrder extends Model
     protected $casts = [
         self::IS_LOCKED => 'boolean',
     ];
-    public $table = self::TABLE;
-    public $with = ['client.person', 'user'];
 
     /**
      * @return BelongsTo
@@ -59,5 +60,10 @@ class WorkOrder extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
     }
 }
