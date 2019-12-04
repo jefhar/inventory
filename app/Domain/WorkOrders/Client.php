@@ -1,9 +1,8 @@
 <?php
 
 /**
- * PHP Version 7.2
- *
- * servicesAndGoods
+ * Copyright 2018, 2019 Jeff Harris
+ * PHP Version 7.4
  */
 
 declare(strict_types=1);
@@ -70,6 +69,9 @@ class Client extends Model
         return $this->hasOne(Person::class);
     }
 
+    /**
+     * @return HasMany
+     */
     public function workOrders(): HasMany
     {
         return $this->hasMany(WorkOrder::class);

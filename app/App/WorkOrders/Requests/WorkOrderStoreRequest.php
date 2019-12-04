@@ -18,9 +18,8 @@ class WorkOrderStoreRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-
         return true;
     }
 
@@ -29,7 +28,7 @@ class WorkOrderStoreRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             Client::COMPANY_NAME => ['required', 'string'],
@@ -40,7 +39,7 @@ class WorkOrderStoreRequest extends FormRequest
         ];
     }
 
-    public function attributes()
+    public function attributes(): array
     {
         return [
             Client::COMPANY_NAME => 'Company Name',

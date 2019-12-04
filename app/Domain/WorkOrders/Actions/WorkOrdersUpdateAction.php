@@ -23,7 +23,7 @@ class WorkOrdersUpdateAction
         $workOrder->client->loadCount('person');
         $client = $workOrder->client;
         $person = new Person();
-        if ($workOrder->client->person_count !== '0') {
+        if ($workOrder->client->person_count > '0') {
             $person = $client->person;
         }
 

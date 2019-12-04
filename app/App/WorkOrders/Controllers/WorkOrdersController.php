@@ -34,10 +34,11 @@ class WorkOrdersController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @codeCoverageIgnore
      * @param Request $request
      * @return View
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $showLocked = 'no';
         if ($request->get('showlocked', $showLocked) === 'yes') {
@@ -53,8 +54,10 @@ class WorkOrdersController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     *
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         return view('workorders.create');
     }
@@ -97,9 +100,9 @@ class WorkOrdersController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param WorkOrder $workorder
-     * @return \Illuminate\Contracts\View\Factory|View
+     * @return View
      */
-    public function edit(WorkOrder $workorder)
+    public function edit(WorkOrder $workorder): View
     {
         return view('workorders.edit')->with(['workOrder' => $workorder]);
     }
