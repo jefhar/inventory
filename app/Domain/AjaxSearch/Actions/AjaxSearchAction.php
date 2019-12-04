@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class AjaxSearchAction
 {
-
     /**
      * @param string $field ENUM {Client::COMPANY_NAME|}
      * @param string $searchString
@@ -36,6 +35,7 @@ class AjaxSearchAction
             abort(Response::HTTP_NOT_ACCEPTABLE);
         }
 
+        // Stub for when more autocomplete fields are used:
         //switch ($field) {
         //    case Client::COMPANY_NAME:
         return self::clientsAndPeopleByCompanyName($searchString);
@@ -52,48 +52,37 @@ class AjaxSearchAction
         $client_ids = Client::findByCompanyName($searchString);
         $clients = Client::whereIn(Client::ID, $client_ids)->with('person')->get();
 
-        $map = $clients->map(
-            static function ($item) {
-                return [
-                    Person::CLIENT_ID => $item->id,
-                    Client::COMPANY_NAME => $item->company_name,
-                    Person::FIRST_NAME => $item->person->first_name,
-                    Person::LAST_NAME => $item->person->last_name,
-                ];
-            }
+        return $clients->map(
+            fn($item) => [
+                Person::CLIENT_ID => $item->id,
+                Client::COMPANY_NAME => $item->company_name,
+                Person::FIRST_NAME => $item->person->first_name,
+                Person::LAST_NAME => $item->person->last_name,
+            ]
         );
-
-        return $map;
     }
 
     public static function findAll(string $searchString): Collection
     {
         $client_ids = Client::findByCompanyName($searchString);
-        $clients = Client::whereIn(Client::ID, $client_ids)->get();
+        $clients = Client::whereIn(Client::ID, $client_ids)->get()->map(
+            fn($client) => [
+                'name' => $client->company_name,
+                'url' => '/clients/' . $client->id,
+            ]
+        );
 
         $people_ids = Person::findByName($searchString);
-        $people = Person::whereIn(Person::ID, $people_ids)->get();
-
-        $peopleMap = $people->map(
-            static function ($person) use ($searchString) {
-                return [
-                    'name' => $person->first_name . ' ' . $person->last_name,
-                    'url' => '/clients/' . $person->client_id,
-                ];
-            }
+        $people = Person::whereIn(Person::ID, $people_ids)->get()->map(
+            fn($person) => [
+                'name' => $person->first_name . ' ' . $person->last_name,
+                'url' => '/clients/' . $person->client_id,
+            ]
         );
 
-        $clientsMap = $clients->map(
-            static function ($client) use ($searchString) {
-                return [
-                    'name' => $client->company_name,
-                    'url' => '/clients/' . $client->id,
-                ];
-            }
-        );
         $collection = collect();
-        $collection = $collection->concat($clientsMap);
-        $collection = $collection->concat($peopleMap);
+        $collection = $collection->concat($clients);
+        $collection = $collection->concat($people);
 
         return $collection;
     }
