@@ -63,3 +63,5 @@ testdusk:
 builddusk:
 	docker build -t registry.gitlab.com/c11k/serviceandgoods:dusk phpdocker/dusk
 
+deploy:
+	docker-compose up -d php-fpm redis mysql webserver

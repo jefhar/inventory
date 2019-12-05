@@ -3,24 +3,38 @@
 ###############################################################################
 # For development
 version: "2.4"
-services:
 
+networks:
+  web:
+    external: true
+  internal:
+    external: false
+
+services:
   mailhog:
     image: mailhog/mailhog:latest
-    container_name: c11k-mailhog
-    restart: always
+    container_name: serviceandgoods-mailhog
+    restart: unless-stopped
     ports:
       - "8025:8025"
+    labels:
+      - traefik.enable=false
+    networks:
+      - internal
 
   redis:
     image: redis:alpine
-    container_name: c11k-redis
-    restart: always
+    container_name: serviceandgoods-redis
+    restart: unless-stopped
+    labels:
+      - traefik.enable=false
+    networks:
+      - internal
 
   mysql:
     image: mysql:8.0
-    container_name: c11k-mysql
-    restart: always
+    container_name: serviceandgoods-mysql
+    restart: unless-stopped
     working_dir: /application
     volumes:
       - .:/application:delegated
@@ -28,43 +42,60 @@ services:
       - ./phpdocker/mysql/default-authentication-plugin:/etc/mysql/mysql.conf.d/default-authentication-plugin.cnf
     environment:
       - MYSQL_ROOT_PASSWORD=rootpw
-      - MYSQL_DATABASE=c11k
-      - MYSQL_USER=c11k
-      - MYSQL_PASSWORD=c11k
-    ports:
-      - "13306:3306"
+      - MYSQL_DATABASE=serviceandgoods
+      - MYSQL_USER=serviceandgoods
+      - MYSQL_PASSWORD=serviceandgoods
     healthcheck:
       test: mysqladmin -h 127.0.0.1 -u root -prootpw --silent ping
       interval: 5s
       retries: 8
+    labels:
+      - traefik.enable=false
+    networks:
+      - internal
 
   selenium:
     image: selenium/standalone-chrome
-    container_name: c11k-selenium
+    restart: unless-stopped
+    container_name: serviceandgoods-selenium
     ports:
       - 4444:4444
+    labels:
+      - traefik.enable=false
+    networks:
+      - internal
 
   webserver:
     image: nginx:alpine
-    container_name: c11k-webserver
+    container_name: serviceandgoods-webserver
     restart: always
     working_dir: /application
     volumes:
       - .:/application:delegated
       - ./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-    ports:
-      - "8080:80"
     depends_on:
       mysql:
         condition: service_healthy
       redis:
         condition: service_started
+    networks:
+      - internal
+      - web
+    labels:
+      - traefik.backend=serviceandgoods
+      - traefik.frontend.rule=Host:serviceandgoods.c11k.com
+      - traefik.docker.network=web
+      - trafik.port=80
 
   php-fpm:
-    build: phpdocker/dusk
-    container_name: c11k-php-fpm
+    build: phpdocker/php-fpm
+    container_name: serviceandgoods-php-fpm
     restart: always
     working_dir: /application
     volumes:
       - .:/application:delegated
       - ./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
+    labels:
+      - traefik.enable=false
+    networks:
+      - internal
