@@ -129,3 +129,5 @@ _ide_helper_models.php
 resources/js/draftComponents
 !/.idea
 /.idea/copyright/Jefhar.xml
+/.idea/deployment.xml
+/.idea/webServers.xml

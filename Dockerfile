@@ -23,7 +23,6 @@ RUN apt-get update \
         php7.4-opcache \
         php7.4-pdo \
         php7.4-zip \
-        php-redis \
         php7.4-sqlite3 \
         sqlite \
         unzip \
