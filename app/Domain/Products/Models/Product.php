@@ -17,6 +17,7 @@ class Product extends Model
 {
     public const ID = 'id';
     public const TABLE = 'products';
+    public const TYPE_ID = 'type_id';
     public const WORK_ORDER_ID = 'work_order_id';
 
     protected $table = self::TABLE;
@@ -27,5 +28,13 @@ class Product extends Model
     public function workOrder(): BelongsTo
     {
         return $this->belongsTo(WorkOrder::class);
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(Type::class);
     }
 }

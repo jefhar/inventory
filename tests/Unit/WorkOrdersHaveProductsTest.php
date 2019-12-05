@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use Domain\Products\Models\Product;
+use Domain\Products\Models\Type;
 use Domain\WorkOrders\WorkOrder;
 use Tests\TestCase;
 
@@ -31,6 +32,27 @@ class WorkOrdersHaveProductsTest extends TestCase
             [
                 Product::ID => $product2->id,
                 Product::WORK_ORDER_ID => $workOrder->id,
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function productsHaveAType(): void
+    {
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = new Product();
+        $type = factory(Type::class)->create();
+
+        $product->type()->associate($type);
+        $workOrder->products()->save($product);
+        $product->save();
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::ID => $product->id,
+                Product::TYPE_ID => $type->id,
             ]
         );
     }
