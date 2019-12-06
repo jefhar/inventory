@@ -14,7 +14,7 @@ use App\WorkOrders\Controllers\WorkOrdersController;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
-use Faker\Generator as Faker;
+use Faker\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -274,9 +274,11 @@ class WorkOrdersControllerTest extends TestCase
     /**
      * @test
      */
-    public function updateOnlyReturnsWhatIsSent(Faker $faker): void
+    public function updateOnlyReturnsWhatIsSent(): void
     {
+        $faker = Factory::create();
         $newClient = factory(Client::class)->make();
+        $newPerson = factory(Person::class)->make();
         $workOrder = factory(WorkOrder::class)->create();
         $this->withoutExceptionHandling()
             ->actingAs($this->user)
@@ -300,7 +302,7 @@ class WorkOrdersControllerTest extends TestCase
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
                     Client::COMPANY_NAME => $newClient->company_name,
-                    Person::FIRST_NAME => $newClient->person->first_name,
+                    Person::FIRST_NAME => $newPerson->first_name,
                 ]
             )
             ->assertDontSee(Person::EMAIL)
@@ -317,7 +319,7 @@ class WorkOrdersControllerTest extends TestCase
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
                     Client::COMPANY_NAME => $newClient->company_name,
-                    Person::LAST_NAME => $newClient->person->last_name,
+                    Person::LAST_NAME => $newPerson->last_name,
                 ]
             )
             ->assertDontSee(Person::EMAIL)
@@ -333,7 +335,7 @@ class WorkOrdersControllerTest extends TestCase
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
-                    Person::EMAIL => $newClient->email,
+                    Person::EMAIL => $newPerson->email,
                     Person::PHONE_NUMBER => $newClient->company_name,
                     WorkOrder::INTAKE => $faker->text(),
                 ]
@@ -347,6 +349,9 @@ class WorkOrdersControllerTest extends TestCase
             ->assertSee(WorkOrder::INTAKE);
     }
 
+    /**
+     * test Setup
+     */
     protected function setUp(): void
     {
         /** @var User $guestUser */
