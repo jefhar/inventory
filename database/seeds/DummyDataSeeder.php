@@ -6,6 +6,7 @@ use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Collection;
 
 class DummyDataSeeder extends Seeder
 {
@@ -18,7 +19,7 @@ class DummyDataSeeder extends Seeder
     {
         $faker = Faker\Factory::create();
         /** @var Client $client */
-        /** @var Type[] $types $i */
+        /** @var Collection[Type] $types */
         $types = collect();
         for ($i = 0; $i < 6; $i++) {
             $type = new Type();
@@ -26,6 +27,12 @@ class DummyDataSeeder extends Seeder
             $type->save();
             $types->push($type);
         }
+        // Make 1 type with a sluggable name.
+        $type = new Type();
+        $type->name = $faker->words(2, true);
+        $type->save();
+        $types->push($type);
+
         for ($i = 0; $i < 20; $i++) {
             $client = factory(Client::class)->create();
             $person = factory(Person::class)->make();

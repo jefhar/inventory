@@ -67,5 +67,11 @@ Route::group(
                     ->name(ClientsController::SHOW_NAME)->middleware('auth');
             }
         );
+        Route::namespace('Types\\Controllers\\')->group(
+            function () {
+                Route::get(\App\Types\Controllers\TypesController::SHOW_PATH, 'TypesController@show')
+                    ->name(\App\Types\Controllers\TypesController::SHOW_NAME)->middleware('auth');
+            }
+        );
     }
 );

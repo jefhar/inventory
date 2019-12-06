@@ -20,6 +20,7 @@ class CreateTypesTable extends Migration
             function (Blueprint $table) {
                 $table->bigIncrements(Type::ID);
                 $table->string(Type::NAME, 64)->unique()->nullable();
+                $table->string(Type::SLUG, 64)->unique()->nullable();
                 $table->timestamps();
             }
         );

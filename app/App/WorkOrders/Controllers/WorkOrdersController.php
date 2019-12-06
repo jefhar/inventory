@@ -8,9 +8,11 @@ use App\WorkOrders\DataTransferObjects\PersonObject;
 use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
 use App\WorkOrders\Requests\WorkOrderStoreRequest;
 use App\WorkOrders\Requests\WorkOrderUpdateRequest;
+use Domain\Products\Models\Type;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
 use Domain\WorkOrders\WorkOrder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -71,9 +73,7 @@ class WorkOrdersController extends Controller
     public function store(WorkOrderStoreRequest $request): JsonResponse
     {
         $validated = $request->validated();
-
         $personObject = PersonObject::fromRequest($request->validated());
-
         $workOrder = WorkOrdersStoreAction::execute(ClientObject::fromRequest($validated), $personObject);
 
         return response()
@@ -104,7 +104,10 @@ class WorkOrdersController extends Controller
      */
     public function edit(WorkOrder $workorder): View
     {
-        return view('workorders.edit')->with(['workOrder' => $workorder]);
+        /** @var Collection $types */
+        $types = Type::select(Type::SLUG, Type::NAME)->get();
+
+        return view('workorders.edit')->with(['workOrder' => $workorder, 'types' => $types]);
     }
 
     /**

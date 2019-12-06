@@ -208,10 +208,8 @@
                                         name="product_type"
                                         class="form-control custom-select-sm">
                                     <option disabled selected value> -- select an option --</option>
-                                    @foreach(\Domain\Products\Models\Type::all()
-->sortBy(\Domain\Products\Models\Type::NAME)
-->pluck(\Domain\Products\Models\Type::NAME)->all() as $type)
-                                        <option value="{{ $type }}">{{ $type }}</option>
+                                    @foreach($types as $type)
+                                        <option value="{{ $type->slug }}">{{ $type->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
