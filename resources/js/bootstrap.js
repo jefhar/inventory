@@ -7,10 +7,12 @@ window._ = require("lodash");
  */
 
 try {
-    window.Popper = require("popper.js").default;
-    window.$ = window.jQuery = require("jquery");
+  // Popper is needed by ReactStrap, but jquery and bootstrap-js are not needed.
+  // they are, however, needed while the navbar is oldschool.
+  window.Popper = require("popper.js").default;
+  window.$ = window.jQuery = require("jquery");
 
-    require("bootstrap");
+  require("bootstrap");
 } catch (e) {}
 
 /**

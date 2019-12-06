@@ -13,6 +13,7 @@ use Illuminate\Contracts\Console\Kernel;
 
 /**
  * Trait DatabaseSetup
+ *
  * @package Tests
  * @codeCoverageIgnore
  */
@@ -42,7 +43,7 @@ trait DatabaseSetup
 
     protected function setupTestDatabase()
     {
-        if (! static::$migrated) {
+        if (!static::$migrated) {
             $this->artisan('migrate:refresh');
             $this->app[Kernel::class]->setArtisan(null);
             static::$migrated = true;

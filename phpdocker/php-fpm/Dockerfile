@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/c11k/c11k:latest
+FROM registry.gitlab.com/c11k/serviceandgoods:latest
 WORKDIR "/application"
 
 ## This is to add chromium-browser for dusk testing.

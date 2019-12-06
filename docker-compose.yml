@@ -8,23 +8,24 @@ services:
   mailhog:
     image: mailhog/mailhog:latest
     container_name: c11k-mailhog
-    restart: unless-stopped
+    restart: always
     ports:
       - "8025:8025"
 
   redis:
     image: redis:alpine
     container_name: c11k-redis
-    restart: unless-stopped
+    restart: always
 
   mysql:
     image: mysql:8.0
     container_name: c11k-mysql
-    restart: unless-stopped
+    restart: always
     working_dir: /application
     volumes:
       - .:/application:delegated
       - ./mysql-data:/var/lib/mysql:delegated
+      - ./phpdocker/mysql/default-authentication-plugin:/etc/mysql/mysql.conf.d/default-authentication-plugin.cnf
     environment:
       - MYSQL_ROOT_PASSWORD=rootpw
       - MYSQL_DATABASE=c11k
@@ -37,10 +38,16 @@ services:
       interval: 5s
       retries: 8
 
+  selenium:
+    image: selenium/standalone-chrome
+    container_name: c11k-selenium
+    ports:
+      - 4444:4444
+
   webserver:
     image: nginx:alpine
     container_name: c11k-webserver
-    restart: unless-stopped
+    restart: always
     working_dir: /application
     volumes:
       - .:/application:delegated
@@ -54,9 +61,9 @@ services:
         condition: service_started
 
   php-fpm:
-    build: phpdocker/php-fpm
+    build: phpdocker/dusk
     container_name: c11k-php-fpm
-    restart: unless-stopped
+    restart: always
     working_dir: /application
     volumes:
       - .:/application:delegated

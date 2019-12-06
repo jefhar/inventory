@@ -15,4 +15,10 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
     use DatabaseSetup;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setupDatabase();
+    }
 }

@@ -1,11 +1,10 @@
-# C11K Boilerplate
+# C11K Service and Goods
 
-[![build status](https://gitlab.com/c11k/c11k/badges/master/build.svg)](https://gitlab.com/c11k/c11k/commits/master)
-[![coverage report](https://gitlab.com/c11k/c11k/badges/master/coverage.svg)](https://gitlab.com/c11k/c11k/commits/master)
-This is a bare bones, a skeleton, a genesis of a PHP library. This is designed
-as a starting point for magic. One class, one test, one standard, one CI, one
-configuration file that all work together in harmony.
-
+[![build status](https://gitlab.com/c11k/serviceandgoods/badges/master/build.svg)](https://gitlab.com/c11k/serviceandgoods/commits/master)
+[![coverage report](https://gitlab.com/c11k/serviceandgoods/badges/master/coverage.svg)](https://gitlab.com/c11k/serviceandgoods/commits/master)
+This is a bespoke application for the keeping track of inventory from a company that
+deals with a Service and Goods. This is for use with php7.4 and uses node:12-slim
+to compile the front end assets.
 
 ## Table of Contents
 
@@ -22,6 +21,7 @@ into your existing repository.
 
 Files need updating, so let's walk through each set of files. Each file may need
 further updating depending on your exact situation.
+
 ### Deployment
 On your deployment server:
 * Give your deployment user passwordless login:

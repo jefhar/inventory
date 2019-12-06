@@ -7,7 +7,7 @@
         <option name="command" value="" />
         <option name="containerName" value="" />
         <option name="entrypoint" value="" />
-        <option name="imageTag" value="registry.gitlab.com/c11k/c11k:latest" />
+        <option name="imageTag" value="registry.gitlab.com/c11k/serviceandgoods" />
         <option name="commandLineOptions" value="" />
         <option name="sourceFilePath" value="Dockerfile" />
       </settings>
