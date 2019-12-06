@@ -4,7 +4,7 @@
 FROM phpdockerio/php74-fpm:latest
 
 ARG PHPREDIS=5.1.0
-ARG XDEBUG=2.8.0
+ARG XDEBUG=2.8.1
 
 ADD auth.json /root/.composer/auth.json
 ADD https://github.com/phpredis/phpredis/archive/${PHPREDIS}.tar.gz /src/phpredis-${PHPREDIS}.tar.gz

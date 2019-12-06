@@ -14,9 +14,15 @@ use App\WorkOrders\Controllers\WorkOrdersController;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
+use Faker\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Class WorkOrdersControllerTest
+ *
+ * @package Tests\Feature
+ */
 class WorkOrdersControllerTest extends TestCase
 {
     use RefreshDatabase;
@@ -60,7 +66,7 @@ class WorkOrdersControllerTest extends TestCase
         $this->withExceptionHandling()->actingAs($this->user)
             ->get(
                 route(WorkOrdersController::CREATE_NAME)
-            )->assertOK();
+            )->assertOk();
     }
 
     /**
@@ -221,7 +227,7 @@ class WorkOrdersControllerTest extends TestCase
     /**
      * @test
      */
-    public function updateUpdatesCompanyName()
+    public function updateUpdatesCompanyName(): void
     {
         $newClient = factory(Client::class)->make();
         $workOrder = factory(WorkOrder::class)->create();
@@ -241,6 +247,111 @@ class WorkOrdersControllerTest extends TestCase
         );
     }
 
+    /**
+     * @test
+     */
+    public function updateCompanyNameOnlyReturnsCompanyName(): void
+    {
+        $newClient = factory(Client::class)->make();
+        $workOrder = factory(WorkOrder::class)->create();
+        $this->withoutExceptionHandling()
+            ->actingAs($this->user)
+            ->patch(
+                route(WorkOrdersController::UPDATE_NAME, $workOrder),
+                [
+                    Client::COMPANY_NAME => $newClient->company_name,
+                ]
+            )
+            ->assertDontSee(Person::EMAIL)
+            ->assertDontSee(Person::FIRST_NAME)
+            ->assertDontSee(Person::LAST_NAME)
+            ->assertDontSee(Person::PHONE_NUMBER)
+            ->assertDontSee(WorkOrder::INTAKE)
+            ->assertOk()
+            ->assertSee(Client::COMPANY_NAME);
+    }
+
+    /**
+     * @test
+     */
+    public function updateOnlyReturnsWhatIsSent(): void
+    {
+        $faker = Factory::create();
+        $newClient = factory(Client::class)->make();
+        $newPerson = factory(Person::class)->make();
+        $workOrder = factory(WorkOrder::class)->create();
+        $this->withoutExceptionHandling()
+            ->actingAs($this->user)
+            ->patch(
+                route(WorkOrdersController::UPDATE_NAME, $workOrder),
+                [
+                    Client::COMPANY_NAME => $newClient->company_name,
+                ]
+            )
+            ->assertDontSee(Person::EMAIL)
+            ->assertDontSee(Person::FIRST_NAME)
+            ->assertDontSee(Person::LAST_NAME)
+            ->assertDontSee(Person::PHONE_NUMBER)
+            ->assertDontSee(WorkOrder::INTAKE)
+            ->assertOk()
+            ->assertSee(Client::COMPANY_NAME);
+
+        $this->withoutExceptionHandling()
+            ->actingAs($this->user)
+            ->patch(
+                route(WorkOrdersController::UPDATE_NAME, $workOrder),
+                [
+                    Client::COMPANY_NAME => $newClient->company_name,
+                    Person::FIRST_NAME => $newPerson->first_name,
+                ]
+            )
+            ->assertDontSee(Person::EMAIL)
+            ->assertDontSee(Person::LAST_NAME)
+            ->assertDontSee(Person::PHONE_NUMBER)
+            ->assertDontSee(WorkOrder::INTAKE)
+            ->assertOk()
+            ->assertSee(Client::COMPANY_NAME)
+            ->assertSee(Person::FIRST_NAME);
+
+        $this->withoutExceptionHandling()
+            ->actingAs($this->user)
+            ->patch(
+                route(WorkOrdersController::UPDATE_NAME, $workOrder),
+                [
+                    Client::COMPANY_NAME => $newClient->company_name,
+                    Person::LAST_NAME => $newPerson->last_name,
+                ]
+            )
+            ->assertDontSee(Person::EMAIL)
+            ->assertDontSee(Person::FIRST_NAME)
+            ->assertDontSee(Person::PHONE_NUMBER)
+            ->assertDontSee(WorkOrder::INTAKE)
+            ->assertOk()
+            ->assertSee(Client::COMPANY_NAME)
+            ->assertSee(Person::LAST_NAME);
+
+        $this->withoutExceptionHandling()
+            ->actingAs($this->user)
+            ->patch(
+                route(WorkOrdersController::UPDATE_NAME, $workOrder),
+                [
+                    Person::EMAIL => $newPerson->email,
+                    Person::PHONE_NUMBER => $newClient->company_name,
+                    WorkOrder::INTAKE => $faker->text(),
+                ]
+            )
+            ->assertDontSee(Client::COMPANY_NAME)
+            ->assertDontSee(Person::FIRST_NAME)
+            ->assertDontSee(Person::LAST_NAME)
+            ->assertOk()
+            ->assertSee(Person::EMAIL)
+            ->assertSee(Person::PHONE_NUMBER)
+            ->assertSee(WorkOrder::INTAKE);
+    }
+
+    /**
+     * test Setup
+     */
     protected function setUp(): void
     {
         /** @var User $guestUser */
