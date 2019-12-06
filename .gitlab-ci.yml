@@ -1,4 +1,4 @@
-image: registry.gitlab.com/c11k/serviceandgoods:latest
+image: registry.gitlab.com/c11k/c11k:latest
 
 stages:
   - test
@@ -7,54 +7,18 @@ stages:
 test:
   stage: test
   script:
-    - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-    - echo "deb https://dl.yarnpkg.com/debian/ rc main" | tee /etc/apt/sources.list.d/yarn.list
-    - curl -sL https://deb.nodesource.com/setup_12.x | bash -
-    - apt-get install -y nodejs yarn
-    - yarn install
-    - npm run prod
     - cp .env.testing .env
     - composer install --no-plugins --no-scripts
     - php artisan key:generate
     - composer pretest
     - composer test
   cache:
-    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_STAGE"
+    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_NAME"
     paths:
     - vendor/
   artifacts:
     paths:
     - tests/coverage
-  except:
-    - ci
-  interruptible: true
-
-dusktest:
-  allow_failure: true
-  image: registry.gitlab.com/c11k/serviceandgoods:dusk
-  services:
-    - selenium/standalone-chrome
-  stage: test
-  script:
-    - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-    - echo "deb https://dl.yarnpkg.com/debian/ rc main" | tee /etc/apt/sources.list.d/yarn.list
-    - curl -sL https://deb.nodesource.com/setup_12.x | bash -
-    - apt-get install -y nodejs yarn
-    - yarn install
-    - npm run prod
-    - composer install --no-plugins --no-scripts --no-progress --no-suggest --prefer-dist --optimize-autoloader
-    - cp .env.dusk.ci .env
-    - php artisan key:generate
-    - php artisan dusk:chrome-driver
-    - ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
-    - php artisan serve > /dev/null 2>&1 &
-    - php artisan migrate
-    - php artisan db:seed --class UsersTableSeeder
-    - php artisan dusk
-  cache:
-    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_STAGE"
-    paths:
-      - vendor/
   except:
     - ci
   interruptible: true
@@ -74,16 +38,14 @@ deploy_staging:
   only:
     - tags
 
-build_images:
+build_image:
   image: docker:git
   services:
   - docker:dind
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest .
-    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk phpdocker/dusk
+    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME .
     - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
-    - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk
   when: manual
   only:
     changes:

@@ -1,58 +1,8 @@
 // Fonts
-@import url("https://fonts.googleapis.com/css?family=Lato&display=swap");
+@import url('https://fonts.googleapis.com/css?family=Nunito');
 
 // Variables
-@import "variables";
+@import 'variables';
 
 // Bootstrap
-@import "~bootstrap/scss/bootstrap";
-
-//Fontawesome
-@import "~@fortawesome/fontawesome-free/css/all.css";
-
-// Autocomplete [in NavBar]
-@import "~autocomplete-js/dist/autocomplete.min.css";
-
-body {
-  padding-top: 4.5rem;
-}
-
-.blue {
-  color: $blue;
-}
-
-.indigo {
-  color: $indigo;
-}
-
-.purple {
-  color: $purple;
-}
-
-.pink {
-  color: $pink;
-}
-
-.red {
-  color: $red;
-}
-
-.orange {
-  color: $orange;
-}
-
-.yellow {
-  color: $yellow;
-}
-
-.green {
-  color: $green;
-}
-
-.teal {
-  color: $teal;
-}
-
-.cyan {
-  color: $cyan;
-}
+@import '~bootstrap/scss/bootstrap';
