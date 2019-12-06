@@ -13,8 +13,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Type extends Model
 {
-    public const TABLE = 'types';
     public const ID = 'id';
+    public const NAME = 'name';
+    public const TABLE = 'types';
 
     protected $table = self::TABLE;
 }

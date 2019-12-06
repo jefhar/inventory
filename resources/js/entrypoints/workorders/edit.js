@@ -31,36 +31,74 @@ function update() {
   const isLockedButton = document.getElementById("lock_button");
   const lockIcon = document.getElementById("lock-icon");
   const outline = document.getElementById("outline");
+  const lockHeader = document.getElementById("locked_header");
+  const locked = {
+    clickTo: "Click to Unlock work order.",
+    isLockedButton: "btn-outline-danger",
+    lockHeader: "Locked",
+    lockIcon: "fa-unlock-alt",
+    outline: "border-primary"
+  };
+  const unlocked = {
+    clickTo: "Click to Lock work order.",
+    isLockedButton: "btn-outline-success",
+    lockHeader: "Unlocked",
+    lockIcon: "fa-lock",
+    outline: "border-warning"
+  };
+  const updateUI = (add, remove) => {
+    isLockedButton.classList.add(add.isLockedButton);
+    lockIcon.classList.add(add.lockIcon);
+    outline.classList.add(add.outline);
+
+    isLockedButton.classList.remove(remove.isLockedButton);
+    lockIcon.classList.remove(remove.lockIcon);
+    outline.classList.remove(remove.outline);
+
+    $('[data-toggle="tooltip"]').attr("data-original-title", add.clickTo);
+  };
 
   if (isLockedButton.dataset.isLocked === "true") {
-    inventoryButton.disabled = true;
-    isLockedButton.classList.add("btn-outline-warning");
-    isLockedButton.classList.remove("btn-outline-success");
-    lockIcon.classList.add("fa-unlock-alt");
-    lockIcon.classList.remove("fa-lock");
-    outline.classList.add("border-warning");
-    outline.classList.remove("border-success");
-    $('[data-toggle="tooltip"]')
-      .tooltip("hide")
-      .attr("data-original-title", "Unlock work order.")
-      .tooltip("show");
+    updateUI(locked, unlocked);
+    lockHeader.innerText = locked.lockHeader;
   } else {
-    inventoryButton.disabled = false;
-    isLockedButton.classList.add("btn-outline-success");
-    isLockedButton.classList.remove("btn-outline-warning");
-    lockIcon.classList.add("fa-lock");
-    lockIcon.classList.remove("fa-unlock-alt");
-    outline.classList.add("border-success");
-    outline.classList.remove("border-warning");
-    $('[data-toggle="tooltip"]')
-      .tooltip("hide")
-      .attr("data-original-title", "Lock work order.")
-      .tooltip("show");
+    updateUI(unlocked, locked);
+    lockHeader.innerText = unlocked.lockHeader;
   }
+  inventoryButton.disabled = isLockedButton.dataset.isLocked === "true";
 }
 
 $(function() {
   $('[data-toggle="tooltip"]').tooltip();
+  $("#productModal")
+    .on("show.bs.modal", event => {
+      console.log("Modal opening.");
+    })
+    .on("shown.bs.modal", event => {
+      console.log("Modal has opened for business.");
+
+      document
+        .getElementById("product_type")
+        .addEventListener("change", event => {
+          console.log("caught select change.");
+          const { value } = event.target;
+          console.log(value);
+          axios
+            .get(`/type/${value}`, value)
+            .then(response => {
+              // Create Form
+              // Loop through each object
+              // Create form element: input, select, radio, textbox
+              // Add form element to Form
+              // Attach Form as a child to #typeForm
+            })
+            .catch(error => {
+              console.log(error);
+              // Create warning alert
+              // Attach warning alert as a child to #typeForm
+            });
+        });
+    });
 
   // Lock/Unlock work order
   document.getElementById("lock_button").addEventListener("click", () => {
@@ -138,6 +176,12 @@ $(function() {
 
     event.preventDefault();
   });
+
+  // Product Select creates new form
+  const handleProductChange = event => {
+    console.log("event: ");
+    console.log(event);
+  };
 
   update();
 });

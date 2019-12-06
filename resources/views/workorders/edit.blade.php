@@ -13,7 +13,7 @@
             <div class="card col-md">
                 <div class="card-header row">
                     <div class="col">
-                        <h1 class="text-center">Work Order</h1>
+                        <h1 class="text-center"><span id="locked_header">The</span> Work Order</h1>
                     </div>
                     <div class="col-sm-3 col-md-2 shadow-sm">
                         <div class="row justify-content-center">
@@ -108,16 +108,23 @@
                             >{{ $workOrder->intake }}</textarea>
                         </div>
                         <div class="row">
-                            <button class="btn btn-outline-success col-4 offset-1" id="update_button" type="submit">
-                                Update
+                            <button
+                                    class="btn btn-outline-primary col-4 offset-1"
+                                    id="update_button"
+                                    type="submit">
+                                Commit Changes
                             </button>
-                            <button class="btn btn-warning col-4 offset-2" type="reset">Reset</button>
+                            <button
+                                    class="btn btn-outline-secondary col-4 offset-2"
+                                    type="reset">
+                                Revert Changes
+                            </button>
                         </div>
                         <div id='alert_row' class="row">
 
                         </div>
                     </form>
-                    <h2>Inventory Items:</h2>
+                    <h2 class="mt-3">Inventory Items:</h2>
                     <table class="table table-dark">
                         <thead>
                         <tr>
@@ -145,6 +152,8 @@
                     <div class="row">
                         <button
                                 class="btn btn-outline-primary col-6 offset-1"
+                                data-target="#productModal"
+                                data-toggle="modal"
                                 id="add_inventory_button"
                                 type="button"
                         >Add Inventory Item
@@ -153,6 +162,7 @@
                                 class="btn btn-sm col-1 offset-4"
                                 data-placement="bottom"
                                 data-toggle="tooltip"
+                                data-trigger="hover"
                                 data-is-locked="{{ ($workOrder->is_locked) ? 'true' : 'false' }}"
                                 data-work-order-id="{{ $workOrder->id }}"
                                 id="lock_button"
@@ -166,6 +176,64 @@
         </div>
         <div class="row shadow-lg border border-info mt-4">
             {{ $workOrder }}
+        </div>
+        <div
+                class="modal fade"
+                role="dialog"
+                id="productModal"
+                tabindex="-1">
+            <div
+                    class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg"
+                    role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modal Title</h5>
+                        <button
+                                type="button"
+                                class="close"
+                                data-dismiss="modal"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div
+                            class="modal-body"
+                            id="productModalBody">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <label for="product_type">Select existing product Type:</label>
+                                <select
+                                        required
+                                        id="product_type"
+                                        name="product_type"
+                                        class="form-control custom-select-sm">
+                                    <option disabled selected value> -- select an option --</option>
+                                    @foreach(\Domain\Products\Models\Type::all()
+->sortBy(\Domain\Products\Models\Type::NAME)
+->pluck(\Domain\Products\Models\Type::NAME)->all() as $type)
+                                        <option value="{{ $type }}">{{ $type }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <p class="row">Type form goes below here.</p>
+                            <div
+                                    id="typeForm"
+                                    class="row"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                                type="button"
+                                class="btn btn-outline-secondary"
+                                data-dismiss="modal">Cancel
+                        </button>
+                        <button
+                                type="button"
+                                class="btn btn-outline-primary">Add Product
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

@@ -19,13 +19,14 @@ class CreateTypesTable extends Migration
             Type::TABLE,
             function (Blueprint $table) {
                 $table->bigIncrements(Type::ID);
+                $table->string(Type::NAME, 64)->unique()->nullable();
                 $table->timestamps();
             }
         );
         Schema::table(
-            \Domain\Products\Models\Product::TABLE,
+            Product::TABLE,
             function (Blueprint $table) {
-                $table->unsignedBigInteger(Product::TYPE_ID)->nullable();
+                $table->unsignedBigInteger(Product::TYPE_ID)->nullable()->after(Product::WORK_ORDER_ID);
                 $table->foreign(Product::TYPE_ID)->references(Type::ID)->on(Type::TABLE);
             }
         );

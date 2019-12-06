@@ -477,20 +477,20 @@
       <option name="CODING_STANDARD" value="PSR12" />
       <option name="EXTENSIONS" value="php,js,css,inc" />
     </inspection_tool>
-    <inspection_tool class="PhpClassNamingConventionInspection" enabled="true" level="INFORMATION" enabled_by_default="false">
-      <scope name="LocalScope" level="WARNING" enabled="true" />
+    <inspection_tool class="PhpClassNamingConventionInspection" enabled="false" level="INFORMATION" enabled_by_default="false">
+      <scope name="LocalScope" level="WARNING" enabled="false" />
     </inspection_tool>
     <inspection_tool class="PhpClosureCanBeConvertedToShortArrowFunctionInspection" enabled="true" level="INFORMATION" enabled_by_default="true">
       <scope name="LocalScope" level="INFORMATION" enabled="true" />
     </inspection_tool>
-    <inspection_tool class="PhpComposerExtensionStubsInspection" enabled="true" level="INFORMATION" enabled_by_default="true">
+    <inspection_tool class="PhpComposerExtensionStubsInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <scope name="LocalScope" level="WARNING" enabled="true" />
     </inspection_tool>
     <inspection_tool class="PhpCompoundNamespaceDepthInspection" enabled="true" level="INFORMATION" enabled_by_default="false">
       <scope name="LocalScope" level="WEAK WARNING" enabled="true" />
     </inspection_tool>
-    <inspection_tool class="PhpConstantNamingConventionInspection" enabled="true" level="INFORMATION" enabled_by_default="false">
-      <scope name="LocalScope" level="WARNING" enabled="true" />
+    <inspection_tool class="PhpConstantNamingConventionInspection" enabled="false" level="INFORMATION" enabled_by_default="false">
+      <scope name="LocalScope" level="WARNING" enabled="false" />
     </inspection_tool>
     <inspection_tool class="PhpConstantReassignmentInspection" enabled="true" level="INFORMATION" enabled_by_default="true">
       <scope name="LocalScope" level="WARNING" enabled="true" />
@@ -567,8 +567,8 @@
     <inspection_tool class="PhpFullyQualifiedNameUsageInspection" enabled="true" level="INFORMATION" enabled_by_default="true">
       <scope name="LocalScope" level="WARNING" enabled="true" />
     </inspection_tool>
-    <inspection_tool class="PhpFunctionNamingConventionInspection" enabled="true" level="INFORMATION" enabled_by_default="false">
-      <scope name="LocalScope" level="WARNING" enabled="true" />
+    <inspection_tool class="PhpFunctionNamingConventionInspection" enabled="false" level="INFORMATION" enabled_by_default="false">
+      <scope name="LocalScope" level="WARNING" enabled="false" />
     </inspection_tool>
     <inspection_tool class="PhpGotoIntoLoopInspection" enabled="true" level="INFORMATION" enabled_by_default="true">
       <scope name="LocalScope" level="ERROR" enabled="true" />
@@ -621,8 +621,8 @@
     <inspection_tool class="PhpMethodMayBeStaticInspection" enabled="true" level="INFORMATION" enabled_by_default="true">
       <scope name="LocalScope" level="INFORMATION" enabled="true" />
     </inspection_tool>
-    <inspection_tool class="PhpMethodNamingConventionInspection" enabled="true" level="INFORMATION" enabled_by_default="false">
-      <scope name="LocalScope" level="WARNING" enabled="true" />
+    <inspection_tool class="PhpMethodNamingConventionInspection" enabled="false" level="INFORMATION" enabled_by_default="false">
+      <scope name="LocalScope" level="WARNING" enabled="false" />
     </inspection_tool>
     <inspection_tool class="PhpMethodOrClassCallIsNotCaseSensitiveInspection" enabled="true" level="INFORMATION" enabled_by_default="false">
       <scope name="LocalScope" level="WARNING" enabled="true" />
@@ -687,8 +687,8 @@
     <inspection_tool class="PhpPossiblePolymorphicInvocationInspection" enabled="true" level="INFORMATION" enabled_by_default="true">
       <scope name="LocalScope" level="WEAK WARNING" enabled="true" />
     </inspection_tool>
-    <inspection_tool class="PhpPropertyNamingConventionInspection" enabled="true" level="INFORMATION" enabled_by_default="false">
-      <scope name="LocalScope" level="WARNING" enabled="true" />
+    <inspection_tool class="PhpPropertyNamingConventionInspection" enabled="false" level="INFORMATION" enabled_by_default="false">
+      <scope name="LocalScope" level="WARNING" enabled="false" />
     </inspection_tool>
     <inspection_tool class="PhpRedundantCatchClauseInspection" enabled="true" level="INFORMATION" enabled_by_default="true">
       <scope name="LocalScope" level="WARNING" enabled="true" />
@@ -834,8 +834,10 @@
     <inspection_tool class="PhpVarUsageInspection" enabled="true" level="INFORMATION" enabled_by_default="false">
       <scope name="LocalScope" level="WEAK WARNING" enabled="true" />
     </inspection_tool>
-    <inspection_tool class="PhpVariableNamingConventionInspection" enabled="true" level="INFORMATION" enabled_by_default="false">
-      <scope name="LocalScope" level="WARNING" enabled="true" />
+    <inspection_tool class="PhpVariableNamingConventionInspection" enabled="false" level="INFORMATION" enabled_by_default="false">
+      <scope name="LocalScope" level="WARNING" enabled="false">
+        <option name="m_minLength" value="0" />
+      </scope>
     </inspection_tool>
     <inspection_tool class="PhpVariableVariableInspection" enabled="true" level="INFORMATION" enabled_by_default="false">
       <scope name="LocalScope" level="WEAK WARNING" enabled="true" />
