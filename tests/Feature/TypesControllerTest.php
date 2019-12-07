@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Admin\Permissions\UserPermissions;
+use App\Types\Controllers\TypesController;
 use App\User;
 use Domain\Products\Models\Type;
 use Tests\TestCase;
@@ -20,7 +21,7 @@ class TypesControllerTest extends TestCase
         $type = factory(Type::class)->create();
         $this
             ->actingAs($this->guest)
-            ->get(route(\App\Types\Controllers\TypesController::SHOW_NAME, $type->slug))
+            ->get(route(TypesController::SHOW_NAME, $type->slug))
             ->assertForbidden();
     }
 
@@ -33,7 +34,7 @@ class TypesControllerTest extends TestCase
         $this
             ->withoutExceptionHandling()
             ->actingAs($this->user)
-            ->get(route(\App\Types\Controllers\TypesController::SHOW_NAME, $type->slug))
+            ->get(route(TypesController::SHOW_NAME, $type->slug))
             ->assertOk();
     }
 

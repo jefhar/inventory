@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Model|static where(mixed $field, ?string $value = null, ?string $value = null)
  * @method static paginate(int $int)
  * @method static Model|static whereNotIn(string $field, array $searchArray)
+ * @method static static findOrFail($get)
  */
 class WorkOrder extends Model
 {
@@ -62,6 +63,9 @@ class WorkOrder extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return HasMany
+     */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

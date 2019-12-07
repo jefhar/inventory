@@ -21,6 +21,7 @@ class CreateTypesTable extends Migration
                 $table->bigIncrements(Type::ID);
                 $table->string(Type::NAME, 64)->unique()->nullable();
                 $table->string(Type::SLUG, 64)->unique()->nullable();
+                $table->json(Type::FORM);
                 $table->timestamps();
             }
         );
@@ -29,6 +30,7 @@ class CreateTypesTable extends Migration
             function (Blueprint $table) {
                 $table->unsignedBigInteger(Product::TYPE_ID)->nullable()->after(Product::WORK_ORDER_ID);
                 $table->foreign(Product::TYPE_ID)->references(Type::ID)->on(Type::TABLE);
+                $table->json(Product::VALUES)->nullable();
             }
         );
     }

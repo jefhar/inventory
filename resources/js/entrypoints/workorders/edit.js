@@ -141,7 +141,9 @@ A simple warning alert—check it out!
         .addEventListener("click", event => {
           const formData = document.getElementById("productForm");
           const postData = {
-            type: document.getElementById("product_type").value
+            type: document.getElementById("product_type").value,
+            workorderId: document.getElementById("lock_button").dataset
+              .workOrderId
           };
           for (let i = 0; i < formData.length; i++) {
             let child = formData[i];
@@ -149,7 +151,7 @@ A simple warning alert—check it out!
           }
           // Post Form
           const isLockedButton = document.getElementById("lock_button");
-          const url = `/products/workorders/${isLockedButton.dataset.workOrderId}`;
+          const url = "/products";
           axios
             .post(url, postData)
             .then(response => {

@@ -13,7 +13,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 /**
- * @method static select(string $SLUG, string $NAME)
+ * @method static static select(string $SLUG, string $NAME)
+ * @method static static where(string $SLUG, $get)
+ * @method Type first()
  */
 class Type extends Model
 {
