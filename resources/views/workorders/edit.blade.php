@@ -174,13 +174,13 @@
                 </div>
             </div>
         </div>
-        <div class="row shadow-lg border border-info mt-4">
+        <div id="debuggingWorkOrderInformation" class="row shadow-lg border border-info mt-4">
             {{ $workOrder }}
         </div>
         <div
                 class="modal fade"
-                role="dialog"
                 id="productModal"
+                role="dialog"
                 tabindex="-1">
             <div
                     class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg"
@@ -193,8 +193,7 @@
                                 class="close"
                                 data-dismiss="modal"
                                 type="button"
-                        >
-                            <span aria-hidden="true">&times;</span>
+                        ><span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div
@@ -216,11 +215,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <p class="row">Type form goes below here.</p>
-                            <div
-                                    class="row"
-                                    id="typeForm"
-                            >
+                            <div class="row" id="typeForm">
                                 <form
                                         data-work-order-id="{{ $workOrder->id }}"
                                         id="productForm"

@@ -70,9 +70,10 @@ function update() {
 }
 
 jQuery(function($) {
-  $("typeForm").formBuilder();
+  // $("typeForm").formBuilder();
 });
-
+/*
+// Sample formbuilder code
 jQuery(function($) {
   let $fbEditor = $(document.getElementById("fb-editor"));
   let $formContainer = $(document.getElementById("fb-rendered-form"));
@@ -92,6 +93,7 @@ jQuery(function($) {
     $formContainer.toggle();
   });
 });
+*/
 
 $(function() {
   $('[data-toggle="tooltip"]').tooltip();
