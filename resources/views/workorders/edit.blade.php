@@ -187,26 +187,29 @@
                     role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Modal Title</h5>
+                        <h5 class="modal-title">Add Product to Inventory</h5>
                         <button
-                                type="button"
+                                aria-label="Close"
                                 class="close"
                                 data-dismiss="modal"
-                                aria-label="Close">
+                                type="button"
+                        >
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div
                             class="modal-body"
-                            id="productModalBody">
+                            id="productModalBody"
+                    >
                         <div class="container-fluid">
                             <div class="row">
                                 <label for="product_type">Select existing product Type:</label>
                                 <select
-                                        required
+                                        class="form-control custom-select-sm"
                                         id="product_type"
                                         name="product_type"
-                                        class="form-control custom-select-sm">
+                                        required
+                                >
                                     <option disabled selected value> -- select an option --</option>
                                     @foreach($types as $type)
                                         <option value="{{ $type->slug }}">{{ $type->name }}</option>
@@ -215,22 +218,34 @@
                             </div>
                             <p class="row">Type form goes below here.</p>
                             <div
+                                    class="row"
                                     id="typeForm"
-                                    class="row">
-                                <form action="#"></form>
+                            >
+                                <form
+                                        data-work-order-id="{{ $workOrder->id }}"
+                                        id="productForm"
+                                >
+                                    @csrf
+                                </form>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button
-                                type="button"
-                                class="btn btn-outline-secondary"
-                                data-dismiss="modal">Cancel
-                        </button>
-                        <button
-                                type="button"
-                                class="btn btn-outline-primary">Add Product
-                        </button>
+                        <div class="row">
+                            <button
+                                    class="btn btn-outline-secondary"
+                                    data-dismiss="modal"
+                                    type="button"
+                            >Cancel
+                            </button>
+                            <button
+                                    class="btn btn-outline-primary"
+                                    id="productSubmit"
+                                    type="button"
+                            >Add Product
+                            </button>
+                        </div>
+                        <div class="row" id="productError"></div>
                     </div>
                 </div>
             </div>

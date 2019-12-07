@@ -102,24 +102,18 @@ $(function() {
     .on("shown.bs.modal", event => {
       console.log("Modal has opened for business.");
 
+      // Defer attaching event listener until modal opens.
       document
         .getElementById("product_type")
         .addEventListener("change", event => {
           console.log("caught select change.");
           const { value } = event.target;
-          console.log(value);
+          let $formContainer = $(document.getElementById("typeForm"));
           axios
             .get(`/types/${value}`, value)
             .then(response => {
-              // Create Form
-              // Loop through each object
-              // Create form element: input, select, radio, textbox
-              // Add form element to Form
-              // Attach Form as a child to #typeForm
               const formData = response.data;
-              console.log(formData);
 
-              let $formContainer = $(document.getElementById("typeForm"));
               $("form", $formContainer).formRender({
                 formData: formData
               });
@@ -127,7 +121,60 @@ $(function() {
             .catch(error => {
               console.log(error);
               // Create warning alert
-              // Attach warning alert as a child to #typeForm
+              // Attach warning alert as a child to $formContainer
+              /*
+          <div class="alert alert-warning" role="alert">
+A simple warning alert—check it out!
+</div>
+           */
+              let alert = document
+                .createElement("div")
+                .classList.add("alert", "alert-warning");
+              alert.innerText = error.data;
+              $formContainer.append(alert);
+            });
+        });
+      document
+        .getElementById("productSubmit")
+        .addEventListener("click", event => {
+          const formData = document.getElementById("productForm");
+          const postData = {
+            type: document.getElementById("product_type").value
+          };
+          for (let i = 0; i < formData.length; i++) {
+            let child = formData[i];
+            postData[formData[i].name] = formData[i].value;
+          }
+          // Post Form
+          const isLockedButton = document.getElementById("lock_button");
+          const url = `/products/workorders/${isLockedButton.dataset.workOrderId}`;
+          axios
+            .post(url, postData)
+            .then(response => {
+              console.log(response.data);
+              // Add Row to `<tbody id="products_table">`
+              // destroy form children
+              // close modal
+            })
+            .catch(error => {
+              console.log(error);
+              const errorAlert = document.createElement("div");
+              errorAlert.classList.add(
+                "alert",
+                "alert-warning",
+                "alert-dismissible",
+                "fade",
+                "show"
+              );
+              errorAlert.innerHTML = `${error}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>`;
+              console.log(errorAlert);
+              document.getElementById("productError").appendChild(errorAlert);
+
+              // Create alert
+              // Add to form
             });
         });
     });
@@ -178,9 +225,9 @@ $(function() {
       .then(response => {
         console.log("response");
         console.log(response.data);
-        // Give user a visual indication that fields have been updated.
-        // Even better, add onChange to the fields, and if they're dirty, give
-        // visual indication.
+        // Give user a visual indication that fields have been
+        // updated. Even better, add onChange to the fields, and if
+        // they're dirty, give visual indication.
         updateAlert.classList.add(
           "alert",
           "alert-success",
