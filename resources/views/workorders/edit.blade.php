@@ -216,7 +216,9 @@
                             <p class="row">Type form goes below here.</p>
                             <div
                                     id="typeForm"
-                                    class="row"></div>
+                                    class="row">
+                                <form action="#"></form>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">

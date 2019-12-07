@@ -7,7 +7,8 @@ import React from "react";
 import axios from "axios";
 
 require("../../bootstrap");
-
+require("formBuilder/dist/form-builder.min");
+require("formBuilder/dist/form-render.min");
 /**
  * Next, we will create a fresh React component instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -68,6 +69,30 @@ function update() {
   inventoryButton.disabled = isLockedButton.dataset.isLocked === "true";
 }
 
+jQuery(function($) {
+  $("typeForm").formBuilder();
+});
+
+jQuery(function($) {
+  let $fbEditor = $(document.getElementById("fb-editor"));
+  let $formContainer = $(document.getElementById("fb-rendered-form"));
+  let fbOptions = {
+    onSave: function() {
+      $fbEditor.toggle();
+      $formContainer.toggle();
+      $("form", $formContainer).formRender({
+        formData: formBuilder.formData
+      });
+    }
+  };
+  let formBuilder = $fbEditor.formBuilder(fbOptions);
+
+  $(".edit-form", $formContainer).click(function() {
+    $fbEditor.toggle();
+    $formContainer.toggle();
+  });
+});
+
 $(function() {
   $('[data-toggle="tooltip"]').tooltip();
   $("#productModal")
@@ -84,13 +109,20 @@ $(function() {
           const { value } = event.target;
           console.log(value);
           axios
-            .get(`/type/${value}`, value)
+            .get(`/types/${value}`, value)
             .then(response => {
               // Create Form
               // Loop through each object
               // Create form element: input, select, radio, textbox
               // Add form element to Form
               // Attach Form as a child to #typeForm
+              const formData = response.data;
+              console.log(formData);
+
+              let $formContainer = $(document.getElementById("typeForm"));
+              $("form", $formContainer).formRender({
+                formData: formData
+              });
             })
             .catch(error => {
               console.log(error);

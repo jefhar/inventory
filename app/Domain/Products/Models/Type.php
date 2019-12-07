@@ -21,6 +21,7 @@ class Type extends Model
     public const NAME = 'name';
     public const TABLE = 'types';
     public const SLUG = 'slug';
+    public const FORM = 'form';
 
     protected $table = self::TABLE;
 
