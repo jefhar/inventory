@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2c89bc561eccd51d520f609eeeece7ad",
+    "content-hash": "17d140a9dc8d8fc75afc16a7751b49e3",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -5276,16 +5276,16 @@
         },
         {
             "name": "nunomaduro/larastan",
-            "version": "v0.4.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nunomaduro/larastan.git",
-                "reference": "ced5c2a216e1b7db7c27c4f1dee4c006f0b378e3"
+                "reference": "7cfe77d96e0686b3ac6f20a022b4511783abf921"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nunomaduro/larastan/zipball/ced5c2a216e1b7db7c27c4f1dee4c006f0b378e3",
-                "reference": "ced5c2a216e1b7db7c27c4f1dee4c006f0b378e3",
+                "url": "https://api.github.com/repos/nunomaduro/larastan/zipball/7cfe77d96e0686b3ac6f20a022b4511783abf921",
+                "reference": "7cfe77d96e0686b3ac6f20a022b4511783abf921",
                 "shasum": ""
             },
             "require": {
@@ -5349,7 +5349,7 @@
                 "php",
                 "static analysis"
             ],
-            "time": "2019-10-22T08:33:26+00:00"
+            "time": "2019-11-12T12:09:34+00:00"
         },
         {
             "name": "ocramius/package-versions",
@@ -7318,11 +7318,18 @@
             "alias_normalized": "1.9.1.0",
             "version": "9999999-dev",
             "package": "fzaninotto/faker"
+        },
+        {
+            "alias": "0.4.4",
+            "alias_normalized": "0.4.4.0",
+            "version": "9999999-dev",
+            "package": "nunomaduro/larastan"
         }
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "fzaninotto/faker": 20
+        "fzaninotto/faker": 20,
+        "nunomaduro/larastan": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

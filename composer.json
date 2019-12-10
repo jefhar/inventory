@@ -1,7 +1,7 @@
 {
   "name": "c11k/serviceandgoods",
   "type": "project",
-  "description": "The thing I'm working on.",
+  "description": "Inventory Database for a Service and Goods Shop",
   "keywords": [
   ],
   "license": "Proprietary",
@@ -24,7 +24,7 @@
     "laravel/ui": "^1.1",
     "mockery/mockery": "^1.0",
     "nunomaduro/collision": "^3.0",
-    "nunomaduro/larastan": "^0.4.3",
+    "nunomaduro/larastan": "dev-master#7cfe77d as 0.4.4-alpha",
     "phpunit/phpunit": "^8.0",
     "sensiolabs/security-checker": "^6.0",
     "squizlabs/php_codesniffer": "3.*"

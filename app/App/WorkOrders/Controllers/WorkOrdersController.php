@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\WorkOrders\Controllers;
 
 use App\Admin\Controllers\Controller;
@@ -12,7 +14,6 @@ use Domain\Products\Models\Type;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
 use Domain\WorkOrders\WorkOrder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -104,7 +105,6 @@ class WorkOrdersController extends Controller
      */
     public function edit(WorkOrder $workorder): View
     {
-        /** @var Collection $types */
         $types = Type::select(Type::SLUG, Type::NAME)->get();
 
         return view('workorders.edit')->with(['workOrder' => $workorder, 'types' => $types]);

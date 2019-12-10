@@ -96,6 +96,9 @@ jQuery(function($) {
 */
 
 $(function() {
+  const MakeModelFields = JSON.parse(
+    '[{"type":"text","required":true,"label":"Manufacturer<br>","className":"form-control","name":"manufacturer_name","subtype":"text"},{"type":"text","required":true,"label":"Model","className":"form-control","name":"model","subtype":"text"}]'
+  );
   $('[data-toggle="tooltip"]').tooltip();
   $("#productModal")
     .on("show.bs.modal", event => {
@@ -110,29 +113,57 @@ $(function() {
         .addEventListener("change", event => {
           console.log("caught select change.");
           const { value } = event.target;
+          const select = document.getElementById("product_type");
+          console.log(event);
           let $formContainer = $(document.getElementById("typeForm"));
           axios
             .get(`/types/${value}`, value)
             .then(response => {
               const formData = response.data;
+              formData.unshift(
+                {
+                  type: "header",
+                  className: "mt-3",
+                  label: select.options[select.selectedIndex].innerText,
+                  subtype: "h3"
+                },
+                {
+                  className: "form-control",
+                  label: "Manufacturer",
+                  name: "manufacturer",
+                  required: "true",
+                  subtype: "text",
+                  type: "text"
+                },
+                {
+                  className: "form-control",
+                  label: "Model",
+                  name: "model",
+                  required: "true",
+                  subtype: "text",
+                  type: "text"
+                }
+              );
 
               $("form", $formContainer).formRender({
                 formData: formData
               });
+              // Add autocomplete to Manufacturer
+              // Add autocomplete to Model
             })
             .catch(error => {
+              console.log("error");
               console.log(error);
               // Create warning alert
               // Attach warning alert as a child to $formContainer
               /*
-          <div class="alert alert-warning" role="alert">
-A simple warning alert—check it out!
-</div>
-           */
-              let alert = document
-                .createElement("div")
-                .classList.add("alert", "alert-warning");
-              alert.innerText = error.data;
+      <div class="alert alert-warning" role="alert">
+    A simple warning alert—check it out!
+    </div>
+       */
+              let alert = document.createElement("div");
+              alert.classList.add("alert", "alert-warning");
+              alert.innerText = error;
               $formContainer.append(alert);
             });
         });
@@ -155,7 +186,7 @@ A simple warning alert—check it out!
           axios
             .post(url, postData)
             .then(response => {
-              console.log(response.data);
+              console.log(response.data.values);
               // Add Row to `<tbody id="products_table">`
               // destroy form children
               // close modal

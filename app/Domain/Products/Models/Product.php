@@ -13,9 +13,17 @@ use Domain\WorkOrders\WorkOrder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Class Product
+ *
+ * @package Domain\Products\Models
+ *
+ * @property mixed $values
+ */
 class Product extends Model
 {
     public const ID = 'id';
+    public const MANUFACTURER_ID = 'manufacturer_id';
     public const TABLE = 'products';
     public const TYPE_ID = 'type_id';
     public const VALUES = 'values';
@@ -37,5 +45,13 @@ class Product extends Model
     public function type(): BelongsTo
     {
         return $this->belongsTo(Type::class);
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function manufacturer(): BelongsTo
+    {
+        return $this->belongsTo(Manufacturer::class);
     }
 }

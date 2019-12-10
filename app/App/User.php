@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @method assignRole(...$roles) : User
  * @method givePermissionTo(...$permissions) : User
  * @method revokePermissionTo($permission) : User
- * @method static create(array $array)
+ * @method static User create(array $array)
  */
 class User extends Authenticatable
 {

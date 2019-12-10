@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Domain\WorkOrders;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -18,10 +18,13 @@ use Illuminate\Support\Collection;
  *
  * @package Domain\WorkOrders
  *
- * @method Builder|static get()
- * @method static Builder|static where(string $field, string $value, string $value = null)
- * @method static Builder|static whereIn(string $ID, $people_ids)
- * @method static findOrFail(array $array)
+ * @method Person get()
+ * @method static Collection map(callable $callback);
+ * @method static EloquentCollection pluck(string $column, ?string $key = null)
+ * @method static Person findOrFail(array $array)
+ * @method static Person where(string $column, ?string $string = null, ?string $string1 = null)
+ * @method static Person whereIn(string $ID, $people_ids)
+ * @method static Person orWhere(string $LAST_NAME, string $string, string $string1)
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $client_id

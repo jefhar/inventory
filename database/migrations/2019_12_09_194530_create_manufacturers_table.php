@@ -1,12 +1,12 @@
 <?php
 
+use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
-use Domain\Products\Models\Type;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTypesTable extends Migration
+class CreateManufacturersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -16,21 +16,19 @@ class CreateTypesTable extends Migration
     public function up()
     {
         Schema::create(
-            Type::TABLE,
+            Manufacturer::TABLE,
             function (Blueprint $table) {
-                $table->bigIncrements(Type::ID);
-                $table->string(Type::NAME, 64)->unique()->nullable();
-                $table->string(Type::SLUG, 64)->unique()->nullable();
-                $table->json(Type::FORM)->nullable();
+                $table->bigIncrements(Manufacturer::ID);
+                $table->string(Manufacturer::NAME)->unique();
                 $table->timestamps();
             }
         );
+
         Schema::table(
             Product::TABLE,
             function (Blueprint $table) {
-                $table->unsignedBigInteger(Product::TYPE_ID)->nullable()->after(Product::WORK_ORDER_ID);
-                $table->foreign(Product::TYPE_ID)->references(Type::ID)->on(Type::TABLE);
-                $table->json(Product::VALUES)->nullable();
+                $table->unsignedBigInteger(Product::MANUFACTURER_ID)->nullable()->after(Product::TYPE_ID);
+                $table->foreign(Product::MANUFACTURER_ID)->references(Manufacturer::ID)->on(Manufacturer::TABLE);
             }
         );
     }
@@ -45,9 +43,10 @@ class CreateTypesTable extends Migration
         Schema::table(
             Product::TABLE,
             function (Blueprint $table) {
-                $table->dropForeign([Product::TYPE_ID]);
+                $table->dropForeign([Product::MANUFACTURER_ID]);
             }
         );
-        Schema::dropIfExists(Type::TABLE);
+
+        Schema::dropIfExists('manufacturers');
     }
 }

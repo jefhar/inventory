@@ -220,7 +220,7 @@
                                         data-work-order-id="{{ $workOrder->id }}"
                                         id="productForm"
                                 >
-                                    @csrf
+
                                 </form>
                             </div>
                         </div>

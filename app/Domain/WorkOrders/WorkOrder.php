@@ -11,6 +11,7 @@ namespace Domain\WorkOrders;
 
 use App\User;
 use Domain\Products\Models\Product;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,15 +20,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Class WorkOrder
  *
  * @package Domain\WorkOrders
+ *
+ * @method static Collection paginate(int $int)
+ * @method static WorkOrder findOrFail($get)
+ * @method static WorkOrder where(mixed $field, ?mixed $value = null, ?mixed $value = null)
+ * @method static WorkOrder whereNotIn(string $field, array $searchArray)
  * @property bool $is_locked
+ * @property Client $client
  * @property int $id
  * @property int $user_id
- * @property Client $client
  * @property string|null $intake
- * @method static Model|static where(mixed $field, ?string $value = null, ?string $value = null)
- * @method static paginate(int $int)
- * @method static Model|static whereNotIn(string $field, array $searchArray)
- * @method static static findOrFail($get)
  */
 class WorkOrder extends Model
 {
@@ -37,6 +39,7 @@ class WorkOrder extends Model
     public const IS_LOCKED = 'is_locked';
     public const TABLE = 'workorders';
     public const USER_ID = 'user_id';
+
     public $table = self::TABLE;
     public $with = ['client.person', 'user'];
     protected $attributes = [

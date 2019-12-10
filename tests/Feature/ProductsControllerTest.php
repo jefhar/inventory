@@ -17,6 +17,11 @@ use Domain\Products\Models\Type;
 use Domain\WorkOrders\WorkOrder;
 use Tests\TestCase;
 
+/**
+ * Class ProductsControllerTest
+ *
+ * @package Tests\Feature
+ */
 class ProductsControllerTest extends TestCase
 {
     private User $user;
