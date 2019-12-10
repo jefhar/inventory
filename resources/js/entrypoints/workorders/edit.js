@@ -9,23 +9,27 @@ import axios from "axios";
 require("../../bootstrap");
 require("formBuilder/dist/form-builder.min");
 require("formBuilder/dist/form-render.min");
+
 /**
- * Next, we will create a fresh React component instance and attach it to
+ * Next, we may create a fresh React component instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-/*
-
-if (document.getElementById("workorders_edit")) {
-  console.log("got workorders_edit");
-  ReactDOM.render(
-    <WorkOrderEdit />,
-    document.getElementById("workorders_edit")
-  );
-}
-
-*/
+const locked = {
+  clickTo: "Click to Unlock work order.",
+  isLockedButton: "btn-outline-danger",
+  lockHeader: "Locked",
+  lockIcon: "fa-unlock-alt",
+  outline: "border-primary"
+};
+const unlocked = {
+  clickTo: "Click to Lock work order.",
+  isLockedButton: "btn-outline-success",
+  lockHeader: "Unlocked",
+  lockIcon: "fa-lock",
+  outline: "border-warning"
+};
 
 function update() {
   const inventoryButton = document.getElementById("add_inventory_button");
@@ -69,158 +73,125 @@ function update() {
   inventoryButton.disabled = isLockedButton.dataset.isLocked === "true";
 }
 
-jQuery(function($) {
-  // $("typeForm").formBuilder();
-});
-/*
-// Sample formbuilder code
-jQuery(function($) {
-  let $fbEditor = $(document.getElementById("fb-editor"));
-  let $formContainer = $(document.getElementById("fb-rendered-form"));
-  let fbOptions = {
-    onSave: function() {
-      $fbEditor.toggle();
-      $formContainer.toggle();
-      $("form", $formContainer).formRender({
-        formData: formBuilder.formData
-      });
-    }
-  };
-  let formBuilder = $fbEditor.formBuilder(fbOptions);
-
-  $(".edit-form", $formContainer).click(function() {
-    $fbEditor.toggle();
-    $formContainer.toggle();
-  });
-});
-*/
-
 $(function() {
   $('[data-toggle="tooltip"]').tooltip();
-  $("#productModal")
-    .on("show.bs.modal", event => {
-      console.log("Modal opening.");
-    })
-    .on("shown.bs.modal", event => {
-      console.log("Modal has opened for business.");
+  $("#productModal").on("shown.bs.modal", event => {
+    // Defer attaching event listener until modal opens
+    // Because #product_type is not attached until modal opens
+    document
+      .getElementById("product_type")
+      .addEventListener("change", event => {
+        const { value } = event.target;
+        const select = document.getElementById("product_type");
+        let $formContainer = $(document.getElementById("typeForm"));
+        axios
+          .get(`/types/${value}`, value)
+          .then(response => {
+            const formData = response.data;
+            formData.unshift(
+              {
+                type: "header",
+                className: "mt-3",
+                label: select.options[select.selectedIndex].innerText,
+                subtype: "h3"
+              },
+              {
+                className: "form-control",
+                label: "Manufacturer",
+                name: "manufacturer",
+                required: "true",
+                subtype: "text",
+                type: "text"
+              },
+              {
+                className: "form-control",
+                label: "Model",
+                name: "model",
+                required: "true",
+                subtype: "text",
+                type: "text"
+              }
+            );
 
-      // Defer attaching event listener until modal opens.
-      document
-        .getElementById("product_type")
-        .addEventListener("change", event => {
-          console.log("caught select change.");
-          const { value } = event.target;
-          const select = document.getElementById("product_type");
-          console.log(event);
-          let $formContainer = $(document.getElementById("typeForm"));
-          axios
-            .get(`/types/${value}`, value)
-            .then(response => {
-              const formData = response.data;
-              formData.unshift(
-                {
-                  type: "header",
-                  className: "mt-3",
-                  label: select.options[select.selectedIndex].innerText,
-                  subtype: "h3"
-                },
-                {
-                  className: "form-control",
-                  label: "Manufacturer",
-                  name: "manufacturer",
-                  required: "true",
-                  subtype: "text",
-                  type: "text"
-                },
-                {
-                  className: "form-control",
-                  label: "Model",
-                  name: "model",
-                  required: "true",
-                  subtype: "text",
-                  type: "text"
-                }
-              );
-
-              $("form", $formContainer).formRender({
-                formData: formData
-              });
-              // Add autocomplete to Manufacturer
-              // Add autocomplete to Model
-            })
-            .catch(error => {
-              console.log("error");
-              console.log(error);
-              // Create warning alert
-              // Attach warning alert as a child to $formContainer
-              /*
-  <div class="alert alert-warning" role="alert">
+            $("form", $formContainer).formRender({
+              formData: formData
+            });
+            // Add autocomplete to Manufacturer
+            // Add autocomplete to Model
+          })
+          .catch(error => {
+            console.log("error");
+            console.log(error);
+            // Create warning alert
+            // Attach warning alert as a child to $formContainer
+            /*
+<div class="alert alert-warning" role="alert">
 A simple warning alert—check it out!
 </div>
-   */
-              let alert = document.createElement("div");
-              alert.classList.add("alert", "alert-warning");
-              alert.innerText = error;
-              $formContainer.append(alert);
-            });
-        });
-      document
-        .getElementById("productSubmit")
-        .addEventListener("click", event => {
-          const formData = document.getElementById("productForm");
-          const postData = {
-            type: document.getElementById("product_type").value,
-            workOrderId: document.getElementById("lock_button").dataset
-              .workOrderId
-          };
-          for (let i = 0; i < formData.length; i++) {
-            let child = formData[i];
-            postData[formData[i].name] = formData[i].value;
-          }
-          // Post Form
-          const url = "/products";
-          axios
-            .post(url, postData)
-            .then(response => {
-              console.log(response.data);
-              const { id, model, created_at } = response.data;
-              const { name: manufacturer } = response.data.manufacturer;
-              const { name: type } = response.data.type;
-              // Add Row to `<tbody id="products_table">`
-              const tr = document.createElement("tr");
-              tr.innerHTML = `<td>${id}</td>
-            <td>${manufacturer}</td>
-            <td>${model}</td>
-            <td>${type}</td>
-            <td>${created_at}</td>`;
-              document.getElementById("products_table").appendChild(tr);
-              // destroy form children
-              // close modal
-              $("#productModal").modal("hide");
-              $(".modal-backdrop").remove();
-            })
-            .catch(error => {
-              console.log(error);
-              const errorAlert = document.createElement("div");
-              errorAlert.classList.add(
-                "alert",
-                "alert-warning",
-                "alert-dismissible",
-                "fade",
-                "show"
-              );
-              errorAlert.innerHTML = `${error}
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>`;
-              console.log(errorAlert);
-              document.getElementById("productError").appendChild(errorAlert);
-
-              // Create alert
-              // Add to form
-            });
-        });
-    });
+*/
+            let alert = document.createElement("div");
+            alert.classList.add("alert", "alert-warning");
+            alert.innerText = error;
+            $formContainer.append(alert);
+          });
+      });
+    document
+      .getElementById("productSubmit")
+      .addEventListener("click", event => {
+        const formData = document.getElementById("productForm");
+        const postData = {
+          type: document.getElementById("product_type").value,
+          workOrderId: document.getElementById("lock_button").dataset
+            .workOrderId
+        };
+        for (let i = 0; i < formData.length; i++) {
+          let child = formData[i];
+          postData[formData[i].name] = formData[i].value;
+        }
+        // Post Form
+        const url = "/products";
+        axios
+          .post(url, postData)
+          .then(response => {
+            const { id, model, created_at } = response.data;
+            const { name: manufacturer } = response.data.manufacturer;
+            const { name: type } = response.data.type;
+            // Add Row to `<tbody id="products_table">`
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${id}</td>\
+<td>${manufacturer}</td>\
+<td>${model}</td>\
+<td>${type}</td>\
+<td>${created_at}</td>`;
+            document.getElementById("products_table").appendChild(tr);
+            // destroy form children
+            // Remove any previous alerts
+            const productForm = document.getElementById("productForm");
+            while (productForm.hasChildNodes()) {
+              productForm.removeChild(productForm.lastChild);
+            }
+            // close modal
+            $("#productModal").modal("hide");
+            $(".modal-backdrop").remove();
+          })
+          .catch(error => {
+            console.log(error);
+            const errorAlert = document.createElement("div");
+            errorAlert.classList.add(
+              "alert",
+              "alert-warning",
+              "alert-dismissible",
+              "fade",
+              "show"
+            );
+            errorAlert.innerHTML = `${error}\
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">\
+<span aria-hidden="true">&times;</span>\
+</button>`;
+            document.getElementById("productError").appendChild(errorAlert);
+          });
+      });
+  });
 
   // Lock/Unlock work order
   document.getElementById("lock_button").addEventListener("click", () => {

@@ -10,7 +10,7 @@ use Faker\Generator as Faker;
 $factory->define(
     Product::class,
     function (Faker $faker) {
-        $manufacturer = factory(Manufacturer::class)->create();
+        $manufacturer = Manufacturer::firstOrCreate([Manufacturer::NAME => $faker->company]);
         $type = factory(Type::class)->create();
 
         return [

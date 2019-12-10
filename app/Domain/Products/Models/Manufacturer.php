@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
  * @method static Manufacturer firstOrCreate(array $array)
+ * @method static Builder inRandomOrder()
  * @property int $id
  * @property string $name
  */

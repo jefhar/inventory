@@ -186,9 +186,14 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function canToggleLockedWorkOrder(): void
     {
+        /** @var Client $client */
         $workOrder = factory(WorkOrder::class)->make();
+        $person = factory(Person::class)->make();
+        $client = $workOrder->client;
+        $client->person()->save($person);
         $workOrder->is_locked = false;
         $workOrder->save();
+        $client->person()->save($person);
         $this
             ->actingAs($this->user)
             ->patch(
@@ -199,7 +204,17 @@ class WorkOrdersControllerTest extends TestCase
                     WorkOrder::ID => $workOrder->id,
                     WorkOrder::IS_LOCKED => true,
                 ]
-            )->assertOk();
+            )->assertJsonMissing(
+                [
+                    Client::COMPANY_NAME => '',
+                    Person::EMAIL => '',
+                    Person::FIRST_NAME => '',
+                    Person::LAST_NAME => '',
+                    Person::PHONE_NUMBER => '',
+                    WorkOrder::INTAKE => '',
+                ]
+            )
+            ->assertOk();
         $this->assertDatabaseHas(
             WorkOrder::TABLE,
             [

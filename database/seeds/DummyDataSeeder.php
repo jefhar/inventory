@@ -48,11 +48,9 @@ class DummyDataSeeder extends Seeder
             $workOrder->intake = $faker->text();
             $workOrder->user_id = 1;
             $client->workOrders()->save($workOrder);
-            $manufacturer = Manufacturer::firstOrCreate([Manufacturer::NAME => $faker->company]);
             $product = factory(Product::class)->make();
             $type = $types->random();
             $product->type()->associate($type);
-            $product->manufacturer()->associate($manufacturer);
             $workOrder->products()->save($product);
         }
     }
