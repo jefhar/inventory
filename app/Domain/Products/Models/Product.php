@@ -24,10 +24,15 @@ class Product extends Model
 {
     public const ID = 'id';
     public const MANUFACTURER_ID = 'manufacturer_id';
+    public const MODEL = 'model';
     public const TABLE = 'products';
     public const TYPE_ID = 'type_id';
     public const VALUES = 'values';
     public const WORK_ORDER_ID = 'work_order_id';
+
+    protected $fillable = [
+        self::MODEL,
+    ];
 
     protected $table = self::TABLE;
 

@@ -28,6 +28,7 @@ class CreateManufacturersTable extends Migration
             Product::TABLE,
             function (Blueprint $table) {
                 $table->unsignedBigInteger(Product::MANUFACTURER_ID)->nullable()->after(Product::TYPE_ID);
+                $table->string(Product::MODEL)->nullable();
                 $table->foreign(Product::MANUFACTURER_ID)->references(Manufacturer::ID)->on(Manufacturer::TABLE);
             }
         );
