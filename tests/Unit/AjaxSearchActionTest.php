@@ -9,8 +9,11 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Domain\AjaxSearch\Actions\AjaxSearchAction;
+use Domain\Products\Models\Manufacturer;
+use Domain\Products\Models\Product;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
+use Domain\WorkOrders\WorkOrder;
 use Tests\TestCase;
 
 /**
@@ -83,5 +86,29 @@ class AjaxSearchActionTest extends TestCase
         $person = factory(Person::class)->create([Person::CLIENT_ID => 1]);
         $options = AjaxSearchAction::findAll(substr($person->last_name, 0, 2));
         $this->assertStringContainsString($person->last_name, $options->toJson());
+    }
+
+    /**
+     * @test
+     */
+    public function ajaxSearchIndexFindsManufacturerName(): void
+    {
+        factory(Manufacturer::class, 50)->create();
+        $manufacturer = factory(Manufacturer::class)->create();
+        $options = AjaxSearchAction::findBy('manufacturer', substr($manufacturer->name, 0, 2));
+        $this->assertStringContainsString($manufacturer->name, $options->toJson());
+    }
+
+    /**
+     * @test
+     */
+    public function ajaxSearchIndexFindsModelName(): void
+    {
+        $workOrder = factory(WorkOrder::class)->create();
+        factory(Product::class, 50)->create([Product::WORK_ORDER_ID => $workOrder->id]);
+        $product = factory(Product::class)->create([Product::WORK_ORDER_ID => $workOrder->id]);
+
+        $options = AjaxSearchAction::findBy(Product::MODEL, substr($product->model, 0, 2));
+        $this->assertStringContainsString($product->model, $options->toJson());
     }
 }

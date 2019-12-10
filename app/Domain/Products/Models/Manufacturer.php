@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Domain\Products\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package Domain\Products\Models
  *
+ * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
  * @method static Manufacturer firstOrCreate(array $array)
  * @property int $id
  * @property string $name

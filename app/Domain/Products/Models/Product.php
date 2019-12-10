@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace Domain\Products\Models;
 
 use Domain\WorkOrders\WorkOrder;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -19,7 +21,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @package Domain\Products\Models
  *
  * @property mixed $values
- * @method static find(int $int)
+ * @method static Model|Collection|static[]|static|null find(int $int)
+ * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
  */
 class Product extends Model
 {

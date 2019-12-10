@@ -1,16 +1,16 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+/** @var Factory $factory */
 
-use App\Model;
 use Domain\Products\Models\Manufacturer;
 use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factory;
 
 $factory->define(
     Manufacturer::class,
     function (Faker $faker) {
         return [
-            Manufacturer::NAME => $faker->company,
+            Manufacturer::NAME => $faker->unique()->company,
         ];
     }
 );
