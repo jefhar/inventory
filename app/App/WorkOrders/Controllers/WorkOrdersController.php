@@ -104,11 +104,12 @@ class WorkOrdersController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param WorkOrder $workorder
+     * @param WorkOrder $workOrder
      * @return View
      */
     public function edit(WorkOrder $workorder): View
     {
+        $workorder->load('products');
         $types = Type::select(Type::SLUG, Type::NAME)->get();
 
         return view('workorders.edit')->with(['workOrder' => $workorder, 'types' => $types]);

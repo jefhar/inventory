@@ -38,6 +38,9 @@ class Product extends Model
         self::MODEL,
         self::VALUES,
     ];
+    protected $with = [
+        'manufacturer',
+    ];
 
     protected $table = self::TABLE;
 

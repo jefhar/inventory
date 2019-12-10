@@ -136,17 +136,17 @@
                         </tr>
                         </thead>
                         <tbody id="products_table">
-                        @if(isset($products))
-                            @foreach ($products as $product)
-                                <tr>
-                                    <td>{{$product->id}}</td>
-                                    <td>{{$produt->manufacturer}}</td>
-                                    <td>{{$product->model}}</td>
-                                    <td>{{$produt->type}}</td>
-                                    <td>{{$product->created_at}}</td>
-                                </tr>
-                            @endforeach
-                        @endif
+
+                        @foreach ($workOrder->products as $product)
+                            <tr>
+                                <td>{{$product->id}}</td>
+                                <td>{{$product->manufacturer->name}}</td>
+                                <td>{{$product->model}}</td>
+                                <td>{{$product->type->name}}</td>
+                                <td>{{$product->created_at}}</td>
+                            </tr>
+                        @endforeach
+
                         </tbody>
                     </table>
                     <div class="row">
@@ -178,7 +178,7 @@
             {{ $workOrder }}
         </div>
         <div
-                class="modal fade"
+                class="modal"
                 id="productModal"
                 role="dialog"
                 tabindex="-1">

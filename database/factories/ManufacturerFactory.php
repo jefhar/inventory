@@ -2,14 +2,15 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use Domain\Products\Models\Product;
+use App\Model;
+use Domain\Products\Models\Manufacturer;
 use Faker\Generator as Faker;
 
 $factory->define(
-    Product::class,
+    Manufacturer::class,
     function (Faker $faker) {
         return [
-            Product::MODEL => $faker->word,
+            Manufacturer::NAME => $faker->company,
         ];
     }
 );

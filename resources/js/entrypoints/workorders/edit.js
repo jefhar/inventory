@@ -96,9 +96,6 @@ jQuery(function($) {
 */
 
 $(function() {
-  const MakeModelFields = JSON.parse(
-    '[{"type":"text","required":true,"label":"Manufacturer<br>","className":"form-control","name":"manufacturer_name","subtype":"text"},{"type":"text","required":true,"label":"Model","className":"form-control","name":"model","subtype":"text"}]'
-  );
   $('[data-toggle="tooltip"]').tooltip();
   $("#productModal")
     .on("show.bs.modal", event => {
@@ -157,10 +154,10 @@ $(function() {
               // Create warning alert
               // Attach warning alert as a child to $formContainer
               /*
-      <div class="alert alert-warning" role="alert">
-    A simple warning alert—check it out!
-    </div>
-       */
+  <div class="alert alert-warning" role="alert">
+A simple warning alert—check it out!
+</div>
+   */
               let alert = document.createElement("div");
               alert.classList.add("alert", "alert-warning");
               alert.innerText = error;
@@ -173,7 +170,7 @@ $(function() {
           const formData = document.getElementById("productForm");
           const postData = {
             type: document.getElementById("product_type").value,
-            workorderId: document.getElementById("lock_button").dataset
+            workOrderId: document.getElementById("lock_button").dataset
               .workOrderId
           };
           for (let i = 0; i < formData.length; i++) {
@@ -181,15 +178,26 @@ $(function() {
             postData[formData[i].name] = formData[i].value;
           }
           // Post Form
-          const isLockedButton = document.getElementById("lock_button");
           const url = "/products";
           axios
             .post(url, postData)
             .then(response => {
-              console.log(response.data.values);
+              console.log(response.data);
+              const { id, model, created_at } = response.data;
+              const { name: manufacturer } = response.data.manufacturer;
+              const { name: type } = response.data.type;
               // Add Row to `<tbody id="products_table">`
+              const tr = document.createElement("tr");
+              tr.innerHTML = `<td>${id}</td>
+            <td>${manufacturer}</td>
+            <td>${model}</td>
+            <td>${type}</td>
+            <td>${created_at}</td>`;
+              document.getElementById("products_table").appendChild(tr);
               // destroy form children
               // close modal
+              $("#productModal").modal("hide");
+              $(".modal-backdrop").remove();
             })
             .catch(error => {
               console.log(error);
@@ -290,12 +298,6 @@ $(function() {
 
     event.preventDefault();
   });
-
-  // Product Select creates new form
-  const handleProductChange = event => {
-    console.log("event: ");
-    console.log(event);
-  };
 
   update();
 });
