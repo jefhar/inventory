@@ -22,7 +22,7 @@ use Illuminate\Support\Collection;
  * @package Domain\WorkOrders
  *
  * @method Client get()
- * @method Collection pluck(mixed $fields, ?mixed $fields)
+ * @method Collection pluck(string $column, string|null $key = null)
  * @method static Builder inRandomOrder()
  * @method static Builder whereIn(string $ID, Collection $client_ids)
  * @method static Client find($value)

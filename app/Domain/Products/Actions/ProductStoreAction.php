@@ -24,7 +24,7 @@ class ProductStoreAction
 {
 
     /**
-     * @param $productStoreObject
+     * @param ProductStoreObject $productStoreObject
      * @return Product
      */
     public static function execute(ProductStoreObject $productStoreObject): Product

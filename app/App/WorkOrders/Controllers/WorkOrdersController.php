@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018, 2019 Jeff Harris
  * PHP Version 7.4
@@ -104,7 +105,7 @@ class WorkOrdersController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param WorkOrder $workOrder
+     * @param WorkOrder $workorder
      * @return View
      */
     public function edit(WorkOrder $workorder): View
