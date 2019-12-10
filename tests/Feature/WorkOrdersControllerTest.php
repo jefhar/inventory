@@ -11,12 +11,19 @@ namespace Tests\Feature;
 use App\Admin\Permissions\UserRoles;
 use App\User;
 use App\WorkOrders\Controllers\WorkOrdersController;
+use Domain\Products\Models\Manufacturer;
+use Domain\Products\Models\Product;
 use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Class WorkOrdersControllerTest
+ *
+ * @package Tests\Feature
+ */
 class WorkOrdersControllerTest extends TestCase
 {
     use RefreshDatabase;
@@ -45,8 +52,8 @@ class WorkOrdersControllerTest extends TestCase
         $this->get(
             route(WorkOrdersController::CREATE_NAME)
         )->assertRedirect('/login');
-        $workOrder = factory(WorkOrder::class)->create();
 
+        $workOrder = factory(WorkOrder::class)->create();
         $this->get(
             route(WorkOrdersController::SHOW_NAME, $workOrder)
         )->assertRedirect('/login');
@@ -60,7 +67,7 @@ class WorkOrdersControllerTest extends TestCase
         $this->withExceptionHandling()->actingAs($this->user)
             ->get(
                 route(WorkOrdersController::CREATE_NAME)
-            )->assertOK();
+            )->assertOk();
     }
 
     /**
@@ -68,10 +75,8 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function guestStoreIsRedirectToLogin(): void
     {
-        $this
-            ->post(
-                route(WorkOrdersController::STORE_NAME)
-            )->assertRedirect('/login');
+        $this->post(route(WorkOrdersController::STORE_NAME))
+            ->assertRedirect('/login');
     }
 
     /**
@@ -86,11 +91,7 @@ class WorkOrdersControllerTest extends TestCase
                 ),
                 [Client::COMPANY_NAME => self::COMPANY_NAME]
             )
-            ->assertJson(
-                [
-                    'created' => true,
-                ]
-            )
+            ->assertJson(['created' => true,])
             ->assertCreated()->assertHeader(
                 'Location',
                 url(route(WorkOrdersController::SHOW_NAME, ['workorder' => 1]))
@@ -161,14 +162,23 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function editPageExists(): void
     {
+        $manufacturer = factory(Manufacturer::class)->create();
+        $product = factory(Product::class)->make();
+        $product->manufacturer()->associate($manufacturer);
+
         $workOrder = factory(WorkOrder::class)->create();
+
         $client = factory(Client::class)->create();
         $person = factory(Person::class)->make();
         $client->person()->save($person);
         $client->workOrders()->save($workOrder);
+        $workOrder->products()->save($product);
+
         $this->actingAs($this->user)->withoutExceptionHandling()
             ->get(route(WorkOrdersController::EDIT_NAME, $workOrder))
-            ->assertOk()->assertSeeText('Edit Work Order');
+            ->assertOk()->assertSeeText('Edit Work Order')
+            ->assertSeeText($product->manufacturer->name)
+            ->assertSeeText($product->model);
     }
 
     /**
@@ -221,7 +231,7 @@ class WorkOrdersControllerTest extends TestCase
     /**
      * @test
      */
-    public function updateUpdatesCompanyName()
+    public function updateUpdatesCompanyName(): void
     {
         $newClient = factory(Client::class)->make();
         $workOrder = factory(WorkOrder::class)->create();

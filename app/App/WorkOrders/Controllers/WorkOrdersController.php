@@ -1,4 +1,10 @@
 <?php
+/**
+ * Copyright 2018, 2019 Jeff Harris
+ * PHP Version 7.4
+ */
+
+declare(strict_types=1);
 
 namespace App\WorkOrders\Controllers;
 
@@ -8,6 +14,7 @@ use App\WorkOrders\DataTransferObjects\PersonObject;
 use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
 use App\WorkOrders\Requests\WorkOrderStoreRequest;
 use App\WorkOrders\Requests\WorkOrderUpdateRequest;
+use Domain\Products\Models\Type;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
 use Domain\WorkOrders\WorkOrder;
@@ -71,9 +78,7 @@ class WorkOrdersController extends Controller
     public function store(WorkOrderStoreRequest $request): JsonResponse
     {
         $validated = $request->validated();
-
         $personObject = PersonObject::fromRequest($request->validated());
-
         $workOrder = WorkOrdersStoreAction::execute(ClientObject::fromRequest($validated), $personObject);
 
         return response()
@@ -99,12 +104,15 @@ class WorkOrdersController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param WorkOrder $workorder
+     * @param WorkOrder $workOrder
      * @return View
      */
     public function edit(WorkOrder $workorder): View
     {
-        return view('workorders.edit')->with(['workOrder' => $workorder]);
+        $workorder->load('products');
+        $types = Type::select(Type::SLUG, Type::NAME)->get();
+
+        return view('workorders.edit')->with(['workOrder' => $workorder, 'types' => $types]);
     }
 
     /**

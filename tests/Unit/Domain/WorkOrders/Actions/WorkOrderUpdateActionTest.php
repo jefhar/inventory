@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Unit\Domain\WorkOrders\Actions;
 
 use App\Admin\Permissions\UserPermissions;
 use App\User;
@@ -17,6 +17,11 @@ use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
 use Tests\TestCase;
 
+/**
+ * Class WorkOrderUpdateActionTest
+ *
+ * @package Tests\Unit\Domain\WorkOrders\Actions
+ */
 class WorkOrderUpdateActionTest extends TestCase
 {
     private User $user;

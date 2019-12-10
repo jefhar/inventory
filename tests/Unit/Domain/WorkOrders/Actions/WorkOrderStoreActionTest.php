@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Unit\Domain\WorkOrders\Actions;
 
 use App\Admin\Permissions\UserRoles;
 use App\User;
@@ -18,6 +18,11 @@ use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
 use Tests\TestCase;
 
+/**
+ * Class WorkOrderStoreActionTest
+ *
+ * @package Tests\Unit\Domain\WorkOrders\Actions
+ */
 class WorkOrderStoreActionTest extends TestCase
 {
     private const COMPANY_NAME = 'George Q. Client';

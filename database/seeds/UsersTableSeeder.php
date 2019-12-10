@@ -23,7 +23,7 @@ class UsersTableSeeder extends Seeder
 
         $environment = App::environment();
         if (strtolower($environment) === 'production') {
-            exit('Cannot seed users in a production environment.');
+            exit("Cannot seed users in a production environment.\n");
         }
 
         $superAdmin = User::create(

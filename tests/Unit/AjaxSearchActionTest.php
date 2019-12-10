@@ -13,6 +13,11 @@ use Domain\WorkOrders\Client;
 use Domain\WorkOrders\Person;
 use Tests\TestCase;
 
+/**
+ * Class AjaxSearchActionTest
+ *
+ * @package Tests\Unit
+ */
 class AjaxSearchActionTest extends TestCase
 {
     /**
@@ -32,10 +37,10 @@ class AjaxSearchActionTest extends TestCase
         $red_herring_client = new Client();
         $red_herring_person = new Person(
             [
-                'first_name' => 'Redd',
-                'last_name' => 'Herring',
-                'email' => 'email@example.com',
-                'phone_number' => '12345',
+                Person::FIRST_NAME => 'Redd',
+                Person::LAST_NAME => 'Herring',
+                Person::EMAIL => 'email@example.com',
+                Person::PHONE_NUMBER => '12345',
             ]
         );
         $red_herring_client->company_name = $red_herring_company_name;
@@ -43,7 +48,7 @@ class AjaxSearchActionTest extends TestCase
         $red_herring_client->person()->save($red_herring_person);
 
         $company_name = 'John ' . uniqid('-', false);
-        $client = new Client();
+        $client = factory(Client::class)->make();
         $person = factory(Person::class)->make();
         $client->company_name = $company_name;
         $client->save();

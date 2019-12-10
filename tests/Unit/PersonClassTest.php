@@ -11,12 +11,17 @@ namespace Tests\Unit;
 use Domain\WorkOrders\Person;
 use Tests\TestCase;
 
+/**
+ * Class PersonClassTest
+ *
+ * @package Tests\Unit
+ */
 class PersonClassTest extends TestCase
 {
     /**
      * @test
      */
-    public function phoneNumberFormatsAndUnformats(): void
+    public function phoneNumberFormatsAndUnFormats(): void
     {
         $faker = factory(Person::class)->make();
 
