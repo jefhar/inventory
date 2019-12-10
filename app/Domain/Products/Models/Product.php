@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @package Domain\Products\Models
  *
  * @property mixed $values
+ * @method static find(int $int)
  */
 class Product extends Model
 {
@@ -30,8 +31,12 @@ class Product extends Model
     public const VALUES = 'values';
     public const WORK_ORDER_ID = 'work_order_id';
 
+    protected $casts = [
+        self::VALUES => 'array',
+    ];
     protected $fillable = [
         self::MODEL,
+        self::VALUES,
     ];
 
     protected $table = self::TABLE;

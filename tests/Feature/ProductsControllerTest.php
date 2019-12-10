@@ -45,7 +45,7 @@ class ProductsControllerTest extends TestCase
             'select-1575689474390' => 'option-2',
             'textarea-1575689477555' => 'textarea text. Bwahahahahaaaa',
             'type' => $type->slug,
-            'workorderId' => $workOrder->id,
+            'workOrderId' => $workOrder->id,
         ];
 
         $this->actingAs($this->user)
@@ -64,6 +64,7 @@ class ProductsControllerTest extends TestCase
                 Product::MODEL => $model,
                 Product::TYPE_ID => $type->id,
                 Product::WORK_ORDER_ID => $workOrder->id,
+                Product::MANUFACTURER_ID => 1,
             ]
         );
         $this->assertDatabaseHas(
@@ -73,6 +74,8 @@ class ProductsControllerTest extends TestCase
                 Manufacturer::NAME => $manufacturer,
             ]
         );
+        $theProduct = Product::find(1);
+        $this->assertContains('option-3', $theProduct->values);
     }
 
     public function setUp(): void

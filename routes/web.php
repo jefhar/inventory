@@ -78,7 +78,7 @@ Route::group(
         Route::namespace('Products\\Controllers\\')->group(
             function () {
                 Route::post(ProductsController::STORE_PATH, 'ProductsController@store')
-                    ->name(ProductsController::STORE_NAME)->middleware('auth');
+                    ->name(ProductsController::STORE_NAME)->middleware('auth', 'productStore');
             }
         );
     }
