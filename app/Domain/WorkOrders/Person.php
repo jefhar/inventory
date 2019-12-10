@@ -74,6 +74,8 @@ class Person extends Model
     }
 
     /**
+     * This is called when using `$person->phone_number = $phoneNumber;`
+     *
      * @param string $phoneNumber
      */
     public function setPhoneNumberAttribute(string $phoneNumber): void
@@ -91,6 +93,8 @@ class Person extends Model
     }
 
     /**
+     * This is called when using `$phoneNumber = $person->phone_number`
+     *
      * @param string $phoneNumber
      * @return string
      */

@@ -1,18 +1,29 @@
 <?php
 
+/**
+ * Copyright 2018, 2019 Jeff Harris
+ * PHP Version 7.4
+ */
+
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Class ExampleTest
+ *
+ * @package Tests\Feature
+ */
 class ExampleTest extends TestCase
 {
     /**
-     * A basic test example.
+     * You get one for free.
      *
      * @return void
      */
-    public function testBasicTest()
+    public function testBasicTest(): void
     {
         $response = $this->get('/');
 

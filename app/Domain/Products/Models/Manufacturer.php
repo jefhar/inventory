@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @package Domain\Products\Models
  *
  * @method static Manufacturer firstOrCreate(array $array)
+ * @property int id
  * @property string $name
  */
 class Manufacturer extends Model

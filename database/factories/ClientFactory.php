@@ -10,7 +10,6 @@ $factory->define(
     function (Faker $faker) {
         return [
             Client::COMPANY_NAME => $faker->company,
-
         ];
     }
 );

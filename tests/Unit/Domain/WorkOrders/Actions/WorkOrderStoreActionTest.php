@@ -18,6 +18,11 @@ use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
 use Tests\TestCase;
 
+/**
+ * Class WorkOrderStoreActionTest
+ *
+ * @package Tests\Unit\Domain\WorkOrders\Actions
+ */
 class WorkOrderStoreActionTest extends TestCase
 {
     private const COMPANY_NAME = 'George Q. Client';

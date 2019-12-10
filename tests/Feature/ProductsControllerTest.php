@@ -80,8 +80,9 @@ class ProductsControllerTest extends TestCase
 
     public function setUp(): void
     {
-        parent::setUp();
         /** @var User $user */
+        parent::setUp();
+
         $user = factory(User::class)->make()
             ->givePermissionTo(UserPermissions::IS_EMPLOYEE);
         $user->save();

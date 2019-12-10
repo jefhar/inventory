@@ -1,6 +1,5 @@
 <?php
 
-use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -25,14 +24,6 @@ class CreateTypesTable extends Migration
                 $table->timestamps();
             }
         );
-        Schema::table(
-            Product::TABLE,
-            function (Blueprint $table) {
-                $table->unsignedBigInteger(Product::TYPE_ID)->nullable()->after(Product::WORK_ORDER_ID);
-                $table->foreign(Product::TYPE_ID)->references(Type::ID)->on(Type::TABLE);
-                $table->json(Product::VALUES)->nullable();
-            }
-        );
     }
 
     /**
@@ -42,12 +33,6 @@ class CreateTypesTable extends Migration
      */
     public function down()
     {
-        Schema::table(
-            Product::TABLE,
-            function (Blueprint $table) {
-                $table->dropForeign([Product::TYPE_ID]);
-            }
-        );
         Schema::dropIfExists(Type::TABLE);
     }
 }

@@ -23,9 +23,9 @@ use Illuminate\Support\Collection;
  *
  * @method Client get()
  * @method Collection pluck(mixed $fields, ?mixed $fields)
- * @method static Builder find($value)
  * @method static Builder inRandomOrder()
  * @method static Builder whereIn(string $ID, Collection $client_ids)
+ * @method static Client find($value)
  * @method static Client first()
  * @method static Client firstOrCreate($value)
  * @method static Client firstOrNew(array $array)

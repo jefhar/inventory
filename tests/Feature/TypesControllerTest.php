@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Copyright 2018, 2019 Jeff Harris
+ * PHP Version 7.4
+ */
+
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Admin\Permissions\UserPermissions;
@@ -8,6 +15,11 @@ use App\User;
 use Domain\Products\Models\Type;
 use Tests\TestCase;
 
+/**
+ * Class TypesControllerTest
+ *
+ * @package Tests\Feature
+ */
 class TypesControllerTest extends TestCase
 {
     private User $user;

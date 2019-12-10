@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Products;
 
-use App\User;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\WorkOrder;
@@ -23,10 +22,6 @@ use Tests\TestCase;
  */
 class ProductsTest extends TestCase
 {
-
-    private User $guest;
-
-    private User $user;
 
     /**
      * @test
@@ -45,14 +40,14 @@ class ProductsTest extends TestCase
             Product::TABLE,
             [
                 Product::ID => $product->id,
-                Product::MANUFACTURER_ID => 1,
+                Product::MANUFACTURER_ID => $manufacturer->id,
             ]
         );
         $this->assertDatabaseHas(
             Manufacturer::TABLE,
             [
-                Manufacturer::ID => 1,
-                Manufacturer::NAME => $manufacturerName,
+                Manufacturer::ID => $manufacturer->id,
+                Manufacturer::NAME => $manufacturer->name,
             ]
         );
         $product->fresh();

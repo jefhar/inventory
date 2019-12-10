@@ -1,7 +1,6 @@
 <?php
 
 use Domain\Products\Models\Manufacturer;
-use Domain\Products\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -23,15 +22,6 @@ class CreateManufacturersTable extends Migration
                 $table->timestamps();
             }
         );
-
-        Schema::table(
-            Product::TABLE,
-            function (Blueprint $table) {
-                $table->unsignedBigInteger(Product::MANUFACTURER_ID)->nullable()->after(Product::TYPE_ID);
-                $table->string(Product::MODEL)->nullable();
-                $table->foreign(Product::MANUFACTURER_ID)->references(Manufacturer::ID)->on(Manufacturer::TABLE);
-            }
-        );
     }
 
     /**
@@ -41,13 +31,6 @@ class CreateManufacturersTable extends Migration
      */
     public function down()
     {
-        Schema::table(
-            Product::TABLE,
-            function (Blueprint $table) {
-                $table->dropForeign([Product::MANUFACTURER_ID]);
-            }
-        );
-
         Schema::dropIfExists('manufacturers');
     }
 }
