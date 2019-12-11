@@ -11,6 +11,7 @@ namespace Domain\WorkOrders;
 
 use App\User;
 use Domain\Products\Models\Product;
+use Domain\WorkOrders\Events\WorkOrderCreated;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,6 +38,7 @@ class WorkOrder extends Model
     public const ID = 'id';
     public const INTAKE = 'intake';
     public const IS_LOCKED = 'is_locked';
+    public const LUHN = 'luhn';
     public const TABLE = 'workorders';
     public const USER_ID = 'user_id';
 
@@ -48,6 +50,9 @@ class WorkOrder extends Model
     ];
     protected $casts = [
         self::IS_LOCKED => 'boolean',
+    ];
+    protected $dispatchesEvents = [
+        'created' => WorkOrderCreated::class,
     ];
 
     /**

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Domain\WorkOrders\Events\WorkOrderCreated;
+use Domain\WorkOrders\Listeners\AddLuhnToWorkOrder;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        WorkOrderCreated::class => [
+            AddLuhnToWorkOrder::class,
+        ],
     ];
 
     /**
@@ -32,7 +37,6 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
-
         //
     }
 }
