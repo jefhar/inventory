@@ -33,12 +33,12 @@ class WorkOrderUpdateObject extends DataTransferObject
         return new self(
             [
                 WorkOrder::IS_LOCKED => $validated[WorkOrder::IS_LOCKED] ?? null,
-                WorkOrder::INTAKE => $validated[WorkOrder::INTAKE] ?? '',
-                Client::COMPANY_NAME => $validated[Client::COMPANY_NAME] ?? '',
-                Person::FIRST_NAME => $validated[Person::FIRST_NAME] ?? '',
-                Person::LAST_NAME => $validated[Person::LAST_NAME] ?? '',
-                Person::PHONE_NUMBER => $validated[Person::PHONE_NUMBER] ?? '',
-                Person::EMAIL => $validated[Person::EMAIL] ?? '',
+                WorkOrder::INTAKE => $validated[WorkOrder::INTAKE] ?? null,
+                Client::COMPANY_NAME => $validated[Client::COMPANY_NAME] ?? null,
+                Person::FIRST_NAME => $validated[Person::FIRST_NAME] ?? null,
+                Person::LAST_NAME => $validated[Person::LAST_NAME] ?? null,
+                Person::PHONE_NUMBER => $validated[Person::PHONE_NUMBER] ?? null,
+                Person::EMAIL => $validated[Person::EMAIL] ?? null,
             ]
         );
     }
