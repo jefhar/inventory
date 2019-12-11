@@ -13,7 +13,7 @@
             <div class="card col-md">
                 <div class="card-header row">
                     <div class="col">
-                        <h1 class="text-center">Work Order</h1>
+                        <h1 class="text-center"><span id="locked_header">The</span> Work Order</h1>
                     </div>
                     <div class="col-sm-3 col-md-2 shadow-sm">
                         <div class="row justify-content-center">
@@ -108,16 +108,23 @@
                             >{{ $workOrder->intake }}</textarea>
                         </div>
                         <div class="row">
-                            <button class="btn btn-outline-success col-4 offset-1" id="update_button" type="submit">
-                                Update
+                            <button
+                                    class="btn btn-outline-primary col-4 offset-1"
+                                    id="update_button"
+                                    type="submit">
+                                Commit Changes
                             </button>
-                            <button class="btn btn-warning col-4 offset-2" type="reset">Reset</button>
+                            <button
+                                    class="btn btn-outline-secondary col-4 offset-2"
+                                    type="reset">
+                                Revert Changes
+                            </button>
                         </div>
                         <div id='alert_row' class="row">
 
                         </div>
                     </form>
-                    <h2>Inventory Items:</h2>
+                    <h2 class="mt-3">Inventory Items:</h2>
                     <table class="table table-dark">
                         <thead>
                         <tr>
@@ -129,22 +136,24 @@
                         </tr>
                         </thead>
                         <tbody id="products_table">
-                        @if(isset($products))
-                            @foreach ($products as $product)
-                                <tr>
-                                    <td>{{$product->id}}</td>
-                                    <td>{{$produt->manufacturer}}</td>
-                                    <td>{{$product->model}}</td>
-                                    <td>{{$produt->type}}</td>
-                                    <td>{{$product->created_at}}</td>
-                                </tr>
-                            @endforeach
-                        @endif
+
+                        @foreach ($workOrder->products as $product)
+                            <tr>
+                                <td>{{$product->id}}</td>
+                                <td>{{$product->manufacturer->name}}</td>
+                                <td>{{$product->model}}</td>
+                                <td>{{$product->type->name}}</td>
+                                <td>{{$product->created_at}}</td>
+                            </tr>
+                        @endforeach
+
                         </tbody>
                     </table>
                     <div class="row">
                         <button
                                 class="btn btn-outline-primary col-6 offset-1"
+                                data-target="#productModal"
+                                data-toggle="modal"
                                 id="add_inventory_button"
                                 type="button"
                         >Add Inventory Item
@@ -153,6 +162,7 @@
                                 class="btn btn-sm col-1 offset-4"
                                 data-placement="bottom"
                                 data-toggle="tooltip"
+                                data-trigger="hover"
                                 data-is-locked="{{ ($workOrder->is_locked) ? 'true' : 'false' }}"
                                 data-work-order-id="{{ $workOrder->id }}"
                                 id="lock_button"
@@ -164,8 +174,73 @@
                 </div>
             </div>
         </div>
-        <div class="row shadow-lg border border-info mt-4">
-            {{ $workOrder }}
+        <div
+                class="modal"
+                id="productModal"
+                role="dialog"
+                tabindex="-1">
+            <div
+                    class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg"
+                    role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Product to Inventory</h5>
+                        <button
+                                aria-label="Close"
+                                class="close"
+                                data-dismiss="modal"
+                                type="button"
+                        ><span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div
+                            class="modal-body"
+                            id="productModalBody"
+                    >
+                        <div class="container-fluid">
+                            <div class="row">
+                                <label for="product_type">Select existing product Type:</label>
+                                <select
+                                        class="form-control custom-select-sm"
+                                        id="product_type"
+                                        name="product_type"
+                                        required
+                                >
+                                    <option disabled selected value> -- select an option --</option>
+                                    @foreach($types as $type)
+                                        <option value="{{ $type->slug }}">{{ $type->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="row" id="typeForm">
+                                <form
+                                        data-work-order-id="{{ $workOrder->id }}"
+                                        id="productForm"
+                                >
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row">
+                            <button
+                                    class="btn btn-outline-secondary"
+                                    data-dismiss="modal"
+                                    type="button"
+                            >Cancel
+                            </button>
+                            <button
+                                    class="btn btn-outline-primary"
+                                    id="productSubmit"
+                                    type="button"
+                            >Add Product
+                            </button>
+                        </div>
+                        <div class="row" id="productError"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

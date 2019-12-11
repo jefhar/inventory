@@ -13,6 +13,8 @@
 
 use App\Admin\Permissions\UserPermissions;
 use App\AjaxSearch\Controllers\AjaxSearchController;
+use App\Products\Controllers\ProductsController;
+use App\Types\Controllers\TypesController;
 use App\WorkOrders\Controllers\ClientsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +67,18 @@ Route::group(
             function () {
                 Route::get(ClientsController::SHOW_PATH, 'ClientsController@show')
                     ->name(ClientsController::SHOW_NAME)->middleware('auth');
+            }
+        );
+        Route::namespace('Types\\Controllers\\')->group(
+            function () {
+                Route::get(TypesController::SHOW_PATH, 'TypesController@show')
+                    ->name(TypesController::SHOW_NAME)->middleware('auth');
+            }
+        );
+        Route::namespace('Products\\Controllers\\')->group(
+            function () {
+                Route::post(ProductsController::STORE_PATH, 'ProductsController@store')
+                    ->name(ProductsController::STORE_NAME)->middleware('auth', 'productStore');
             }
         );
     }

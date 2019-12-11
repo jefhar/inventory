@@ -21,18 +21,20 @@ use Illuminate\Support\Collection;
  *
  * @package Domain\WorkOrders
  *
- * @method Builder|static get()
+ * @method Client get()
+ * @method Collection pluck(string $column, string|null $key = null)
  * @method static Builder inRandomOrder()
- * @method static Builder|static find($value)
- * @method static Builder|static where(string $field, string $value, string $value = null)
- * @method static Builder|static whereIn(string $ID, Collection $client_ids)
- * @method static Model|static first()
- * @method static Model|static firstOrCreate($value)
- * @method static Model|static firstOrNew(array $array)
- * @method static Model|static with(string $relationship)
+ * @method static Builder whereIn(string $ID, Collection $client_ids)
+ * @method static Client find($value)
+ * @method static Client first()
+ * @method static Client firstOrCreate($value)
+ * @method static Client firstOrNew(array $array)
+ * @method static Client where(string $field, ?string $string = null, ?string $string1 = null)
+ * @method static Client with(string $relationship)
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $id
+ * @property int|null $person_count
  * @property Person $person
  * @property string $company_name
  * @property string $first_name

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Copyright 2018, 2019 Jeff Harris
+ * PHP Version 7.4
+ */
+
+declare(strict_types=1);
 
 namespace Tests\Feature;
 
@@ -8,6 +14,11 @@ use App\WorkOrders\Controllers\ClientsController;
 use Domain\WorkOrders\Client;
 use Tests\TestCase;
 
+/**
+ * Class ClientsControllerTest
+ *
+ * @package Tests\Feature
+ */
 class ClientsControllerTest extends TestCase
 {
     /**
