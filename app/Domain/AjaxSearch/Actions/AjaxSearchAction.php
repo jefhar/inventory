@@ -80,14 +80,15 @@ class AjaxSearchAction
     {
         $searchString = "%{$searchString}%";
 
-        return Manufacturer::where(Manufacturer::NAME, 'like', $searchString)->get();
+        return Manufacturer::where(Manufacturer::NAME, 'like', $searchString)->get()->pluck(Manufacturer::NAME)->unique(
+        )->values();
     }
 
     private static function productsByModel(string $searchString): Collection
     {
         $searchString = "%{$searchString}%";
 
-        return Product::where(Product::MODEL, 'like', $searchString)->get();
+        return Product::where(Product::MODEL, 'like', $searchString)->get()->pluck(Product::MODEL)->unique()->values();
     }
 
     public static function findAll(string $searchString): Collection

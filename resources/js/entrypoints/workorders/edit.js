@@ -16,20 +16,25 @@ require("formBuilder/dist/form-render.min");
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const locked = {
-  clickTo: "Click to Unlock work order.",
-  isLockedButton: "btn-outline-danger",
-  lockHeader: "Locked",
-  lockIcon: "fa-unlock-alt",
-  outline: "border-primary"
-};
-const unlocked = {
-  clickTo: "Click to Lock work order.",
-  isLockedButton: "btn-outline-success",
-  lockHeader: "Unlocked",
-  lockIcon: "fa-lock",
-  outline: "border-warning"
-};
+var AutoComplete = require("autocomplete-js");
+
+/*
+handleSearch = query => {
+    this.setState({ isLoading: true, company_name: query });
+    axios
+      .get(`/ajaxsearch/company_name?q=${query}`)
+      .then(response => {
+        this.setState({
+          isLoading: false,
+          options: response.data,
+          company_name: query
+        });
+      })
+      .catch(error => {
+        console.debug(error);
+      });
+  };
+ */
 
 function update() {
   const inventoryButton = document.getElementById("add_inventory_button");
@@ -97,6 +102,7 @@ $(function() {
               },
               {
                 className: "form-control",
+                dataAutocomplete: "/ajaxsearch/manufacturer",
                 label: "Manufacturer",
                 name: "manufacturer",
                 required: "true",
@@ -105,6 +111,7 @@ $(function() {
               },
               {
                 className: "form-control",
+                dataAutocomplete: "/ajaxsearch/model",
                 label: "Model",
                 name: "model",
                 required: "true",
@@ -117,6 +124,7 @@ $(function() {
               formData: formData
             });
             // Add autocomplete to Manufacturer
+            AutoComplete();
             // Add autocomplete to Model
           })
           .catch(error => {
@@ -145,7 +153,6 @@ A simple warning alert—check it out!
             .workOrderId
         };
         for (let i = 0; i < formData.length; i++) {
-          let child = formData[i];
           postData[formData[i].name] = formData[i].value;
         }
         // Post Form
@@ -164,8 +171,6 @@ A simple warning alert—check it out!
 <td>${type}</td>\
 <td>${created_at}</td>`;
             document.getElementById("products_table").appendChild(tr);
-            // destroy form children
-            // Remove any previous alerts
             const productForm = document.getElementById("productForm");
             while (productForm.hasChildNodes()) {
               productForm.removeChild(productForm.lastChild);
@@ -212,17 +217,13 @@ A simple warning alert—check it out!
 
   // Submit changed field data to UPDATE
   document.getElementById("update_button").addEventListener("click", event => {
-    console.log("update_button clicked.");
     const isLockedButton = document.getElementById("lock_button");
     const updateAlert = document.createElement("div");
-
-    // Remove any previous alerts
     const alertRow = document.getElementById("alert_row");
     while (alertRow.hasChildNodes()) {
       alertRow.removeChild(alertRow.lastChild);
     }
 
-    // Gather the information
     const url = `/workorders/${isLockedButton.dataset.workOrderId}`;
     const data = {
       company_name: document.getElementById("company_name").value,
@@ -237,11 +238,9 @@ A simple warning alert—check it out!
     axios
       .patch(url, data)
       .then(response => {
-        console.log("response");
-        console.log(response.data);
-        // Give user a visual indication that fields have been
+        // At some point, give user a visual indication that fields have been
         // updated. Even better, add onChange to the fields, and if
-        // they're dirty, give visual indication.
+        // they're dirty, give visual indication when changed.
         updateAlert.classList.add(
           "alert",
           "alert-success",

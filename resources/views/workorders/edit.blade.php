@@ -174,9 +174,6 @@
                 </div>
             </div>
         </div>
-        <div id="debuggingWorkOrderInformation" class="row shadow-lg border border-info mt-4">
-            {{ $workOrder }}
-        </div>
         <div
                 class="modal"
                 id="productModal"
