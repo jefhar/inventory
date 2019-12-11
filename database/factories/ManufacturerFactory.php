@@ -10,7 +10,7 @@ $factory->define(
     Manufacturer::class,
     function (Faker $faker) {
         return [
-            Manufacturer::NAME => $faker->unique()->company,
+            Manufacturer::NAME => "O'" . $faker->unique()->company,
         ];
     }
 );

@@ -16,25 +16,7 @@ require("formBuilder/dist/form-render.min");
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-var AutoComplete = require("autocomplete-js");
-
-/*
-handleSearch = query => {
-    this.setState({ isLoading: true, company_name: query });
-    axios
-      .get(`/ajaxsearch/company_name?q=${query}`)
-      .then(response => {
-        this.setState({
-          isLoading: false,
-          options: response.data,
-          company_name: query
-        });
-      })
-      .catch(error => {
-        console.debug(error);
-      });
-  };
- */
+const AutoComplete = require("autocomplete-js");
 
 function update() {
   const inventoryButton = document.getElementById("add_inventory_button");
