@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Admin\Permissions\UserPermissions;
+use App\Admin\Permissions\UserRoles;
 use App\Types\Controllers\TypesController;
 use App\User;
 use Domain\Products\Models\Type;
@@ -48,6 +49,23 @@ class TypesControllerTest extends TestCase
             ->actingAs($this->user)
             ->get(route(TypesController::SHOW_NAME, $type->slug))
             ->assertOk();
+    }
+
+    /**
+     * @test
+     */
+    public function techSeesAddTypesAndEmployeeDoesnt(): void
+    {
+        /** @var User $tech */
+        $tech = factory(User::class)->create();
+        $tech->assignRole(UserRoles::TECHNICIAN);
+        $tech->save();
+        $this->actingAs($tech)
+            ->get(route('home'))
+            ->assertSeeText('Create a New Product Type');
+        $this->actingAs($this->user)
+            ->get(route('home'))
+            ->assertDontSeeText('Create a New Product Type');
     }
 
     protected function setUp(): void

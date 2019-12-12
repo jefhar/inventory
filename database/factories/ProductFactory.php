@@ -10,11 +10,19 @@ use Faker\Generator as Faker;
 $factory->define(
     Product::class,
     function (Faker $faker) {
-        $manufacturer = Manufacturer::firstOrCreate([Manufacturer::NAME => $faker->company]);
-        $type = factory(Type::class)->create();
+        if (Manufacturer::count() < 20) {
+            Manufacturer::create([Manufacturer::NAME => $faker->company]);
+        }
+
+        if (Type::count() < 8) {
+            factory(Type::class)->create();
+        }
+
+        $manufacturer = Manufacturer::inRandomOrder()->first();
+        $type = Type::inRandomOrder()->first();
 
         return [
-            Product::MODEL => $faker->word,
+            Product::MODEL => $faker->jobTitle,
             Product::MANUFACTURER_ID => $manufacturer->id,
             Product::TYPE_ID => $type->id,
         ];

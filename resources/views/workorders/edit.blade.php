@@ -4,7 +4,7 @@
     <script src="{{ mix('js/workorders/edit.js') }}" defer></script>
 @endpush
 
-@section('title', 'Edit Work Order #' . $workOrder->id . ': ' . $workOrder->client->company_name )
+@section('title', 'Edit Work Order #' . $workOrder->luhn . ': ' . $workOrder->client->company_name )
 
 @section('content')
     <div id="workorders_edit"></div>
@@ -132,7 +132,7 @@
                             <th scope="col">Make</th>
                             <th scope="col">Model</th>
                             <th scope="col">Type</th>
-                            <th scope="col">Something</th>
+                            <th scope="col">Created At</th>
                         </tr>
                         </thead>
                         <tbody id="products_table">
@@ -164,7 +164,7 @@
                                 data-toggle="tooltip"
                                 data-trigger="hover"
                                 data-is-locked="{{ ($workOrder->is_locked) ? 'true' : 'false' }}"
-                                data-work-order-id="{{ $workOrder->id }}"
+                                data-work-order-id="{{ $workOrder->luhn }}"
                                 id="lock_button"
                                 title="unlock work order"
                                 type="button"
@@ -214,7 +214,7 @@
                             </div>
                             <div class="row" id="typeForm">
                                 <form
-                                        data-work-order-id="{{ $workOrder->id }}"
+                                        data-work-order-id="{{ $workOrder->luhn }}"
                                         id="productForm"
                                 >
 

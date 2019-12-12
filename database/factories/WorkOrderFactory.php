@@ -10,8 +10,14 @@ use Faker\Generator as Faker;
 $factory->define(
     WorkOrder::class,
     function (Faker $faker) {
-        $client = factory(Client::class)->create();
-        $user = factory(User::class)->create();
+        if (Client::count() < 6) {
+            factory(Client::class)->create();
+        }
+        $client = Client::inRandomOrder()->first();
+        $user = User::inRandomOrder()->first();
+        if ($user === null) {
+            $user = factory(User::class)->create();
+        }
 
         return [
             WorkOrder::CLIENT_ID => $client->id,
