@@ -40,17 +40,20 @@ class AjaxSearchAction
             abort(Response::HTTP_NOT_ACCEPTABLE);
         }
 
+        $searchResults = null;
         switch ($field) {
             case Client::COMPANY_NAME:
-                return self::clientsAndPeopleByCompanyName($searchString);
+                $searchResults = self::clientsAndPeopleByCompanyName($searchString);
                 break;
             case 'manufacturer':
-                return self::manufacturersByManufacturerName($searchString);
+                $searchResults = self::manufacturersByManufacturerName($searchString);
                 break;
             case Product::MODEL:
-                return self::productsByModel($searchString);
+                $searchResults = self::productsByModel($searchString);
                 break;
         }
+
+        return $searchResults;
     }
 
     /**
@@ -80,34 +83,53 @@ class AjaxSearchAction
     {
         $searchString = "%{$searchString}%";
 
-        return Manufacturer::where(Manufacturer::NAME, 'like', $searchString)->get()->pluck(Manufacturer::NAME)->unique(
-        )->values();
+        return Manufacturer::where(Manufacturer::NAME, 'like', $searchString)
+            ->get()
+            ->pluck(Manufacturer::NAME)
+            ->unique()
+            ->values();
     }
 
+    /**
+     * @param string $searchString
+     * @return Collection
+     */
     private static function productsByModel(string $searchString): Collection
     {
         $searchString = "%{$searchString}%";
 
-        return Product::where(Product::MODEL, 'like', $searchString)->get()->pluck(Product::MODEL)->unique()->values();
+        return Product::where(Product::MODEL, 'like', $searchString)
+            ->get()
+            ->pluck(Product::MODEL)
+            ->unique()
+            ->values();
     }
 
+    /**
+     * @param string $searchString
+     * @return Collection
+     */
     public static function findAll(string $searchString): Collection
     {
         $client_ids = Client::findByCompanyName($searchString);
-        $clients = Client::whereIn(Client::ID, $client_ids)->get()->map(
-            fn($client) => [
-                'name' => $client->company_name,
-                'url' => '/clients/' . $client->id,
-            ]
-        );
+        $clients = Client::whereIn(Client::ID, $client_ids)
+            ->get()
+            ->map(
+                fn($client) => [
+                    'name' => $client->company_name,
+                    'url' => '/clients/' . $client->id,
+                ]
+            );
 
         $people_ids = Person::findByName($searchString);
-        $people = Person::whereIn(Person::ID, $people_ids)->get()->map(
-            fn($person) => [
-                'name' => $person->first_name . ' ' . $person->last_name,
-                'url' => '/clients/' . $person->client_id,
-            ]
-        );
+        $people = Person::whereIn(Person::ID, $people_ids)
+            ->get()
+            ->map(
+                fn($person) => [
+                    'name' => $person->first_name . ' ' . $person->last_name,
+                    'url' => '/clients/' . $person->client_id,
+                ]
+            );
 
         $collection = collect();
         $collection = $collection->concat($clients);

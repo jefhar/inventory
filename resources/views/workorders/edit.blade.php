@@ -20,7 +20,7 @@
                             Work Order #
                         </div>
                         <div class="row justify-content-center workorder-id">
-                            {{ str_pad($workOrder->id, 6, '0', STR_PAD_LEFT) }}
+                            {{ str_pad($workOrder->luhn, 6, '0', STR_PAD_LEFT) }}
                         </div>
                         <div class="row justify-content-center">
                             {{ $workOrder->created_at->format('j M Y') }}

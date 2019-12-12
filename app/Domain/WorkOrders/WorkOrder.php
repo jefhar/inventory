@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property int $user_id
  * @property string|null $intake
+ * @property int $luhn
  */
 class WorkOrder extends Model
 {
@@ -50,10 +51,22 @@ class WorkOrder extends Model
     ];
     protected $casts = [
         self::IS_LOCKED => 'boolean',
+        self::LUHN => 'int',
     ];
     protected $dispatchesEvents = [
         'created' => WorkOrderCreated::class,
     ];
+
+    /**
+     * This allows for matching the model by the slug in the path
+     *
+     * @return string
+     * @noinspection PhpMissingParentCallCommonInspection
+     */
+    public function getRouteKeyName(): string
+    {
+        return self::LUHN;
+    }
 
     /**
      * @return BelongsTo

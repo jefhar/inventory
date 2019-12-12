@@ -12,15 +12,21 @@ namespace Domain\WorkOrders\Listeners;
 use Domain\WorkOrders\Events\WorkOrderCreated;
 use Tdely\Luhn\Luhn;
 
+/**
+ * Class AddLuhnToWorkOrder
+ *
+ * @package Domain\WorkOrders\Listeners
+ */
 class AddLuhnToWorkOrder
 {
-
-    public function handle(WorkOrderCreated $event)
+    /**
+     * @param WorkOrderCreated $event
+     */
+    public function handle(WorkOrderCreated $event): void
     {
         $id = $event->workOrder->id;
         $luhn = Luhn::create($id);
         $event->workOrder->luhn = $luhn;
         $event->workOrder->save();
     }
-
 }

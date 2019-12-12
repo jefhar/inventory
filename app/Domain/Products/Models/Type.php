@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Domain\Products\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Str;
 
 /**
@@ -21,6 +22,7 @@ use Illuminate\Support\Str;
  * @method static Type where(mixed $field, ?mixed $value = null, ?mixed $value = null)
  * @method Type first()
  * @method Type get()
+ * @method Builder orderBy(string $SLUG)
  * @property string $name
  */
 class Type extends Model

@@ -18,6 +18,7 @@ use Domain\WorkOrders\Person;
 use Domain\WorkOrders\WorkOrder;
 use Faker\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tdely\Luhn\Luhn;
 use Tests\TestCase;
 
 /**
@@ -85,22 +86,21 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function technicianCanStoreWorkOrderWithCompanyNameOnly(): void
     {
+        $checksum = Luhn::create(1);
         $this->actingAs($this->user)
             ->post(
-                route(
-                    WorkOrdersController::STORE_NAME
-                ),
+                route(WorkOrdersController::STORE_NAME),
                 [Client::COMPANY_NAME => self::COMPANY_NAME]
             )
             ->assertJson(['created' => true,])
             ->assertCreated()->assertHeader(
                 'Location',
-                url(route(WorkOrdersController::SHOW_NAME, ['workorder' => 1]))
+                url(route(WorkOrdersController::SHOW_NAME, ['workorder' => $checksum]))
             );
 
         $this->assertDatabaseHas(
             Client::TABLE,
-            [Client::COMPANY_NAME => self::COMPANY_NAME,]
+            [Client::COMPANY_NAME => self::COMPANY_NAME]
         );
     }
 

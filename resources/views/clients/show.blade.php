@@ -33,8 +33,8 @@
                     <tr class="d-flex">
                         <th scope="row" class="col-1">
                             <a class="btn {{ $workOrder->is_locked ? 'btn-warning' : 'btn-success' }}"
-                               href="/workorders/{{ $workOrder->id }}/edit">
-                                {{ str_pad($workOrder->id, 6, '0', STR_PAD_LEFT) }}&nbsp;<i
+                               href="/workorders/{{ $workOrder->luhn }}/edit">
+                                {{ str_pad($workOrder->luhn, 6, '0', STR_PAD_LEFT) }}&nbsp;<i
                                         class="fas fa-{{ $workOrder->is_locked ? 'lock' : 'unlock-alt' }}"></i>
                             </a>
                         </th>

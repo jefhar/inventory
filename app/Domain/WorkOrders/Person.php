@@ -18,13 +18,13 @@ use Illuminate\Support\Collection;
  *
  * @package Domain\WorkOrders
  *
+ * @method Collection map(callable $callback);
  * @method Person get()
- * @method static Collection map(callable $callback);
  * @method static EloquentCollection pluck(string $column, ?string $key = null)
  * @method static Person findOrFail(array $array)
+ * @method static Person orWhere(string $LAST_NAME, string $string, string $string1)
  * @method static Person where(string $column, ?string $string = null, ?string $string1 = null)
  * @method static Person whereIn(string $ID, $people_ids)
- * @method static Person orWhere(string $LAST_NAME, string $string, string $string1)
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $client_id

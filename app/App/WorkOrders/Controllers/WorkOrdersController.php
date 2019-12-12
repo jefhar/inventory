@@ -111,7 +111,7 @@ class WorkOrdersController extends Controller
     public function edit(WorkOrder $workorder): View
     {
         $workorder->load('products');
-        $types = Type::select(Type::SLUG, Type::NAME)->get();
+        $types = Type::select(Type::SLUG, Type::NAME)->orderBy(Type::SLUG)->get();
 
         return view('workorders.edit')->with(['workOrder' => $workorder, 'types' => $types]);
     }
