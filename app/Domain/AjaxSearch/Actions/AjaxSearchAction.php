@@ -27,7 +27,6 @@ class AjaxSearchAction
      * @param string $field ENUM {Client::COMPANY_NAME|manufacturer}
      * @param string $searchString
      * @return Collection
-     * @noinspection PhpInconsistentReturnPointsInspection
      */
     public static function findBy(string $field, string $searchString): Collection
     {
