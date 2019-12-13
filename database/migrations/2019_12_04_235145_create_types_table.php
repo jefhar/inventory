@@ -22,6 +22,7 @@ class CreateTypesTable extends Migration
                 $table->string(Type::SLUG, 64)->unique()->nullable();
                 $table->json(Type::FORM)->nullable();
                 $table->timestamps();
+                $table->softDeletes();
             }
         );
     }

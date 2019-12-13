@@ -11,6 +11,7 @@ namespace Domain\Products\Models;
 
 use Domain\Products\Events\TypeCreated;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Str;
 
@@ -21,14 +22,18 @@ use Illuminate\Support\Str;
  *
  * @method Builder orderBy(string $slug)
  * @method static Type select(?mixed $columns = null, ?mixed $column = null)
+ * @method static Type updateOrCreate(array $attributes, array $values = [])
  * @method static Type where(mixed $field, ?mixed $value = null, ?mixed $value = null)
  * @method Type first()
  * @method Type get()
+ * @property array $form
  * @property string $name
  * @property string $slug
  */
 class Type extends Model
 {
+    use SoftDeletes;
+
     public const FORM = 'form';
     public const ID = 'id';
     public const NAME = 'name';
@@ -40,6 +45,12 @@ class Type extends Model
     protected $dispatchesEvents = [
         'created' => TypeCreated::class,
     ];
+
+    protected $fillable = [
+        self::NAME,
+        self::FORM,
+    ];
+
     /**
      * @param string $name
      */

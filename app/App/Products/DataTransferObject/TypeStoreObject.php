@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * Copyright 2018, 2019 Jeff Harris
+ * PHP Version 7.4
+ */
+
+declare(strict_types=1);
+
+namespace App\Products\DataTransferObject;
+
+use Domain\Products\Models\Type;
+use Spatie\DataTransferObject\DataTransferObject;
+
+/**
+ * Class TypeStoreObject
+ *
+ * @package App\Products\DataTransferObject
+ */
+class TypeStoreObject extends DataTransferObject
+{
+    public string $form;
+    public string $name;
+
+    /**
+     * @param array $validated
+     * @return static
+     */
+    public static function fromRequest(array $validated): self
+    {
+        return new self(
+            [
+                Type::FORM => $validated[Type::FORM],
+                Type::NAME => $validated[Type::NAME],
+            ]
+        );
+    }
+}
