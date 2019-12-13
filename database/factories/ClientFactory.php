@@ -2,7 +2,7 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use Domain\WorkOrders\Client;
+use Domain\WorkOrders\Models\Client;
 use Faker\Generator as Faker;
 
 $factory->define(

@@ -9,15 +9,25 @@ declare(strict_types=1);
 
 namespace Domain\WorkOrders\Events;
 
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\WorkOrder;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Class WorkOrderCreated
+ *
+ * @package Domain\WorkOrders\Events
+ */
 class WorkOrderCreated
 {
     use SerializesModels;
 
     public WorkOrder $workOrder;
 
+    /**
+     * WorkOrderCreated constructor.
+     *
+     * @param WorkOrder $workOrder
+     */
     public function __construct(WorkOrder $workOrder)
     {
         $this->workOrder = $workOrder;

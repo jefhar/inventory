@@ -9,15 +9,22 @@ declare(strict_types=1);
 
 namespace App\WorkOrders\Requests;
 
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
+use Domain\WorkOrders\Models\WorkOrder;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class WorkOrderUpdateRequest
+ *
+ * @package App\WorkOrders\Requests
+ */
 class WorkOrderUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     * Here's a quick tip: If there is no authorize() function, the parent
+     * class returns true to authorize();
      *
      * @return bool
      */

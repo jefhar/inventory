@@ -11,9 +11,9 @@ namespace Tests\Unit;
 use Domain\AjaxSearch\Actions\AjaxSearchAction;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
+use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
 
 /**

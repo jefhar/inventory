@@ -13,7 +13,7 @@ use App\Products\DataTransferObject\ProductStoreObject;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\WorkOrder;
 
 /**
  * Class ProductStoreAction

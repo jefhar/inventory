@@ -12,9 +12,9 @@ use App\Admin\Permissions\UserPermissions;
 use App\User;
 use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
+use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
 
 /**

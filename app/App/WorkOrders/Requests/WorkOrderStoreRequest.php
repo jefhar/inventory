@@ -1,9 +1,16 @@
 <?php
 
+/**
+ * Copyright 2018, 2019 Jeff Harris
+ * PHP Version 7.4
+ */
+
+declare(strict_types=1);
+
 namespace App\WorkOrders\Requests;
 
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -39,6 +46,11 @@ class WorkOrderStoreRequest extends FormRequest
         ];
     }
 
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array
+     */
     public function attributes(): array
     {
         return [

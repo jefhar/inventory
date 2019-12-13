@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Domain\WorkOrders;
+namespace Domain\WorkOrders\Models;
 
 use App\User;
 use Domain\Products\Models\Product;
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * Class WorkOrder
  *
- * @package Domain\WorkOrders
+ * @package Domain\WorkOrders\Models
  *
  * @method static Collection paginate(int $int)
  * @method static WorkOrder findOrFail($get)

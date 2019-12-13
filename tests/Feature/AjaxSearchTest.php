@@ -11,8 +11,8 @@ namespace Tests\Feature;
 use App\Admin\Permissions\UserRoles;
 use App\AjaxSearch\Controllers\AjaxSearchController;
 use App\User;
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 

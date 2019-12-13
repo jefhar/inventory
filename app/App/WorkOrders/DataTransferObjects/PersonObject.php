@@ -8,9 +8,14 @@ declare(strict_types=1);
 
 namespace App\WorkOrders\DataTransferObjects;
 
-use Domain\WorkOrders\Person;
+use Domain\WorkOrders\Models\Person;
 use Spatie\DataTransferObject\DataTransferObject;
 
+/**
+ * Class PersonObject
+ *
+ * @package App\WorkOrders\DataTransferObjects
+ */
 class PersonObject extends DataTransferObject
 {
     public string $email;

@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Domain\WorkOrders;
+namespace Domain\WorkOrders\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,7 +19,7 @@ use Illuminate\Support\Collection;
 /**
  * Class Client
  *
- * @package Domain\WorkOrders
+ * @package Domain\WorkOrders\Models
  *
  * @method Client get()
  * @method Collection pluck(string $column, string|null $key = null)

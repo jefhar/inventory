@@ -11,7 +11,7 @@ namespace Tests\Unit;
 
 use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
 
 /**

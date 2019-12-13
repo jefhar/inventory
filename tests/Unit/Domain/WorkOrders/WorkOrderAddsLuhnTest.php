@@ -1,12 +1,24 @@
 <?php
 
+/**
+ * Copyright 2018, 2019 Jeff Harris
+ * PHP Version 7.4
+ */
+
+declare(strict_types=1);
+
 namespace Tests\Unit\Domain\WorkOrders;
 
 use Domain\WorkOrders\Events\WorkOrderCreated;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\WorkOrder;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
+/**
+ * Class WorkOrderAddsLuhnTest
+ *
+ * @package Tests\Unit\Domain\WorkOrders
+ */
 class WorkOrderAddsLuhnTest extends TestCase
 {
     /**

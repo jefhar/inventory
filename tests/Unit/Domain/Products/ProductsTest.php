@@ -11,7 +11,7 @@ namespace Tests\Unit\Domain\Products;
 
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
 use Tests\TestCase;
 

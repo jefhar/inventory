@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace App\Products\Requests;
 
 use Domain\Products\Models\Type;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\WorkOrder;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**

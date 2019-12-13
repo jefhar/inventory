@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Domain\WorkOrders;
+namespace Domain\WorkOrders\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
 /**
  * Class Person
  *
- * @package Domain\WorkOrders
+ * @package Domain\WorkOrders\Models
  *
  * @method Collection map(callable $callback);
  * @method Person get()

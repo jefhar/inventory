@@ -13,9 +13,9 @@ use App\User;
 use App\WorkOrders\DataTransferObjects\ClientObject;
 use App\WorkOrders\DataTransferObjects\PersonObject;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
+use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
 
 /**

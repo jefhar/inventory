@@ -12,7 +12,8 @@ namespace Tests\Feature;
 use App\Admin\Permissions\UserPermissions;
 use App\User;
 use App\WorkOrders\Controllers\ClientsController;
-use Domain\WorkOrders\Client;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
 use Tests\TestCase;
 
 /**
@@ -27,11 +28,15 @@ class ClientsControllerTest extends TestCase
      */
     public function clientsShowPageListsWorkOrders(): void
     {
-        $client = factory(Client::class)->create();
+        $client = factory(Client::class)->make();
+        $client->company_name = "O'" . $client->company_name;
+        $person = factory(Person::class)->make();
+        $client->save();
+        $client->person()->save($person);
         $user = factory(User::class)->create();
         $user->givePermissionTo(UserPermissions::IS_EMPLOYEE);
         $this->actingAs($user)
             ->get(route(ClientsController::SHOW_NAME, $client))
-            ->assertSee($client->company_name);
+            ->assertSeeText(htmlspecialchars($client->company_name, ENT_QUOTES | ENT_HTML401));
     }
 }

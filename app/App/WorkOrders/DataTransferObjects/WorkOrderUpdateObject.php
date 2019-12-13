@@ -9,11 +9,16 @@ declare(strict_types=1);
 
 namespace App\WorkOrders\DataTransferObjects;
 
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
+use Domain\WorkOrders\Models\WorkOrder;
 use Spatie\DataTransferObject\DataTransferObject;
 
+/**
+ * Class WorkOrderUpdateObject
+ *
+ * @package App\WorkOrders\DataTransferObjects
+ */
 class WorkOrderUpdateObject extends DataTransferObject
 {
     public ?bool $is_locked = null;
