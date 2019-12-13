@@ -66,10 +66,10 @@ class AjaxSearchAction
 
         return $clients->map(
             fn($item) => [
-                Person::CLIENT_ID => $item->id,
-                Client::COMPANY_NAME => $item->company_name,
-                Person::FIRST_NAME => $item->person->first_name,
-                Person::LAST_NAME => $item->person->last_name,
+            Person::CLIENT_ID => $item->id,
+            Client::COMPANY_NAME => $item->company_name,
+            Person::FIRST_NAME => $item->person->first_name,
+            Person::LAST_NAME => $item->person->last_name,
             ]
         );
     }
@@ -115,8 +115,8 @@ class AjaxSearchAction
             ->get()
             ->map(
                 fn($client) => [
-                    'name' => $client->company_name,
-                    'url' => '/clients/' . $client->id,
+                'name' => $client->company_name,
+                'url' => '/clients/' . $client->id,
                 ]
             );
 
@@ -125,8 +125,8 @@ class AjaxSearchAction
             ->get()
             ->map(
                 fn($person) => [
-                    'name' => $person->first_name . ' ' . $person->last_name,
-                    'url' => '/clients/' . $person->client_id,
+                'name' => $person->first_name . ' ' . $person->last_name,
+                'url' => '/clients/' . $person->client_id,
                 ]
             );
 

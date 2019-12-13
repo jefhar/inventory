@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Domain\Products\Models;
 
+use Domain\Products\Events\TypeCreated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Str;
@@ -18,12 +19,13 @@ use Illuminate\Support\Str;
  *
  * @package Domain\Products\Models
  *
+ * @method Builder orderBy(string $slug)
  * @method static Type select(?mixed $columns = null, ?mixed $column = null)
  * @method static Type where(mixed $field, ?mixed $value = null, ?mixed $value = null)
  * @method Type first()
  * @method Type get()
- * @method Builder orderBy(string $SLUG)
  * @property string $name
+ * @property string $slug
  */
 class Type extends Model
 {
@@ -35,6 +37,9 @@ class Type extends Model
 
     protected $table = self::TABLE;
 
+    protected $dispatchesEvents = [
+        'created' => TypeCreated::class,
+    ];
     /**
      * @param string $name
      */
