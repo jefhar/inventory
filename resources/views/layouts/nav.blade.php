@@ -23,8 +23,9 @@
                             {{ Auth::user()->name }} <span class="caret"></span>
                         </a>
 
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{{ route('logout') }}"
+                        <div class="dropdown-menu dropdown-menu-right bg-transparent border-secondary"
+                             aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item text-light" href="{{ route('logout') }}"
                                onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                 {{ __('Logout') }}
@@ -41,8 +42,9 @@
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Work Orders
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="workOrderDropdownMenuLink">
-                        <a class="dropdown-item" href="/workorders/create">Create</a>
+                    <div class="dropdown-menu bg-transparent border-secondary"
+                         aria-labelledby="workOrderDropdownMenuLink">
+                        <a class="dropdown-item text-light" href="/workorders/create">Create</a>
                     </div>
                 </li>
             </ul>
@@ -51,7 +53,7 @@
             <ul class="navbar-nav ml-auto">
 
             </ul>
-            @auth
+        @auth
                 <!-- AutoComplete Search Bar -->
                     <form class="form-inline">
                         <div class="input-group">

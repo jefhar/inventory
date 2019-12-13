@@ -83,10 +83,10 @@ class WorkOrdersController extends Controller
         $workOrder = WorkOrdersStoreAction::execute(ClientObject::fromRequest($validated), $personObject);
 
         return response()
-            ->json(['workorder_id' => $workOrder->id, 'created' => true], Response::HTTP_CREATED)
+            ->json(['workorder_id' => $workOrder->luhn, 'created' => true], Response::HTTP_CREATED)
             ->header(
                 'Location',
-                route(self::SHOW_NAME, ['workorder' => $workOrder])
+                route(self::SHOW_NAME, ['workorder' => $workOrder->luhn])
             );
     }
 

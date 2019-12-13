@@ -37,7 +37,7 @@ class ProductStoreRequest extends FormRequest
             'manufacturer' => ['required'],
             'model' => ['required'],
             'type' => ['required', 'exists:' . Type::TABLE . ',' . Type::SLUG],
-            'workOrderId' => ['required', 'exists:' . WorkOrder::TABLE . ',' . WorkOrder::ID],
+            'workOrderId' => ['required', 'exists:' . WorkOrder::TABLE . ',' . WorkOrder::LUHN],
             'values' => ['array'],
         ];
     }

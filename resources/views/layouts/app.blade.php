@@ -22,8 +22,9 @@
 </head>
 <body>
 <div id="app">
-    @include('layouts.nav')
-
+    <header>
+        @include('layouts.nav')
+    </header>
     <main class="py-4">
         @yield('content')
     </main>

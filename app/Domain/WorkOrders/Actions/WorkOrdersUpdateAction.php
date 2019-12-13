@@ -19,7 +19,7 @@ class WorkOrdersUpdateAction
 
     public static function execute(WorkOrder $workOrder, WorkOrderUpdateObject $workOrderUpdateObject): array
     {
-        $changedFields[WorkOrder::ID] = $workOrder->id;
+        $changedFields[WorkOrder::ID] = $workOrder->luhn;
         $workOrder->client->loadCount('person');
         $client = $workOrder->client;
         $person = new Person();

@@ -9,7 +9,7 @@
 @section('content')
     <div id="workorders_edit"></div>
     <div class="container">
-        <div id="outline" class="row shadow-sm border border-{{ $workOrder->is_locked ? 'warning' : 'success' }}">
+        <div id="outline" class="row shadow border border-{{ $workOrder->is_locked ? 'warning' : 'success' }}">
             <div class="card col-md">
                 <div class="card-header row">
                     <div class="col">
@@ -28,69 +28,74 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form>
-                        <div class="form-group form-row">
+                    <form class="container">
+                        <div class="form-row">
                             <label
-                                    class="form-group col-form-label-sm"
+                                    class="col-form-label-sm"
                                     for="company_name"
                             >Client Company Name:</label>
                             <input
                                     class="form-control form-control-sm"
                                     id="company_name"
                                     name="company_name"
+                                    placeholder="Company Name"
                                     required
                                     type="text"
                                     value="{{ $workOrder->client->company_name }}"
                             />
                         </div>
-                        <div class="form-group form-row">
-                            <label
-                                    class="col-sm-2 d-md-none col-form-label-sm"
-                                    for="first_name"
-                            >First Name</label>
+                        <div class="form-row">
                             <div class="col">
+                                <label
+                                        class="col-form-label-sm"
+                                        for="first_name"
+                                >First Name</label>
                                 <input
                                         class="form-control form-control-sm"
                                         id="first_name"
                                         name="first_name"
+                                        placeholder="First Name"
                                         value="{{ $workOrder->client->person->first_name }}"
                                 />
                             </div>
-                            <label
-                                    class="col-sm-2 d-md-none col-form-label-sm"
-                                    for="last_name"
-                            >Last Name</label>
                             <div class="col">
+                                <label
+                                        class="col-form-label-sm"
+                                        for="last_name"
+                                >Last Name</label>
                                 <input
                                         class="form-control form-control-sm"
                                         id="last_name"
                                         name="last_name"
+                                        placeholder="Last Name"
                                         value="{{ $workOrder->client->person->last_name }}"
                                 />
                             </div>
                         </div>
-                        <div class="form-group form-row">
-                            <label
-                                    class="col-sm-2 d-md-none col-form-label-sm"
-                                    for="phone_number"
-                            >Phone</label>
-                            <div class="col">
+                        <div class="form-row">
+                            <div class="col-12 col-sm-6">
+                                <label
+                                        class="col-form-label-sm"
+                                        for="phone_number"
+                                >Phone</label>
                                 <input
                                         class="form-control form-control-sm"
                                         id="phone_number"
                                         name="phone_number"
+                                        placeholder="Phone Number"
                                         value="{{ $workOrder->client->person->phone_number }}"
                                 />
                             </div>
-                            <label
-                                    class="col-sm-2 d-md-none col-form-label-sm"
-                                    for="email"
-                            >email</label>
-                            <div class="col">
+                            <div class="col-12 col-sm-6">
+                                <label
+                                        class="col-form-label-sm"
+                                        for="email"
+                                >email</label>
                                 <input
                                         class="form-control form-control-sm"
                                         id="email"
                                         name="email"
+                                        placeholder="Email Address"
                                         type="email"
                                         value="{{ $workOrder->client->person->email }}"
                                 />
@@ -98,7 +103,7 @@
                         </div>
                         <div class="form-group form-row">
                             <label
-                                    class="form-check-label"
+                                    class="col-form-label-sm"
                                     for="intake"
                             >Intake Notes:</label><br/>
                             <textarea

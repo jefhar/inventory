@@ -225,13 +225,20 @@ A simple warning alert—check it out!
         // they're dirty, give visual indication when changed.
         updateAlert.classList.add(
           "alert",
+          "alert-dismissible",
           "alert-success",
           "col-6",
+          "fade",
           "mt-3",
-          "offset-3"
+          "offset-3",
+          "shadow",
+          "show"
         );
-        updateAlert.innerHTML =
-          '<h4 class="alert-heading">Success</h4><p>Work Order successfully updated.</p>';
+        updateAlert.innerHTML = `<h4 class="alert-heading">Success</h4>\
+<p>Work Order successfully updated.</p>\
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">\
+<span aria-hidden="true">&times;</span>\
+</button>`;
       })
       .catch(error => {
         console.debug(error);

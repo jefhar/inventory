@@ -45,7 +45,7 @@ class ProductsControllerTest extends TestCase
             'select-1575689474390' => 'option-2',
             'textarea-1575689477555' => 'textarea text. Bwahahahahaaaa',
             'type' => $type->slug,
-            'workOrderId' => $workOrder->id,
+            'workOrderId' => $workOrder->luhn,
         ];
 
         $this->actingAs($this->user)

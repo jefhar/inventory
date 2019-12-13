@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static WorkOrder findOrFail($get)
  * @method static WorkOrder where(mixed $field, ?mixed $value = null, ?mixed $value = null)
  * @method static WorkOrder whereNotIn(string $field, array $searchArray)
+ * @method WorkOrder first()
  * @property bool $is_locked
  * @property Client $client
  * @property int $id

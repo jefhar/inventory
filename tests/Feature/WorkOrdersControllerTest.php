@@ -202,7 +202,7 @@ class WorkOrdersControllerTest extends TestCase
                 [WorkOrder::IS_LOCKED => true]
             )->assertJson(
                 [
-                    WorkOrder::ID => $workOrder->id,
+                    WorkOrder::ID => $workOrder->luhn,
                     WorkOrder::IS_LOCKED => true,
                 ]
             )->assertJsonMissing(
@@ -231,7 +231,7 @@ class WorkOrdersControllerTest extends TestCase
                 [WorkOrder::IS_LOCKED => false]
             )->assertJson(
                 [
-                    WorkOrder::ID => $workOrder->id,
+                    WorkOrder::ID => $workOrder->luhn,
                     WorkOrder::IS_LOCKED => false,
                 ]
             )->assertOk();
