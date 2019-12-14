@@ -63,3 +63,5 @@ testdusk:
 builddusk:
 	docker build -t registry.gitlab.com/c11k/serviceandgoods:dusk phpdocker/dusk
 
+refresh:
+	php artisan db:wipe && php artisan migrate && php artisan db:seed --class UsersTableSeeder && php artisan db:seed --class DummyDataSeeder

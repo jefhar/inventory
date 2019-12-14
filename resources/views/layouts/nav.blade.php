@@ -19,13 +19,12 @@
                 @else
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            {{ Auth::user()->name }} <span class="caret"></span>
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ Auth::user()->name }}
                         </a>
 
-                        <div class="dropdown-menu dropdown-menu-right bg-transparent border-secondary"
-                             aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item text-light" href="{{ route('logout') }}"
+                        <div class="dropdown-menu dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{{ route('logout') }}"
                                onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                 {{ __('Logout') }}
@@ -36,17 +35,18 @@
                             </form>
                         </div>
                     </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="workOrderDropdownMenuLink" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Work Orders
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="workOrderDropdownMenuLink">
+                            <a class="dropdown-item" href="/workorders/create">Create</a>
+                            <div class="dropdown-divider"></div>
+                        </div>
+                    </li>
                 @endguest
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="workOrderDropdownMenuLink" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Work Orders
-                    </a>
-                    <div class="dropdown-menu bg-transparent border-secondary"
-                         aria-labelledby="workOrderDropdownMenuLink">
-                        <a class="dropdown-item text-light" href="/workorders/create">Create</a>
-                    </div>
-                </li>
             </ul>
 
             <!-- Right Side Of Navbar -->
@@ -54,17 +54,17 @@
 
             </ul>
         @auth
-                <!-- AutoComplete Search Bar -->
-                    <form class="form-inline">
-                        <div class="input-group">
-                            <input id="site-search" class="form-control" type="search" placeholder="Search"
-                                   aria-label="Search">
-                            <div class="input-group-append">
-                                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                            </div>
+            <!-- AutoComplete Search Bar -->
+                <form class="form-inline">
+                    <div class="input-group">
+                        <input id="site-search" class="form-control" type="search" placeholder="Search"
+                               aria-label="Search">
+                        <div class="input-group-append">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
                         </div>
-                    </form>
-                @endauth
+                    </div>
+                </form>
+            @endauth
         </div>
     </div>
 </nav>

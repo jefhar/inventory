@@ -6,7 +6,6 @@
 import React from "react";
 import axios from "axios";
 
-require("../../bootstrap");
 require("formBuilder/dist/form-builder.min");
 require("formBuilder/dist/form-render.min");
 
@@ -19,11 +18,11 @@ require("formBuilder/dist/form-render.min");
 const AutoComplete = require("autocomplete-js");
 
 function update() {
-  const inventoryButton = document.getElementById("add_inventory_button");
-  const isLockedButton = document.getElementById("lock_button");
-  const lockIcon = document.getElementById("lock-icon");
+  const inventoryButton = document.getElementById("addInventoryButton");
+  const isLockedButton = document.getElementById("lockButton");
+  const lockIcon = document.getElementById("lockIcon");
   const outline = document.getElementById("outline");
-  const lockHeader = document.getElementById("locked_header");
+  const lockHeader = document.getElementById("lockedHeader");
   const locked = {
     clickTo: "Click to Unlock work order.",
     isLockedButton: "btn-outline-danger",
@@ -39,99 +38,120 @@ function update() {
     outline: "border-warning"
   };
   const updateUI = (add, remove) => {
-    isLockedButton.classList.add(add.isLockedButton);
-    lockIcon.classList.add(add.lockIcon);
+    if (isLockedButton) {
+      isLockedButton.classList.add(add.isLockedButton);
+
+      lockIcon.classList.add(add.lockIcon);
+    }
     outline.classList.add(add.outline);
 
-    isLockedButton.classList.remove(remove.isLockedButton);
-    lockIcon.classList.remove(remove.lockIcon);
+    if (isLockedButton) {
+      isLockedButton.classList.remove(remove.isLockedButton);
+
+      lockIcon.classList.remove(remove.lockIcon);
+    }
     outline.classList.remove(remove.outline);
 
     $('[data-toggle="tooltip"]').attr("data-original-title", add.clickTo);
   };
 
-  if (isLockedButton.dataset.isLocked === "true") {
+  if (document.getElementById("workOrderBody").dataset.isLocked === "true") {
     updateUI(locked, unlocked);
     lockHeader.innerText = locked.lockHeader;
   } else {
     updateUI(unlocked, locked);
     lockHeader.innerText = unlocked.lockHeader;
   }
-  inventoryButton.disabled = isLockedButton.dataset.isLocked === "true";
+  if (inventoryButton) {
+    inventoryButton.disabled =
+      document.getElementById("workOrderBody").dataset.isLocked === "true";
+  }
 }
 
 $(function() {
   $('[data-toggle="tooltip"]').tooltip();
   $("#productModal").on("shown.bs.modal", event => {
     // Defer attaching event listener until modal opens
-    // Because #product_type is not attached until modal opens
-    document
-      .getElementById("product_type")
-      .addEventListener("change", event => {
-        const { value } = event.target;
-        const select = document.getElementById("product_type");
-        let $formContainer = $(document.getElementById("typeForm"));
-        axios
-          .get(`/types/${value}`, value)
-          .then(response => {
-            const formData = response.data;
-            formData.unshift(
-              {
-                type: "header",
-                className: "mt-3",
-                label: select.options[select.selectedIndex].innerText,
-                subtype: "h3"
-              },
-              {
-                className: "form-control",
-                dataAutocomplete: "/ajaxsearch/manufacturer",
-                label: "Manufacturer",
-                name: "manufacturer",
-                required: "true",
-                subtype: "text",
-                type: "text"
-              },
-              {
-                className: "form-control",
-                dataAutocomplete: "/ajaxsearch/model",
-                label: "Model",
-                name: "model",
-                required: "true",
-                subtype: "text",
-                type: "text"
-              }
-            );
+    // Because #productType is not attached until modal opens
+    document.getElementById("productType").addEventListener("change", event => {
+      const { value } = event.target;
+      const select = document.getElementById("productType");
+      let $formContainer = $(document.getElementById("typeForm"));
+      let spinner = document.getElementById("spinner");
+      spinner.classList.remove("invisible");
+      spinner.classList.add("visible");
+      console.log("visible");
 
-            $("form", $formContainer).formRender({
-              formData: formData
-            });
-            // Add autocomplete to Manufacturer
-            AutoComplete();
-            // Add autocomplete to Model
-          })
-          .catch(error => {
-            console.log("error");
-            console.log(error);
-            // Create warning alert
-            // Attach warning alert as a child to $formContainer
-            /*
+      axios
+        .get(`/types/${value}`, value)
+        .then(response => {
+          const formData = response.data;
+          formData.unshift(
+            {
+              type: "header",
+              className: "mt-3",
+              label: select.options[select.selectedIndex].innerText,
+              subtype: "h3"
+            },
+            {
+              className: "form-control",
+              dataAutocomplete: "/ajaxsearch/manufacturer",
+              label: "Manufacturer",
+              name: "manufacturer",
+              required: "true",
+              subtype: "text",
+              type: "text"
+            },
+            {
+              className: "form-control",
+              dataAutocomplete: "/ajaxsearch/model",
+              label: "Model",
+              name: "model",
+              required: "true",
+              subtype: "text",
+              type: "text"
+            }
+          );
+
+          $("form", $formContainer).formRender({
+            formData: formData
+          });
+          // Add autocomplete to Manufacturer
+          AutoComplete({
+            _Cache: function(value) {
+              value += this.Input.name;
+              return this.$Cache[value];
+            }
+          });
+          // Add autocomplete to Model
+        })
+        .catch(error => {
+          console.log("error");
+          console.log(error);
+          // Create warning alert
+          // Attach warning alert as a child to $formContainer
+          /*
 <div class="alert alert-warning" role="alert">
 A simple warning alert—check it out!
 </div>
 */
-            let alert = document.createElement("div");
-            alert.classList.add("alert", "alert-warning");
-            alert.innerText = error;
-            $formContainer.append(alert);
-          });
-      });
+          let alert = document.createElement("div");
+          alert.classList.add("alert", "alert-warning");
+          alert.innerText = error;
+          $formContainer.append(alert);
+        })
+        .finally(() => {
+          spinner.classList.remove("visible");
+          spinner.classList.add("invisible");
+        });
+    });
     document
       .getElementById("productSubmit")
       .addEventListener("click", event => {
         const formData = document.getElementById("productForm");
         const postData = {
-          type: document.getElementById("product_type").value,
-          workOrderId: document.getElementById("lock_button").dataset
+          type: document.getElementById("productType").value,
+          workOrderId: document.getElementById("workOrderBody").dataset
             .workOrderId
         };
         for (let i = 0; i < formData.length; i++) {
@@ -157,6 +177,7 @@ A simple warning alert—check it out!
             while (productForm.hasChildNodes()) {
               productForm.removeChild(productForm.lastChild);
             }
+            document.getElementById("productType").selectedIndex = 0;
             // close modal
             $("#productModal").modal("hide");
             $(".modal-backdrop").remove();
@@ -178,85 +199,110 @@ A simple warning alert—check it out!
             document.getElementById("productError").appendChild(errorAlert);
           });
       });
+    document.getElementById("cancelButton").addEventListener("click", event => {
+      const productForm = document.getElementById("productForm");
+      while (productForm.hasChildNodes()) {
+        productForm.removeChild(productForm.lastChild);
+      }
+      document.getElementById("productType").selectedIndex = 0;
+    });
   });
 
   // Lock/Unlock work order
-  document.getElementById("lock_button").addEventListener("click", () => {
-    const isLockedButton = document.getElementById("lock_button");
-    const wantOrderToBeLocked = !(isLockedButton.dataset.isLocked === "true");
-    const data = { is_locked: wantOrderToBeLocked };
-    const url = `/workorders/${isLockedButton.dataset.workOrderId}`;
-    axios
-      .patch(url, data)
-      .then(response => {
-        isLockedButton.dataset.isLocked = response.data.is_locked;
-        update();
-      })
-      .catch(error => {
-        console.log(error.response.data);
-      });
-  });
-
+  if (document.getElementById("lockButton")) {
+    document.getElementById("lockButton").addEventListener("click", () => {
+      const wantOrderToBeLocked = !(
+        document.getElementById("workOrderBody").dataset.isLocked === "true"
+      );
+      const data = { is_locked: wantOrderToBeLocked };
+      const url = `/workorders/${
+        document.getElementById("workOrderBody").dataset.workOrderId
+      }`;
+      axios
+        .patch(url, data)
+        .then(response => {
+          document.getElementById("workOrderBody").dataset.isLocked =
+            response.data.is_locked;
+          update();
+        })
+        .catch(error => {
+          console.log(error.response.data);
+        });
+    });
+  }
   // Submit changed field data to UPDATE
-  document.getElementById("update_button").addEventListener("click", event => {
-    const isLockedButton = document.getElementById("lock_button");
-    const updateAlert = document.createElement("div");
-    const alertRow = document.getElementById("alert_row");
-    while (alertRow.hasChildNodes()) {
-      alertRow.removeChild(alertRow.lastChild);
-    }
+  if (document.getElementById("update_button")) {
+    document
+      .getElementById("update_button")
+      .addEventListener("click", event => {
+        const cardBody = document.getElementById("workOrderBody");
+        const updateToast = document.createElement("div");
+        const url = `/workorders/${cardBody.dataset.workOrderId}`;
+        const data = {
+          company_name: document.getElementById("company_name").value,
+          email: document.getElementById("email").value,
+          first_name: document.getElementById("first_name").value,
+          intake: document.getElementById("intake").value,
+          last_name: document.getElementById("last_name").value,
+          phone_number: document.getElementById("phone_number").value
+        };
 
-    const url = `/workorders/${isLockedButton.dataset.workOrderId}`;
-    const data = {
-      company_name: document.getElementById("company_name").value,
-      email: document.getElementById("email").value,
-      first_name: document.getElementById("first_name").value,
-      intake: document.getElementById("intake").value,
-      last_name: document.getElementById("last_name").value,
-      phone_number: document.getElementById("phone_number").value
-    };
+        updateToast.id = "updateToast";
+        updateToast.classList.add("toast");
+        updateToast.style.position = "absolute";
+        updateToast.style.top = "0";
+        updateToast.style.right = "0";
+        updateToast.dataset.delay = "8000";
 
-    // send PATCH via axios
-    axios
-      .patch(url, data)
-      .then(response => {
-        // At some point, give user a visual indication that fields have been
-        // updated. Even better, add onChange to the fields, and if
-        // they're dirty, give visual indication when changed.
-        updateAlert.classList.add(
-          "alert",
-          "alert-dismissible",
-          "alert-success",
-          "col-6",
-          "fade",
-          "mt-3",
-          "offset-3",
-          "shadow",
-          "show"
-        );
-        updateAlert.innerHTML = `<h4 class="alert-heading">Success</h4>\
-<p>Work Order successfully updated.</p>\
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">\
-<span aria-hidden="true">&times;</span>\
-</button>`;
-      })
-      .catch(error => {
-        console.debug(error);
-        updateAlert.innerText = error.toString();
-        updateAlert.classList.add(
-          "alert",
-          "alert-warning",
-          "mt-3",
-          "col-6",
-          "offset-3"
-        );
-      })
-      .finally(() => {
-        alertRow.appendChild(updateAlert);
+        // send PATCH via axios
+        axios
+          .patch(url, data)
+          .then(response => {
+            // At some point, give user a visual indication that fields have been
+            // updated. Even better, add onChange to the fields, and if
+            // they're dirty, give visual indication when changed.
+
+            updateToast.innerHTML = `\  
+    <div class="toast-header">
+      <i class="fas fa-check-square text-success"></i>&nbsp;
+      <strong class="mr-auto">Success</strong>
+      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="toast-body">
+      Work Order successfully updated.
+    </div>`;
+          })
+          .catch(error => {
+            console.debug(error);
+            updateToast.innerHTML = `  <div
+  style="position: absolute; top: 0; right: 0;"
+  class="toast"
+  role="alert"
+  aria-live="assertive" 
+  aria-atomic="true">
+    <div class="toast-header">
+      <i class="fas fa-exclamation-circle text-warning"></i>&nbsp;
+      <strong class="mr-auto">Warning</strong>
+      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="toast-body">
+      ${error}
+    </div>
+  </div>`;
+          })
+          .finally(() => {
+            document.getElementById("workOrderBody").appendChild(updateToast);
+            const $updateToast = $("#updateToast");
+            $updateToast.toast();
+            $updateToast.toast("show");
+          });
+
+        event.preventDefault();
       });
-
-    event.preventDefault();
-  });
-
+  }
   update();
 });

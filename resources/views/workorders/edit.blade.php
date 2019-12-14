@@ -13,7 +13,7 @@
             <div class="card col-md">
                 <div class="card-header row">
                     <div class="col">
-                        <h1 class="text-center"><span id="locked_header">The</span> Work Order</h1>
+                        <h1 class="text-center"><span id="lockedHeader">The</span> Work Order</h1>
                     </div>
                     <div class="col-sm-3 col-md-2 shadow-sm">
                         <div class="row justify-content-center">
@@ -27,7 +27,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
+                <div
+                        aria-atomic="true"
+                        aria-live="polite"
+                        class="card-body"
+                        data-is-locked="{{ ($workOrder->is_locked) ? 'true' : 'false' }}"
+                        data-work-order-id="{{ $workOrder->luhn }}"
+                        id="workOrderBody"
+                        style="position: relative; min-height: 200px;"
+                >
                     <form class="container">
                         <div class="form-row">
                             <label
@@ -154,28 +162,28 @@
 
                         </tbody>
                     </table>
-                    <div class="row">
-                        <button
-                                class="btn btn-outline-primary col-6 offset-1"
-                                data-target="#productModal"
-                                data-toggle="modal"
-                                id="add_inventory_button"
-                                type="button"
-                        >Add Inventory Item
-                        </button>
-                        <button
-                                class="btn btn-sm col-1 offset-4"
-                                data-placement="bottom"
-                                data-toggle="tooltip"
-                                data-trigger="hover"
-                                data-is-locked="{{ ($workOrder->is_locked) ? 'true' : 'false' }}"
-                                data-work-order-id="{{ $workOrder->luhn }}"
-                                id="lock_button"
-                                title="unlock work order"
-                                type="button"
-                        ><small><i id="lock-icon" class="fas"></i></small>
-                        </button>
-                    </div>
+                    @can(\App\Admin\Permissions\UserPermissions::WORK_ORDER_OPTIONAL_PERSON)
+                        <div class="row">
+                            <button
+                                    class="btn btn-outline-primary col-6 offset-1"
+                                    data-target="#productModal"
+                                    data-toggle="modal"
+                                    id="addInventoryButton"
+                                    type="button"
+                            >Add Inventory Item
+                            </button>
+                            <button
+                                    class="btn btn-sm col-1 offset-4"
+                                    data-placement="bottom"
+                                    data-toggle="tooltip"
+                                    data-trigger="hover"
+                                    id="lockButton"
+                                    title="unlock work order"
+                                    type="button"
+                            ><small><i id="lockIcon" class="fas"></i></small>
+                            </button>
+                        </div>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -204,10 +212,10 @@
                     >
                         <div class="container-fluid">
                             <div class="row">
-                                <label for="product_type">Select existing product Type:</label>
+                                <label for="productType">Select existing product Type:</label>
                                 <select
                                         class="form-control custom-select-sm"
-                                        id="product_type"
+                                        id="productType"
                                         name="product_type"
                                         required
                                 >
@@ -227,21 +235,22 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <div class="row">
-                            <button
-                                    class="btn btn-outline-secondary"
-                                    data-dismiss="modal"
-                                    type="button"
-                            >Cancel
-                            </button>
-                            <button
-                                    class="btn btn-outline-primary"
-                                    id="productSubmit"
-                                    type="button"
-                            >Add Product
-                            </button>
-                        </div>
+                    <div class="modal-footer" id="modalFooter">
+                        <div class="spinner-border text-info mr-auto invisible" id="spinner"></div>
+                        <button
+                                class="btn btn-outline-secondary"
+                                data-dismiss="modal"
+                                id="cancelButton"
+                                type="button"
+                        >Cancel
+                        </button>
+                        <button
+                                class="btn btn-outline-primary"
+                                id="productSubmit"
+                                type="button"
+                        >Add Product
+                        </button>
+
                         <div class="row" id="productError"></div>
                     </div>
                 </div>

@@ -22,7 +22,7 @@
                         <br/>
                         <div class="row">
                             <div class="col-6">
-                                <div class="card">
+                                <div class="card mb-4">
                                     <div class="card-body">
                                         <h3 class="card-title">Create a New WorkOrder</h3>
                                         <p class="card-text">
@@ -40,7 +40,7 @@
                             \App\Admin\Permissions\UserRoles::OWNER. '|' .
                             \App\Admin\Permissions\UserRoles::SUPER_ADMIN)
                             <div class="col-6">
-                                <div class="card">
+                                <div class="card mb-1">
                                     <div class="card-body">
                                         <h3 class="card-title">Create a New Product Type</h3>
                                         <p class="card-text">
@@ -51,6 +51,24 @@
                                 </div>
                             </div>
                             @endhasanyrole
+                            {{-- This is the logout card. Make sure it is last --}}
+                            <div class="w-100"></div>
+                            <div class="col-6">
+                                <div class="card border-danger">
+                                    <div class="card-body text-danger">
+                                        <h3 class="card-title">Logout</h3>
+                                        <p class="card-text">
+                                            Log out of the system
+                                        </p>
+
+                                        <a class="btn btn-outline-danger" href="{{ route('logout') }}"
+                                           onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                                            {{ __('Logout') }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
