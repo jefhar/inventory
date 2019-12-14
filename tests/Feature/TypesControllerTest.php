@@ -14,6 +14,7 @@ use App\Admin\Permissions\UserRoles;
 use App\Types\Controllers\TypesController;
 use App\User;
 use Domain\Products\Models\Type;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /**
@@ -44,11 +45,10 @@ class TypesControllerTest extends TestCase
     public function authorizedTypesControllerIsOk(): void
     {
         $type = factory(Type::class)->create();
-        $this
-            ->withoutExceptionHandling()
-            ->actingAs($this->user)
+        $this->actingAs($this->user)
             ->get(route(TypesController::SHOW_NAME, $type->slug))
-            ->assertOk();
+            ->assertOk()
+            ->assertSeeText($type->form);
     }
 
     /**
@@ -66,6 +66,94 @@ class TypesControllerTest extends TestCase
         $this->actingAs($this->user)
             ->get(route('home'))
             ->assertDontSeeText('Create a New Product Type');
+    }
+
+    /**
+     * @test
+     */
+    public function typeCreatePageExistsAndIsAccessible(): void
+    {
+        $this->actingAs($this->guest)
+            ->get(route(TypesController::CREATE_NAME))
+            ->assertForbidden();
+
+        $this->withoutExceptionHandling()->actingAs($this->user)
+            ->get(route(TypesController::CREATE_NAME))
+            ->assertOk()
+            ->assertSeeText('New Product Form');
+    }
+
+    /**
+     * @test
+     */
+    public function typeIndexAPIExistsAndIsAccessible(): void
+    {
+        $type = factory(Type::class)->create();
+        $this->actingAs($this->guest)
+            ->get(route(TypesController::INDEX_NAME))
+            ->assertForbidden();
+
+        $this->actingAs($this->user)
+            ->get(route(TypesController::INDEX_NAME))
+            ->assertOk()
+            ->assertSeeText($type->name);
+    }
+
+    /**
+     * @test
+     */
+    public function typeStoreExistsAndStoresForAuthorizedPerson(): void
+    {
+        $type = factory(Type::class)->make();
+        $this->actingAs($this->guest)
+            ->post(
+                route(TypesController::STORE_NAME),
+                [
+                    Type::FORM => $type->form,
+                    Type::NAME => $type->name,
+
+                ]
+            )
+            ->assertForbidden();
+        $this->actingAs($this->user)
+            ->post(
+                route(TypesController::STORE_NAME),
+                [
+                    Type::FORM => $type->form,
+                    Type::NAME => $type->name,
+
+                ]
+            )->assertCreated();
+        $this->assertDatabaseHas(
+            Type::TABLE,
+            [
+                Type::FORM => $type->form,
+                Type::NAME => Str::title($type->name),
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function canDestroyForm()
+    {
+        $type = factory(Type::class)->create();
+        $this
+            ->actingAs($this->guest)
+            ->delete(route(TypesController::DESTROY_NAME, $type))
+            ->assertForbidden();
+
+        // Destroyed Type returns OK
+        $this
+            ->actingAs($this->user)
+            ->delete(route(TypesController::DESTROY_NAME, $type))
+            ->assertOk();
+        $this->assertSoftDeleted($type);
+        // Destroyed non-existing Type returns 404
+        $this->actingAs($this->user)
+            ->delete(route(TypesController::DESTROY_NAME, $type))
+            ->assertNotFound();
     }
 
     protected function setUp(): void

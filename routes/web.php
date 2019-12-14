@@ -71,8 +71,16 @@ Route::group(
         );
         Route::namespace('Types\\Controllers\\')->group(
             function () {
+                Route::get(TypesController::CREATE_PATH, 'TypesController@create')
+                    ->name(TypesController::CREATE_NAME)->middleware('auth');
+                Route::delete(TypesController::DESTROY_PATH, 'TypesController@destroy')
+                    ->name(TypesController::DESTROY_NAME)->middleware('auth');
+                Route::get(TypesController::INDEX_PATH, 'TypesController@index')
+                    ->name(TypesController::INDEX_NAME)->middleware('auth');
                 Route::get(TypesController::SHOW_PATH, 'TypesController@show')
                     ->name(TypesController::SHOW_NAME)->middleware('auth');
+                Route::post(TypesController::STORE_PATH, 'TypesController@store')
+                    ->name(TypesController::STORE_NAME)->middleware('auth');
             }
         );
         Route::namespace('Products\\Controllers\\')->group(
