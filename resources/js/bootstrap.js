@@ -11,6 +11,9 @@ try {
   // they are, however, needed while the navbar is oldschool.
   window.Popper = require("popper.js").default;
   window.$ = window.jQuery = require("jquery");
+  require("jquery-ui-sortable");
+  require("formBuilder");
+  require("formBuilder/dist/form-render.min");
 
   require("bootstrap");
 } catch (e) {}

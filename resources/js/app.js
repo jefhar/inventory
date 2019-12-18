@@ -82,4 +82,90 @@ $(function() {
     },
     "#site-search"
   );
+
+  if (document.getElementById("types_create")) {
+    const options = {
+      controlOrder: [
+        "text",
+        "number",
+        "select",
+        "checkbox-group",
+        "radio-group",
+        "date",
+        "textarea"
+      ],
+      dataType: "json",
+      disabledSubtypes: {
+        text: ["password", "color", "email"]
+      },
+      disableFields: [
+        "autocomplete",
+        "button",
+        "file",
+        "header",
+        "hidden",
+        "paragraph",
+        "starRating"
+      ],
+      fieldRemoveWarn: true,
+      onSave: (event, formData) => {
+        toggleEdit(false);
+        $("#fb-render").formRender({ formData });
+        console.info(JSON.stringify(formData));
+      },
+      showActionButtons: false
+    };
+
+    function toggleEdit() {
+      const button = document.getElementById("previewButton");
+      const editing = button.dataset.showOnClick;
+      let renderPreview = false;
+      if (editing === "preview") {
+        button.innerHTML = 'Edit&emsp;&emsp;<i class="far fa-edit"></i>';
+        button.dataset.showOnClick = "edit";
+      } else {
+        button.innerHTML = 'Preview&emsp;&emsp;<i class="far fa-eye"></i>';
+        button.dataset.showOnClick = "preview";
+        renderPreview = true;
+      }
+      document
+        .getElementById("formbuilder")
+        .classList.toggle("form-rendered", !renderPreview);
+    }
+
+    function checkAndClear(formBuilder) {
+      const formData = formBuilder.actions.getData("json", true);
+      if (formData !== "[]") {
+        if (window.confirm("Are you sure you want to clear all fields?")) {
+          formBuilder.actions.clearFields();
+          return true;
+        }
+        return false;
+      }
+      return true;
+    }
+
+    const formBuilder = $("#fb-editor").formBuilder(options);
+    $("#fb-render").formRender();
+
+    document.getElementById("previewButton").onclick = () => {
+      toggleEdit();
+      const formData = formBuilder.actions.getData("json", true);
+      $("#fb-render").formRender({ formData });
+    };
+
+    document.getElementById("clearButton").onclick = () => {
+      checkAndClear(formBuilder);
+    };
+
+    document.getElementById("loadButton").onclick = () => {
+      if (!checkAndClear(formBuilder)) {
+        return;
+      }
+
+      console.info("attempting to launch modal.");
+      console.info($);
+      $("#loadModal").modal("show");
+    };
+  }
 });
