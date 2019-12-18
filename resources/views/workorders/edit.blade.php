@@ -1,9 +1,5 @@
 @extends('layouts.app')
 
-@push('scripts')
-    <script src="{{ mix('js/workorders/edit.js') }}" defer></script>
-@endpush
-
 @section('title', 'Edit Work Order #' . $workOrder->luhn . ': ' . $workOrder->client->company_name )
 
 @section('content')

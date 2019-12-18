@@ -1,8 +1,5 @@
 @extends('layouts.app')
 
-@push('scripts')
-    <script src="{{ mix('/js/types/create.js') }}" defer></script>
-@endpush
 
 @section('content')
     <style type="text/css">
