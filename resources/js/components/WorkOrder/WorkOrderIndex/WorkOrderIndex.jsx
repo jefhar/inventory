@@ -1,5 +1,6 @@
-import React, { Component } from "react";
-import { Container } from "reactstrap";
+import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
+import { Container } from 'reactstrap'
 
 class WorkOrderIndex extends Component {
   render() {
@@ -8,3 +9,11 @@ class WorkOrderIndex extends Component {
 }
 
 export default WorkOrderIndex;
+
+if (document.getElementById('workorders_index')) {
+  console.log('got workorders_index')
+  ReactDOM.render(
+    <WorkOrderIndex/>,
+    document.getElementById('workorders_index')
+  )
+}
