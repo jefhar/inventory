@@ -15,7 +15,9 @@ use App\Types\Requests\TypeStoreRequest;
 use Domain\Products\Actions\TypeStoreAction;
 use Domain\Products\Models\Type;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class TypesController
@@ -64,13 +66,30 @@ class TypesController extends Controller
 
     /**
      * @param TypeStoreRequest $request
-     * @return Type
      */
-    public function store(TypeStoreRequest $request): Type
+    public function store(TypeStoreRequest $request)
     {
-        $typeStoreObject = TypeStoreObject::fromRequest($request->validated());
 
-        return TypeStoreAction::execute($typeStoreObject);
+        $status = Response::HTTP_I_AM_A_TEAPOT;
+
+        $typeStoreObject = TypeStoreObject::fromRequest($request->validated());
+        $type = Type::where(Type::NAME, '$typeStoreObject->name')->first();
+    /*    if ($type) {
+            if ($typeStoreObject->force !== true) {
+                $status = Response::HTTP_ACCEPTED;
+                Log::info('Existing Type not forced, returning accepted.');
+            } else {
+                $status = Response::HTTP_OK;
+                $type = TypeStoreAction::execute($typeStoreObject);
+                Log::info('Existing Type forced, updating and returning OK');
+            }
+        } else {*/
+            $status = Response::HTTP_CREATED;
+            $newType = TypeStoreAction::execute($typeStoreObject);
+            Log::info('New Type. Create and return Created.');
+    //    }
+
+        response()->json($newType, 201)->setStatusCode(201);
     }
 
     /**
