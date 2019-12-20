@@ -13,6 +13,9 @@
 // Autocomplete [in NavBar]
 @import "~autocomplete-js/dist/autocomplete.min.css";
 
+/*
+ * Package additions
+ */
 body {
   padding-top: 4.5rem;
 }
@@ -55,4 +58,25 @@ body {
 
 .cyan {
   color: $cyan;
+}
+
+.form-rendered #fb-editor {
+  display: none;
+}
+
+#fb-render {
+  display: none;
+}
+
+.form-rendered #fb-render {
+  display: block;
+}
+
+#edit-form {
+  display: none;
+  float: right;
+}
+
+.form-rendered #edit-form {
+  display: block;
 }

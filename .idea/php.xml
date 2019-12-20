@@ -128,6 +128,7 @@
       <path value="$PROJECT_DIR$/vendor/symfony/http-client-contracts" />
       <path value="$PROJECT_DIR$/vendor/symfony/error-handler" />
       <path value="$PROJECT_DIR$/vendor/tdely/luhn" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/object-reflector_compare" />
     </include_path>
   </component>
   <component name="PhpInterpreters">

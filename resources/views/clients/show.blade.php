@@ -1,6 +1,5 @@
 @extends('layouts.app')
 
-
 @section('title', 'WorkOrders for ' . $client->company_name)
 
 @section('content')
