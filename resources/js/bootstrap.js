@@ -5,15 +5,9 @@ window._ = require("lodash");
  * for JavaScript based Bootstrap features such as modals and tabs. This
  * code may be modified to fit the specific needs of your application.
  */
-
 try {
-  // Popper is needed by ReactStrap, but jquery and bootstrap-js are not needed.
-  // they are, however, needed while the navbar is oldschool.
   window.Popper = require("popper.js").default;
   window.$ = window.jQuery = require("jquery");
-  require("jquery-ui-sortable");
-  require("formBuilder");
-  require("formBuilder/dist/form-render.min");
 
   require("bootstrap");
 } catch (e) {}
@@ -23,12 +17,8 @@ try {
  * to our Laravel back-end. This library automatically handles sending the
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
-
 window.axios = require("axios");
-
 window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
-
-window.AutoComplete = require("autocomplete-js");
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
