@@ -423,11 +423,15 @@ if (document.getElementById("types_create")) {
       .classList.toggle("form-rendered", !renderPreview);
   }
 
+  /**
+   * @return {boolean}
+   */
   function TC_checkAndClear(formBuilder) {
     const formData = formBuilder.actions.getData("json", true);
     if (formData !== "[]") {
       if (window.confirm("Are you sure you want to clear all fields?")) {
         formBuilder.actions.clearFields();
+        $("#fb-render").formRender({ formData });
         return true;
       }
       return false;
