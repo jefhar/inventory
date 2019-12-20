@@ -28,6 +28,7 @@ class TypeStoreRequest extends FormRequest
         return [
             Type::NAME => ['required', 'string'],
             Type::FORM => ['required', 'json'],
+            'force' => ['boolean', 'nullable'],
         ];
     }
 }

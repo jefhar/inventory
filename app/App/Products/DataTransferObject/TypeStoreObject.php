@@ -19,6 +19,7 @@ use Spatie\DataTransferObject\DataTransferObject;
  */
 class TypeStoreObject extends DataTransferObject
 {
+    public bool $force;
     public string $form;
     public string $name;
 
@@ -30,6 +31,7 @@ class TypeStoreObject extends DataTransferObject
     {
         return new self(
             [
+                'force' => (bool)($validated['force'] ?? false),
                 Type::FORM => $validated[Type::FORM],
                 Type::NAME => $validated[Type::NAME],
             ]

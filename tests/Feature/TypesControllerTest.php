@@ -15,6 +15,7 @@ use App\Types\Controllers\TypesController;
 use App\User;
 use Domain\Products\Models\Type;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 /**
@@ -114,7 +115,6 @@ class TypesControllerTest extends TestCase
                 [
                     Type::FORM => $type->form,
                     Type::NAME => $type->name,
-
                 ]
             )
             ->assertForbidden();
@@ -124,7 +124,6 @@ class TypesControllerTest extends TestCase
                 [
                     Type::FORM => $type->form,
                     Type::NAME => $type->name,
-
                 ]
             )->assertCreated();
         $this->assertDatabaseHas(
@@ -157,6 +156,58 @@ class TypesControllerTest extends TestCase
         $this->actingAs($this->user)
             ->delete(route(TypesController::DESTROY_NAME, $type))
             ->assertNotFound();
+    }
+
+    /**
+     * @test
+     */
+    public function savingExistingFormWithoutForceReturnsAccepted(): void
+    {
+        $type = factory(Type::class)->create();
+        $this->actingAs($this->user)->withoutExceptionHandling()
+            ->post(
+                route(
+                    TypesController::STORE_NAME,
+                    [
+                        Type::NAME => $type->name,
+                        Type::FORM => $type->form,
+                        'force' => false,
+                    ]
+                )
+            )
+            ->assertStatus(Response::HTTP_ACCEPTED);
+
+        $this->actingAs($this->user)
+            ->post(
+                route(
+                    TypesController::STORE_NAME,
+                    [
+                        Type::NAME => $type->name,
+                        Type::FORM => $type->form,
+                    ]
+                )
+            )
+            ->assertStatus(Response::HTTP_ACCEPTED);
+    }
+
+    /**
+     * @test
+     */
+    public function savingExistingFormCanBeForced(): void
+    {
+        $type = factory(Type::class)->create();
+        $this->actingAs($this->user)->withoutExceptionHandling()
+            ->post(
+                route(
+                    TypesController::STORE_NAME,
+                    [
+                        Type::NAME => $type->name,
+                        Type::FORM => $type->form,
+                        'force' => true,
+                    ]
+                )
+            )
+            ->assertOk();
     }
 
     protected function setUp(): void
