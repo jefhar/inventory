@@ -49,7 +49,9 @@ class TypesController extends Controller
      */
     public function create(): View
     {
-        return view('types.create');
+        $types = Type::select(Type::SLUG, Type::NAME)->orderBy(Type::SLUG)->get();
+
+        return view('types.create')->with(['types' => $types]);
     }
 
     /**

@@ -73,6 +73,7 @@ class TypesControllerTest extends TestCase
      */
     public function typeCreatePageExistsAndIsAccessible(): void
     {
+        $type = factory(Type::class)->create();
         $this->actingAs($this->guest)
             ->get(route(TypesController::CREATE_NAME))
             ->assertForbidden();
@@ -80,7 +81,9 @@ class TypesControllerTest extends TestCase
         $this->withoutExceptionHandling()->actingAs($this->user)
             ->get(route(TypesController::CREATE_NAME))
             ->assertOk()
-            ->assertSeeText('New Product Form');
+            ->assertSeeText('Create New Product Type')
+            ->assertSeeText($type->name)
+            ->assertSee($type->slug);
     }
 
     /**
