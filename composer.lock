@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "42ea38d9247516bd3295af53a7a39b4c",
+    "content-hash": "ce1030ee4add52bbeff63854008059ca",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -4214,16 +4214,16 @@
         },
         {
             "name": "fzaninotto/faker",
-            "version": "dev-master",
+            "version": "v1.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fzaninotto/Faker.git",
-                "reference": "7a6797dce9b07e4a0b6d3862227984fb080339b8"
+                "reference": "fc10d778e4b84d5bd315dad194661e091d307c6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/7a6797dce9b07e4a0b6d3862227984fb080339b8",
-                "reference": "7a6797dce9b07e4a0b6d3862227984fb080339b8",
+                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/fc10d778e4b84d5bd315dad194661e091d307c6f",
+                "reference": "fc10d778e4b84d5bd315dad194661e091d307c6f",
                 "shasum": ""
             },
             "require": {
@@ -4260,7 +4260,7 @@
                 "faker",
                 "fixtures"
             ],
-            "time": "2019-12-17T13:52:41+00:00"
+            "time": "2019-12-12T13:22:17+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -4741,16 +4741,16 @@
         },
         {
             "name": "nunomaduro/larastan",
-            "version": "dev-master",
+            "version": "v0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nunomaduro/larastan.git",
-                "reference": "1dac7893b9ce1ad7a73b2d73689c67a3c304a108"
+                "reference": "e7ed5ad8143c08659920bb3db0b86868a7184334"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nunomaduro/larastan/zipball/1dac7893b9ce1ad7a73b2d73689c67a3c304a108",
-                "reference": "1dac7893b9ce1ad7a73b2d73689c67a3c304a108",
+                "url": "https://api.github.com/repos/nunomaduro/larastan/zipball/e7ed5ad8143c08659920bb3db0b86868a7184334",
+                "reference": "e7ed5ad8143c08659920bb3db0b86868a7184334",
                 "shasum": ""
             },
             "require": {
@@ -4809,7 +4809,7 @@
                 "php",
                 "static analysis"
             ],
-            "time": "2019-12-28T08:58:33+00:00"
+            "time": "2019-12-25T21:55:22+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -6641,25 +6641,9 @@
             "time": "2019-11-24T13:36:37+00:00"
         }
     ],
-    "aliases": [
-        {
-            "alias": "1.9.1",
-            "alias_normalized": "1.9.1.0",
-            "version": "9999999-dev",
-            "package": "fzaninotto/faker"
-        },
-        {
-            "alias": "0.4.4-alpha",
-            "alias_normalized": "0.4.4.0-alpha",
-            "version": "9999999-dev",
-            "package": "nunomaduro/larastan"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "fzaninotto/faker": 20,
-        "nunomaduro/larastan": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

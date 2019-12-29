@@ -30,6 +30,7 @@ test:
   interruptible: true
 
 dusktest:
+  when: manual
   allow_failure: true
   image: registry.gitlab.com/c11k/serviceandgoods:dusk
   services:
@@ -102,4 +103,4 @@ pages:
     expire_in: 30 days
   only:
     - master
-    - develop
+    - development
