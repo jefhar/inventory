@@ -60,9 +60,8 @@ class TypesController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json(Type::all());
+        return response()->json(Type::orderBy(Type::NAME)->get());
     }
-
     /**
      * @param TypeStoreRequest $request
      * @return JsonResponse
