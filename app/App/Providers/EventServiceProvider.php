@@ -1,7 +1,18 @@
 <?php
 
+/**
+ * Copyright 2018, 2019 Jeff Harris
+ * PHP Version 7.4
+ */
+
+declare(strict_types=1);
+
 namespace App\Providers;
 
+use Domain\Products\Events\TypeCreated;
+use Domain\Products\Listeners\AddSlugToType;
+use Domain\WorkOrders\Events\WorkOrderCreated;
+use Domain\WorkOrders\Listeners\AddLuhnToWorkOrder;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,6 +33,12 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        WorkOrderCreated::class => [
+            AddLuhnToWorkOrder::class,
+        ],
+        TypeCreated::class => [
+            AddSlugToType::class,
+        ],
     ];
 
     /**
@@ -32,7 +49,6 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
-
         //
     }
 }

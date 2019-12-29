@@ -1,13 +1,25 @@
 <?php
 
+/**
+ * Copyright 2018, 2019 Jeff Harris
+ * PHP Version 7.4
+ */
+
+declare(strict_types=1);
+
 namespace Tests\Browser;
 
-use App\Admin\Controllers\WorkOrdersController;
 use App\User;
+use App\WorkOrders\Controllers\WorkOrdersController;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\WorkOrderCreate;
 use Tests\DuskTestCase;
 
+/**
+ * Class WorkOrderCreateTest
+ *
+ * @package Tests\Browser
+ */
 class WorkOrderCreateTest extends DuskTestCase
 {
 

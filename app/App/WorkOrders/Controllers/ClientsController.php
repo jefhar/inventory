@@ -10,9 +10,14 @@ declare(strict_types=1);
 namespace App\WorkOrders\Controllers;
 
 use App\Admin\Controllers\Controller;
-use Domain\WorkOrders\Client;
+use Domain\WorkOrders\Models\Client;
 use Illuminate\View\View;
 
+/**
+ * Class ClientsController
+ *
+ * @package App\WorkOrders\Controllers
+ */
 class ClientsController extends Controller
 {
     public const SHOW_PATH = '/clients/{client}';

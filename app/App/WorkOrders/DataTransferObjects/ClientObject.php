@@ -8,14 +8,23 @@ declare(strict_types=1);
 
 namespace App\WorkOrders\DataTransferObjects;
 
-use Domain\WorkOrders\Client;
+use Domain\WorkOrders\Models\Client;
 use Spatie\DataTransferObject\DataTransferObject;
 
+/**
+ * Class ClientObject
+ *
+ * @package App\WorkOrders\DataTransferObjects
+ */
 class ClientObject extends DataTransferObject
 {
     public string $company_name;
 
-    public static function fromRequest(array $validated): self
+    /**
+     * @param array $validated
+     * @return ClientObject
+     */
+    public static function fromRequest(array $validated): ClientObject
     {
         return new self(
             [

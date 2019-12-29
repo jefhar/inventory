@@ -1,9 +1,5 @@
 @extends('layouts.app')
 
-@push('scripts')
-    <script src="{{ mix('js/workorders/index.js') }}" defer></script>
-@endpush
-
 @section('content')
     {{ time() }}
     <h1>Work Orders</h1>

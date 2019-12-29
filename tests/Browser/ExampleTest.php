@@ -1,11 +1,22 @@
 <?php
 
+/**
+ * Copyright 2018, 2019 Jeff Harris
+ * PHP Version 7.4
+ */
+
+declare(strict_types=1);
+
 namespace Tests\Browser;
 
-use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Tests\DuskTestCase;
 
+/**
+ * Class ExampleTest
+ *
+ * @package Tests\Browser
+ */
 class ExampleTest extends DuskTestCase
 {
     /**

@@ -6,17 +6,22 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Unit\Domain\WorkOrders\Actions;
 
 use App\Admin\Permissions\UserPermissions;
 use App\User;
 use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
+use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
 
+/**
+ * Class WorkOrderUpdateActionTest
+ *
+ * @package Tests\Unit\Domain\WorkOrders\Actions
+ */
 class WorkOrderUpdateActionTest extends TestCase
 {
     private User $user;
@@ -240,6 +245,35 @@ class WorkOrderUpdateActionTest extends TestCase
             Person::TABLE,
             [
                 Person::PHONE_NUMBER => Person::unformatPhoneNumber($workOrderUpdateObject->phone_number),
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function updateDoesNotUpdateBlankFields(): void
+    {
+        $client = factory(Client::class)->create();
+        $person = factory(Person::class)->make();
+        $workOrder = factory(WorkOrder::class)->make();
+        $client->person()->save($person);
+        $workOrder->client()->associate($client);
+        $client->push();
+        $newPerson = factory(Person::class)->make();
+        $workOrderUpdateObject = WorkOrderUpdateObject::fromRequest(
+            [
+                Person::PHONE_NUMBER => $newPerson->phone_number,
+            ]
+        );
+        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObject);
+        $this->assertDatabaseHas(
+            Person::TABLE,
+            [
+                Person::PHONE_NUMBER => Person::unformatPhoneNumber($workOrderUpdateObject->phone_number),
+                Person::FIRST_NAME => $person->first_name,
+                Person::LAST_NAME => $person->last_name,
+                Person::EMAIL => $person->email,
             ]
         );
     }

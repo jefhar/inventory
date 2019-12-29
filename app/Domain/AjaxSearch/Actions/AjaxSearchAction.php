@@ -9,8 +9,10 @@ declare(strict_types=1);
 
 namespace Domain\AjaxSearch\Actions;
 
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
+use Domain\Products\Models\Manufacturer;
+use Domain\Products\Models\Product;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,25 +24,35 @@ use Symfony\Component\HttpFoundation\Response;
 class AjaxSearchAction
 {
     /**
-     * @param string $field ENUM {Client::COMPANY_NAME|}
+     * @param string $field ENUM {Client::COMPANY_NAME|manufacturer}
      * @param string $searchString
      * @return Collection
      */
     public static function findBy(string $field, string $searchString): Collection
     {
         $availableFields = [
+            'manufacturer' => 'manufacturer',
             Client::COMPANY_NAME => Client::COMPANY_NAME,
+            Product::MODEL => Product::MODEL,
         ];
         if (!array_key_exists($field, $availableFields)) {
             abort(Response::HTTP_NOT_ACCEPTABLE);
         }
 
-        // Stub for when more autocomplete fields are used:
-        //switch ($field) {
-        //    case Client::COMPANY_NAME:
-        return self::clientsAndPeopleByCompanyName($searchString);
-        //        break;
-        //}
+        $searchResults = null;
+        switch ($field) {
+            case Client::COMPANY_NAME:
+                $searchResults = self::clientsAndPeopleByCompanyName($searchString);
+                break;
+            case 'manufacturer':
+                $searchResults = self::manufacturersByManufacturerName($searchString);
+                break;
+            case Product::MODEL:
+                $searchResults = self::productsByModel($searchString);
+                break;
+        }
+
+        return $searchResults;
     }
 
     /**
@@ -62,23 +74,61 @@ class AjaxSearchAction
         );
     }
 
+    /**
+     * @param string $searchString
+     * @return Collection
+     */
+    private static function manufacturersByManufacturerName(string $searchString): Collection
+    {
+        $searchString = "%{$searchString}%";
+
+        return Manufacturer::where(Manufacturer::NAME, 'like', $searchString)
+            ->get()
+            ->pluck(Manufacturer::NAME)
+            ->unique()
+            ->values();
+    }
+
+    /**
+     * @param string $searchString
+     * @return Collection
+     */
+    private static function productsByModel(string $searchString): Collection
+    {
+        $searchString = "%{$searchString}%";
+
+        return Product::where(Product::MODEL, 'like', $searchString)
+            ->get()
+            ->pluck(Product::MODEL)
+            ->unique()
+            ->values();
+    }
+
+    /**
+     * @param string $searchString
+     * @return Collection
+     */
     public static function findAll(string $searchString): Collection
     {
         $client_ids = Client::findByCompanyName($searchString);
-        $clients = Client::whereIn(Client::ID, $client_ids)->get()->map(
-            fn($client) => [
-            'name' => $client->company_name,
-            'url' => '/clients/' . $client->id,
-            ]
-        );
+        $clients = Client::whereIn(Client::ID, $client_ids)
+            ->get()
+            ->map(
+                fn($client) => [
+                'name' => $client->company_name,
+                'url' => '/clients/' . $client->id,
+                ]
+            );
 
         $people_ids = Person::findByName($searchString);
-        $people = Person::whereIn(Person::ID, $people_ids)->get()->map(
-            fn($person) => [
-            'name' => $person->first_name . ' ' . $person->last_name,
-            'url' => '/clients/' . $person->client_id,
-            ]
-        );
+        $people = Person::whereIn(Person::ID, $people_ids)
+            ->get()
+            ->map(
+                fn($person) => [
+                'name' => $person->first_name . ' ' . $person->last_name,
+                'url' => '/clients/' . $person->client_id,
+                ]
+            );
 
         $collection = collect();
         $collection = $collection->concat($clients);

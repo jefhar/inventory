@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import {
   Alert,
   Button,
@@ -142,82 +143,88 @@ class WorkOrderCreate extends React.Component {
             <FormHeader workOrderId="-----" />
             <CardBody>
               <Form>
-                <FormGroup>
-                  <Label className="col-form-label" for="company_name">
-                    Client Company Name
-                  </Label>
-                  <CompanyName
-                    className={
-                      (this.state.invalid_company_name
-                        ? "is-invalid"
-                        : "is-valid") + " form-control form-control-sm"
-                    }
-                    id="company_name"
-                    isLoading={this.state.isLoading}
-                    handleChange={this.handleChange}
-                    labelKey="company_name"
-                    name="company_name"
-                    newSelectionPrefix="New Client:"
-                    onSearch={this.handleSearch}
-                    onBlur={this.handleBlur}
-                    options={this.state.options}
-                    placeholder="Client's company name"
-                    invalid={this.state.invalid_company_name}
-                    selectHintOnEnter={true}
-                  />
-                  <FormFeedback valid={!this.state.invalid_company_name}>
-                    Company Name is required.
-                  </FormFeedback>
-                  <Alert
-                    color="warning"
-                    isOpen={this.state.invalid_company_name}
-                  >
-                    The Company Name field is required.
-                  </Alert>
-                </FormGroup>
-                <FormGroup row={true}>
-                  <Label
-                    className="col-sm-2 d-md-none col-form-label"
-                    for="first_name"
-                  >
-                    Name:
-                  </Label>
+                <Row form>
                   <Col>
-                    <Input
-                      className="form-control form-control-sm"
-                      id="first_name"
-                      name="first_name"
-                      onChange={this.handleNameChange}
-                      placeholder="Joe"
-                      type="text"
-                      value={this.state.first_name}
-                      onBlur={this.handleBlur}
-                    />
+                    <FormGroup>
+                      <Label for="company_name">Client Company Name</Label>
+                      <CompanyName
+                        className={
+                          (this.state.invalid_company_name
+                            ? "is-invalid"
+                            : "is-valid") + " form-control form-control-sm"
+                        }
+                        id="company_name"
+                        isLoading={this.state.isLoading}
+                        handleChange={this.handleChange}
+                        labelKey="company_name"
+                        name="company_name"
+                        newSelectionPrefix="New Client:"
+                        onSearch={this.handleSearch}
+                        onBlur={this.handleBlur}
+                        options={this.state.options}
+                        placeholder="Client's company name"
+                        invalid={this.state.invalid_company_name}
+                        selectHintOnEnter={true}
+                      />
+                      <FormFeedback valid={!this.state.invalid_company_name}>
+                        Company Name is required.
+                      </FormFeedback>
+                      <Alert
+                        color="warning"
+                        isOpen={this.state.invalid_company_name}
+                      >
+                        The Company Name field is required.
+                      </Alert>
+                    </FormGroup>
                   </Col>
-                  <Col>
-                    <Input
-                      className="form-control form-control-sm"
-                      id="last_name"
-                      name="last_name"
-                      onChange={this.handleNameChange}
-                      placeholder="Smith"
-                      type="text"
-                      value={this.state.last_name}
-                      onBlur={this.handleBlur}
-                    />
+                </Row>
+                <Row form>
+                  <Col xs={6}>
+                    <FormGroup>
+                      <Label for="first_name">First Name</Label>
+                      <Input
+                        className="form-control form-control-sm"
+                        id="first_name"
+                        name="first_name"
+                        onChange={this.handleNameChange}
+                        placeholder="First Name"
+                        type="text"
+                        value={this.state.first_name}
+                        onBlur={this.handleBlur}
+                      />
+                    </FormGroup>
                   </Col>
-                </FormGroup>
-                <FormGroup row={true}>
-                  <Button
-                    block
-                    outline
-                    color="success"
-                    onClick={this.handleButtonClick}
-                  >
-                    Create New Work Order
-                  </Button>
-                </FormGroup>
-                <FormGroup>
+                  <Col xs={6}>
+                    <FormGroup>
+                      <Label for="last_name">Last Name</Label>
+                      <Input
+                        className="form-control form-control-sm"
+                        id="last_name"
+                        name="last_name"
+                        onChange={this.handleNameChange}
+                        placeholder="Last Name"
+                        type="text"
+                        value={this.state.last_name}
+                        onBlur={this.handleBlur}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row form>
+                  <Col xs={{ size: 6, offset: 3 }}>
+                    <FormGroup row>
+                      <Button
+                        block
+                        outline
+                        color="success"
+                        onClick={this.handleButtonClick}
+                      >
+                        Create New Work Order
+                      </Button>
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <FormGroup row>
                   <Alert
                     className="row"
                     color="danger"
@@ -243,3 +250,11 @@ class WorkOrderCreate extends React.Component {
 }
 
 export default WorkOrderCreate;
+
+if (document.getElementById("workorders_create")) {
+  console.log("got workorders_create");
+  ReactDOM.render(
+    <WorkOrderCreate />,
+    document.getElementById("workorders_create")
+  );
+}

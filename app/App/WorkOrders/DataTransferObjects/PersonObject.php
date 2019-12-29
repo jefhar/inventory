@@ -8,9 +8,14 @@ declare(strict_types=1);
 
 namespace App\WorkOrders\DataTransferObjects;
 
-use Domain\WorkOrders\Person;
+use Domain\WorkOrders\Models\Person;
 use Spatie\DataTransferObject\DataTransferObject;
 
+/**
+ * Class PersonObject
+ *
+ * @package App\WorkOrders\DataTransferObjects
+ */
 class PersonObject extends DataTransferObject
 {
     public string $email;
@@ -20,9 +25,9 @@ class PersonObject extends DataTransferObject
 
     /**
      * @param array $validated
-     * @return static
+     * @return PersonObject
      */
-    public static function fromRequest(array $validated): self
+    public static function fromRequest(array $validated): PersonObject
     {
         return new self(
             [

@@ -8,6 +8,11 @@ declare(strict_types=1);
 
 namespace App\Admin\Permissions;
 
+/**
+ * Class UserRoles
+ *
+ * @package App\Admin\Permissions
+ */
 final class UserRoles
 {
     public const TECHNICIAN = 'technician';

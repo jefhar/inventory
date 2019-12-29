@@ -9,11 +9,16 @@ declare(strict_types=1);
 
 namespace App\WorkOrders\DataTransferObjects;
 
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
+use Domain\WorkOrders\Models\WorkOrder;
 use Spatie\DataTransferObject\DataTransferObject;
 
+/**
+ * Class WorkOrderUpdateObject
+ *
+ * @package App\WorkOrders\DataTransferObjects
+ */
 class WorkOrderUpdateObject extends DataTransferObject
 {
     public ?bool $is_locked = null;
@@ -33,12 +38,12 @@ class WorkOrderUpdateObject extends DataTransferObject
         return new self(
             [
                 WorkOrder::IS_LOCKED => $validated[WorkOrder::IS_LOCKED] ?? null,
-                WorkOrder::INTAKE => $validated[WorkOrder::INTAKE] ?? '',
-                Client::COMPANY_NAME => $validated[Client::COMPANY_NAME] ?? '',
-                Person::FIRST_NAME => $validated[Person::FIRST_NAME] ?? '',
-                Person::LAST_NAME => $validated[Person::LAST_NAME] ?? '',
-                Person::PHONE_NUMBER => $validated[Person::PHONE_NUMBER] ?? '',
-                Person::EMAIL => $validated[Person::EMAIL] ?? '',
+                WorkOrder::INTAKE => $validated[WorkOrder::INTAKE] ?? null,
+                Client::COMPANY_NAME => $validated[Client::COMPANY_NAME] ?? null,
+                Person::FIRST_NAME => $validated[Person::FIRST_NAME] ?? null,
+                Person::LAST_NAME => $validated[Person::LAST_NAME] ?? null,
+                Person::PHONE_NUMBER => $validated[Person::PHONE_NUMBER] ?? null,
+                Person::EMAIL => $validated[Person::EMAIL] ?? null,
             ]
         );
     }

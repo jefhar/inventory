@@ -1,8 +1,8 @@
 <?php
 
 use App\User;
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\WorkOrder;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -41,7 +41,8 @@ class CreateWorkordersTable extends Migration
         Schema::table(
             WorkOrder::TABLE,
             function (Blueprint $table) {
-                $table->dropForeign([WorkOrder::CLIENT_ID, WorkOrder::USER_ID]);
+                $table->dropForeign([WorkOrder::CLIENT_ID]);
+                $table->dropForeign([WorkOrder::USER_ID]);
             }
         );
         Schema::dropIfExists(WorkOrder::TABLE);

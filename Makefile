@@ -65,3 +65,5 @@ builddusk:
 
 deploy:
 	docker-compose up -d php-fpm redis mysql webserver
+refresh:
+	php artisan db:wipe && php artisan migrate && php artisan db:seed --class UsersTableSeeder && php artisan db:seed --class DummyDataSeeder

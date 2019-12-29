@@ -1,9 +1,5 @@
 @extends('layouts.app')
 
-@push('scripts')
-    <script src="{{ mix('js/workorders/create.js') }}" defer></script>
-@endpush
-
 @section('content')
     <div id="workorders_create"></div>
 @endsection
@@ -11,7 +7,7 @@
 @section('future_workorder_content')
     <form class="container">
         <div class="row">
-            <div class="col-sm card">
+            <div class="card">
                 <h2 class="card-header">Product Information</h2>
                 <div class="card-body">
                     <div class="form-group row">

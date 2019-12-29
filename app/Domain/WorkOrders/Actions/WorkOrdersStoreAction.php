@@ -10,9 +10,9 @@ namespace Domain\WorkOrders\Actions;
 
 use App\WorkOrders\DataTransferObjects\ClientObject;
 use App\WorkOrders\DataTransferObjects\PersonObject;
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
+use Domain\WorkOrders\Models\WorkOrder;
 use Illuminate\Support\Facades\Auth;
 
 /**

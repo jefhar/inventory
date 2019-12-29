@@ -1,7 +1,7 @@
 <?php
 
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

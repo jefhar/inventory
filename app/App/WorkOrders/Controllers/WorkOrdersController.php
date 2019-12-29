@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Copyright 2018, 2019 Jeff Harris
+ * PHP Version 7.4
+ */
+
+declare(strict_types=1);
+
 namespace App\WorkOrders\Controllers;
 
 use App\Admin\Controllers\Controller;
@@ -8,9 +15,10 @@ use App\WorkOrders\DataTransferObjects\PersonObject;
 use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
 use App\WorkOrders\Requests\WorkOrderStoreRequest;
 use App\WorkOrders\Requests\WorkOrderUpdateRequest;
+use Domain\Products\Models\Type;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\WorkOrder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -71,16 +79,14 @@ class WorkOrdersController extends Controller
     public function store(WorkOrderStoreRequest $request): JsonResponse
     {
         $validated = $request->validated();
-
         $personObject = PersonObject::fromRequest($request->validated());
-
         $workOrder = WorkOrdersStoreAction::execute(ClientObject::fromRequest($validated), $personObject);
 
         return response()
-            ->json(['workorder_id' => $workOrder->id, 'created' => true], Response::HTTP_CREATED)
+            ->json(['workorder_id' => $workOrder->luhn, 'created' => true], Response::HTTP_CREATED)
             ->header(
                 'Location',
-                route(self::SHOW_NAME, ['workorder' => $workOrder])
+                route(self::SHOW_NAME, ['workorder' => $workOrder->luhn])
             );
     }
 
@@ -104,7 +110,10 @@ class WorkOrdersController extends Controller
      */
     public function edit(WorkOrder $workorder): View
     {
-        return view('workorders.edit')->with(['workOrder' => $workorder]);
+        $workorder->load('products');
+        $types = Type::select(Type::SLUG, Type::NAME)->orderBy(Type::SLUG)->get();
+
+        return view('workorders.edit')->with(['workOrder' => $workorder, 'types' => $types]);
     }
 
     /**

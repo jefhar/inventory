@@ -10,16 +10,26 @@ declare(strict_types=1);
 namespace Domain\WorkOrders\Actions;
 
 use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
-use Domain\WorkOrders\Client;
-use Domain\WorkOrders\Person;
-use Domain\WorkOrders\WorkOrder;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
+use Domain\WorkOrders\Models\WorkOrder;
 
+/**
+ * Class WorkOrdersUpdateAction
+ *
+ * @package Domain\WorkOrders\Actions
+ */
 class WorkOrdersUpdateAction
 {
 
+    /**
+     * @param WorkOrder $workOrder
+     * @param WorkOrderUpdateObject $workOrderUpdateObject
+     * @return array
+     */
     public static function execute(WorkOrder $workOrder, WorkOrderUpdateObject $workOrderUpdateObject): array
     {
-        $changedFields[WorkOrder::ID] = $workOrder->id;
+        $changedFields[WorkOrder::ID] = $workOrder->luhn;
         $workOrder->client->loadCount('person');
         $client = $workOrder->client;
         $person = new Person();
