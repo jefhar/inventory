@@ -11,7 +11,9 @@ require("formBuilder/dist/form-render.min");
 const AutoComplete = require("autocomplete-js");
 require("./components/WorkOrder/WorkOrderIndex");
 require("./components/WorkOrder/WorkOrderCreate");
-
+const OK = 200;
+const CREATED = 201;
+const ACCEPTED = 202;
 AutoComplete();
 
 $(() => {
@@ -25,7 +27,6 @@ $(() => {
       MinChars: 2,
       Url: "/ajaxsearch",
       _RenderResponseItems: function(response) {
-        console.log("_RenderResponseItems");
         let ul = document.createElement("ul");
 
         let limit = this._Limit();
@@ -52,10 +53,7 @@ $(() => {
         return ul;
       },
       _Post: function(response) {
-        console.log("_Post");
-        console.log(JSON.parse(response));
         const json = JSON.parse(response);
-        console.log("/_Post");
         let returnResponse = [];
         if (Array.isArray(json)) {
           console.log("json is array");
@@ -80,6 +78,7 @@ $(() => {
     "#site-search"
   );
 });
+
 if (document.getElementById("workorders_edit")) {
   console.info("workorders_edit");
 
@@ -145,7 +144,6 @@ if (document.getElementById("workorders_edit")) {
       let spinner = document.getElementById("spinner");
       spinner.classList.remove("invisible");
       spinner.classList.add("visible");
-      console.log("visible");
 
       axios
         .get(`/types/${value}`, value)
@@ -191,8 +189,8 @@ if (document.getElementById("workorders_edit")) {
           // Add autocomplete to Model
         })
         .catch(error => {
-          console.log("error");
-          console.log(error);
+          console.info("error");
+          console.info(error);
           // Create warning alert
           // Attach warning alert as a child to $formContainer
           /*
@@ -248,7 +246,7 @@ A simple warning alert—check it out!
             $(".modal-backdrop").remove();
           })
           .catch(error => {
-            console.log(error);
+            console.info(error);
             const errorAlert = document.createElement("div");
             errorAlert.classList.add(
               "alert",
@@ -291,7 +289,7 @@ A simple warning alert—check it out!
           WE_update();
         })
         .catch(error => {
-          console.log(error.response.data);
+          console.info(error.response.data);
         });
     });
   }
@@ -458,9 +456,125 @@ if (document.getElementById("types_create")) {
     }
 
     console.info("attempting to launch modal.");
-    console.info($);
     $("#loadProductModal").modal("show");
   };
+
+  document.getElementById("saveButton").onclick = () => {
+    const formData = TC_formBuilder.actions.getData("json", true);
+    if (formData === "[]") {
+      alert("Nothing to save!");
+      return;
+    }
+
+    // open save dialog modal
+    $("#saveProductModal").modal("show");
+  };
+
+  $("#saveProductModal").on("shown.bs.modal", event => {
+    document
+      .getElementById("saveTypeButton")
+      .addEventListener("click", event => {
+        console.info("Save button clicked.");
+        const typeName = document.getElementById("saveType").value;
+        const formData = TC_formBuilder.actions.getData("json", true);
+        let alert = "";
+        _.throttle(
+          axios
+            .post("/types", {
+              form: formData,
+              name: typeName
+            })
+            .then(response => {
+              if (response.status === CREATED) {
+                console.info("created.");
+                document.getElementById(
+                  "alert"
+                ).innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">\
+<h5>Product Type Saved.</h5>You may now use ${response.data.name} as a product type.\
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">\
+<span aria-hidden="true">&times;</span>\
+</button>\
+</div>`;
+              } else if (response.status === ACCEPTED) {
+                console.info("accepted.");
+                const resave = window.confirm(
+                  "Type already exists. Press OK to update, CANCEL to rename"
+                );
+                if (resave) {
+                  axios
+                    .post("/types", {
+                      force: true,
+                      form: formData,
+                      name: typeName
+                    })
+                    .then(response => {
+                      if (response.status === OK) {
+                        console.info("forced created.");
+                        document.getElementById(
+                          "alert"
+                        ).innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">\
+<h5>Product Type Updated.</h5>${response.data.name} has been updated. Existing products of this type have not been updated.\
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">\
+<span aria-hidden="true">&times;</span>\
+</button>\
+</div>`;
+                      } else {
+                        console.info("unable to force create.");
+                        document.getElementById(
+                          "alert"
+                        ).innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">\
+<h5>Saving failed.</h5>${typeName} has not been updated. Existing products of this type have not been updated.\
+<strong>An unexpected response was tendered from the server. Please try again later.</strong>
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">\
+<span aria-hidden="true">&times;</span>\
+</button>\
+</div>`;
+                      }
+                    });
+                } else {
+                  console.info("not force updating.");
+                  document.getElementById(
+                    "alert"
+                  ).innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">\
+<h5>Saving canceled.</h5>${typeName} has not been saved. Please choose a different name for the product type.\
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">\
+<span aria-hidden="true">&times;</span>\
+</button>\
+</div>`;
+                }
+              } else {
+                console.info(response);
+                console.info("Hmm.");
+              }
+            })
+            .finally(response => {
+              $("#saveProductModal").modal("hide");
+              // Refresh typesList from server
+              const typesList = document.getElementById("typesList");
+              while (typesList.hasChildNodes()) {
+                typesList.removeChild(typesList.lastChild);
+              }
+
+              axios.get("/types").then(response => {
+                response.data.forEach(item => {
+                  const option = document.createElement("option");
+                  option.value = item.slug;
+                  option.innerText = item.name;
+                  typesList.append(option);
+                });
+              });
+              console.info("setting timeout?");
+              window.setTimeout(() => {
+                if (document.getElementById("alert")) {
+                  $(".alert").alert("close");
+                }
+              }, 8000);
+            }),
+          250,
+          { leading: true, trailing: false }
+        );
+      });
+  });
 
   $("#loadProductModal").on("shown.bs.modal", event => {
     // Defer attaching event listener until modal opens
@@ -468,62 +582,65 @@ if (document.getElementById("types_create")) {
     document
       .getElementById("loadTypeButton")
       .addEventListener("click", event => {
-        console.info("loadTypeButton clicked.");
         // Save selected slug
+        const index = document.getElementById("typesList").selectedIndex;
         const value = document.getElementById("typesList").value;
-        let spinner = document.getElementById("spinner");
-        let formBuilder = document.getElementById("formbuilder");
+        const spinner = document.getElementById("spinner");
+        const formBuilder = document.getElementById("formbuilder");
 
         $("#loadProductModal").modal("hide");
         spinner.classList.remove("invisible");
         spinner.classList.add("visible");
         formBuilder.classList.remove("visible");
         formBuilder.classList.add("invisible");
-        console.info("spinner visible");
 
         axios
           .get(`/types/${value}`, value)
           .then(response => {
             const formData = response.data;
             /*
-          // These need an ID so they can be removed via formBuilder.actions.removeField('tmp_header');
-          // Or maybe add them via prepend
-          formData.unshift(
-            {
-            id: tmp_header
-              type: 'header',
-              className: 'mt-3',
-              label: select.options[select.selectedIndex].innerText,
-              subtype: 'h3'
-            },
-            {
-              className: 'form-control',
-              dataAutocomplete: '/ajaxsearch/manufacturer',
-              label: 'Manufacturer',
-              name: 'manufacturer',
-              required: 'true',
-              subtype: 'text',
-              type: 'text'
-            },
-            {
-              className: 'form-control',
-              dataAutocomplete: '/ajaxsearch/model',
-              label: 'Model',
-              name: 'model',
-              required: 'true',
-              subtype: 'text',
-              type: 'text'
-            }
-          )
-           */
+        // These need an ID so they can be removed via formBuilder.actions.removeField('tmp_header');
+        // Or maybe add them via prepend
+        formData.unshift(
+          {
+          id: tmp_header
+            type: 'header',
+            className: 'mt-3',
+            label: select.options[select.selectedIndex].innerText,
+            subtype: 'h3'
+          },
+          {
+            className: 'form-control',
+            dataAutocomplete: '/ajaxsearch/manufacturer',
+            label: 'Manufacturer',
+            name: 'manufacturer',
+            required: 'true',
+            subtype: 'text',
+            type: 'text'
+          },
+          {
+            className: 'form-control',
+            dataAutocomplete: '/ajaxsearch/model',
+            label: 'Model',
+            name: 'model',
+            required: 'true',
+            subtype: 'text',
+            type: 'text'
+          }
+        )
+         */
 
             TC_toggleEdit();
             $("#fb-render").formRender({ formData });
             TC_formBuilder.actions.setData(formData);
+            document.getElementById("productType").innerHTML =
+              "<h5>" +
+              document.getElementById("typesList")[index].label +
+              "</h5>";
           })
           .catch(error => {
-            console.log("error");
-            console.log(error);
+            console.info("error");
+            console.info(error);
             // Create warning alert
             // Attach warning alert as a child to $formContainer
             /*
