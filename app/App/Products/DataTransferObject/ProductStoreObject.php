@@ -26,9 +26,9 @@ class ProductStoreObject extends DataTransferObject
 
     /**
      * @param array $validated
-     * @return static
+     * @return ProductStoreObject
      */
-    public static function fromRequest(array $validated): self
+    public static function fromRequest(array $validated): ProductStoreObject
     {
         return new self(
             [

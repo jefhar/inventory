@@ -2,4 +2,15 @@ includes:
     - ./vendor/nunomaduro/larastan/extension.neon
 parameters:
     ignoreErrors:
-            - '#Access to an undefined property Spatie\\DataTransferObject\\ImmutableDataTransferObject::\$[a-zA-Z0-9\\_]+\.#'
+        -
+            message: '#Method App\\Admin\\Middleware\\Authenticate::redirectTo\(\) should return string but return statement is missing.#'
+            path: app/App/Admin/Middleware/Authenticate.php
+        -
+            message: '#If condition is always true.#'
+            path: app/App/Types/Controllers/TypesController.php
+        - '#Access to an undefined property Spatie\\DataTransferObject\\ImmutableDataTransferObject::\$[a-zA-Z0-9\\_]+\.#'
+        - '#Function factory invoked with [0-9] parameter[s]?, 0 required.#'
+    paths:
+        - app
+        - tests
+    level: 4

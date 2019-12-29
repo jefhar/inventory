@@ -74,15 +74,16 @@ class ProductsControllerTest extends TestCase
                 Manufacturer::NAME => $manufacturer,
             ]
         );
+        /** @var Product $theProduct */
         $theProduct = Product::find(1);
         $this->assertContains('option-3', $theProduct->values);
     }
 
     public function setUp(): void
     {
-        /** @var User $user */
         parent::setUp();
 
+        /** @var User $user */
         $user = factory(User::class)->make()
             ->givePermissionTo(UserPermissions::IS_EMPLOYEE);
         $user->save();

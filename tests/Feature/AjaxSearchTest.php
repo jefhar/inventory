@@ -28,9 +28,9 @@ class AjaxSearchTest extends TestCase
 
     public function setUp(): void
     {
-        /** @var User $user */
         parent::setUp();
         $guest = factory(User::class)->make();
+        /** @var User $user */
         $user = factory(User::class)->create();
         $user->assignRole(UserRoles::EMPLOYEE);
         $this->guest = $guest;

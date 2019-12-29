@@ -212,9 +212,9 @@ class TypesControllerTest extends TestCase
 
     protected function setUp(): void
     {
-        /** @var User $user */
         parent::setUp();
         $guest = factory(User::class)->make();
+        /** @var User $user */
         $user = factory(User::class)->create();
         $user->givePermissionTo(UserPermissions::IS_EMPLOYEE);
         $user->save();

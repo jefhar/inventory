@@ -22,9 +22,9 @@ class ClientObject extends DataTransferObject
 
     /**
      * @param array $validated
-     * @return static
+     * @return ClientObject
      */
-    public static function fromRequest(array $validated): self
+    public static function fromRequest(array $validated): ClientObject
     {
         return new self(
             [

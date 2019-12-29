@@ -25,9 +25,9 @@ class PersonObject extends DataTransferObject
 
     /**
      * @param array $validated
-     * @return static
+     * @return PersonObject
      */
-    public static function fromRequest(array $validated): self
+    public static function fromRequest(array $validated): PersonObject
     {
         return new self(
             [

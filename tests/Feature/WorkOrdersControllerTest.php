@@ -187,9 +187,9 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function canToggleLockedWorkOrder(): void
     {
-        /** @var Client $client */
         $workOrder = factory(WorkOrder::class)->make();
         $person = factory(Person::class)->make();
+        /** @var Client $client */
         $client = $workOrder->client;
         $client->person()->save($person);
         $workOrder->is_locked = false;
@@ -374,8 +374,6 @@ class WorkOrdersControllerTest extends TestCase
      */
     protected function setUp(): void
     {
-        /** @var User $guestUser */
-        /** @var User $authorizedUser */
         parent::setUp();
         $this->transient = factory(User::class)->make();
         $this->user = factory(User::class)->create()->assignRole(UserRoles::TECHNICIAN);

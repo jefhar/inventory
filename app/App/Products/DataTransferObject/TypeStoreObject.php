@@ -25,9 +25,9 @@ class TypeStoreObject extends DataTransferObject
 
     /**
      * @param array $validated
-     * @return static
+     * @return TypeStoreObject
      */
-    public static function fromRequest(array $validated): self
+    public static function fromRequest(array $validated): TypeStoreObject
     {
         return new self(
             [

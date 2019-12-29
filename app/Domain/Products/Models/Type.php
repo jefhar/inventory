@@ -20,7 +20,7 @@ use Illuminate\Support\Str;
  *
  * @package Domain\Products\Models
  *
- * @method Builder orderBy(string $slug)
+ * @method static Builder orderBy(string $slug)
  * @method static Type select(?mixed $columns = null, ?mixed $column = null)
  * @method static Type updateOrCreate(array $attributes, array $values = [])
  * @method static Type where(mixed $field, ?mixed $value = null, ?mixed $value = null)
