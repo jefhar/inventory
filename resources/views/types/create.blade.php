@@ -21,7 +21,9 @@
                                     class="fas fa-eraser"></i></button>
                     </div>
                     <div id="spinner" class="spinner-border text-info invisible"></div>
+                    <div id="alert"></div>
                     <div id='formbuilder' class="row bg-light py-2 visible">
+                        <div id="productType" class="col-12"></div>
                         <div id="fb-editor" class="col-12"></div>
                         <div id="fb-render" class="col-12"></div>
                     </div>
@@ -35,22 +37,18 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="loadModalLabel">Load Existing Form</h5>
+                    <h5 class="modal-title" id="loadModalLabel">Load Existing Product Type Form</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body" id="loadpane">
-
-                    <p>Select an existing product type:</p>
-
-
-                        <select id="typesList" name="list_of_types" size="4">
-                            @foreach($types as $type)
-                                <option value="{{ $type->slug }}">{{ $type->name }}</option>
-                            @endforeach
-                        </select>
-
+                    <label for="typesList">Select an existing product type:</label>
+                    <select id="typesList" name="list_of_types" size="8">
+                        @foreach($types as $type)
+                            <option value="{{ $type->slug }}">{{ $type->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
@@ -60,4 +58,35 @@
         </div>
     </div>
     <!-- /LoadModal -->
+    <!-- Save Modal -->
+    <div id="saveProductModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="saveModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="saveModalLabel">Save New Type</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="savepane">
+                    <div class="form-group">
+                        <label for="saveType">Enter name of product type</label>
+                        <input
+                                class="form-control"
+                                id="saveType"
+                                name="saveType"
+                                placeholder="Enter product type"
+                                type="text"
+                        >
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button id="saveTypeButton" type="button" class="btn btn-outline-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /SaveModal -->
 @endsection
