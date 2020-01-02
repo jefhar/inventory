@@ -49,14 +49,14 @@
                                 </div>
                             </div>
                             @endhasanyrole
-                            {{-- This is the logout card. Make sure it is last --}}
+                            {{-- This is the log out card. Make sure it is last --}}
                             <div class="w-100"></div>
                             <div class="col-6">
                                 <div class="card border-danger">
                                     <div class="card-body text-danger">
                                         <h3 class="card-title">Logout</h3>
                                         <p class="card-text">
-                                            Log out of the system
+                                            Log out of the system.
                                         </p>
 
                                         <a class="btn btn-outline-danger" href="{{ route('logout') }}"

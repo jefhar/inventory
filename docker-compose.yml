@@ -86,6 +86,8 @@ services:
       - traefik.frontend.rule=Host:serviceandgoods.c11k.com
       - traefik.docker.network=web
       - trafik.port=80
+    ports:
+      - 8080:80
 
   php-fpm:
     build: phpdocker/php-fpm
