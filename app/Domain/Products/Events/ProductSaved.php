@@ -20,6 +20,7 @@ use Illuminate\Queue\SerializesModels;
 class ProductSaved
 {
     use SerializesModels;
+
     public Product $product;
 
     /**

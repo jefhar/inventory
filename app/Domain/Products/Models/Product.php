@@ -28,10 +28,11 @@ use Illuminate\Support\Collection;
  * @method static LengthAwarePaginator paginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null)
  * @method static Model|EloquentCollection|static[]|static|null find(int $int)
  * @method static Builder whereIn(string $ID, Collection $product_ids)
- * @property array values
- * @property int luhn
- * @property string model
- * @property string serial
+ * @property array $values
+ * @property int $id
+ * @property int $luhn
+ * @property string $model
+ * @property string $serial
  */
 class Product extends Model
 {

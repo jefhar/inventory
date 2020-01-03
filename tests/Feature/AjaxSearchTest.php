@@ -160,6 +160,8 @@ class AjaxSearchTest extends TestCase
     {
         $faker = Factory::create();
         $workOrder = factory(WorkOrder::class)->create();
+        $product = '';
+        $serial = '';   // Why? so phpstan doesn't complain.
         for ($i = 0; $i < 15; $i++) {
             $serial = $faker->isbn13;
             $unsavedProduct = factory(Product::class)->make();

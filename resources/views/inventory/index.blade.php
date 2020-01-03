@@ -4,11 +4,9 @@
 
 @section('content')
     <div class="container">
+        <h1 class="text-center">Complete Inventory</h1>
+        <p class="text-muted text-center">Generated at {{ date('j F, Y g:i:s a e') }}</p>
         <div class="row">
-            <h1 class="text-center">Complete Inventory</h1>
-            <span class="text-muted">Generated {{ date('j F, Y g:i:s a e') }}</span>
-
-
             @if ($products->isEmpty())
                 No Products Available For Sale.
             @else

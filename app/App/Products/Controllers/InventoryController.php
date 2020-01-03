@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2018, 2019, 2019 Jeff Harris
+ * Copyright 2018, 2019, 2020 Jeff Harris
  * PHP Version 7.4
  */
 
@@ -61,5 +61,4 @@ class InventoryController extends Controller
 
         return $product;
     }
-
 }

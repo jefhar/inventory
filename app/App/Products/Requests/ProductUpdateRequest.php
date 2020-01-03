@@ -36,16 +36,17 @@ class ProductUpdateRequest extends FormRequest
     {
         /** @var User $user */
         $user = Auth::user();
-        if ($user === null) {
+        if ($user == null) {
             return false;
         }
-        if ($user->hasAnyRole(
-            [
+        if (
+            $user->hasAnyRole(
+                [
                 UserRoles::TECHNICIAN,
                 UserRoles::OWNER,
                 UserRoles::SUPER_ADMIN,
-            ]
-        )
+                ]
+            )
         ) {
             return true;
         }
@@ -60,5 +61,4 @@ class ProductUpdateRequest extends FormRequest
     {
         return self::RULES;
     }
-
 }
