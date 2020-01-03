@@ -23,6 +23,10 @@ class UpdateProductTable extends Migration
                 $table->string(Product::STATUS, 64)
                     ->default(Product::STATUS_AVAILABLE)
                     ->after(Product::MODEL);
+                $table->string(Product::SERIAL, 64)
+                    ->nullable()
+                    ->after(Product::MODEL);
+                $table->index(Product::SERIAL);
             }
         );
 

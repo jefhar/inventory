@@ -25,6 +25,9 @@ $factory->define(
             Product::MODEL => $faker->jobTitle,
             Product::MANUFACTURER_ID => $manufacturer->id,
             Product::TYPE_ID => $type->id,
+            Product::VALUES=> [
+                'serial' => $faker->isbn10
+            ]
         ];
     }
 );

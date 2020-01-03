@@ -10,12 +10,14 @@ declare(strict_types=1);
 namespace Domain\Products\Models;
 
 use Domain\Products\Events\ProductCreated;
+use Domain\Products\Events\ProductSaved;
 use Domain\WorkOrders\Models\WorkOrder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 
 /**
  * Class Product
@@ -24,10 +26,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
  * @method static LengthAwarePaginator paginate()
- * @method static Model|Collection|static[]|static|null find(int $int)
+ * @method static Model|EloquentCollection|static[]|static|null find(int $int)
+ * @method static Builder whereIn(string $ID, Collection $product_ids)
+ * @property array values
  * @property int luhn
- * @property mixed $values
  * @property string model
+ * @property string serial
  */
 class Product extends Model
 {
@@ -35,6 +39,7 @@ class Product extends Model
     public const LUHN = 'luhn';
     public const MANUFACTURER_ID = 'manufacturer_id';
     public const MODEL = 'model';
+    public const SERIAL = 'serial';
     public const STATUS = 'status';
     public const STATUS_AVAILABLE = 'Available';
     public const TABLE = 'products';
@@ -60,7 +65,19 @@ class Product extends Model
 
     protected $dispatchesEvents = [
         'created' => ProductCreated::class,
+        'saving' => ProductSaved::class,
     ];
+
+    /**
+     * @param string $searchString
+     * @return Collection
+     */
+    public static function findBySerial(string $searchString): Collection
+    {
+        return self::where(self::SERIAL, 'like', '%' . $searchString . '%')
+            ->get()
+            ->pluck(self::ID, self::ID);
+    }
 
     /**
      * This allows for matching the model by the slug in the path

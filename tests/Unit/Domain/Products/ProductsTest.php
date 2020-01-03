@@ -130,4 +130,54 @@ class ProductsTest extends TestCase
             ]
         );
     }
+
+    /**
+     * @test
+     */
+    public function updateProductCreatesSerialField(): void
+    {
+        $faker = Factory::create();
+        $serial = $faker->isbn13;
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make(
+            [
+                'values' => [
+                    'radio-group-1575689472139' => 'option-3',
+                    'select-1575689474390' => 'option-2',
+                    'text-1575689474910' => 'option-1',
+                ],
+            ]
+        );
+
+        $workOrder->products()->save($product);
+        $this->assertDatabaseMissing(
+            Product::TABLE,
+            [
+                Product::ID => $product->id,
+                Product::SERIAL => $serial,
+            ]
+        );
+
+        $productUpdateObject = ProductUpdateObject::fromRequest(
+            [
+                'type' => $product->type->slug,
+                'manufacturer' => $product->manufacturer->name,
+                'model' => $product->model,
+                'values' => [
+                    'radio-group-1575689472139' => 'option-3',
+                    'select-1575689474390' => 'option-2',
+                    'text-1575689474910' => 'option-1',
+                    'serial' => $serial,
+                ],
+            ]
+        );
+        ProductUpdateAction::execute($product, $productUpdateObject);
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::ID => $product->id,
+                Product::SERIAL => $serial,
+            ]
+        );
+    }
 }

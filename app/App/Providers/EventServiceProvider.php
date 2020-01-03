@@ -10,8 +10,10 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use Domain\Products\Events\ProductCreated;
+use Domain\Products\Events\ProductSaved;
 use Domain\Products\Events\TypeCreated;
 use Domain\Products\Listeners\AddLuhnToProduct;
+use Domain\Products\Listeners\AddSerialToProduct;
 use Domain\Products\Listeners\AddSlugToType;
 use Domain\WorkOrders\Events\WorkOrderCreated;
 use Domain\WorkOrders\Listeners\AddLuhnToWorkOrder;
@@ -43,6 +45,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         ProductCreated::class => [
             AddLuhnToProduct::class,
+        ],
+        ProductSaved::class => [
+            AddSerialToProduct::class,
         ],
     ];
 

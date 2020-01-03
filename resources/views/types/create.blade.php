@@ -8,7 +8,9 @@
                 <div class="card-body">
                     <div class="row">
                         <p>Manufacturer and model fields will automatically be added to the form. Please do
-                            not add them through this form builder.</p>
+                            not add them through this form builder. If serial numbers are needed for this
+                            product type, you must add one text field and update its <span class="font-weight-bolder">Name</span>
+                            attribute to <code>serial</code>.</p>
                     </div>
                     <div class="d-flex justify-content-between mb-3">
                         <button type="button" class="btn btn-outline-info" id="loadButton">Load Existing&emsp;&emsp;<i

@@ -148,7 +148,7 @@
 
                     @foreach ($workOrder->products as $product)
                         <tr>
-                            <td>{{$product->id}}</td>
+                            <td>{{$product->luhn}}</td>
                             <td>{{$product->manufacturer->name}}</td>
                             <td>{{$product->model}}</td>
                             <td>{{$product->type->name}}</td>

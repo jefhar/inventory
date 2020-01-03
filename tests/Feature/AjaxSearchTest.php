@@ -12,6 +12,7 @@ use App\Admin\Permissions\UserRoles;
 use App\AjaxSearch\Controllers\AjaxSearchController;
 use App\Products\DataTransferObject\ProductStoreObject;
 use App\User;
+use Domain\Products\Actions\ProductStoreAction;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
@@ -160,37 +161,36 @@ class AjaxSearchTest extends TestCase
         $faker = Factory::create();
         $workOrder = factory(WorkOrder::class)->create();
         for ($i = 0; $i < 15; $i++) {
-            $product = factory(Product::class)->make();
+            $serial = $faker->isbn13;
+            $unsavedProduct = factory(Product::class)->make();
             $formRequest = [
                 'values' => [
                     'radio-group-1575689472139' => $faker->word,
                     'select-1575689474390' => $faker->word,
-                    'serial' => $faker->isbn13,
+                    'serial' => $serial,
                 ],
-                'manufacturer' => $product->manufacturer->name,
-                'model' => $product->model,
-                'type' => $product->type->slug,
+                'manufacturer' => $unsavedProduct->manufacturer->name,
+                'model' => $unsavedProduct->model,
+                'type' => $unsavedProduct->type->slug,
                 'workOrderId' => $workOrder->luhn,
             ];
-            ProductStoreObject::fromRequest($formRequest);
+            $product = ProductStoreAction::execute(ProductStoreObject::fromRequest($formRequest));
         }
 
         $this->actingAs($this->user)
-            ->get(route(AjaxSearchController::INDEX_NAME, ['q' => $product->formRequest['serial']]))
+            ->get(route(AjaxSearchController::INDEX_NAME, ['q' => $product->serial]))
             ->assertJsonFragment(
                 [
-                    Product::MODEL => $product->model,
-                    Product::ID => $product->luhn,
-                    Product::WORK_ORDER_ID => $product->work_order_id,
+                    'name' => $serial,
+                    'url' => '/inventory/' . $product->luhn,
                 ]
             );
         $this->actingAs($this->user)
-            ->get(route(AjaxSearchController::INDEX_NAME, ['q' => substr($product->formRequest['serial'], 1, 2)]))
+            ->get(route(AjaxSearchController::INDEX_NAME, ['q' => substr($product->serial, 1, 2)]))
             ->assertJsonFragment(
                 [
-                    Product::MODEL => $product->model,
-                    Product::ID => $product->luhn,
-                    Product::WORK_ORDER_ID => $product->work_order_id,
+                    'name' => $serial,
+                    'url' => '/inventory/' . $product->luhn,
                 ]
             );
     }

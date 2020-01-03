@@ -225,12 +225,12 @@ A simple warning alert—check it out!
         axios
           .post(url, postData)
           .then(response => {
-            const { id, model, created_at } = response.data;
+            const { luhn, model, created_at } = response.data;
             const { name: manufacturer } = response.data.manufacturer;
             const { name: type } = response.data.type;
             // Add Row to `<tbody id="products_table">`
             const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${id}</td>\
+            tr.innerHTML = `<td>${luhn}</td>\
 <td>${manufacturer}</td>\
 <td>${model}</td>\
 <td>${type}</td>\

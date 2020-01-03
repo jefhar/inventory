@@ -91,6 +91,7 @@ class InventoryTest extends TestCase
         $user->assignRole(UserRoles::EMPLOYEE);
         $user->save();
         $this->actingAs($user)
+            ->withoutExceptionHandling()
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertOk()
             ->assertSee($product->model);

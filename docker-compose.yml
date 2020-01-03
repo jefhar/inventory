@@ -53,6 +53,8 @@ services:
       - traefik.enable=false
     networks:
       - internal
+    ports:
+      - 13306:3306
 
   selenium:
     image: selenium/standalone-chrome
