@@ -9,22 +9,23 @@ declare(strict_types=1);
 
 namespace App\Products\Requests;
 
+use App\Admin\Permissions\UserRoles;
+use App\User;
 use Domain\Products\Models\Type;
-use Domain\WorkOrders\Models\WorkOrder;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 /**
- * Class ProductStoreRequest
+ * Class ProductUpdateRequest
  *
  * @package App\Products\Requests
  */
-class ProductStoreRequest extends FormRequest
+class ProductUpdateRequest extends FormRequest
 {
     public const RULES = [
         'manufacturer' => ['required'],
         'model' => ['required'],
         'type' => ['required', 'exists:' . Type::TABLE . ',' . Type::SLUG],
-        'workOrderId' => ['required', 'exists:' . WorkOrder::TABLE . ',' . WorkOrder::LUHN],
         'values' => ['array'],
     ];
 
@@ -33,7 +34,23 @@ class ProductStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        /** @var User $user */
+        $user = Auth::user();
+        if ($user === null) {
+            return false;
+        }
+        if ($user->hasAnyRole(
+            [
+                UserRoles::TECHNICIAN,
+                UserRoles::OWNER,
+                UserRoles::SUPER_ADMIN,
+            ]
+        )
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -43,4 +60,5 @@ class ProductStoreRequest extends FormRequest
     {
         return self::RULES;
     }
+
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2018, 2019 Jeff Harris
+ * Copyright 2018, 2019, 2020 Jeff Harris
  * PHP Version 7.4
  */
 
@@ -100,7 +100,7 @@ class TypesControllerTest extends TestCase
         $this->actingAs($this->user)
             ->get(route(TypesController::INDEX_NAME))
             ->assertOk()
-            ->assertSeeText($type->name);
+            ->assertSeeText(addslashes($type->name));
     }
 
     /**

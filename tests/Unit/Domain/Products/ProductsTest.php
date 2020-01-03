@@ -61,7 +61,10 @@ class ProductsTest extends TestCase
      */
     public function createdProductHasLuhn(): void
     {
-        factory(Product::class)->create();
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -76,7 +79,9 @@ class ProductsTest extends TestCase
      */
     public function createdProductIsAvailableForSale(): void
     {
-        factory(Product::class)->create();
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -91,22 +96,38 @@ class ProductsTest extends TestCase
      */
     public function updateProductUpdatesProduct(): void
     {
-        $product = factory(Product::class)->create();
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
         $update = factory(Product::class)->make();
         $productUpdateObject = ProductUpdateObject::fromRequest(
             [
-                'type' => $update->type,
-                'manufacturer' => $update->manufacturer,
+                'type' => $update->type->slug,
+                'manufacturer' => $update->manufacturer->name,
                 'model' => $update->model,
-                'values' => $update->values,
+                'values' => [
+                    'radio-group-1575689472139' => 'option-3',
+                    'select-1575689474390' => 'option-2',
+                    'textarea-1575689477555' => 'textarea text. Bwahahahahaaaa',
+                ],
             ]
         );
-        ProductUpdateAction::execute($product->id, $productUpdateObject);
-        $this->assertDatabaseHas(Product::TABLE, [
-            Product::ID => $product->id,
-            Product::MODEL => $productUpdateObject['model'],
-            Product::VALUES => $update->values,
-        ]);
-
+        ProductUpdateAction::execute($product, $productUpdateObject);
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::ID => $product->id,
+                Product::MODEL => $productUpdateObject->model,
+                Product::VALUES => json_encode(
+                    [
+                        'radio-group-1575689472139' => 'option-3',
+                        'select-1575689474390' => 'option-2',
+                        'textarea-1575689477555' => 'textarea text. Bwahahahahaaaa',
+                    ],
+                    JSON_THROW_ON_ERROR,
+                    512
+                ),
+            ]
+        );
     }
 }

@@ -162,15 +162,17 @@ class AjaxSearchTest extends TestCase
         for ($i = 0; $i < 15; $i++) {
             $product = factory(Product::class)->make();
             $formRequest = [
-                'manufacturer' => $product->manufacturer,
+                'values' => [
+                    'radio-group-1575689472139' => $faker->word,
+                    'select-1575689474390' => $faker->word,
+                    'serial' => $faker->isbn13,
+                ],
+                'manufacturer' => $product->manufacturer->name,
                 'model' => $product->model,
-                'radio-group-1575689472139' => $faker->word,
-                'select-1575689474390' => $faker->word,
-                'serial' => $faker->isbn13,
                 'type' => $product->type->slug,
                 'workOrderId' => $workOrder->luhn,
             ];
-            ProductStoreObject::fromRequest([$formRequest]);
+            ProductStoreObject::fromRequest($formRequest);
         }
 
         $this->actingAs($this->user)

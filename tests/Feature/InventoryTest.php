@@ -13,6 +13,7 @@ use App\Admin\Permissions\UserRoles;
 use App\Products\Controllers\InventoryController;
 use App\User;
 use Domain\Products\Models\Product;
+use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
 
 /**
@@ -41,7 +42,7 @@ class InventoryTest extends TestCase
     public function inventoryPageForUnauthorizedIsUnauthorized(): void
     {
         $this->get(route(InventoryController::INDEX_NAME))
-            ->assertUnauthorized();
+            ->assertRedirect();
     }
 
     /**
@@ -57,7 +58,9 @@ class InventoryTest extends TestCase
             ->assertOk()
             ->assertSee('No Products Available For Sale.');
 
-        $product = factory(Product::class)->create();
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
         $this->actingAs($user)
             ->get(route(InventoryController::INDEX_NAME))
             ->assertOk()
@@ -69,9 +72,11 @@ class InventoryTest extends TestCase
      */
     public function productPageForUnauthorizedUserIsUnauthorized(): void
     {
-        $product = factory(Product::class)->create();
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
         $this->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertUnauthorized();
+            ->assertRedirect();
     }
 
     /**
@@ -79,8 +84,14 @@ class InventoryTest extends TestCase
      */
     public function productPageForUserIsOk(): void
     {
-        $product = factory(Product::class)->create();
-        $this->get(route(InventoryController::SHOW_NAME, $product))
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+        $user = factory(User::class)->create();
+        $user->assignRole(UserRoles::EMPLOYEE);
+        $user->save();
+        $this->actingAs($user)
+            ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertOk()
             ->assertSee($product->model);
     }
@@ -88,9 +99,11 @@ class InventoryTest extends TestCase
     /**
      * @test
      */
-    public function updateProductUnauthorizedForNonTechs(): void
+    public function updateProductForbiddenForNonTechs(): void
     {
-        $product = factory(Product::class)->create();
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
         $update = factory(Product::class)->make();
         $this->patch(
             route(InventoryController::UPDATE_NAME, $product),
@@ -98,17 +111,18 @@ class InventoryTest extends TestCase
                 Product::MODEL => $update->model,
             ]
         )
-            ->assertUnauthorized();
+            ->assertRedirect();
         $salesRep = factory(User::class)->create();
         $salesRep->assignRole(UserRoles::SALES_REP);
         $this->actingAs($salesRep)
+            ->withExceptionHandling()
             ->patch(
                 route(InventoryController::UPDATE_NAME, $product),
                 [
                     Product::MODEL => $update->model,
                 ]
             )
-            ->assertUnauthorized();
+            ->assertForbidden();
     }
 
     /**
@@ -116,16 +130,22 @@ class InventoryTest extends TestCase
      */
     public function updateProductForTechsIsOk(): void
     {
-        $product = factory(Product::class)->create();
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
         $update = factory(Product::class)->make();
         $technician = factory(User::class)->create();
         $technician->assignRole(UserRoles::TECHNICIAN);
         $technician->save();
         $this->actingAs($technician)
+            ->withoutExceptionHandling()
             ->patch(
                 route(InventoryController::UPDATE_NAME, $product),
                 [
+                    'manufacturer' => $update->manufacturer->name,
                     Product::MODEL => $update->model,
+                    'type' => $update->type->slug,
+                    'values' => [],
                 ]
             )
             ->assertOk()

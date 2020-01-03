@@ -46,6 +46,11 @@
                             <div class="dropdown-divider"></div>
                         </div>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/inventory">
+                            Inventory
+                        </a>
+                    </li>
                 @endguest
             </ul>
 

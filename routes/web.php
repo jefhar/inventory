@@ -13,6 +13,7 @@
 
 use App\Admin\Permissions\UserPermissions;
 use App\AjaxSearch\Controllers\AjaxSearchController;
+use App\Products\Controllers\InventoryController;
 use App\Products\Controllers\ProductsController;
 use App\Types\Controllers\TypesController;
 use App\WorkOrders\Controllers\ClientsController;
@@ -87,6 +88,16 @@ Route::group(
             function () {
                 Route::post(ProductsController::STORE_PATH, 'ProductsController@store')
                     ->name(ProductsController::STORE_NAME)->middleware('auth', 'productStore');
+            }
+        );
+        Route::namespace('Products\\Controllers\\')->group(
+            function () {
+                Route::get(InventoryController::INDEX_PATH, 'InventoryController@index')
+                    ->name(InventoryController::INDEX_NAME)->middleware('auth');
+                Route::get(InventoryController::SHOW_PATH, 'InventoryController@show')
+                    ->name(InventoryController::SHOW_NAME)->middleware('auth');
+                Route::patch(InventoryController::UPDATE_PATH, 'InventoryController@update')
+                    ->name(InventoryController::UPDATE_NAME)->middleware('auth');
             }
         );
     }

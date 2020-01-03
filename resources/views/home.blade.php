@@ -15,21 +15,34 @@
                         @endif
 
                         You are logged in, {{ Auth::user()->name }}!
-                        <!-- {{ Auth::user()->getRoleNames()->first() }} -->
+                    <!-- {{ Auth::user()->getRoleNames()->first() }} -->
                         <br/>
                         <br/>
-                        <div class="row">
+                        <div class="row hyphenation">
                             <div class="col-6">
                                 <div class="card mb-4">
                                     <div class="card-body">
-                                        <h3 class="card-title">Create a New WorkOrder</h3>
+                                        <h3 class="card-title">Create a New Work&shy;Order</h3>
                                         <p class="card-text">
-                                            Create a new WorkOrder to keep track of where equipment comes from. Each
-                                            WorkOrder should keep track of one decommission project.
+                                            Create a new Work&shy;Order to keep track of where equipment comes from.
+                                            Each
+                                            Work&shy;Order should keep track of one decommission project.
                                         </p>
 
                                         <a href="/workorders/create" class="btn btn-outline-primary">Create new
                                             WorkOrder</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <h3 class="card-title">View Inventory</h3>
+                                        <p class="card-text">
+                                            See all items available for sale.
+                                        </p>
+
+                                        <a href="/inventory" class="btn btn-outline-primary">View Inventory</a>
                                     </div>
                                 </div>
                             </div>
@@ -38,7 +51,7 @@
                             \App\Admin\Permissions\UserRoles::OWNER. '|' .
                             \App\Admin\Permissions\UserRoles::SUPER_ADMIN)
                             <div class="col-6">
-                                <div class="card mb-1">
+                                <div class="card mb-4">
                                     <div class="card-body">
                                         <h3 class="card-title">Create a New Product Type</h3>
                                         <p class="card-text">

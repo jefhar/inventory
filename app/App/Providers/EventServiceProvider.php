@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2018, 2019 Jeff Harris
+ * Copyright 2018, 2019, 2020 Jeff Harris
  * PHP Version 7.4
  */
 
@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use Domain\Products\Events\ProductCreated;
 use Domain\Products\Events\TypeCreated;
+use Domain\Products\Listeners\AddLuhnToProduct;
 use Domain\Products\Listeners\AddSlugToType;
 use Domain\WorkOrders\Events\WorkOrderCreated;
 use Domain\WorkOrders\Listeners\AddLuhnToWorkOrder;
@@ -38,6 +40,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         TypeCreated::class => [
             AddSlugToType::class,
+        ],
+        ProductCreated::class => [
+            AddLuhnToProduct::class,
         ],
     ];
 
