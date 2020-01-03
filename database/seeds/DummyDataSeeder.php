@@ -37,7 +37,12 @@ class DummyDataSeeder extends Seeder
             $workOrder->intake = $faker->text();
             $workOrder->user_id = 1;
             $client->workOrders()->save($workOrder);
-            $product = factory(Product::class)->make([Product::MODEL => $models->random()]);
+            $product = factory(Product::class)->make(
+                [
+                    Product::MODEL => $models->random(),
+                    Product::VALUES => ['serial' => $faker->isbn10],
+                ]
+            );
             $workOrder->products()->save($product);
         }
     }

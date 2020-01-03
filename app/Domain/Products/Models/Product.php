@@ -25,7 +25,7 @@ use Illuminate\Support\Collection;
  * @package Domain\Products\Models
  *
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
- * @method static LengthAwarePaginator paginate()
+ * @method static LengthAwarePaginator paginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null)
  * @method static Model|EloquentCollection|static[]|static|null find(int $int)
  * @method static Builder whereIn(string $ID, Collection $product_ids)
  * @property array values

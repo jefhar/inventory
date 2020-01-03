@@ -35,7 +35,7 @@ class InventoryController extends Controller
      */
     public function index(): View
     {
-        $products = Product::paginate();
+        $products = Product::paginate(25);
 
         return view('inventory.index', ['products' => $products]);
     }

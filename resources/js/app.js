@@ -225,15 +225,18 @@ A simple warning alert—check it out!
         axios
           .post(url, postData)
           .then(response => {
-            const { luhn, model, created_at } = response.data;
+            const { model, created_at, serial } = response.data;
             const { name: manufacturer } = response.data.manufacturer;
             const { name: type } = response.data.type;
+            const luhn = _.padStart(response.data.luhn, 6, "0");
             // Add Row to `<tbody id="products_table">`
             const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${luhn}</td>\
+            tr.innerHTML = `<th scope="row" class="col-1">\
+<a class="btn btn-info" href="/inventory/${luhn}">${luhn}</a></th>\
 <td>${manufacturer}</td>\
 <td>${model}</td>\
 <td>${type}</td>\
+<td>${serial}</td>
 <td>${created_at}</td>`;
             document.getElementById("products_table").appendChild(tr);
             const productForm = document.getElementById("productForm");

@@ -141,6 +141,7 @@
                         <th scope="col">Make</th>
                         <th scope="col">Model</th>
                         <th scope="col">Type</th>
+                        <th scope="col">Serial</th>
                         <th scope="col">Created At</th>
                     </tr>
                     </thead>
@@ -148,10 +149,16 @@
 
                     @foreach ($workOrder->products as $product)
                         <tr>
-                            <td>{{$product->luhn}}</td>
+                            <th scope="row" class="col-1">
+                                <a class="btn btn-info"
+                                   href="/inventory/{{ $product->luhn }}">
+                                    {{ str_pad($product->luhn, 7, '0', STR_PAD_LEFT) }}
+                                </a>
+                            </th>
                             <td>{{$product->manufacturer->name}}</td>
                             <td>{{$product->model}}</td>
                             <td>{{$product->type->name}}</td>
+                            <td>{{$product->serial}}</td>
                             <td>{{$product->created_at}}</td>
                         </tr>
                     @endforeach
