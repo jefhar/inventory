@@ -14,8 +14,8 @@
                             </div>
                         @endif
 
-                        You are logged in, {{ Auth::user()->name }}
-                        ! <!-- {{ Auth::user()->getRoleNames()->first() }} -->
+                        You are logged in, {{ Auth::user()->name }}!
+                        <!-- {{ Auth::user()->getRoleNames()->first() }} -->
                         <br/>
                         <br/>
                         <div class="row">

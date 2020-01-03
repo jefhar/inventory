@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2018, 2019 Jeff Harris
+ * Copyright 2018, 2019, 2020 Jeff Harris
  * PHP Version 7.4
  */
 
@@ -20,6 +20,7 @@ use Illuminate\Support\Str;
  *
  * @package Domain\Products\Models
  *
+ * @method static Builder inRandomOrder()
  * @method static Builder orderBy(string $slug)
  * @method static Type select(?mixed $columns = null, ?mixed $column = null)
  * @method static Type updateOrCreate(array $attributes, array $values = [])

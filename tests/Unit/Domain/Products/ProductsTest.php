@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2018, 2019 Jeff Harris
+ * Copyright 2018, 2019, 2020 Jeff Harris
  * PHP Version 7.4
  */
 
@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Products;
 
+use App\Products\DataTransferObject\ProductUpdateObject;
+use Domain\Products\Actions\ProductUpdateAction;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
@@ -52,5 +54,59 @@ class ProductsTest extends TestCase
         );
         $product->fresh();
         $this->assertEquals($manufacturerName, $product->manufacturer->name);
+    }
+
+    /**
+     * @test
+     */
+    public function createdProductHasLuhn(): void
+    {
+        factory(Product::class)->create();
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::ID => 1,
+                Product::LUHN => 18,
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function createdProductIsAvailableForSale(): void
+    {
+        factory(Product::class)->create();
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::ID => 1,
+                Product::STATUS => Product::STATUS_AVAILABLE,
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function updateProductUpdatesProduct(): void
+    {
+        $product = factory(Product::class)->create();
+        $update = factory(Product::class)->make();
+        $productUpdateObject = ProductUpdateObject::fromRequest(
+            [
+                'type' => $update->type,
+                'manufacturer' => $update->manufacturer,
+                'model' => $update->model,
+                'values' => $update->values,
+            ]
+        );
+        ProductUpdateAction::execute($product->id, $productUpdateObject);
+        $this->assertDatabaseHas(Product::TABLE, [
+            Product::ID => $product->id,
+            Product::MODEL => $productUpdateObject['model'],
+            Product::VALUES => $update->values,
+        ]);
+
     }
 }

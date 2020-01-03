@@ -11,9 +11,9 @@ require("formBuilder/dist/form-render.min");
 const AutoComplete = require("autocomplete-js");
 require("./components/WorkOrder/WorkOrderIndex");
 require("./components/WorkOrder/WorkOrderCreate");
-const OK = 200;
-const CREATED = 201;
-const ACCEPTED = 202;
+const HTTP_OK = 200;
+const HTTP_CREATED = 201;
+const HTTP_ACCEPTED = 202;
 AutoComplete();
 
 $(() => {
@@ -485,7 +485,7 @@ if (document.getElementById("types_create")) {
               name: typeName
             })
             .then(response => {
-              if (response.status === CREATED) {
+              if (response.status === HTTP_CREATED) {
                 console.info("created.");
                 document.getElementById(
                   "alert"
@@ -495,7 +495,7 @@ if (document.getElementById("types_create")) {
 <span aria-hidden="true">&times;</span>\
 </button>\
 </div>`;
-              } else if (response.status === ACCEPTED) {
+              } else if (response.status === HTTP_ACCEPTED) {
                 console.info("accepted.");
                 const resave = window.confirm(
                   "Type already exists. Press OK to update, CANCEL to rename"
@@ -508,7 +508,7 @@ if (document.getElementById("types_create")) {
                       name: typeName
                     })
                     .then(response => {
-                      if (response.status === OK) {
+                      if (response.status === HTTP_OK) {
                         console.info("forced created.");
                         document.getElementById(
                           "alert"
