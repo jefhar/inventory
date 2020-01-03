@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Domain\Products;
 
 use App\Products\DataTransferObject\ProductUpdateObject;
+use Domain\Products\Actions\ProductShowAction;
 use Domain\Products\Actions\ProductUpdateAction;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
@@ -179,5 +180,19 @@ class ProductsTest extends TestCase
                 Product::SERIAL => $serial,
             ]
         );
+    }
+
+    /**
+     * @test
+     */
+    public function renderingProductViewCombinesValuesAndType(): void
+    {
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+        $product->refresh;
+        $formData = ProductShowAction::execute($product);
+        $this->assertArrayHasKey('userData', $formData[0]);
+
     }
 }
