@@ -18,6 +18,25 @@
             <div class="card-body">
                 <div id="product_show"></div>
             </div>
+            @can(\App\Admin\Permissions\UserPermissions::EDIT_SAVED_PRODUCT)
+                <div class="card-footer">
+                    <div class="dropdown">
+                        <button
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                class="btn btn-outline-primary dropdown-toggle"
+                                data-toggle="dropdown"
+                                id="addToCardButton"
+                                type="button"
+                        >Add To Cart &hellip;
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="addToCartButton">
+                            <a class="dropdown-item" href="#">New Cart</a>
+                            <div class="dropdown-divider" id="dropdownDivider"></div>
+                        </div>
+                    </div>
+                </div>
+            @endcan
         </div>
     </div>
 @endsection

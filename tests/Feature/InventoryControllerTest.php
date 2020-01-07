@@ -190,7 +190,7 @@ class InventoryControllerTest extends TestCase
     /**
      * @test
      */
-    public function othersSeeInventoryItemAsReadOnly()
+    public function othersSeeInventoryItemAsReadOnly(): void
     {
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
@@ -207,5 +207,51 @@ class InventoryControllerTest extends TestCase
         $this->actingAs($technician)
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertSee('"className":"form-control-plaintext"');
+    }
+
+    /**
+     * @test
+     */
+    public function salesRepsSeeAddToCartButton(): void
+    {
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+        $product->refresh;
+
+        $salesRep = factory(User::class)->create();
+        $salesRep->assignRole(UserRoles::SALES_REP);
+        $this->actingAs($salesRep)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertSee('Add To Cart &hellip;');
+
+        $owner = factory(User::class)->create();
+        $owner->assignRole(UserRoles::SALES_REP);
+        $this->actingAs($owner)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertSee('Add To Cart &hellip;');
+    }
+
+    /**
+     * @test
+     */
+    public function othersDontSeeAddToCartButton(): void
+    {
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+        $product->refresh;
+
+        $employee = factory(User::class)->create();
+        $employee->assignRole(UserRoles::EMPLOYEE);
+        $this->actingAs($employee)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertDontSee('Add To Cart &hellip;');
+
+        $technician = factory(User::class)->create();
+        $technician->assignRole(UserRoles::TECHNICIAN);
+        $this->actingAs($technician)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertDontSee('Add To Cart &hellip;');
     }
 }
