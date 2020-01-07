@@ -665,3 +665,9 @@ A simple warning alert—check it out!
       });
   });
 }
+
+if (document.getElementById("product_show")) {
+  const wrapper = $("#product_show");
+  wrapper.formRender(window.formRenderOptions);
+  console.info(window.formRenderOptions);
+}

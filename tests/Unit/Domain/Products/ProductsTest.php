@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Products;
 
+use App\Admin\Permissions\UserRoles;
 use App\Products\DataTransferObject\ProductUpdateObject;
+use App\User;
 use Domain\Products\Actions\ProductShowAction;
 use Domain\Products\Actions\ProductUpdateAction;
 use Domain\Products\Models\Manufacturer;
@@ -191,8 +193,32 @@ class ProductsTest extends TestCase
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
         $product->refresh;
-        $formData = ProductShowAction::execute($product);
-        $this->assertArrayHasKey('userData', $formData[0]);
 
+        $user = factory(User::class)->create();
+        $user->assignRole(UserRoles::EMPLOYEE);
+        $this->actingAs($user);
+
+        $formData = ProductShowAction::execute($product);
+        $this->assertArrayHasKey('userData', $formData[2]);
+    }
+
+    /**
+     * @test
+     */
+    public function renderingProductViewAddsManufacturerAndModelFirst(): void
+    {
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+        $product->refresh;
+        $user = factory(User::class)->create();
+        $user->assignRole(UserRoles::EMPLOYEE);
+        $this->actingAs($user);
+
+        $formData = json_decode($product->type->form, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertArrayNotHasKey('manufacturer', $formData);
+        $actionFormData = ProductShowAction::execute($product);
+        $this->assertEquals('manufacturer', $actionFormData[0]['name']);
+        $this->assertEquals('model', $actionFormData[1]['name']);
     }
 }

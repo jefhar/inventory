@@ -31,8 +31,11 @@ use Illuminate\Support\Collection;
  * @property array $values
  * @property int $id
  * @property int $luhn
+ * @property Manufacturer $manufacturer;
  * @property string $model
  * @property string $serial
+ * @property Type $type;
+ * @property WorkOrder $workOrder;
  */
 class Product extends Model
 {

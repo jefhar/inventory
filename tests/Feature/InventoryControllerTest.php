@@ -18,11 +18,11 @@ use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
 
 /**
- * Class InventoryTest
+ * Class InventoryControllerTest
  *
  * @package Tests\Feature
  */
-class InventoryTest extends TestCase
+class InventoryControllerTest extends TestCase
 {
     /**
      * @test
@@ -163,5 +163,49 @@ class InventoryTest extends TestCase
                 Product::MODEL => $update->model,
             ]
         );
+    }
+
+    /**
+     * @test
+     */
+    public function salesRepsSeeInventoryAsEditable(): void
+    {
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+        $product->refresh;
+
+        $salesRep = factory(User::class)->create();
+        $salesRep->assignRole(UserRoles::SALES_REP);
+        $owner = factory(User::class)->create();
+        $owner->assignRole(UserRoles::OWNER);
+        $this->actingAs($salesRep)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertDontSee('"className":"form-control-plaintext"');
+        $this->actingAs($owner)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertDontSee('"className":"form-control-plaintext"');
+    }
+
+    /**
+     * @test
+     */
+    public function othersSeeInventoryItemAsReadOnly()
+    {
+        $workOrder = factory(WorkOrder::class)->create();
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+        $product->refresh;
+
+        $employee = factory(User::class)->create();
+        $employee->assignRole(UserRoles::EMPLOYEE);
+        $technician = factory(User::class)->create();
+        $technician->assignRole(UserRoles::TECHNICIAN);
+        $this->actingAs($employee)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertSee('"className":"form-control-plaintext"');
+        $this->actingAs($technician)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertSee('"className":"form-control-plaintext"');
     }
 }

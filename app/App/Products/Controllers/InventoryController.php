@@ -12,6 +12,7 @@ namespace App\Products\Controllers;
 use App\Admin\Controllers\Controller;
 use App\Products\DataTransferObject\ProductUpdateObject;
 use App\Products\Requests\ProductUpdateRequest;
+use Domain\Products\Actions\ProductShowAction;
 use Domain\Products\Actions\ProductUpdateAction;
 use Domain\Products\Models\Product;
 use Illuminate\View\View;
@@ -46,7 +47,7 @@ class InventoryController extends Controller
      */
     public function show(Product $product): View
     {
-        return view('inventory.show', ['product' => $product]);
+        return view('inventory.show', ['product' => $product, 'formData' => ProductShowAction::execute($product)]);
     }
 
     /**

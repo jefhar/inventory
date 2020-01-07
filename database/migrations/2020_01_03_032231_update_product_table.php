@@ -1,9 +1,14 @@
 <?php
 
+use App\Admin\Permissions\UserPermissions;
+use App\Admin\Permissions\UserRoles;
 use Domain\Products\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Tdely\Luhn\Luhn;
 
 class UpdateProductTable extends Migration
 {
@@ -32,9 +37,19 @@ class UpdateProductTable extends Migration
 
         $products = Product::all();
         foreach ($products as $product) {
-            $product->luhn = \Tdely\Luhn\Luhn::create($product->id);
+            $product->luhn = Luhn::create($product->id);
             $product->save();
         }
+
+        $editSavedProduct = Permission::create(['name' => UserPermissions::EDIT_SAVED_PRODUCT]);
+
+        $owner = Role::findByName(UserRoles::OWNER);
+        $superAdmin = Role::findByName(UserRoles::SUPER_ADMIN);
+        $salesRep = Role::findByName(UserRoles::SALES_REP);
+
+        $owner->givePermissionTo($editSavedProduct);
+        $superAdmin->givePermissionTo($editSavedProduct);
+        $salesRep->givePermissionTo($editSavedProduct);
     }
 
     /**
