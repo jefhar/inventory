@@ -17,9 +17,12 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package Domain\Products\Models
  *
+ * @method Manufacturer first()
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
+ * @method static int count()
+ * @method static Manufacturer create(array $array)
  * @method static Manufacturer firstOrCreate(array $array)
- * @method static Builder inRandomOrder()
+ * @method static Manufacturer inRandomOrder()
  * @property int $id
  * @property string $name
  */

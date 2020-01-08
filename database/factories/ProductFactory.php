@@ -11,7 +11,7 @@ $factory->define(
     Product::class,
     function (Faker $faker) {
         if (Manufacturer::count() < 20) {
-            Manufacturer::create([Manufacturer::NAME => $faker->company]);
+            Manufacturer::create([Manufacturer::NAME => $faker->unique()->company]);
         }
 
         if (Type::count() < 8) {
@@ -19,6 +19,7 @@ $factory->define(
         }
 
         $manufacturer = Manufacturer::inRandomOrder()->first();
+        /** @var Type $type */
         $type = Type::inRandomOrder()->first();
 
         return [

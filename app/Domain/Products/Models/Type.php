@@ -22,11 +22,13 @@ use Illuminate\Support\Str;
  *
  * @method static Builder inRandomOrder()
  * @method static Builder orderBy(string $slug)
+ * @method static int count()
  * @method static Type select(?mixed $columns = null, ?mixed $column = null)
  * @method static Type updateOrCreate(array $attributes, array $values = [])
  * @method static Type where(mixed $field, ?mixed $value = null, ?mixed $value = null)
  * @method Type first()
  * @method Type get()
+ * @property int $id
  * @property string $form
  * @property string $name
  * @property string $slug
