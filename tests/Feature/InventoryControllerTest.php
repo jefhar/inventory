@@ -173,7 +173,6 @@ class InventoryControllerTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
-        $product->refresh;
 
         $salesRep = factory(User::class)->create();
         $salesRep->assignRole(UserRoles::SALES_REP);
@@ -195,7 +194,6 @@ class InventoryControllerTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
-        $product->refresh;
 
         $employee = factory(User::class)->create();
         $employee->assignRole(UserRoles::EMPLOYEE);
@@ -217,7 +215,6 @@ class InventoryControllerTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
-        $product->refresh;
 
         $salesRep = factory(User::class)->create();
         $salesRep->assignRole(UserRoles::SALES_REP);
@@ -240,7 +237,6 @@ class InventoryControllerTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
-        $product->refresh;
 
         $employee = factory(User::class)->create();
         $employee->assignRole(UserRoles::EMPLOYEE);

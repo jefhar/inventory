@@ -128,6 +128,7 @@
       <path value="$PROJECT_DIR$/vendor/nette/bootstrap" />
       <path value="$PROJECT_DIR$/vendor/nette/di" />
       <path value="$PROJECT_DIR$/vendor/jean85/pretty-package-versions" />
+      <path value="$PROJECT_DIR$/vendor/symfony/http-client_compare" />
     </include_path>
   </component>
   <component name="PhpInterpreters">

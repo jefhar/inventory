@@ -192,7 +192,6 @@ class ProductsTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
-        $product->refresh;
 
         $user = factory(User::class)->create();
         $user->assignRole(UserRoles::EMPLOYEE);
@@ -210,7 +209,6 @@ class ProductsTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
-        $product->refresh;
         $user = factory(User::class)->create();
         $user->assignRole(UserRoles::EMPLOYEE);
         $this->actingAs($user);
