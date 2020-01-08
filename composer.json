@@ -73,7 +73,7 @@
       "rm -rf tests/coverage*",
       "composer phpcs"
     ],
-    "test": "vendor/bin/phpunit --coverage-text --colors=never -d memory_limit=2048M",
+    "test": "vendor/bin/phpunit --coverage-text --colors=never --testdox -d memory_limit=2048M",
     "dusk": [
       "php artisan db:wipe",
       "php artisan db:migrate",
