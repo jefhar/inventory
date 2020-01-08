@@ -36,9 +36,6 @@ class ProductUpdateRequest extends FormRequest
     {
         /** @var User $user */
         $user = Auth::user();
-        if ($user == null) {
-            return false;
-        }
         if (
             $user->hasAnyRole(
                 [
