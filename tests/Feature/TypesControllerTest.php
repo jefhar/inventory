@@ -90,7 +90,7 @@ class TypesControllerTest extends TestCase
     /**
      * @test
      */
-    public function typeIndexAPIExistsAndIsAccessible(): void
+    public function typeIndexApiExistsAndIsAccessible(): void
     {
         $type = factory(Type::class)->create();
         $this->actingAs($this->guest)

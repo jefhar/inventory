@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2018, 2019 Jeff Harris
+ * Copyright 2018, 2019, 2020 Jeff Harris
  * PHP Version 7.4
  */
 
@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Admin\Permissions\UserPermissions;
+use App\Admin\Permissions\UserRoles;
 use App\Products\Controllers\ProductsController;
 use App\User;
 use Domain\Products\Models\Manufacturer;
@@ -77,6 +78,54 @@ class ProductsControllerTest extends TestCase
         /** @var Product $theProduct */
         $theProduct = Product::find(1);
         $this->assertContains('option-3', $theProduct->values);
+    }
+
+    /**
+     * @test
+     */
+    public function salesRepCanAddPriceToProduct(): void
+    {
+        $faker = Factory::create();
+        $price = $faker->randomNumber();
+        /** @var User $salesRep */
+        $salesRep = factory(User::class)->make();
+        $salesRep->assignRole(UserRoles::SALES_REP);
+        $product = \factory(Product::class)->create();
+        $this->actingAs($salesRep)
+            ->patch(
+                route(ProductsController::UPDATE_NAME, $product),
+                [Product::PRICE => $price]
+            )
+            ->assertJson(
+                [
+                    Product::ID => $product->luhn,
+                    Product::PRICE => $price,
+                ]
+            )
+            ->assertOk();
+    }
+
+    /**
+     * @test
+     */
+    public function technicianCannotAddPriceToProduct(): void
+    {
+        $faker = Factory::create();
+        $price = $faker->randomNumber();
+        $product = \factory(Product::class)->create();
+        /** @var User $technician */
+        $technician = factory(User::class)->make();
+        $technician->assignRole(UserRoles::TECHNICIAN);
+        $technician->save();
+
+        $this->actingAs($technician)
+            ->patch(
+                route(ProductsController::UPDATE_NAME, $product),
+                [
+                    Product::PRICE => $price
+                ]
+            )
+            ->assertForbidden();
     }
 
     public function setUp(): void

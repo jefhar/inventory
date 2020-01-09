@@ -15,6 +15,7 @@ use Spatie\DataTransferObject\DataTransferObject;
  * Class ProductStoreObject
  *
  * @package App\Products\DataTransferObject
+ * @TODO: Move this namespace to App\Products\DataTransferObjects
  */
 class ProductStoreObject extends DataTransferObject
 {
