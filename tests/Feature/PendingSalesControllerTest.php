@@ -95,11 +95,7 @@ class PendingSalesControllerTest extends TestCase
 
         $this->actingAs($salesRep)
             ->delete(
-                route(\App\Carts\Controllers\PendingSalesController::DESTROY_NAME),
-                [
-                    Product::CART_ID => $cart->id,
-                    Product::ID => $product->id,
-                ]
+                route(\App\Carts\Controllers\PendingSalesController::DESTROY_NAME, $product)
             )
             ->assertOk();
     }
@@ -121,11 +117,7 @@ class PendingSalesControllerTest extends TestCase
 
         $this->actingAs($technician)
             ->delete(
-                route(\App\Carts\Controllers\PendingSalesController::DESTROY_NAME),
-                [
-                    Product::CART_ID => $cart->id,
-                    Product::ID => $product->id,
-                ]
+                route(\App\Carts\Controllers\PendingSalesController::DESTROY_NAME, $product)
             )
             ->assertForbidden();
     }
