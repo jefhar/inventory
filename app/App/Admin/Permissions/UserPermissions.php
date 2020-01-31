@@ -18,4 +18,6 @@ final class UserPermissions
     public const IS_EMPLOYEE = 'user.is.employee';
     public const WORK_ORDER_OPTIONAL_PERSON = 'workOrder.optional.person';
     public const EDIT_SAVED_PRODUCT = 'inventoryItem.view.edit';
+    public const UPDATE_PRODUCT_PRICE = 'product.price.update';
+    public const MUTATE_CART = 'cart.mutate';
 }

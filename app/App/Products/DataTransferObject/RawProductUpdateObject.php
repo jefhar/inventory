@@ -17,7 +17,7 @@ use Spatie\DataTransferObject\DataTransferObject;
  *
  * @package App\Products\DataTransferObject
  */
-class ProductUpdateObject extends DataTransferObject
+class RawProductUpdateObject extends DataTransferObject
 {
     public array $values;
     public string $manufacturer;
@@ -26,9 +26,9 @@ class ProductUpdateObject extends DataTransferObject
 
     /**
      * @param array $validated
-     * @return ProductUpdateObject
+     * @return RawProductUpdateObject
      */
-    public static function fromRequest(array $validated): ProductUpdateObject
+    public static function fromRequest(array $validated): RawProductUpdateObject
     {
         return new self(
             [

@@ -24,6 +24,8 @@ class ProductsController extends Controller
 {
     public const STORE_NAME = 'products.store';
     public const STORE_PATH = '/products';
+    public const UPDATE_NAME = 'products.update';
+    public const UPDATE_PATH = '/products/{product}';
 
     /**
      * @param ProductStoreRequest $request
@@ -34,5 +36,12 @@ class ProductsController extends Controller
         $productStoreObject = ProductStoreObject::fromRequest($request->validated());
 
         return ProductStoreAction::execute($productStoreObject);
+    }
+
+    public function update(Product $product, \Illuminate\Http\Request $request): Product
+    {
+        $price = (int)$request->input(Product::PRICE);
+
+        return \Domain\PendingSales\Actions\PricePatchAction::execute($product, $price);
     }
 }

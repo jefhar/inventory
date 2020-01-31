@@ -11,6 +11,7 @@ namespace Tests\Feature;
 use App\Admin\Permissions\UserRoles;
 use App\User;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 
 /**
  * Class CartControllerTest
@@ -19,6 +20,8 @@ use Tests\TestCase;
  */
 class CartControllerTest extends TestCase
 {
+    use FullObjects;
+
     private User $employee;
     private User $owner;
     private User $salesRep;
@@ -31,9 +34,10 @@ class CartControllerTest extends TestCase
     {
         $cart = factory(\Domain\Carts\Models\Cart::class)->make();
         $this->actingAs($this->salesRep)
+            ->withoutExceptionHandling()
             ->post(
-                route(\App\Carts\CartsController::STORE_NAME),
-                $cart
+                route(\App\Carts\Controllers\CartsController::STORE_NAME),
+                $cart->toArray()
             )
             ->assertCreated()
             ->assertJson(
@@ -51,8 +55,8 @@ class CartControllerTest extends TestCase
         $cart = factory(\Domain\Carts\Models\Cart::class)->make();
         $this->actingAs($this->technician)
             ->post(
-                route(\App\Carts\CartsController::STORE_NAME),
-                $cart
+                route(\App\Carts\Controllers\CartsController::STORE_NAME),
+                $cart->toArray()
             )
             ->assertForbidden();
     }
@@ -63,7 +67,7 @@ class CartControllerTest extends TestCase
     public function salesRepCanAccessCart(): void
     {
         $this->actingAs($this->salesRep)
-            ->get(route(\App\Carts\CartsController::INDEX_NAME))
+            ->get(route(\App\Carts\Controllers\CartsController::INDEX_NAME))
             ->assertOk();
     }
 
@@ -73,7 +77,7 @@ class CartControllerTest extends TestCase
     public function ownerCanAccessCart(): void
     {
         $this->actingAs($this->owner)
-            ->get(route(\App\Carts\CartsController::INDEX_NAME))
+            ->get(route(\App\Carts\Controllers\CartsController::INDEX_NAME))
             ->assertOk();
     }
 
@@ -83,12 +87,12 @@ class CartControllerTest extends TestCase
     public function othersCantAccessCart(): void
     {
         $this->actingAs($this->employee)
-            ->get(route(\App\Carts\CartsController::INDEX_NAME))
-            ->assertRedirect();
+            ->get(route(\App\Carts\Controllers\CartsController::INDEX_NAME))
+            ->assertForbidden();
 
         $this->actingAs($this->technician)
-            ->get(route(\App\Carts\CartsController::INDEX_NAME))
-            ->assertRedirect();
+            ->get(route(\App\Carts\Controllers\CartsController::INDEX_NAME))
+            ->assertForbidden();
     }
 
     /**
@@ -97,11 +101,12 @@ class CartControllerTest extends TestCase
     public function salesRepCanSeeCart(): void
     {
         /** @var \Domain\Carts\Models\Cart $cart */
-        $cart = factory(\Domain\Carts\Models\Cart::class)->make();
+        // $cart = factory(\Domain\Carts\Models\Cart::class)->make();
+        $cart = $this->makeFullCart();
         $this->salesRep->carts()->save($cart);
 
         $this->actingAs($this->salesRep)
-            ->get(route(\App\Carts\CartsController::SHOW_NAME, $cart))
+            ->get(route(\App\Carts\Controllers\CartsController::SHOW_NAME, $cart))
             ->assertOk()
             ->assertSee($cart->client->company_name);
     }
@@ -117,7 +122,7 @@ class CartControllerTest extends TestCase
         $this->salesRep->carts()->save($cart);
 
         $this->actingAs($this->salesRep)
-            ->get(route(\App\Carts\CartsController::DESTROY_NAME, $cart))
+            ->delete(route(\App\Carts\Controllers\CartsController::DESTROY_NAME, $cart))
             ->assertOk();
     }
 
@@ -132,8 +137,8 @@ class CartControllerTest extends TestCase
         $this->employee->carts()->save($employeeCart);
 
         $this->actingAs($this->employee)
-            ->get(route(\App\Carts\CartsController::DESTROY_NAME, $employeeCart))
-            ->assertRedirect();
+            ->delete(route(\App\Carts\Controllers\CartsController::DESTROY_NAME, $employeeCart))
+            ->assertForbidden();
 
         /** @var \Domain\Carts\Models\Cart $employeeCart */
         $technicianCart = factory(\Domain\Carts\Models\Cart::class)->make();
@@ -141,8 +146,8 @@ class CartControllerTest extends TestCase
         $this->technician->carts()->save($technicianCart);
 
         $this->actingAs($this->technician)
-            ->get(route(\App\Carts\CartsController::DESTROY_NAME, $employeeCart))
-            ->assertRedirect();
+            ->delete(route(\App\Carts\Controllers\CartsController::DESTROY_NAME, $employeeCart))
+            ->assertForbidden();
     }
 
     /**
@@ -155,7 +160,7 @@ class CartControllerTest extends TestCase
         $this->salesRep->carts()->save($cart);
         $this->actingAs($this->salesRep)
             ->patch(
-                route(\App\Carts\CartsController::UPDATE_NAME, $cart),
+                route(\App\Carts\Controllers\CartsController::UPDATE_NAME, $cart),
                 [\Domain\Carts\Models\Cart::STATUS => \Domain\Carts\Models\Cart::STATUS_VOID]
             )->assertOk()
             ->assertJson(

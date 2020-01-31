@@ -88,9 +88,14 @@ Route::group(
             function () {
                 Route::post(ProductsController::STORE_PATH, 'ProductsController@store')
                     ->name(ProductsController::STORE_NAME)->middleware('auth', 'productStore');
+                Route::patch(ProductsController::UPDATE_PATH, 'ProductsController@update')
+                    ->name(ProductsController::UPDATE_NAME)->middleware(
+                        'auth',
+                        'permission:' . UserPermissions::UPDATE_PRODUCT_PRICE
+                    );
             }
         );
-        Route::namespace('Products\\Controllers\\')->group(
+        Route::namespace('Products\\Controllers\\')->group( // The Inventory Controller is a Product concern.
             function () {
                 Route::get(InventoryController::INDEX_PATH, 'InventoryController@index')
                     ->name(InventoryController::INDEX_NAME)->middleware('auth');
@@ -98,6 +103,46 @@ Route::group(
                     ->name(InventoryController::SHOW_NAME)->middleware('auth');
                 Route::patch(InventoryController::UPDATE_PATH, 'InventoryController@update')
                     ->name(InventoryController::UPDATE_NAME)->middleware('auth');
+            }
+        );
+        Route::namespace('Carts\\Controllers\\')->group(
+            function () {
+                Route::get(\App\Carts\Controllers\CartsController::INDEX_PATH, 'CartsController@index')
+                    ->name(\App\Carts\Controllers\CartsController::INDEX_NAME)->middleware(
+                        'auth',
+                        'permission:' . UserPermissions::MUTATE_CART
+                    );
+                Route::get(\App\Carts\Controllers\CartsController::SHOW_PATH, 'CartsController@show')
+                    ->name(\App\Carts\Controllers\CartsController::SHOW_NAME)->middleware('auth');
+                Route::post(\App\Carts\Controllers\CartsController::STORE_PATH, 'CartsController@store')
+                    ->name(\App\Carts\Controllers\CartsController::STORE_NAME)->middleware(
+                        'auth',
+                        'permission:' . UserPermissions::MUTATE_CART
+                    );
+                Route::delete(\App\Carts\Controllers\CartsController::DESTROY_PATH, 'CartsController@destroy')
+                    ->name(\App\Carts\Controllers\CartsController::DESTROY_NAME)->middleware(
+                        'auth',
+                        'permission:' . UserPermissions::MUTATE_CART
+                    );
+                Route::patch(\App\Carts\Controllers\CartsController::UPDATE_PATH, 'CartsController@update')
+                    ->name(\App\Carts\Controllers\CartsController::UPDATE_NAME)->middleware('auth');
+            }
+        );
+        Route::namespace('Carts\\Controllers\\')->group(
+            function () {
+                Route::post(\App\Carts\Controllers\PendingSalesController::STORE_PATH, 'PendingSalesController@store')
+                    ->name(\App\Carts\Controllers\PendingSalesController::STORE_NAME)->middleware(
+                        'auth',
+                        'permission:' . UserPermissions::MUTATE_CART
+                    );
+                Route::delete(
+                    \App\Carts\Controllers\PendingSalesController::DESTROY_PATH,
+                    'PendingSalesController@destroy'
+                )
+                    ->name(\App\Carts\Controllers\PendingSalesController::DESTROY_NAME)->middleware(
+                        'auth',
+                        'permission:' . UserPermissions::MUTATE_CART
+                    );
             }
         );
     }

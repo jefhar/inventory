@@ -19,6 +19,7 @@ use Domain\Products\Models\Type;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 
 /**
  * Class ProductsControllerTest
@@ -27,6 +28,8 @@ use Tests\TestCase;
  */
 class ProductsControllerTest extends TestCase
 {
+    use FullObjects;
+
     private User $user;
 
     /**
@@ -90,15 +93,16 @@ class ProductsControllerTest extends TestCase
         /** @var User $salesRep */
         $salesRep = factory(User::class)->make();
         $salesRep->assignRole(UserRoles::SALES_REP);
-        $product = \factory(Product::class)->create();
-        $this->actingAs($salesRep)
+        $salesRep->save();
+        $product = $this->createFullProduct();
+        $this->actingAs($salesRep)->withoutExceptionHandling()
             ->patch(
                 route(ProductsController::UPDATE_NAME, $product),
                 [Product::PRICE => $price]
             )
             ->assertJson(
                 [
-                    Product::ID => $product->luhn,
+                    Product::LUHN => $product->luhn,
                     Product::PRICE => $price,
                 ]
             )
@@ -112,7 +116,7 @@ class ProductsControllerTest extends TestCase
     {
         $faker = Factory::create();
         $price = $faker->randomNumber();
-        $product = \factory(Product::class)->create();
+        $product = $this->createFullProduct();
         /** @var User $technician */
         $technician = factory(User::class)->make();
         $technician->assignRole(UserRoles::TECHNICIAN);
@@ -122,7 +126,7 @@ class ProductsControllerTest extends TestCase
             ->patch(
                 route(ProductsController::UPDATE_NAME, $product),
                 [
-                    Product::PRICE => $price
+                    Product::PRICE => $price,
                 ]
             )
             ->assertForbidden();

@@ -10,10 +10,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Domain\Products;
 
 use App\Admin\Permissions\UserRoles;
-use App\Products\DataTransferObject\ProductUpdateObject;
+use App\Products\DataTransferObject\RawProductUpdateObject;
 use App\User;
 use Domain\Products\Actions\ProductShowAction;
-use Domain\Products\Actions\ProductUpdateAction;
+use Domain\Products\Actions\RawProductUpdateAction;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
@@ -103,7 +103,7 @@ class ProductsTest extends TestCase
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
         $update = factory(Product::class)->make();
-        $productUpdateObject = ProductUpdateObject::fromRequest(
+        $productUpdateObject = RawProductUpdateObject::fromRequest(
             [
                 'type' => $update->type->slug,
                 'manufacturer' => $update->manufacturer->name,
@@ -115,7 +115,7 @@ class ProductsTest extends TestCase
                 ],
             ]
         );
-        ProductUpdateAction::execute($product, $productUpdateObject);
+        RawProductUpdateAction::execute($product, $productUpdateObject);
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -161,7 +161,7 @@ class ProductsTest extends TestCase
             ]
         );
 
-        $productUpdateObject = ProductUpdateObject::fromRequest(
+        $productUpdateObject = RawProductUpdateObject::fromRequest(
             [
                 'type' => $product->type->slug,
                 'manufacturer' => $product->manufacturer->name,
@@ -174,7 +174,7 @@ class ProductsTest extends TestCase
                 ],
             ]
         );
-        ProductUpdateAction::execute($product, $productUpdateObject);
+        RawProductUpdateAction::execute($product, $productUpdateObject);
         $this->assertDatabaseHas(
             Product::TABLE,
             [

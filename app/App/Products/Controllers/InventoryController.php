@@ -10,10 +10,10 @@ declare(strict_types=1);
 namespace App\Products\Controllers;
 
 use App\Admin\Controllers\Controller;
-use App\Products\DataTransferObject\ProductUpdateObject;
+use App\Products\DataTransferObject\RawProductUpdateObject;
 use App\Products\Requests\ProductUpdateRequest;
 use Domain\Products\Actions\ProductShowAction;
-use Domain\Products\Actions\ProductUpdateAction;
+use Domain\Products\Actions\RawProductUpdateAction;
 use Domain\Products\Models\Product;
 use Illuminate\View\View;
 
@@ -57,8 +57,8 @@ class InventoryController extends Controller
      */
     public function update(Product $product, ProductUpdateRequest $request): Product
     {
-        $productUpdateObject = ProductUpdateObject::fromRequest($request->validated());
-        $product = ProductUpdateAction::execute($product, $productUpdateObject);
+        $productUpdateObject = RawProductUpdateObject::fromRequest($request->validated());
+        $product = RawProductUpdateAction::execute($product, $productUpdateObject);
 
         return $product;
     }

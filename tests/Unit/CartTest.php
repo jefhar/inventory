@@ -9,9 +9,11 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\User;
+use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 
 /**
  * Class CartTest
@@ -20,6 +22,8 @@ use Tests\TestCase;
  */
 class CartTest extends TestCase
 {
+    use FullObjects;
+
     /**
      * @test
      */
@@ -29,7 +33,7 @@ class CartTest extends TestCase
         $cart = factory(\Domain\Carts\Models\Cart::class)->make();
         $cart->save();
         Event::assertDispatched(
-            \Domain\Carts\Events\CartOrderCreated::class,
+            \Domain\Carts\Events\CartCreated::class,
             function ($e) use ($cart) {
                 return $e->cart->id === $cart->id;
             }
@@ -98,6 +102,7 @@ class CartTest extends TestCase
         /** @var \Domain\Carts\Models\Cart $cart */
         $cart = factory(\Domain\Carts\Models\Cart::class)->make();
         $cartStoreObject = \App\Carts\DataTransferObjects\CartStoreObject::fromRequest($cart->toArray());
+        $this->actingAs(factory(User::class)->create());
         $savedCart = \Domain\Carts\Actions\CartStoreAction::execute($cartStoreObject);
 
         $this->actingAs(factory(User::class)->create());
@@ -115,11 +120,28 @@ class CartTest extends TestCase
      */
     public function canDestroyCart(): void
     {
+        /** @var Product $product */
+        // $product = factory(Product::class)->make();
+        $product = $this->createFullProduct();
         /** @var \Domain\Carts\Models\Cart $cart */
         $cart = factory(\Domain\Carts\Models\Cart::class)->create();
-
+        $cart->products()->save($product);
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::ID => $product->id,
+                Product::CART_ID => $cart->id,
+            ]
+        );
         \Domain\Carts\Action\CartDestroyAction::execute($cart);
         $this->assertSoftDeleted($cart);
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::ID => $product->id,
+                Product::CART_ID => null,
+            ]
+        );
     }
 
     /**
@@ -130,7 +152,7 @@ class CartTest extends TestCase
         /** @var \Domain\Carts\Models\Cart $cart */
         $cart = factory(\Domain\Carts\Models\Cart::class)->create();
 
-        $cartPatchObject = \Domain\Carts\DataTransferObjects\CartPatchObject::fromRequest(
+        $cartPatchObject = \App\Carts\DataTransferObjects\CartPatchObject::fromRequest(
             [
                 \Domain\Carts\Models\Cart::STATUS => \Domain\Carts\Models\Cart::STATUS_VOID,
             ]

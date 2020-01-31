@@ -11,6 +11,7 @@ namespace Tests\Unit;
 use Domain\Products\Models\Product;
 use Faker\Factory;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 
 /**
  * Class PendingSalesTest
@@ -19,6 +20,8 @@ use Tests\TestCase;
  */
 class PendingSalesTest extends TestCase
 {
+    use FullObjects;
+
     /**
      * @test
      */
@@ -27,7 +30,7 @@ class PendingSalesTest extends TestCase
         /** @var \Domain\Carts\Models\Cart $cart */
         $cart = factory(\Domain\Carts\Models\Cart::class)->create();
         /** @var Product $product */
-        $product = factory(Product::class)->create();
+        $product = $this->createFullProduct();
 
         \Domain\PendingSales\Actions\CreatePendingSaleAction::execute($cart, $product);
         $this->assertDatabaseHas(
@@ -47,7 +50,7 @@ class PendingSalesTest extends TestCase
         /** @var \Domain\Carts\Models\Cart $cart */
         $cart = factory(\Domain\Carts\Models\Cart::class)->create();
         /** @var Product $product */
-        $product = factory(Product::class)->create();
+        $product = $this->createFullProduct();
 
         $cart->products()->save($product);
 
@@ -69,7 +72,7 @@ class PendingSalesTest extends TestCase
         $faker = Factory::create();
         $price = $faker->randomNumber();
         /** @var Product $product */
-        $product = factory(Product::class)->create();
+        $product = $this->createFullProduct();
 
         \Domain\PendingSales\Actions\PricePatchAction::execute($product, $price);
         $this->assertDatabaseHas(

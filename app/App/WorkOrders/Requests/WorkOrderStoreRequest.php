@@ -20,6 +20,14 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class WorkOrderStoreRequest extends FormRequest
 {
+    public const RULES = [
+        Client::COMPANY_NAME => ['required', 'string'],
+        Person::FIRST_NAME => ['string', 'nullable'],
+        Person::LAST_NAME => ['string', 'nullable'],
+        Person::PHONE_NUMBER => ['string', 'nullable', 'min:10', 'max:16'],
+        Person::EMAIL => ['string', 'nullable'],
+    ];
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -37,13 +45,7 @@ class WorkOrderStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            Client::COMPANY_NAME => ['required', 'string'],
-            Person::FIRST_NAME => ['string', 'nullable'],
-            Person::LAST_NAME => ['string', 'nullable'],
-            Person::PHONE_NUMBER => ['string', 'nullable', 'min:10', 'max:16'],
-            Person::EMAIL => ['string', 'nullable'],
-        ];
+        return self::RULES;
     }
 
     /**

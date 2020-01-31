@@ -88,6 +88,7 @@ services:
       - traefik.frontend.rule=Host:serviceandgoods.c11k.com
       - traefik.docker.network=web
       - trafik.port=80
+      - traefik.enable=true
     ports:
       - 8080:80
 
