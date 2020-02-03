@@ -98,7 +98,7 @@ class CartControllerTest extends TestCase
         $this->actingAs($salesRep)
             ->get(route(CartsController::SHOW_NAME, $cart))
             ->assertOk()
-            ->assertSee($cart->client->company_name);
+            ->assertSee(htmlspecialchars($cart->client->company_name, ENT_QUOTES | ENT_HTML401));
     }
 
     /**

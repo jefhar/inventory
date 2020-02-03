@@ -12,7 +12,7 @@ use App\Admin\Permissions\UserRoles;
 use App\Carts\DataTransferObjects\CartPatchObject;
 use App\Carts\DataTransferObjects\CartStoreObject;
 use App\User;
-use Domain\Carts\Action\CartDestroyAction;
+use Domain\Carts\Actions\CartDestroyAction;
 use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Events\CartCreated;
@@ -126,6 +126,7 @@ class CartTest extends TestCase
 
     /**
      * @test
+     * @throws \Exception
      */
     public function canDestroyCart(): void
     {

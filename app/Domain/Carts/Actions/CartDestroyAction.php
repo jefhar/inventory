@@ -7,12 +7,11 @@
 
 declare(strict_types=1);
 
-namespace Domain\Carts\Action;
+namespace Domain\Carts\Actions;
 
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class CartDestroyAction
@@ -25,18 +24,14 @@ class CartDestroyAction
     /**
      * @param Cart $cart
      * @return Cart
+     * @throws \Exception Only if $cart doesn't have a primary key.
      */
     public static function execute(Cart $cart): Cart
     {
         DB::table(Product::TABLE)
             ->where(Product::CART_ID, $cart->id)
             ->update([Product::CART_ID => null]);
-
-        try {
-            $cart->delete();
-        } catch (\Exception $e) {
-            Log::error('Attepting to delete cart id ' . $cart->id .".\n" . print_r($e, true));
-        }
+        $cart->delete();
 
         return $cart;
     }
