@@ -59,6 +59,7 @@ class TypesTest extends TestCase
 
     /**
      * @test
+     * @throws \JsonException
      */
     public function canUpdateType(): void
     {

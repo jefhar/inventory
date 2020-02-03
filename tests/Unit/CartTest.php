@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\Admin\Permissions\UserRoles;
 use App\Carts\DataTransferObjects\CartPatchObject;
 use App\Carts\DataTransferObjects\CartStoreObject;
 use App\User;
@@ -21,6 +22,7 @@ use Domain\WorkOrders\Models\Client;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
+use Tests\Traits\FullUsers;
 
 /**
  * Class CartTest
@@ -30,6 +32,7 @@ use Tests\Traits\FullObjects;
 class CartTest extends TestCase
 {
     use FullObjects;
+    use FullUsers;
 
     /**
      * @test
@@ -109,10 +112,9 @@ class CartTest extends TestCase
         /** @var Cart $cart */
         $cart = factory(Cart::class)->make();
         $cartStoreObject = CartStoreObject::fromRequest($cart->toArray());
-        $this->actingAs(factory(User::class)->create());
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
         $savedCart = CartStoreAction::execute($cartStoreObject);
 
-        $this->actingAs(factory(User::class)->create());
         $this->assertDatabaseHas(
             Cart::TABLE,
             [
@@ -127,7 +129,6 @@ class CartTest extends TestCase
      */
     public function canDestroyCart(): void
     {
-
         $product = $this->createFullProduct();
         $cart = $this->makeFullCart();
         $cart->save();

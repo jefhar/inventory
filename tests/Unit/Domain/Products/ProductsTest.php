@@ -11,7 +11,6 @@ namespace Tests\Unit\Domain\Products;
 
 use App\Admin\Permissions\UserRoles;
 use App\Products\DataTransferObject\RawProductUpdateObject;
-use App\User;
 use Domain\Products\Actions\ProductShowAction;
 use Domain\Products\Actions\RawProductUpdateAction;
 use Domain\Products\Models\Manufacturer;
@@ -19,6 +18,7 @@ use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
 use Tests\TestCase;
+use Tests\Traits\FullUsers;
 
 /**
  * Class ProductsTest
@@ -27,6 +27,7 @@ use Tests\TestCase;
  */
 class ProductsTest extends TestCase
 {
+    use FullUsers;
 
     /**
      * @test
@@ -195,9 +196,7 @@ class ProductsTest extends TestCase
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
 
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::EMPLOYEE);
-        $this->actingAs($user);
+        $this->actingAs($this->createEmployee(UserRoles::EMPLOYEE));
 
         $formData = ProductShowAction::execute($product);
         $this->assertArrayHasKey('userData', $formData[2]);
@@ -212,9 +211,8 @@ class ProductsTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::EMPLOYEE);
-        $this->actingAs($user);
+
+        $this->actingAs($this->createEmployee(UserRoles::EMPLOYEE));
 
         $formData = json_decode($product->type->form, true, 512, JSON_THROW_ON_ERROR);
         $this->assertArrayNotHasKey('manufacturer', $formData);

@@ -84,7 +84,6 @@ class InventoryControllerTest extends TestCase
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
         $this->actingAs($this->createEmployee())
-            ->withoutExceptionHandling()
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertOk()
             ->assertSee($product->model);
@@ -99,21 +98,10 @@ class InventoryControllerTest extends TestCase
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
         $update = factory(Product::class)->make();
-        $this->patch(
-            route(InventoryController::UPDATE_NAME, $product),
-            [
-                Product::MODEL => $update->model,
-            ]
-        )
+        $this->patch(route(InventoryController::UPDATE_NAME, $product), [Product::MODEL => $update->model,])
             ->assertRedirect();
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
-            ->withExceptionHandling()
-            ->patch(
-                route(InventoryController::UPDATE_NAME, $product),
-                [
-                    Product::MODEL => $update->model,
-                ]
-            )
+            ->patch(route(InventoryController::UPDATE_NAME, $product), [Product::MODEL => $update->model,])
             ->assertForbidden();
     }
 
@@ -127,7 +115,6 @@ class InventoryControllerTest extends TestCase
         $workOrder->products()->save($product);
         $update = factory(Product::class)->make();
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
-            ->withoutExceptionHandling()
             ->patch(
                 route(InventoryController::UPDATE_NAME, $product),
                 [
@@ -176,9 +163,11 @@ class InventoryControllerTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
+
         $this->actingAs($this->createEmployee())
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertSee('"className":"form-control-plaintext"');
+
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertSee('"className":"form-control-plaintext"');

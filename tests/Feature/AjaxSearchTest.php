@@ -32,24 +32,9 @@ class AjaxSearchTest extends TestCase
     /**
      * @test
      */
-    public function anonymousIsUnauthorized(): void
+    public function anonymousOrUnauthorizedIsUnauthorized(): void
     {
-        $this->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))->assertRedirect('/login');
-    }
-
-    /**
-     * @test
-     */
-    public function unauthorizedIsUnauthorized(): void
-    {
-        $this->get(
-            route(
-                AjaxSearchController::SHOW_NAME,
-                [
-                    'field' => Client::COMPANY_NAME,
-                ]
-            )
-        )
+        $this->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))
             ->assertRedirect('/login');
     }
 
@@ -58,13 +43,9 @@ class AjaxSearchTest extends TestCase
      */
     public function authorizedIsOk(): void
     {
-        $this->actingAs($this->createEmployee())->withoutExceptionHandling();
-        $this->get(
-            route(
-                AjaxSearchController::SHOW_NAME,
-                ['field' => Client::COMPANY_NAME]
-            )
-        )->assertOk();
+        $this->actingAs($this->createEmployee())
+            ->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))
+            ->assertOk();
     }
 
     /**
@@ -72,15 +53,9 @@ class AjaxSearchTest extends TestCase
      */
     public function knownFieldIsOk(): void
     {
-        $this->actingAs($this->createEmployee());
-        $this->get(
-            route(
-                AjaxSearchController::SHOW_NAME,
-                [
-                    'field' => Client::COMPANY_NAME,
-                ]
-            )
-        )->assertOk();
+        $this->actingAs($this->createEmployee())
+            ->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))
+            ->assertOk();
     }
 
     /**
@@ -117,9 +92,8 @@ class AjaxSearchTest extends TestCase
         $red_herring_client->person()->save($red_herring_person);
 
         $this->actingAs($this->createEmployee())
-            ->get(
-                route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME, 'q' => 'J',])
-            )->assertJsonFragment(
+            ->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME, 'q' => 'J']))
+            ->assertJsonFragment(
                 [
                     Client::COMPANY_NAME => $client->company_name,
                     Person::FIRST_NAME => $client->person->first_name,
@@ -134,7 +108,7 @@ class AjaxSearchTest extends TestCase
     public function indexReturnsSomething(): void
     {
         $client = factory(Client::class)->create();
-        $this->actingAs($this->createEmployee())->withoutExceptionHandling()
+        $this->actingAs($this->createEmployee())
             ->get(route(AjaxSearchController::INDEX_NAME, ['q' => $client->company_name]))
             ->assertOk()
             ->assertJsonFragment(['name' => $client->company_name]);

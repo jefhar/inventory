@@ -40,10 +40,7 @@ class PendingSalesControllerTest extends TestCase
         $this->actingAs($salesRep)
             ->post(
                 route(PendingSalesController::STORE_NAME),
-                [
-                    Product::CART_ID => $cart->id,
-                    Product::ID => $product->id,
-                ]
+                [Product::CART_ID => $cart->id, Product::ID => $product->id,]
             )
             ->assertCreated()
             ->assertJson(
@@ -67,10 +64,7 @@ class PendingSalesControllerTest extends TestCase
         $this->actingAs($technician)
             ->post(
                 route(PendingSalesController::STORE_NAME),
-                [
-                    Product::CART_ID => $cart->id,
-                    Product::ID => $product->id,
-                ]
+                [Product::CART_ID => $cart->id, Product::ID => $product->id,]
             )
             ->assertForbidden();
     }
@@ -87,9 +81,7 @@ class PendingSalesControllerTest extends TestCase
         $cart->products()->save($product);
 
         $this->actingAs($salesRep)
-            ->delete(
-                route(PendingSalesController::DESTROY_NAME, $product)
-            )
+            ->delete(route(PendingSalesController::DESTROY_NAME, $product))
             ->assertOk();
     }
 
@@ -105,9 +97,7 @@ class PendingSalesControllerTest extends TestCase
         $cart->products()->save($product);
 
         $this->actingAs($technician)
-            ->delete(
-                route(PendingSalesController::DESTROY_NAME, $product)
-            )
+            ->delete(route(PendingSalesController::DESTROY_NAME, $product))
             ->assertForbidden();
     }
 }

@@ -51,7 +51,6 @@ class ProductsControllerTest extends TestCase
         ];
 
         $this->actingAs($this->createEmployee())
-            ->withoutExceptionHandling()
             ->postJson(route(ProductsController::STORE_NAME), $formRequest)
             ->assertCreated()
             ->assertSee($manufacturer)
@@ -90,10 +89,7 @@ class ProductsControllerTest extends TestCase
         $price = $faker->randomNumber();
         $product = $this->createFullProduct();
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
-            ->patch(
-                route(ProductsController::UPDATE_NAME, $product),
-                [Product::PRICE => $price]
-            )
+            ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price])
             ->assertJson(
                 [
                     Product::LUHN => $product->luhn,
@@ -112,12 +108,7 @@ class ProductsControllerTest extends TestCase
         $price = $faker->randomNumber();
         $product = $this->createFullProduct();
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
-            ->patch(
-                route(ProductsController::UPDATE_NAME, $product),
-                [
-                    Product::PRICE => $price,
-                ]
-            )
+            ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price,])
             ->assertForbidden();
     }
 }

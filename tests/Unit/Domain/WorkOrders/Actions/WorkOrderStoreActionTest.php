@@ -17,6 +17,7 @@ use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
+use Tests\Traits\FullUsers;
 
 /**
  * Class WorkOrderStoreActionTest
@@ -25,17 +26,18 @@ use Tests\TestCase;
  */
 class WorkOrderStoreActionTest extends TestCase
 {
+    use FullUsers;
+
     private const COMPANY_NAME = 'George Q. Client';
     private ClientObject $clientObject;
     private PersonObject $personObject;
-    private User $user;
+    private User $employee;
 
     /**
      * @test
      */
     public function workOrderStoreActionAddsCompanyNameToStorage(): void
     {
-        $this->actingAs($this->user);
         WorkOrdersStoreAction::execute($this->clientObject, $this->personObject);
         $this->assertDatabaseHas(
             Client::TABLE,
@@ -50,7 +52,6 @@ class WorkOrderStoreActionTest extends TestCase
      */
     public function workOrderStoreActionAddsGivenPersonToClient(): void
     {
-        $this->actingAs($this->user);
         WorkOrdersStoreAction::execute($this->clientObject, $this->personObject);
         $this->assertDatabaseHas(
             Person::TABLE,
@@ -71,7 +72,6 @@ class WorkOrderStoreActionTest extends TestCase
      */
     public function workOrderStoreWithoutPersonCreatesBlankPerson(): void
     {
-        $this->actingAs($this->user);
         $clientObject = $this->clientObject;
         $personObject = PersonObject::fromRequest([]);
         WorkOrdersStoreAction::execute($clientObject, $personObject);
@@ -90,10 +90,6 @@ class WorkOrderStoreActionTest extends TestCase
      */
     public function storingWorkOrderStoresWorkOrderSuccessfullyIfClientAlreadyExists(): void
     {
-        $authorizedUser = factory(User::class)->create();
-        $authorizedUser->assignRole(UserRoles::EMPLOYEE);
-        $this->actingAs($this->user);
-
         $client = factory(Client::class)->create();
         $person = factory(Person::class)->make();
         $client->person()->save($person);
@@ -124,15 +120,12 @@ class WorkOrderStoreActionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::EMPLOYEE);
-        $user->save();
-        $this->user = $user;
-        $person = factory(Person::class)->make();
-
+        $this->actingAs($this->createEmployee(UserRoles::EMPLOYEE));
         $this->clientObject = new ClientObject(
             [Client::COMPANY_NAME => self::COMPANY_NAME],
         );
+
+        $person = factory(Person::class)->make();
         $this->personObject = PersonObject::fromRequest(
             [
                 Person::EMAIL => $person->email,

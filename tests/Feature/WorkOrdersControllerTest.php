@@ -37,9 +37,8 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function guestCreateIsUnauthorized(): void
     {
-        $this->get(
-            route(WorkOrdersController::CREATE_NAME)
-        )->assertRedirect('/login');
+        $this->get(route(WorkOrdersController::CREATE_NAME))
+            ->assertRedirect('/login');
     }
 
     /**
@@ -49,14 +48,12 @@ class WorkOrdersControllerTest extends TestCase
     public function userWithNoRolesIsUnauthorized(): void
     {
         $this->actingAs(factory(User::class)->create())
-            ->get(
-                route(WorkOrdersController::CREATE_NAME)
-            )->assertForbidden();
+            ->get(route(WorkOrdersController::CREATE_NAME))
+            ->assertForbidden();
 
         $workOrder = factory(WorkOrder::class)->create();
-        $this->get(
-            route(WorkOrdersController::SHOW_NAME, $workOrder)
-        )->assertForbidden();
+        $this->get(route(WorkOrdersController::SHOW_NAME, $workOrder))
+            ->assertForbidden();
     }
 
     /**
@@ -65,9 +62,8 @@ class WorkOrdersControllerTest extends TestCase
     public function techUserCreateIsOk(): void
     {
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
-            ->get(
-                route(WorkOrdersController::CREATE_NAME)
-            )->assertOk();
+            ->get(route(WorkOrdersController::CREATE_NAME))
+            ->assertOk();
     }
 
     /**
@@ -298,9 +294,7 @@ class WorkOrdersControllerTest extends TestCase
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
-                [
-                    Client::COMPANY_NAME => $newClient->company_name,
-                ]
+                [Client::COMPANY_NAME => $newClient->company_name,]
             )
             ->assertDontSee(Person::EMAIL)
             ->assertDontSee(Person::FIRST_NAME)

@@ -32,11 +32,7 @@ class CartControllerTest extends TestCase
     {
         $cart = factory(Cart::class)->make();
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
-            ->withoutExceptionHandling()
-            ->post(
-                route(CartsController::STORE_NAME),
-                $cart->toArray()
-            )
+            ->post(route(CartsController::STORE_NAME), $cart->toArray())
             ->assertCreated()
             ->assertJson(
                 [
@@ -52,10 +48,7 @@ class CartControllerTest extends TestCase
     {
         $cart = factory(Cart::class)->make();
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
-            ->post(
-                route(CartsController::STORE_NAME),
-                $cart->toArray()
-            )
+            ->post(route(CartsController::STORE_NAME), $cart->toArray())
             ->assertForbidden();
     }
 
