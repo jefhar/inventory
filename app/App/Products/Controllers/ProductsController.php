@@ -12,8 +12,10 @@ namespace App\Products\Controllers;
 use App\Admin\Controllers\Controller;
 use App\Products\DataTransferObject\ProductStoreObject;
 use App\Products\Requests\ProductStoreRequest;
+use Domain\PendingSales\Actions\PricePatchAction;
 use Domain\Products\Actions\ProductStoreAction;
 use Domain\Products\Models\Product;
+use Illuminate\Http\Request;
 
 /**
  * Class ProductsController
@@ -38,10 +40,15 @@ class ProductsController extends Controller
         return ProductStoreAction::execute($productStoreObject);
     }
 
-    public function update(Product $product, \Illuminate\Http\Request $request): Product
+    /**
+     * @param Product $product
+     * @param Request $request
+     * @return Product
+     */
+    public function update(Product $product, Request $request): Product
     {
         $price = (int)$request->input(Product::PRICE);
 
-        return \Domain\PendingSales\Actions\PricePatchAction::execute($product, $price);
+        return PricePatchAction::execute($product, $price);
     }
 }

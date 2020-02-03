@@ -48,6 +48,11 @@ class Cart extends Model
         'created' => CartCreated::class,
     ];
 
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
     public function getRouteKeyName(): string
     {
         return self::LUHN;

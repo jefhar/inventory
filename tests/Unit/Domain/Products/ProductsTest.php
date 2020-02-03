@@ -96,6 +96,7 @@ class ProductsTest extends TestCase
 
     /**
      * @test
+     * @throws \JsonException
      */
     public function updateProductUpdatesProduct(): void
     {
@@ -186,6 +187,7 @@ class ProductsTest extends TestCase
 
     /**
      * @test
+     * @throws \JsonException
      */
     public function renderingProductViewCombinesValuesAndType(): void
     {
@@ -203,6 +205,7 @@ class ProductsTest extends TestCase
 
     /**
      * @test
+     * @throws \JsonException
      */
     public function renderingProductViewAddsManufacturerAndModelFirst(): void
     {

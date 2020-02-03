@@ -10,7 +10,12 @@ declare(strict_types=1);
 namespace App\Carts\Controllers;
 
 use App\Admin\Controllers\Controller;
+use App\Carts\DataTransferObjects\CartStoreObject;
+use App\Carts\Requests\CartStoreRequest;
+use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
+use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
 
 /**
  * Class CartsController
@@ -38,19 +43,30 @@ class CartsController extends Controller
     {
     }
 
-    public function show(Cart $cart)
+    /**
+     * @param Cart $cart
+     * @return View
+     */
+    public function show(Cart $cart): View
     {
         return view('carts.show')->with(['cart' => $cart]);
     }
 
-    public function store(\App\Carts\Requests\CartStoreRequest $request): \Domain\Carts\Models\Cart
+    /**
+     * @param CartStoreRequest $request
+     * @return Cart
+     */
+    public function store(CartStoreRequest $request): Cart
     {
-        $cartStoreObject = \App\Carts\DataTransferObjects\CartStoreObject::fromRequest($request->validated());
+        $cartStoreObject = CartStoreObject::fromRequest($request->validated());
 
-        return \Domain\Carts\Actions\CartStoreAction::execute($cartStoreObject);
+        return CartStoreAction::execute($cartStoreObject);
     }
 
-    public function update()
+    /**
+     * @return JsonResponse
+     */
+    public function update(): JsonResponse
     {
         return response()->json(['id' => 1, 'status' => 'void']);
     }

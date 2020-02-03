@@ -9,8 +9,10 @@ declare(strict_types=1);
 
 namespace Domain\Carts\Action;
 
+use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class CartDestroyAction
@@ -21,10 +23,10 @@ class CartDestroyAction
 {
 
     /**
-     * @param \Domain\Carts\Models\Cart $cart
-     * @return \Domain\Carts\Models\Cart
+     * @param Cart $cart
+     * @return Cart
      */
-    public static function execute(\Domain\Carts\Models\Cart $cart): \Domain\Carts\Models\Cart
+    public static function execute(Cart $cart): Cart
     {
         DB::table(Product::TABLE)
             ->where(Product::CART_ID, $cart->id)
@@ -33,6 +35,7 @@ class CartDestroyAction
         try {
             $cart->delete();
         } catch (\Exception $e) {
+            Log::error('Attepting to delete cart id ' . $cart->id .".\n" . print_r($e, true));
         }
 
         return $cart;

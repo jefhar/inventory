@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Domain\PendingSales\Actions;
 
+use Domain\Products\Models\Product;
+
 /**
  * Class DestroyPendingSalesAction
  *
@@ -17,7 +19,11 @@ namespace Domain\PendingSales\Actions;
 class DestroyPendingSalesAction
 {
 
-    public static function execute(\Domain\Products\Models\Product $product)
+    /**
+     * @param Product $product
+     * @return Product
+     */
+    public static function execute(Product $product): Product
     {
         $product->cart()->dissociate();
         $product->save();

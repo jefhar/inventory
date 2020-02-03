@@ -8,7 +8,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\Carts\DataTransferObjects\CartPatchObject;
+use App\Carts\DataTransferObjects\CartStoreObject;
 use App\User;
+use Domain\Carts\Action\CartDestroyAction;
+use Domain\Carts\Actions\CartPatchAction;
+use Domain\Carts\Actions\CartStoreAction;
+use Domain\Carts\Events\CartCreated;
+use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
 use Illuminate\Support\Facades\Event;
@@ -30,10 +37,10 @@ class CartTest extends TestCase
     public function createdCartThrowsEvent(): void
     {
         Event::fake();
-        $cart = factory(\Domain\Carts\Models\Cart::class)->make();
+        $cart = factory(Cart::class)->make();
         $cart->save();
         Event::assertDispatched(
-            \Domain\Carts\Events\CartCreated::class,
+            CartCreated::class,
             function ($e) use ($cart) {
                 return $e->cart->id === $cart->id;
             }
@@ -46,14 +53,14 @@ class CartTest extends TestCase
     public function cartCreatesItsOwnLuhn(): void
     {
         /** \Domain\Carts\Models\Cart $cart */
-        $cart = factory(\Domain\Carts\Models\Cart::class)->make();
-        $this->assertArrayNotHasKey(\Domain\Carts\Models\Cart::LUHN, $cart->toArray());
+        $cart = factory(Cart::class)->make();
+        $this->assertArrayNotHasKey(Cart::LUHN, $cart->toArray());
         $cart->save();
         $this->assertDatabaseHas(
-            \Domain\Carts\Models\Cart::TABLE,
+            Cart::TABLE,
             [
-                \Domain\Carts\Models\Cart::ID => $cart->id,
-                \Domain\Carts\Models\Cart::LUHN => $cart->luhn,
+                Cart::ID => $cart->id,
+                Cart::LUHN => $cart->luhn,
             ]
         );
     }
@@ -64,13 +71,13 @@ class CartTest extends TestCase
     public function cartBelongsToUser(): void
     {
         $user = factory(User::class)->create();
-        $cart = factory(\Domain\Carts\Models\Cart::class)->make();
+        $cart = factory(Cart::class)->make();
         $user->carts()->save($cart);
         $this->assertDatabaseHas(
-            \Domain\Carts\Models\Cart::TABLE,
+            Cart::TABLE,
             [
-                \Domain\Carts\Models\Cart::ID => $cart->id,
-                \Domain\Carts\Models\Cart::USER_ID => $user->id,
+                Cart::ID => $cart->id,
+                Cart::USER_ID => $user->id,
             ]
         );
     }
@@ -81,15 +88,15 @@ class CartTest extends TestCase
     public function cartBelongsToAClient(): void
     {
         $user = factory(User::class)->create();
-        $cart = factory(\Domain\Carts\Models\Cart::class)->make();
+        $cart = factory(Cart::class)->make();
         $client = factory(Client::class)->create();
         $user->carts()->save($cart);
         $client->carts()->save($cart);
         $this->assertDatabaseHas(
-            \Domain\Carts\Models\Cart::TABLE,
+            Cart::TABLE,
             [
-                \Domain\Carts\Models\Cart::ID => $cart->id,
-                \Domain\Carts\Models\Cart::CLIENT_ID => $client->id,
+                Cart::ID => $cart->id,
+                Cart::CLIENT_ID => $client->id,
             ]
         );
     }
@@ -99,18 +106,18 @@ class CartTest extends TestCase
      */
     public function canCreateCart(): void
     {
-        /** @var \Domain\Carts\Models\Cart $cart */
-        $cart = factory(\Domain\Carts\Models\Cart::class)->make();
-        $cartStoreObject = \App\Carts\DataTransferObjects\CartStoreObject::fromRequest($cart->toArray());
+        /** @var Cart $cart */
+        $cart = factory(Cart::class)->make();
+        $cartStoreObject = CartStoreObject::fromRequest($cart->toArray());
         $this->actingAs(factory(User::class)->create());
-        $savedCart = \Domain\Carts\Actions\CartStoreAction::execute($cartStoreObject);
+        $savedCart = CartStoreAction::execute($cartStoreObject);
 
         $this->actingAs(factory(User::class)->create());
         $this->assertDatabaseHas(
-            \Domain\Carts\Models\Cart::TABLE,
+            Cart::TABLE,
             [
-                \Domain\Carts\Models\Cart::ID => $savedCart->id,
-                \Domain\Carts\Models\Cart::LUHN => $savedCart->luhn,
+                Cart::ID => $savedCart->id,
+                Cart::LUHN => $savedCart->luhn,
             ]
         );
     }
@@ -120,11 +127,10 @@ class CartTest extends TestCase
      */
     public function canDestroyCart(): void
     {
-        /** @var Product $product */
-        // $product = factory(Product::class)->make();
+
         $product = $this->createFullProduct();
-        /** @var \Domain\Carts\Models\Cart $cart */
-        $cart = factory(\Domain\Carts\Models\Cart::class)->create();
+        $cart = $this->makeFullCart();
+        $cart->save();
         $cart->products()->save($product);
         $this->assertDatabaseHas(
             Product::TABLE,
@@ -133,7 +139,7 @@ class CartTest extends TestCase
                 Product::CART_ID => $cart->id,
             ]
         );
-        \Domain\Carts\Action\CartDestroyAction::execute($cart);
+        CartDestroyAction::execute($cart);
         $this->assertSoftDeleted($cart);
         $this->assertDatabaseHas(
             Product::TABLE,
@@ -149,21 +155,21 @@ class CartTest extends TestCase
      */
     public function canPatchCartStatus(): void
     {
-        /** @var \Domain\Carts\Models\Cart $cart */
-        $cart = factory(\Domain\Carts\Models\Cart::class)->create();
+        /** @var Cart $cart */
+        $cart = factory(Cart::class)->create();
 
-        $cartPatchObject = \App\Carts\DataTransferObjects\CartPatchObject::fromRequest(
+        $cartPatchObject = CartPatchObject::fromRequest(
             [
-                \Domain\Carts\Models\Cart::STATUS => \Domain\Carts\Models\Cart::STATUS_VOID,
+                Cart::STATUS => Cart::STATUS_VOID,
             ]
         );
-        \Domain\Carts\Actions\CartPatchAction::execute($cart, $cartPatchObject);
+        CartPatchAction::execute($cart, $cartPatchObject);
         $this->assertDatabaseHas(
-            \Domain\Carts\Models\Cart::TABLE,
+            Cart::TABLE,
             [
-                \Domain\Carts\Models\Cart::ID => $cart->id,
-                \Domain\Carts\Models\Cart::LUHN => $cart->luhn,
-                \Domain\Carts\Models\Cart::STATUS => \Domain\Carts\Models\Cart::STATUS_VOID,
+                Cart::ID => $cart->id,
+                Cart::LUHN => $cart->luhn,
+                Cart::STATUS => Cart::STATUS_VOID,
             ]
         );
     }

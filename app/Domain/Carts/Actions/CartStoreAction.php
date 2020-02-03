@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Domain\Carts\Actions;
 
+use App\Carts\DataTransferObjects\CartStoreObject;
 use Domain\Carts\Models\Cart;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,10 +22,11 @@ class CartStoreAction
 {
 
     /**
-     * @param \App\Carts\DataTransferObjects\CartStoreObject $cartStoreObject
+     * @param CartStoreObject $cartStoreObject
      * @return Cart
+     * @todo figure out what data the cart needs, put it in cartStoreObject
      */
-    public static function execute(\App\Carts\DataTransferObjects\CartStoreObject $cartStoreObject): Cart
+    public static function execute(CartStoreObject $cartStoreObject): Cart
     {
         $cart = new Cart();
         $user = Auth::user();

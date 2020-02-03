@@ -9,7 +9,9 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
+use App\Carts\Controllers\CartsController;
 use App\User;
+use Domain\Carts\Models\Cart;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
@@ -32,17 +34,17 @@ class CartControllerTest extends TestCase
      */
     public function salesRepCanCreateCart(): void
     {
-        $cart = factory(\Domain\Carts\Models\Cart::class)->make();
+        $cart = factory(Cart::class)->make();
         $this->actingAs($this->salesRep)
             ->withoutExceptionHandling()
             ->post(
-                route(\App\Carts\Controllers\CartsController::STORE_NAME),
+                route(CartsController::STORE_NAME),
                 $cart->toArray()
             )
             ->assertCreated()
             ->assertJson(
                 [
-                    \Domain\Carts\Models\Cart::ID => 1,
+                    Cart::ID => 1,
                 ]
             );
     }
@@ -52,10 +54,10 @@ class CartControllerTest extends TestCase
      */
     public function technicianCantCreateCart(): void
     {
-        $cart = factory(\Domain\Carts\Models\Cart::class)->make();
+        $cart = factory(Cart::class)->make();
         $this->actingAs($this->technician)
             ->post(
-                route(\App\Carts\Controllers\CartsController::STORE_NAME),
+                route(CartsController::STORE_NAME),
                 $cart->toArray()
             )
             ->assertForbidden();
@@ -67,7 +69,7 @@ class CartControllerTest extends TestCase
     public function salesRepCanAccessCart(): void
     {
         $this->actingAs($this->salesRep)
-            ->get(route(\App\Carts\Controllers\CartsController::INDEX_NAME))
+            ->get(route(CartsController::INDEX_NAME))
             ->assertOk();
     }
 
@@ -77,7 +79,7 @@ class CartControllerTest extends TestCase
     public function ownerCanAccessCart(): void
     {
         $this->actingAs($this->owner)
-            ->get(route(\App\Carts\Controllers\CartsController::INDEX_NAME))
+            ->get(route(CartsController::INDEX_NAME))
             ->assertOk();
     }
 
@@ -87,11 +89,11 @@ class CartControllerTest extends TestCase
     public function othersCantAccessCart(): void
     {
         $this->actingAs($this->employee)
-            ->get(route(\App\Carts\Controllers\CartsController::INDEX_NAME))
+            ->get(route(CartsController::INDEX_NAME))
             ->assertForbidden();
 
         $this->actingAs($this->technician)
-            ->get(route(\App\Carts\Controllers\CartsController::INDEX_NAME))
+            ->get(route(CartsController::INDEX_NAME))
             ->assertForbidden();
     }
 
@@ -100,13 +102,11 @@ class CartControllerTest extends TestCase
      */
     public function salesRepCanSeeCart(): void
     {
-        /** @var \Domain\Carts\Models\Cart $cart */
-        // $cart = factory(\Domain\Carts\Models\Cart::class)->make();
         $cart = $this->makeFullCart();
         $this->salesRep->carts()->save($cart);
 
         $this->actingAs($this->salesRep)
-            ->get(route(\App\Carts\Controllers\CartsController::SHOW_NAME, $cart))
+            ->get(route(CartsController::SHOW_NAME, $cart))
             ->assertOk()
             ->assertSee($cart->client->company_name);
     }
@@ -116,13 +116,13 @@ class CartControllerTest extends TestCase
      */
     public function salesRepCanDestroyCart(): void
     {
-        /** @var \Domain\Carts\Models\Cart $cart */
-        $cart = factory(\Domain\Carts\Models\Cart::class)->make();
+        /** @var Cart $cart */
+        $cart = factory(Cart::class)->make();
 
         $this->salesRep->carts()->save($cart);
 
         $this->actingAs($this->salesRep)
-            ->delete(route(\App\Carts\Controllers\CartsController::DESTROY_NAME, $cart))
+            ->delete(route(CartsController::DESTROY_NAME, $cart))
             ->assertOk();
     }
 
@@ -131,22 +131,22 @@ class CartControllerTest extends TestCase
      */
     public function othersCantDestroyCart(): void
     {
-        /** @var \Domain\Carts\Models\Cart $employeeCart */
-        $employeeCart = factory(\Domain\Carts\Models\Cart::class)->make();
+        /** @var Cart $employeeCart */
+        $employeeCart = factory(Cart::class)->make();
 
         $this->employee->carts()->save($employeeCart);
 
         $this->actingAs($this->employee)
-            ->delete(route(\App\Carts\Controllers\CartsController::DESTROY_NAME, $employeeCart))
+            ->delete(route(CartsController::DESTROY_NAME, $employeeCart))
             ->assertForbidden();
 
-        /** @var \Domain\Carts\Models\Cart $employeeCart */
-        $technicianCart = factory(\Domain\Carts\Models\Cart::class)->make();
+        /** @var Cart $employeeCart */
+        $technicianCart = factory(Cart::class)->make();
 
         $this->technician->carts()->save($technicianCart);
 
         $this->actingAs($this->technician)
-            ->delete(route(\App\Carts\Controllers\CartsController::DESTROY_NAME, $employeeCart))
+            ->delete(route(CartsController::DESTROY_NAME, $employeeCart))
             ->assertForbidden();
     }
 
@@ -155,18 +155,18 @@ class CartControllerTest extends TestCase
      */
     public function salesRepCanUpdateCartStatus(): void
     {
-        /** @var \Domain\Carts\Models\Cart $cart */
-        $cart = factory(\Domain\Carts\Models\Cart::class)->make();
+        /** @var Cart $cart */
+        $cart = factory(Cart::class)->make();
         $this->salesRep->carts()->save($cart);
         $this->actingAs($this->salesRep)
             ->patch(
-                route(\App\Carts\Controllers\CartsController::UPDATE_NAME, $cart),
-                [\Domain\Carts\Models\Cart::STATUS => \Domain\Carts\Models\Cart::STATUS_VOID]
+                route(CartsController::UPDATE_NAME, $cart),
+                [Cart::STATUS => Cart::STATUS_VOID]
             )->assertOk()
             ->assertJson(
                 [
-                    \Domain\Carts\Models\Cart::ID => $cart->id,
-                    \Domain\Carts\Models\Cart::STATUS => \Domain\Carts\Models\Cart::STATUS_VOID,
+                    Cart::ID => $cart->id,
+                    Cart::STATUS => Cart::STATUS_VOID,
 
                 ]
             );

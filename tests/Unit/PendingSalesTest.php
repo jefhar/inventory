@@ -8,6 +8,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Domain\PendingSales\Actions\CreatePendingSaleAction;
+use Domain\PendingSales\Actions\DestroyPendingSalesAction;
+use Domain\PendingSales\Actions\PricePatchAction;
 use Domain\Products\Models\Product;
 use Faker\Factory;
 use Tests\TestCase;
@@ -27,12 +30,11 @@ class PendingSalesTest extends TestCase
      */
     public function canCreatePendingSale(): void
     {
-        /** @var \Domain\Carts\Models\Cart $cart */
-        $cart = factory(\Domain\Carts\Models\Cart::class)->create();
-        /** @var Product $product */
+        $cart = $this->makeFullCart();
+        $cart->save();
         $product = $this->createFullProduct();
 
-        \Domain\PendingSales\Actions\CreatePendingSaleAction::execute($cart, $product);
+        CreatePendingSaleAction::execute($cart, $product);
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -47,14 +49,13 @@ class PendingSalesTest extends TestCase
      */
     public function canDestroyPendingSale(): void
     {
-        /** @var \Domain\Carts\Models\Cart $cart */
-        $cart = factory(\Domain\Carts\Models\Cart::class)->create();
-        /** @var Product $product */
+        $cart = $this->makeFullCart();
+        $cart->save();
         $product = $this->createFullProduct();
 
         $cart->products()->save($product);
 
-        \Domain\PendingSales\Actions\DestroyPendingSalesAction::execute($product);
+        DestroyPendingSalesAction::execute($product);
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -71,10 +72,9 @@ class PendingSalesTest extends TestCase
     {
         $faker = Factory::create();
         $price = $faker->randomNumber();
-        /** @var Product $product */
         $product = $this->createFullProduct();
 
-        \Domain\PendingSales\Actions\PricePatchAction::execute($product, $price);
+        PricePatchAction::execute($product, $price);
         $this->assertDatabaseHas(
             Product::TABLE,
             [

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use Domain\Carts\Events\CartCreated;
+use Domain\Carts\Listeners\AddLuhnToCart;
 use Domain\Products\Events\ProductCreated;
 use Domain\Products\Events\ProductSaved;
 use Domain\Products\Events\TypeCreated;
@@ -51,7 +52,7 @@ class EventServiceProvider extends ServiceProvider
             AddSerialToProduct::class,
         ],
         CartCreated::class => [
-            \Domain\Carts\Listeners\AddLuhnToCart::class,
+            AddLuhnToCart::class,
         ],
     ];
 

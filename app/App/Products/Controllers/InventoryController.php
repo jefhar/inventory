@@ -44,6 +44,7 @@ class InventoryController extends Controller
     /**
      * @param Product $product
      * @return View
+     * @throws \JsonException
      */
     public function show(Product $product): View
     {

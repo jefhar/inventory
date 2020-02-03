@@ -25,6 +25,7 @@ class ProductShowAction
     /**
      * @param Product $product
      * @return array
+     * @throws \JsonException
      */
     public static function execute(Product $product): array
     {

@@ -93,7 +93,7 @@ class InventoryControllerTest extends TestCase
         $user->save();
         $this->actingAs($user)
             ->withoutExceptionHandling()
-            ->get(route(\App\Products\Controllers\InventoryController::SHOW_NAME, $product))
+            ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertOk()
             ->assertSee($product->model);
     }
@@ -142,7 +142,7 @@ class InventoryControllerTest extends TestCase
         $this->actingAs($technician)
             ->withoutExceptionHandling()
             ->patch(
-                route(\App\Products\Controllers\InventoryController::UPDATE_NAME, $product),
+                route(InventoryController::UPDATE_NAME, $product),
                 [
                     'manufacturer' => $update->manufacturer->name,
                     Product::MODEL => $update->model,

@@ -9,7 +9,9 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
+use App\Carts\Controllers\PendingSalesController;
 use App\User;
+use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
@@ -37,7 +39,7 @@ class PendingSalesControllerTest extends TestCase
 
         $this->actingAs($this->salesRep)
             ->post(
-                route(\App\Carts\Controllers\PendingSalesController::STORE_NAME),
+                route(PendingSalesController::STORE_NAME),
                 [
                     Product::CART_ID => $cart->id,
                     Product::ID => $product->id,
@@ -61,15 +63,13 @@ class PendingSalesControllerTest extends TestCase
         $technician = factory(User::class)->make();
         $technician->assignRole(UserRoles::TECHNICIAN);
         $technician->save();
-        /** @var \Domain\Carts\Models\Cart $cart */
         $cart = $this->makeFullCart();
-        /** @var Product $product */
         $product = $this->createFullProduct();
         $technician->carts()->save($cart);
 
         $this->actingAs($technician)
             ->post(
-                route(\App\Carts\Controllers\PendingSalesController::STORE_NAME),
+                route(PendingSalesController::STORE_NAME),
                 [
                     Product::CART_ID => $cart->id,
                     Product::ID => $product->id,
@@ -83,10 +83,8 @@ class PendingSalesControllerTest extends TestCase
      */
     public function salesRepCanRemoveProductFromCart(): void
     {
-        /** @var Product $product */
         $product = $this->createFullProduct();
-        /** @var \Domain\Carts\Models\Cart $cart */
-        $cart = factory(\Domain\Carts\Models\Cart::class)->make();
+        $cart = factory(Cart::class)->make();
         /** @var User $salesRep */
         $salesRep = factory(User::class)->create();
         $salesRep->assignRole(UserRoles::SALES_REP);
@@ -95,7 +93,7 @@ class PendingSalesControllerTest extends TestCase
 
         $this->actingAs($salesRep)
             ->delete(
-                route(\App\Carts\Controllers\PendingSalesController::DESTROY_NAME, $product)
+                route(PendingSalesController::DESTROY_NAME, $product)
             )
             ->assertOk();
     }
@@ -105,10 +103,8 @@ class PendingSalesControllerTest extends TestCase
      */
     public function technicianCantRemoveProductFromCart(): void
     {
-        /** @var Product $product */
         $product = $this->createFullProduct();
-        /** @var \Domain\Carts\Models\Cart $cart */
-        $cart = factory(\Domain\Carts\Models\Cart::class)->make();
+        $cart = factory(Cart::class)->make();
         /** @var User $technician */
         $technician = factory(User::class)->create();
         $technician->assignRole(UserRoles::TECHNICIAN);
@@ -117,7 +113,7 @@ class PendingSalesControllerTest extends TestCase
 
         $this->actingAs($technician)
             ->delete(
-                route(\App\Carts\Controllers\PendingSalesController::DESTROY_NAME, $product)
+                route(PendingSalesController::DESTROY_NAME, $product)
             )
             ->assertForbidden();
     }

@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Domain\PendingSales\Actions;
 
+use Domain\Carts\Models\Cart;
+use Domain\Products\Models\Product;
+
 /**
  * Class CreatePendingSaleAction
  *
@@ -17,7 +20,12 @@ namespace Domain\PendingSales\Actions;
 class CreatePendingSaleAction
 {
 
-    public static function execute(\Domain\Carts\Models\Cart $cart, \Domain\Products\Models\Product $product)
+    /**
+     * @param Cart $cart
+     * @param Product $product
+     * @return Product
+     */
+    public static function execute(Cart $cart, Product $product): Product
     {
         $cart->products()->save($product);
 

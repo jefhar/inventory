@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Domain\PendingSales\Actions;
 
+use Domain\Products\Models\Product;
+
 /**
  * Class PricePatchAction
  *
@@ -17,7 +19,12 @@ namespace Domain\PendingSales\Actions;
 class PricePatchAction
 {
 
-    public static function execute(\Domain\Products\Models\Product $product, int $price)
+    /**
+     * @param Product $product
+     * @param int $price
+     * @return Product
+     */
+    public static function execute(Product $product, int $price): Product
     {
         $product->price = $price;
         $product->save();
