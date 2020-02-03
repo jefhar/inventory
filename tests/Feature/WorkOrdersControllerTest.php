@@ -17,9 +17,9 @@ use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tdely\Luhn\Luhn;
 use Tests\TestCase;
+use Tests\Traits\FullUsers;
 
 /**
  * Class WorkOrdersControllerTest
@@ -28,11 +28,9 @@ use Tests\TestCase;
  */
 class WorkOrdersControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use FullUsers;
 
     private const COMPANY_NAME = 'George Q. Client';
-    private User $transient;
-    private User $user;
 
     /**
      * @test
@@ -48,17 +46,17 @@ class WorkOrdersControllerTest extends TestCase
      * @test
      * @SE-20 Testing that a locked user cannot access pages.
      */
-    public function lockedUserIsUnauthorized(): void
+    public function userWithNoRolesIsUnauthorized(): void
     {
-        factory(User::class)->create();
-        $this->get(
-            route(WorkOrdersController::CREATE_NAME)
-        )->assertRedirect('/login');
+        $this->actingAs(factory(User::class)->create())
+            ->get(
+                route(WorkOrdersController::CREATE_NAME)
+            )->assertForbidden();
 
         $workOrder = factory(WorkOrder::class)->create();
         $this->get(
             route(WorkOrdersController::SHOW_NAME, $workOrder)
-        )->assertRedirect('/login');
+        )->assertForbidden();
     }
 
     /**
@@ -66,7 +64,7 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function techUserCreateIsOk(): void
     {
-        $this->withExceptionHandling()->actingAs($this->user)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(
                 route(WorkOrdersController::CREATE_NAME)
             )->assertOk();
@@ -87,7 +85,7 @@ class WorkOrdersControllerTest extends TestCase
     public function technicianCanStoreWorkOrderWithCompanyNameOnly(): void
     {
         $checksum = Luhn::create(1);
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->post(
                 route(WorkOrdersController::STORE_NAME),
                 [Client::COMPANY_NAME => self::COMPANY_NAME]
@@ -111,8 +109,7 @@ class WorkOrdersControllerTest extends TestCase
     {
         $company_name = self::COMPANY_NAME . uniqid('b', true);
         $person = factory(Person::class)->make();
-        $this->withoutExceptionHandling()
-            ->actingAs($this->user)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->post(
                 route(WorkOrdersController::STORE_NAME),
                 [
@@ -152,7 +149,7 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function technicianIndexIsOk(): void
     {
-        $this->actingAs($this->user)->withoutExceptionHandling()
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(WorkOrdersController::INDEX_NAME))
             ->assertOk()
             ->assertSeeText('Work Orders');
@@ -175,7 +172,7 @@ class WorkOrdersControllerTest extends TestCase
         $client->workOrders()->save($workOrder);
         $workOrder->products()->save($product);
 
-        $this->actingAs($this->user)->withoutExceptionHandling()
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(WorkOrdersController::EDIT_NAME, $workOrder))
             ->assertOk()->assertSeeText('Edit Work Order')
             ->assertSeeText(htmlspecialchars($product->manufacturer->name, ENT_QUOTES | ENT_HTML401))
@@ -196,7 +193,7 @@ class WorkOrdersControllerTest extends TestCase
         $workOrder->save();
         $client->person()->save($person);
         $this
-            ->actingAs($this->user)
+            ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, ['workorder' => $workOrder]),
                 [WorkOrder::IS_LOCKED => true]
@@ -225,7 +222,7 @@ class WorkOrdersControllerTest extends TestCase
         );
 
         $this
-            ->actingAs($this->user)
+            ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, ['workorder' => $workOrder]),
                 [WorkOrder::IS_LOCKED => false]
@@ -251,8 +248,7 @@ class WorkOrdersControllerTest extends TestCase
     {
         $newClient = factory(Client::class)->make();
         $workOrder = factory(WorkOrder::class)->create();
-        $this->withoutExceptionHandling()
-            ->actingAs($this->user)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
@@ -274,8 +270,7 @@ class WorkOrdersControllerTest extends TestCase
     {
         $newClient = factory(Client::class)->make();
         $workOrder = factory(WorkOrder::class)->create();
-        $this->withoutExceptionHandling()
-            ->actingAs($this->user)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
@@ -300,8 +295,7 @@ class WorkOrdersControllerTest extends TestCase
         $newClient = factory(Client::class)->make();
         $newPerson = factory(Person::class)->make();
         $workOrder = factory(WorkOrder::class)->create();
-        $this->withoutExceptionHandling()
-            ->actingAs($this->user)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
@@ -316,8 +310,7 @@ class WorkOrdersControllerTest extends TestCase
             ->assertOk()
             ->assertSee(Client::COMPANY_NAME);
 
-        $this->withoutExceptionHandling()
-            ->actingAs($this->user)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
@@ -333,8 +326,7 @@ class WorkOrdersControllerTest extends TestCase
             ->assertSee(Client::COMPANY_NAME)
             ->assertSee(Person::FIRST_NAME);
 
-        $this->withoutExceptionHandling()
-            ->actingAs($this->user)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
@@ -350,8 +342,7 @@ class WorkOrdersControllerTest extends TestCase
             ->assertSee(Client::COMPANY_NAME)
             ->assertSee(Person::LAST_NAME);
 
-        $this->withoutExceptionHandling()
-            ->actingAs($this->user)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
@@ -367,15 +358,5 @@ class WorkOrdersControllerTest extends TestCase
             ->assertSee(Person::EMAIL)
             ->assertSee(Person::PHONE_NUMBER)
             ->assertSee(WorkOrder::INTAKE);
-    }
-
-    /**
-     * test Setup
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->transient = factory(User::class)->make();
-        $this->user = factory(User::class)->create()->assignRole(UserRoles::TECHNICIAN);
     }
 }

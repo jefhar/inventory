@@ -9,14 +9,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Admin\Permissions\UserPermissions;
 use App\Admin\Permissions\UserRoles;
 use App\Types\Controllers\TypesController;
-use App\User;
 use Domain\Products\Models\Type;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
+use Tests\Traits\FullUsers;
 
 /**
  * Class TypesControllerTest
@@ -25,19 +24,17 @@ use Tests\TestCase;
  */
 class TypesControllerTest extends TestCase
 {
-    private User $user;
-    private User $guest;
+    use FullUsers;
 
     /**
      * @test
      */
-    public function unauthorizedTypesControllerIsUnauthorized(): void
+    public function unauthorizedTypesControllerIsRedirected(): void
     {
         $type = factory(Type::class)->create();
         $this
-            ->actingAs($this->guest)
             ->get(route(TypesController::SHOW_NAME, $type->slug))
-            ->assertForbidden();
+            ->assertRedirect();
     }
 
     /**
@@ -46,7 +43,7 @@ class TypesControllerTest extends TestCase
     public function authorizedTypesControllerIsOk(): void
     {
         $type = factory(Type::class)->create();
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->get(route(TypesController::SHOW_NAME, $type->slug))
             ->assertOk()
             ->assertSeeText($type->form);
@@ -57,14 +54,10 @@ class TypesControllerTest extends TestCase
      */
     public function techSeesAddTypesAndEmployeeDoesnt(): void
     {
-        /** @var User $tech */
-        $tech = factory(User::class)->create();
-        $tech->assignRole(UserRoles::TECHNICIAN);
-        $tech->save();
-        $this->actingAs($tech)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route('home'))
             ->assertSeeText('Create a New Product Type');
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->get(route('home'))
             ->assertDontSeeText('Create a New Product Type');
     }
@@ -75,11 +68,10 @@ class TypesControllerTest extends TestCase
     public function typeCreatePageExistsAndIsAccessible(): void
     {
         $type = factory(Type::class)->create();
-        $this->actingAs($this->guest)
-            ->get(route(TypesController::CREATE_NAME))
-            ->assertForbidden();
+        $this->get(route(TypesController::CREATE_NAME))
+            ->assertRedirect();
 
-        $this->withoutExceptionHandling()->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->get(route(TypesController::CREATE_NAME))
             ->assertOk()
             ->assertSeeText('Create New Product Type')
@@ -93,11 +85,10 @@ class TypesControllerTest extends TestCase
     public function typeIndexApiExistsAndIsAccessible(): void
     {
         $type = factory(Type::class)->create();
-        $this->actingAs($this->guest)
-            ->get(route(TypesController::INDEX_NAME))
-            ->assertForbidden();
+        $this->get(route(TypesController::INDEX_NAME))
+            ->assertRedirect();
 
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->get(route(TypesController::INDEX_NAME))
             ->assertOk()
             ->assertSeeText(addslashes($type->name));
@@ -109,16 +100,15 @@ class TypesControllerTest extends TestCase
     public function typeStoreExistsAndStoresForAuthorizedPerson(): void
     {
         $type = factory(Type::class)->make();
-        $this->actingAs($this->guest)
-            ->post(
+        $this->post(
                 route(TypesController::STORE_NAME),
                 [
                     Type::FORM => $type->form,
                     Type::NAME => $type->name,
                 ]
             )
-            ->assertForbidden();
-        $this->actingAs($this->user)
+            ->assertRedirect();
+        $this->actingAs($this->createEmployee())
             ->post(
                 route(TypesController::STORE_NAME),
                 [
@@ -142,18 +132,17 @@ class TypesControllerTest extends TestCase
     {
         $type = factory(Type::class)->create();
         $this
-            ->actingAs($this->guest)
             ->delete(route(TypesController::DESTROY_NAME, $type))
-            ->assertForbidden();
+            ->assertRedirect();
 
         // Destroyed Type returns OK
         $this
-            ->actingAs($this->user)
+            ->actingAs($this->createEmployee())
             ->delete(route(TypesController::DESTROY_NAME, $type))
             ->assertOk();
         $this->assertSoftDeleted($type);
         // Destroyed non-existing Type returns 404
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->delete(route(TypesController::DESTROY_NAME, $type))
             ->assertNotFound();
     }
@@ -164,7 +153,7 @@ class TypesControllerTest extends TestCase
     public function savingExistingFormWithoutForceReturnsAccepted(): void
     {
         $type = factory(Type::class)->create();
-        $this->actingAs($this->user)->withoutExceptionHandling()
+        $this->actingAs($this->createEmployee())
             ->post(
                 route(
                     TypesController::STORE_NAME,
@@ -177,7 +166,7 @@ class TypesControllerTest extends TestCase
             )
             ->assertStatus(Response::HTTP_ACCEPTED);
 
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->post(
                 route(
                     TypesController::STORE_NAME,
@@ -196,7 +185,7 @@ class TypesControllerTest extends TestCase
     public function savingExistingFormCanBeForced(): void
     {
         $type = factory(Type::class)->create();
-        $this->actingAs($this->user)->withoutExceptionHandling()
+        $this->actingAs($this->createEmployee())
             ->post(
                 route(
                     TypesController::STORE_NAME,
@@ -208,17 +197,5 @@ class TypesControllerTest extends TestCase
                 )
             )
             ->assertOk();
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $guest = factory(User::class)->make();
-        /** @var User $user */
-        $user = factory(User::class)->create();
-        $user->givePermissionTo(UserPermissions::IS_EMPLOYEE);
-        $user->save();
-        $this->user = $user;
-        $this->guest = $guest;
     }
 }

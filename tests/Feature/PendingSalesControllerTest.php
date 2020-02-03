@@ -10,11 +10,11 @@ namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
 use App\Carts\Controllers\PendingSalesController;
-use App\User;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
+use Tests\Traits\FullUsers;
 
 /**
  * Class PendingSalesControllerTest
@@ -24,20 +24,20 @@ use Tests\Traits\FullObjects;
 class PendingSalesControllerTest extends TestCase
 {
     use FullObjects;
-
-    private User $salesRep;
+    use FullUsers;
 
     /**
      * @test
      */
     public function salesRepCanAddProductToCart(): void
     {
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $cart = $this->makeFullCart();
         $cart->save();
         $product = $this->createFullProduct();
-        $this->salesRep->carts()->save($cart);
+        $salesRep->carts()->save($cart);
 
-        $this->actingAs($this->salesRep)
+        $this->actingAs($salesRep)
             ->post(
                 route(PendingSalesController::STORE_NAME),
                 [
@@ -59,10 +59,7 @@ class PendingSalesControllerTest extends TestCase
      */
     public function technicianCannotAddProductToCart(): void
     {
-        /** @var User $technician */
-        $technician = factory(User::class)->make();
-        $technician->assignRole(UserRoles::TECHNICIAN);
-        $technician->save();
+        $technician = $this->createEmployee(UserRoles::TECHNICIAN);
         $cart = $this->makeFullCart();
         $product = $this->createFullProduct();
         $technician->carts()->save($cart);
@@ -85,9 +82,7 @@ class PendingSalesControllerTest extends TestCase
     {
         $product = $this->createFullProduct();
         $cart = factory(Cart::class)->make();
-        /** @var User $salesRep */
-        $salesRep = factory(User::class)->create();
-        $salesRep->assignRole(UserRoles::SALES_REP);
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $salesRep->carts()->save($cart);
         $cart->products()->save($product);
 
@@ -105,9 +100,7 @@ class PendingSalesControllerTest extends TestCase
     {
         $product = $this->createFullProduct();
         $cart = factory(Cart::class)->make();
-        /** @var User $technician */
-        $technician = factory(User::class)->create();
-        $technician->assignRole(UserRoles::TECHNICIAN);
+        $technician = $this->createEmployee(UserRoles::TECHNICIAN);
         $technician->carts()->save($cart);
         $cart->products()->save($product);
 
@@ -116,15 +109,5 @@ class PendingSalesControllerTest extends TestCase
                 route(PendingSalesController::DESTROY_NAME, $product)
             )
             ->assertForbidden();
-    }
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        /** @var User $salesRep */
-        $salesRep = factory(User::class)->make();
-        $salesRep->assignRole(UserRoles::SALES_REP);
-        $salesRep->save();
-        $this->salesRep = $salesRep;
     }
 }

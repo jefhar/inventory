@@ -9,13 +9,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Admin\Permissions\UserPermissions;
 use App\Admin\Permissions\UserRoles;
 use App\Products\Controllers\InventoryController;
-use App\User;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
+use Tests\Traits\FullUsers;
 
 /**
  * Class InventoryControllerTest
@@ -24,15 +23,14 @@ use Tests\TestCase;
  */
 class InventoryControllerTest extends TestCase
 {
+    use FullUsers;
+
     /**
      * @test
      */
     public function inventoryLinkOnNavBar(): void
     {
-        $user = factory(User::class)->create();
-        $user->givePermissionTo(UserPermissions::IS_EMPLOYEE);
-        $user->save();
-        $this->actingAs($user)
+        $this->actingAs($this->createEmployee())
             ->get('/home')
             ->assertSeeText('Inventory');
     }
@@ -51,10 +49,7 @@ class InventoryControllerTest extends TestCase
      */
     public function inventoryPageForAuthorizedUserIsOk(): void
     {
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::SALES_REP);
-        $user->save();
-        $this->actingAs($user)
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->get(route(InventoryController::INDEX_NAME))
             ->assertOk()
             ->assertSee('No Products Available For Sale.');
@@ -62,7 +57,7 @@ class InventoryControllerTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
-        $this->actingAs($user)
+        $this->actingAs($this->createEmployee())
             ->get(route(InventoryController::INDEX_NAME))
             ->assertOk()
             ->assertSee($product->model);
@@ -88,10 +83,7 @@ class InventoryControllerTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::EMPLOYEE);
-        $user->save();
-        $this->actingAs($user)
+        $this->actingAs($this->createEmployee())
             ->withoutExceptionHandling()
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertOk()
@@ -114,9 +106,7 @@ class InventoryControllerTest extends TestCase
             ]
         )
             ->assertRedirect();
-        $salesRep = factory(User::class)->create();
-        $salesRep->assignRole(UserRoles::SALES_REP);
-        $this->actingAs($salesRep)
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->withExceptionHandling()
             ->patch(
                 route(InventoryController::UPDATE_NAME, $product),
@@ -136,10 +126,7 @@ class InventoryControllerTest extends TestCase
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
         $update = factory(Product::class)->make();
-        $technician = factory(User::class)->create();
-        $technician->assignRole(UserRoles::TECHNICIAN);
-        $technician->save();
-        $this->actingAs($technician)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->withoutExceptionHandling()
             ->patch(
                 route(InventoryController::UPDATE_NAME, $product),
@@ -173,15 +160,10 @@ class InventoryControllerTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
-
-        $salesRep = factory(User::class)->create();
-        $salesRep->assignRole(UserRoles::SALES_REP);
-        $owner = factory(User::class)->create();
-        $owner->assignRole(UserRoles::OWNER);
-        $this->actingAs($salesRep)
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertDontSee('"className":"form-control-plaintext"');
-        $this->actingAs($owner)
+        $this->actingAs($this->createEmployee(UserRoles::OWNER))
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertDontSee('"className":"form-control-plaintext"');
     }
@@ -194,15 +176,10 @@ class InventoryControllerTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
-
-        $employee = factory(User::class)->create();
-        $employee->assignRole(UserRoles::EMPLOYEE);
-        $technician = factory(User::class)->create();
-        $technician->assignRole(UserRoles::TECHNICIAN);
-        $this->actingAs($employee)
+        $this->actingAs($this->createEmployee())
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertSee('"className":"form-control-plaintext"');
-        $this->actingAs($technician)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertSee('"className":"form-control-plaintext"');
     }
@@ -216,15 +193,11 @@ class InventoryControllerTest extends TestCase
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
 
-        $salesRep = factory(User::class)->create();
-        $salesRep->assignRole(UserRoles::SALES_REP);
-        $this->actingAs($salesRep)
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertSee('Add To Cart &hellip;');
 
-        $owner = factory(User::class)->create();
-        $owner->assignRole(UserRoles::SALES_REP);
-        $this->actingAs($owner)
+        $this->actingAs($this->createEmployee(UserRoles::OWNER))
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertSee('Add To Cart &hellip;');
     }
@@ -238,15 +211,11 @@ class InventoryControllerTest extends TestCase
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
 
-        $employee = factory(User::class)->create();
-        $employee->assignRole(UserRoles::EMPLOYEE);
-        $this->actingAs($employee)
+        $this->actingAs($this->createEmployee(UserRoles::EMPLOYEE))
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertDontSee('Add To Cart &hellip;');
 
-        $technician = factory(User::class)->create();
-        $technician->assignRole(UserRoles::TECHNICIAN);
-        $this->actingAs($technician)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertDontSee('Add To Cart &hellip;');
     }

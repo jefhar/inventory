@@ -9,10 +9,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Admin\Permissions\UserPermissions;
 use App\Admin\Permissions\UserRoles;
 use App\Products\Controllers\ProductsController;
-use App\User;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
@@ -20,6 +18,7 @@ use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
+use Tests\Traits\FullUsers;
 
 /**
  * Class ProductsControllerTest
@@ -29,8 +28,7 @@ use Tests\Traits\FullObjects;
 class ProductsControllerTest extends TestCase
 {
     use FullObjects;
-
-    private User $user;
+    use FullUsers;
 
     /**
      * @test
@@ -52,7 +50,7 @@ class ProductsControllerTest extends TestCase
             'workOrderId' => $workOrder->luhn,
         ];
 
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->withoutExceptionHandling()
             ->postJson(route(ProductsController::STORE_NAME), $formRequest)
             ->assertCreated()
@@ -90,12 +88,8 @@ class ProductsControllerTest extends TestCase
     {
         $faker = Factory::create();
         $price = $faker->randomNumber();
-        /** @var User $salesRep */
-        $salesRep = factory(User::class)->make();
-        $salesRep->assignRole(UserRoles::SALES_REP);
-        $salesRep->save();
         $product = $this->createFullProduct();
-        $this->actingAs($salesRep)->withoutExceptionHandling()
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->patch(
                 route(ProductsController::UPDATE_NAME, $product),
                 [Product::PRICE => $price]
@@ -117,12 +111,7 @@ class ProductsControllerTest extends TestCase
         $faker = Factory::create();
         $price = $faker->randomNumber();
         $product = $this->createFullProduct();
-        /** @var User $technician */
-        $technician = factory(User::class)->make();
-        $technician->assignRole(UserRoles::TECHNICIAN);
-        $technician->save();
-
-        $this->actingAs($technician)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(ProductsController::UPDATE_NAME, $product),
                 [
@@ -130,16 +119,5 @@ class ProductsControllerTest extends TestCase
                 ]
             )
             ->assertForbidden();
-    }
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        /** @var User $user */
-        $user = factory(User::class)->make()
-            ->givePermissionTo(UserPermissions::IS_EMPLOYEE);
-        $user->save();
-        $this->user = $user;
     }
 }

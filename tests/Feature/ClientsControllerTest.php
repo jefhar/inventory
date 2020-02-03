@@ -9,12 +9,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Admin\Permissions\UserPermissions;
-use App\User;
 use App\WorkOrders\Controllers\ClientsController;
 use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Tests\TestCase;
+use Tests\Traits\FullUsers;
 
 /**
  * Class ClientsControllerTest
@@ -23,6 +22,8 @@ use Tests\TestCase;
  */
 class ClientsControllerTest extends TestCase
 {
+    use FullUsers;
+
     /**
      * @test
      */
@@ -33,9 +34,7 @@ class ClientsControllerTest extends TestCase
         $person = factory(Person::class)->make();
         $client->save();
         $client->person()->save($person);
-        $user = factory(User::class)->create();
-        $user->givePermissionTo(UserPermissions::IS_EMPLOYEE);
-        $this->actingAs($user)
+        $this->actingAs($this->createEmployee())
             ->get(route(ClientsController::SHOW_NAME, $client))
             ->assertSeeText(htmlspecialchars($client->company_name, ENT_QUOTES | ENT_HTML401));
     }

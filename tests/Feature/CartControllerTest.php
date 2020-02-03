@@ -10,10 +10,10 @@ namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
 use App\Carts\Controllers\CartsController;
-use App\User;
 use Domain\Carts\Models\Cart;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
+use Tests\Traits\FullUsers;
 
 /**
  * Class CartControllerTest
@@ -23,11 +23,7 @@ use Tests\Traits\FullObjects;
 class CartControllerTest extends TestCase
 {
     use FullObjects;
-
-    private User $employee;
-    private User $owner;
-    private User $salesRep;
-    private User $technician;
+    use FullUsers;
 
     /**
      * @test
@@ -35,7 +31,7 @@ class CartControllerTest extends TestCase
     public function salesRepCanCreateCart(): void
     {
         $cart = factory(Cart::class)->make();
-        $this->actingAs($this->salesRep)
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->withoutExceptionHandling()
             ->post(
                 route(CartsController::STORE_NAME),
@@ -55,7 +51,7 @@ class CartControllerTest extends TestCase
     public function technicianCantCreateCart(): void
     {
         $cart = factory(Cart::class)->make();
-        $this->actingAs($this->technician)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->post(
                 route(CartsController::STORE_NAME),
                 $cart->toArray()
@@ -68,7 +64,7 @@ class CartControllerTest extends TestCase
      */
     public function salesRepCanAccessCart(): void
     {
-        $this->actingAs($this->salesRep)
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->get(route(CartsController::INDEX_NAME))
             ->assertOk();
     }
@@ -78,7 +74,7 @@ class CartControllerTest extends TestCase
      */
     public function ownerCanAccessCart(): void
     {
-        $this->actingAs($this->owner)
+        $this->actingAs($this->createEmployee(UserRoles::OWNER))
             ->get(route(CartsController::INDEX_NAME))
             ->assertOk();
     }
@@ -88,11 +84,11 @@ class CartControllerTest extends TestCase
      */
     public function othersCantAccessCart(): void
     {
-        $this->actingAs($this->employee)
+        $this->actingAs($this->createEmployee())
             ->get(route(CartsController::INDEX_NAME))
             ->assertForbidden();
 
-        $this->actingAs($this->technician)
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(CartsController::INDEX_NAME))
             ->assertForbidden();
     }
@@ -103,9 +99,10 @@ class CartControllerTest extends TestCase
     public function salesRepCanSeeCart(): void
     {
         $cart = $this->makeFullCart();
-        $this->salesRep->carts()->save($cart);
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $salesRep->carts()->save($cart);
 
-        $this->actingAs($this->salesRep)
+        $this->actingAs($salesRep)
             ->get(route(CartsController::SHOW_NAME, $cart))
             ->assertOk()
             ->assertSee($cart->client->company_name);
@@ -118,10 +115,10 @@ class CartControllerTest extends TestCase
     {
         /** @var Cart $cart */
         $cart = factory(Cart::class)->make();
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $salesRep->carts()->save($cart);
 
-        $this->salesRep->carts()->save($cart);
-
-        $this->actingAs($this->salesRep)
+        $this->actingAs($salesRep)
             ->delete(route(CartsController::DESTROY_NAME, $cart))
             ->assertOk();
     }
@@ -133,19 +130,19 @@ class CartControllerTest extends TestCase
     {
         /** @var Cart $employeeCart */
         $employeeCart = factory(Cart::class)->make();
+        $employee = $this->createEmployee();
+        $employee->carts()->save($employeeCart);
 
-        $this->employee->carts()->save($employeeCart);
-
-        $this->actingAs($this->employee)
+        $this->actingAs($employee)
             ->delete(route(CartsController::DESTROY_NAME, $employeeCart))
             ->assertForbidden();
 
         /** @var Cart $employeeCart */
         $technicianCart = factory(Cart::class)->make();
+        $technician = $this->createEmployee(UserRoles::TECHNICIAN);
+        $technician->carts()->save($technicianCart);
 
-        $this->technician->carts()->save($technicianCart);
-
-        $this->actingAs($this->technician)
+        $this->actingAs($technician)
             ->delete(route(CartsController::DESTROY_NAME, $employeeCart))
             ->assertForbidden();
     }
@@ -155,10 +152,11 @@ class CartControllerTest extends TestCase
      */
     public function salesRepCanUpdateCartStatus(): void
     {
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         /** @var Cart $cart */
         $cart = factory(Cart::class)->make();
-        $this->salesRep->carts()->save($cart);
-        $this->actingAs($this->salesRep)
+        $salesRep->carts()->save($cart);
+        $this->actingAs($salesRep)
             ->patch(
                 route(CartsController::UPDATE_NAME, $cart),
                 [Cart::STATUS => Cart::STATUS_VOID]
@@ -172,31 +170,4 @@ class CartControllerTest extends TestCase
             );
     }
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        /** @var User $salesRep */
-        $salesRep = factory(User::class)->make();
-        $salesRep->assignRole(UserRoles::SALES_REP);
-        $salesRep->save();
-        $this->salesRep = $salesRep;
-
-        /** @var User $owner */
-        $owner = factory(User::class)->make();
-        $owner->assignRole(UserRoles::OWNER);
-        $owner->save();
-        $this->owner = $owner;
-
-        /** @var User $technician */
-        $technician = factory(User::class)->make();
-        $technician->assignRole(UserRoles::TECHNICIAN);
-        $technician->save();
-        $this->technician = $technician;
-
-        /** @var User $employee */
-        $employee = factory(User::class)->make();
-        $employee->assignRole(UserRoles::EMPLOYEE);
-        $employee->save();
-        $this->employee = $employee;
-    }
 }
