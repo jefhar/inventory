@@ -95,7 +95,8 @@ class CartControllerTest extends TestCase
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $salesRep->carts()->save($cart);
 
-        $this->actingAs($salesRep)
+        $this->withoutMix()
+            ->actingAs($salesRep)
             ->get(route(CartsController::SHOW_NAME, $cart))
             ->assertOk()
             ->assertSee(htmlspecialchars($cart->client->company_name, ENT_QUOTES | ENT_HTML401));

@@ -61,7 +61,8 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function techUserCreateIsOk(): void
     {
-        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
+        $this->withoutMix()
+            ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(WorkOrdersController::CREATE_NAME))
             ->assertOk();
     }
@@ -145,7 +146,8 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function technicianIndexIsOk(): void
     {
-        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
+        $this->withoutMix()
+            ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(WorkOrdersController::INDEX_NAME))
             ->assertOk()
             ->assertSeeText('Work Orders');
@@ -168,7 +170,8 @@ class WorkOrdersControllerTest extends TestCase
         $client->workOrders()->save($workOrder);
         $workOrder->products()->save($product);
 
-        $this->withoutExceptionHandling()
+        $this->withoutMix()
+            ->withoutExceptionHandling()
             ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(WorkOrdersController::EDIT_NAME, $workOrder))
             ->assertOk()->assertSeeText('Edit Work Order')

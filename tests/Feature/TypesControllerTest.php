@@ -54,7 +54,8 @@ class TypesControllerTest extends TestCase
      */
     public function techSeesAddTypesAndEmployeeDoesntOnDashboard(): void
     {
-        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
+        $this->withoutMix()
+            ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route('home'))
             ->assertSeeText('Create a New Product Type');
         $this->actingAs($this->createEmployee())
@@ -67,6 +68,7 @@ class TypesControllerTest extends TestCase
      */
     public function typeCreatePageExistsAndIsAccessible(): void
     {
+        $this->withoutMix();
         $type = factory(Type::class)->create();
         $this->get(route(TypesController::CREATE_NAME))
             ->assertRedirect();

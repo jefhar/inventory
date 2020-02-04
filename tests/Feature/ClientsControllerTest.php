@@ -34,7 +34,8 @@ class ClientsControllerTest extends TestCase
         $person = factory(Person::class)->make();
         $client->save();
         $client->person()->save($person);
-        $this->actingAs($this->createEmployee())
+        $this->withoutMix()
+            ->actingAs($this->createEmployee())
             ->get(route(ClientsController::SHOW_NAME, $client))
             ->assertSeeText(htmlspecialchars($client->company_name, ENT_QUOTES | ENT_HTML401));
     }

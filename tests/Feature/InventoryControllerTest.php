@@ -49,7 +49,8 @@ class InventoryControllerTest extends TestCase
      */
     public function inventoryPageForAuthorizedUserIsOk(): void
     {
-        $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
+        $this->withoutMix()
+            ->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->get(route(InventoryController::INDEX_NAME))
             ->assertOk()
             ->assertSee('No Products Available For Sale.');
@@ -83,7 +84,8 @@ class InventoryControllerTest extends TestCase
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
-        $this->actingAs($this->createEmployee())
+        $this->withoutMix()
+            ->actingAs($this->createEmployee())
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertOk()
             ->assertSee($product->model);
@@ -164,7 +166,8 @@ class InventoryControllerTest extends TestCase
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
 
-        $this->actingAs($this->createEmployee())
+        $this->withoutMix()
+            ->actingAs($this->createEmployee())
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertSee('"className":"form-control-plaintext"');
 
@@ -178,6 +181,7 @@ class InventoryControllerTest extends TestCase
      */
     public function salesRepsSeeAddToCartButton(): void
     {
+        $this->withoutMix();
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);

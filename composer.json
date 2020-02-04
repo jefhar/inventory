@@ -10,7 +10,7 @@
     "ext-json": "*",
     "ext-pdo": "*",
     "fideloper/proxy": "^4.0",
-    "laravel/framework": "^6.2",
+    "laravel/framework": "^6.10",
     "laravel/tinker": "^1.0",
     "spatie/data-transfer-object": "^1.10",
     "spatie/laravel-permission": "^3.2.0",
