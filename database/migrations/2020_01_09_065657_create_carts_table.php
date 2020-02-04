@@ -46,14 +46,17 @@ class CreateCartsTable extends Migration
 
         $updateProductPrice = Permission::create(['name' => UserPermissions::UPDATE_PRODUCT_PRICE]);
         $createCart = Permission::create(['name' => UserPermissions::MUTATE_CART]);
+        $updateRawProducts = Permission::create(['name' => UserPermissions::UPDATE_RAW_PRODUCTS]);
 
         $owner = Role::findByName(UserRoles::OWNER);
         $superAdmin = Role::findByName(UserRoles::SUPER_ADMIN);
         $salesRep = Role::findByName(UserRoles::SALES_REP);
+        $technician = Role::findByName(UserRoles::TECHNICIAN);
 
-        $owner->givePermissionTo([$updateProductPrice, $createCart]);
-        $superAdmin->givePermissionTo([$updateProductPrice, $createCart]);
+        $owner->givePermissionTo([$createCart, $updateProductPrice, $updateRawProducts]);
+        $superAdmin->givePermissionTo([$createCart, $updateProductPrice, $updateRawProducts]);
         $salesRep->givePermissionTo([$updateProductPrice, $createCart]);
+        $technician->givePermissionTo([$updateRawProducts]);
     }
 
     /**

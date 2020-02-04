@@ -9,10 +9,12 @@ declare(strict_types=1);
 
 namespace App\Products\Requests;
 
+use App\Admin\Permissions\UserPermissions;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class ProductUpdateRequest
@@ -27,6 +29,16 @@ class ProductUpdateRequest extends FormRequest
         Type::TYPE => ['required', 'exists:' . Type::TABLE . ',' . Type::SLUG],
         Product::VALUES => ['array'],
     ];
+
+    /**
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        $user = Auth::user();
+
+        return $user->hasPermissionTo(UserPermissions::UPDATE_RAW_PRODUCTS);
+    }
 
     /**
      * @return array
