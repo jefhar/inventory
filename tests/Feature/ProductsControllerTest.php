@@ -39,6 +39,7 @@ class ProductsControllerTest extends TestCase
         $manufacturer = $faker->company;
         $model = $faker->title;
         $type = factory(Type::class)->create();
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $formRequest = [
             'manufacturer' => $manufacturer,
@@ -47,7 +48,7 @@ class ProductsControllerTest extends TestCase
             'select-1575689474390' => 'option-2',
             'textarea-1575689477555' => 'textarea text. Bwahahahahaaaa',
             'type' => $type->slug,
-            'workOrderId' => $workOrder->luhn,
+            'workOrderId' => $workOrder->id,
         ];
 
         $this->actingAs($this->createEmployee())
@@ -92,6 +93,7 @@ class ProductsControllerTest extends TestCase
             ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price])
             ->assertJson(
                 [
+                    Product::ID => $product->id,
                     Product::LUHN => $product->luhn,
                     Product::PRICE => $price,
                 ]
