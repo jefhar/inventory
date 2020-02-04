@@ -7,12 +7,6 @@ stages:
 test:
   stage: test
   script:
-    - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-    - echo "deb https://dl.yarnpkg.com/debian/ rc main" | tee /etc/apt/sources.list.d/yarn.list
-    - curl -sL https://deb.nodesource.com/setup_12.x | bash -
-    - apt-get install -y nodejs yarn
-    - yarn install
-    - npm run prod
     - cp .env.testing .env
     - composer install --no-plugins --no-scripts
     - php artisan key:generate
@@ -37,12 +31,6 @@ dusktest:
     - selenium/standalone-chrome
   stage: test
   script:
-    - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-    - echo "deb https://dl.yarnpkg.com/debian/ rc main" | tee /etc/apt/sources.list.d/yarn.list
-    - curl -sL https://deb.nodesource.com/setup_12.x | bash -
-    - apt-get install -y nodejs yarn
-    - yarn install
-    - npm run prod
     - composer install --no-plugins --no-scripts --no-progress --no-suggest --prefer-dist --optimize-autoloader
     - cp .env.dusk.ci .env
     - php artisan key:generate
