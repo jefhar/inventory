@@ -120,11 +120,13 @@ class AjaxSearchTest extends TestCase
     public function productSerialNumberSearchReturnsJson(): void
     {
         $faker = Factory::create();
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $product = '';
         $serial = '';   // Why? so phpstan doesn't complain.
         for ($i = 0; $i < 15; $i++) {
             $serial = $faker->isbn13;
+            /** @var Product $unsavedProduct */
             $unsavedProduct = factory(Product::class)->make();
             $formRequest = [
                 'values' => [
@@ -135,7 +137,7 @@ class AjaxSearchTest extends TestCase
                 'manufacturer' => $unsavedProduct->manufacturer->name,
                 'model' => $unsavedProduct->model,
                 'type' => $unsavedProduct->type->slug,
-                'workOrderId' => $workOrder->luhn,
+                'workOrderId' => $workOrder->id,
             ];
             $product = ProductStoreAction::execute(ProductStoreObject::fromRequest($formRequest));
         }
