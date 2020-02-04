@@ -71,14 +71,14 @@ class TypesController extends Controller
     public function store(TypeStoreRequest $request): JsonResponse
     {
         $typeStoreObject = TypeStoreObject::fromRequest($request->validated());
-        $type = Type::where(Type::NAME, $typeStoreObject->name)->first();
-        if ($type && $typeStoreObject->force !== true) {
-            $status = Response::HTTP_ACCEPTED;
-        } elseif ($type) {
-            $status = Response::HTTP_OK;
-            $type = TypeStoreAction::execute($typeStoreObject);
-        } else {
+        $type = Type::firstOrNew([Type::NAME => $typeStoreObject->name]);
+        if ($type->exists === false) {
             $status = Response::HTTP_CREATED;
+            $type = TypeStoreAction::execute($typeStoreObject);
+        } elseif ($typeStoreObject->force !== true) {
+            $status = Response::HTTP_ACCEPTED;
+        } else {
+            $status = Response::HTTP_OK;
             $type = TypeStoreAction::execute($typeStoreObject);
         }
 

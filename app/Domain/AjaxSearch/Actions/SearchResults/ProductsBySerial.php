@@ -19,6 +19,8 @@ use Illuminate\Support\Collection;
  */
 class ProductsBySerial extends AbstractSearchAction
 {
+    use SearchActionTrait;
+
     /**
      * @param string $searchString
      * @return Collection
@@ -36,5 +38,4 @@ class ProductsBySerial extends AbstractSearchAction
                 ]
             );
     }
-
 }

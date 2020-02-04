@@ -59,6 +59,13 @@ class WorkOrder extends Model
     ];
 
     /**
+     * The number of models to return for pagination.
+     *
+     * @var int
+     */
+    protected $perPage = 15;
+
+    /**
      * This allows for matching the model by the slug in the path
      *
      * @return string

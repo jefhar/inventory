@@ -29,7 +29,7 @@ class TypesTest extends TestCase
     {
         $type = new Type();
         $name = 'john jacob jingleheimer schmidt';
-        $type->name= $name;
+        $type->name = $name;
 
         $this->assertEquals(Str::slug($name), $type->slug);
         $this->assertEquals(Str::title($name), $type->name);

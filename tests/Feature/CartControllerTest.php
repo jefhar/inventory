@@ -162,5 +162,4 @@ class CartControllerTest extends TestCase
                 ]
             );
     }
-
 }

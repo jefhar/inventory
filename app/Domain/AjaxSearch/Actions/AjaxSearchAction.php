@@ -37,7 +37,7 @@ class AjaxSearchAction
      */
     public static function findBy(string $field, string $searchString): Collection
     {
-        /** @var SearchActionInterface $searchResults */
+        $searchResults = null;
         switch ($field) {
             case Client::COMPANY_NAME:
                 $searchResults = ClientsWithPersonByCompanyName::getInstance();

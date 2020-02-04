@@ -122,7 +122,7 @@ class TypesControllerTest extends TestCase
     /**
      * @test
      */
-    public function canDestroyForm():void
+    public function canDestroyForm(): void
     {
         $type = factory(Type::class)->create();
         $this

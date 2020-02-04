@@ -19,6 +19,8 @@ use Illuminate\Support\Collection;
  */
 class PeopleByName extends AbstractSearchAction
 {
+    use SearchActionTrait;
+
     /**
      * @param string $searchString
      * @return Collection

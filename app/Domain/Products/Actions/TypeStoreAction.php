@@ -35,6 +35,5 @@ class TypeStoreAction
                 Type::FORM => $typeStoreObject->form,
             ]
         );
-
     }
 }

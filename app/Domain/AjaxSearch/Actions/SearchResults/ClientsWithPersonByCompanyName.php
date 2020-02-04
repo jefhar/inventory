@@ -20,6 +20,7 @@ use Illuminate\Support\Collection;
  */
 class ClientsWithPersonByCompanyName extends AbstractSearchAction
 {
+    use SearchActionTrait;
 
     /**
      * @param string $searchString

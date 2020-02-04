@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * @method static Cart findOrFail($input)
  * @package Domain\Carts\Models
- * @property Client client
+ * @property Client $client
  * @property int $id
  * @property int $luhn
  * @property string $status

@@ -20,6 +20,7 @@ use Illuminate\Queue\SerializesModels;
 class CartCreated
 {
     use SerializesModels;
+
     public Cart $cart;
 
     /**

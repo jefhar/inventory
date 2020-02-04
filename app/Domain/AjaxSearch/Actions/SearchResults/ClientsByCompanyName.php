@@ -19,6 +19,7 @@ use Illuminate\Support\Collection;
  */
 class ClientsByCompanyName extends AbstractSearchAction
 {
+    use SearchActionTrait;
 
     /**
      * @inheritDoc

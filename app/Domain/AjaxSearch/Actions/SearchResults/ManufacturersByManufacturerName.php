@@ -19,6 +19,7 @@ use Illuminate\Support\Collection;
  */
 class ManufacturersByManufacturerName extends AbstractSearchAction
 {
+    use SearchActionTrait;
 
     /**
      * @param string $searchString

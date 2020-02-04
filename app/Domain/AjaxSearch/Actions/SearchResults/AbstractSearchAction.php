@@ -22,10 +22,7 @@ abstract class AbstractSearchAction implements SearchActionInterface
     /**
      * @return SearchActionInterface
      */
-    public static function getInstance(): SearchActionInterface
-    {
-        return new static;
-    }
+    abstract public static function getInstance(): SearchActionInterface;
 
     /**
      * @param string $searchString
