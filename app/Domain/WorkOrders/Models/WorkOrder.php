@@ -52,7 +52,7 @@ class WorkOrder extends Model
     ];
     protected $casts = [
         self::IS_LOCKED => 'boolean',
-        self::LUHN => 'int',
+        self::LUHN => 'int'
     ];
     protected $dispatchesEvents = [
         'created' => WorkOrderCreated::class,

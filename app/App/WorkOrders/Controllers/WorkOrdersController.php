@@ -38,6 +38,7 @@ class WorkOrdersController extends Controller
     public const SHOW_NAME = 'workorders.show';
     public const STORE_NAME = 'workorders.store';
     public const UPDATE_NAME = 'workorders.update';
+    public const PAGINATE_PER_PAGE = 15;
 
     /**
      * Display a listing of the resource.
@@ -50,10 +51,10 @@ class WorkOrdersController extends Controller
     {
         $showLocked = 'no';
         if ($request->get('showlocked', $showLocked) === 'yes') {
-            $workOrders = WorkOrder::paginate(15);
+            $workOrders = WorkOrder::paginate(self::PAGINATE_PER_PAGE);
             $showLocked = 'yes';
         } else {
-            $workOrders = WorkOrder::where(WorkOrder::IS_LOCKED, false)->paginate(15);
+            $workOrders = WorkOrder::where(WorkOrder::IS_LOCKED, false)->paginate(self::PAGINATE_PER_PAGE);
             $showLocked = 'no';
         }
 
@@ -75,6 +76,7 @@ class WorkOrdersController extends Controller
      *
      * @param WorkOrderStoreRequest $request
      * @return JsonResponse
+     * @todo: change luhn response to id response -> through JS.
      */
     public function store(WorkOrderStoreRequest $request): JsonResponse
     {
@@ -93,13 +95,13 @@ class WorkOrdersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param WorkOrder $workorder
+     * @param WorkOrder $workOrder
      * @return WorkOrder
      * @codeCoverageIgnore
      */
-    public function show(WorkOrder $workorder): WorkOrder
+    public function show(WorkOrder $workOrder): WorkOrder
     {
-        return $workorder;
+        return $workOrder;
     }
 
     /**
@@ -126,10 +128,7 @@ class WorkOrdersController extends Controller
     public function update(WorkOrderUpdateRequest $request, WorkOrder $workorder): JsonResponse
     {
         $workOrderObject = WorkOrderUpdateObject::fromRequest($request->validated());
-        $workOrderAction = WorkOrdersUpdateAction::execute(
-            $workorder,
-            $workOrderObject
-        );
+        $workOrderAction = WorkOrdersUpdateAction::execute($workorder, $workOrderObject);
 
         return response()->json($workOrderAction);
     }

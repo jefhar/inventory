@@ -20,7 +20,7 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class WorkOrderStoreRequest extends FormRequest
 {
-    public const RULES = [
+    private const RULES = [
         Client::COMPANY_NAME => ['required', 'string'],
         Person::FIRST_NAME => ['string', 'nullable'],
         Person::LAST_NAME => ['string', 'nullable'],

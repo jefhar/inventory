@@ -21,14 +21,14 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class WorkOrderUpdateRequest extends FormRequest
 {
-    public const RULES = [
-        Client::COMPANY_NAME => 'string|nullable',
-        Person::FIRST_NAME => 'string|nullable',
-        Person::LAST_NAME => 'string|nullable',
-        Person::PHONE_NUMBER => 'string|nullable',
-        Person::EMAIL => 'string|nullable',
-        WorkOrder::INTAKE => 'string|nullable',
-        WorkOrder::IS_LOCKED => 'boolean|nullable',
+    private const RULES = [
+        Client::COMPANY_NAME => ['string', 'nullable'],
+        Person::FIRST_NAME => ['string', 'nullable'],
+        Person::LAST_NAME => ['string', 'nullable'],
+        Person::PHONE_NUMBER => ['string', 'nullable'],
+        Person::EMAIL => ['string', 'nullable'],
+        WorkOrder::INTAKE => ['string', 'nullable'],
+        WorkOrder::IS_LOCKED => ['boolean','nullable'],
     ];
 
     /**

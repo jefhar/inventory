@@ -30,7 +30,6 @@ class WorkOrdersStoreAction
      */
     public static function execute(ClientObject $clientObject, PersonObject $personObject): WorkOrder
     {
-        /** @var Client $client */
         $client = Client::firstOrCreate([Client::COMPANY_NAME => $clientObject->company_name]);
 
         $client->person()->save(

@@ -168,7 +168,8 @@ class WorkOrdersControllerTest extends TestCase
         $client->workOrders()->save($workOrder);
         $workOrder->products()->save($product);
 
-        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
+        $this->withoutExceptionHandling()
+            ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(WorkOrdersController::EDIT_NAME, $workOrder))
             ->assertOk()->assertSeeText('Edit Work Order')
             ->assertSeeText(htmlspecialchars($product->manufacturer->name, ENT_QUOTES | ENT_HTML401))

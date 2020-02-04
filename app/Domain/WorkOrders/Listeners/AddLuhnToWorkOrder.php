@@ -24,9 +24,7 @@ class AddLuhnToWorkOrder
      */
     public function handle(WorkOrderCreated $event): void
     {
-        $id = $event->workOrder->id;
-        $luhn = Luhn::create($id);
-        $event->workOrder->luhn = $luhn;
+        $event->workOrder->luhn = Luhn::create($event->workOrder->id);
         $event->workOrder->save();
     }
 }
