@@ -33,8 +33,8 @@ class ProductsBySerial extends AbstractSearchAction
             ->get()
             ->map(
                 fn($product) => [
-                    'name' => $product->serial,
-                    'url' => '/inventory/' . $product->luhn,
+                'name' => $product->serial,
+                'url' => '/inventory/' . $product->luhn,
                 ]
             );
     }

@@ -32,8 +32,8 @@ class ClientsByCompanyName extends AbstractSearchAction
             ->get()
             ->map(
                 fn($client) => [
-                    'name' => $client->company_name,
-                    'url' => '/clients/' . $client->id,
+                'name' => $client->company_name,
+                'url' => '/clients/' . $client->id,
                 ]
             );
     }

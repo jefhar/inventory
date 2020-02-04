@@ -33,8 +33,8 @@ class PeopleByName extends AbstractSearchAction
             ->get()
             ->map(
                 fn($person) => [
-                    'name' => $person->first_name . ' ' . $person->last_name,
-                    'url' => '/clients/' . $person->client_id,
+                'name' => $person->first_name . ' ' . $person->last_name,
+                'url' => '/clients/' . $person->client_id,
                 ]
             );
     }
