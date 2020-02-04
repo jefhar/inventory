@@ -24,9 +24,7 @@ class AddLuhnToCart
      */
     public function handle(CartCreated $event): void
     {
-        $id = $event->cart->id;
-        $luhn = Luhn::create($id);
-        $event->cart->luhn = $luhn;
+        $event->cart->luhn = Luhn::create($event->cart->id);
         $event->cart->save();
     }
 }

@@ -18,7 +18,7 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class CartStoreRequest extends FormRequest
 {
-    protected array $rules = [
+    private const RULES = [
 
     ];
 
@@ -27,6 +27,6 @@ class CartStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        return $this->rules;
+        return self::RULES;
     }
 }

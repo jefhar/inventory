@@ -28,8 +28,9 @@ class CartStoreAction
      */
     public static function execute(CartStoreObject $cartStoreObject): Cart
     {
-        $cart = new Cart();
         $user = Auth::user();
+        $cart = new Cart();
+        // $cart->status = $cartPatchObject->status
         $user->carts()->save($cart);
 
         return $cart;

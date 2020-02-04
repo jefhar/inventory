@@ -27,6 +27,6 @@ class CartPatchObject extends DataTransferObject
      */
     public static function fromRequest(array $validated): self
     {
-        return new self(['status' => $validated[Cart::STATUS]]);
+        return new self([Cart::STATUS => $validated[Cart::STATUS]]);
     }
 }

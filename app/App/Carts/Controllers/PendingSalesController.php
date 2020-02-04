@@ -36,11 +36,11 @@ class PendingSalesController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $cart = Cart::findOrFail($request->input(Product::CART_ID));
-        $product = Product::findOrFail($request->input(Product::ID));
-
         return response()->json(
-            CreatePendingSaleAction::execute($cart, $product)
+            CreatePendingSaleAction::execute(
+                Cart::findOrFail($request->input(Product::CART_ID)),
+                Product::findOrFail($request->input(Product::ID))
+            )
         )->setStatusCode(201);
     }
 
@@ -50,6 +50,6 @@ class PendingSalesController extends Controller
      */
     public function destroy(Product $product): JsonResponse
     {
-       return response()->json(DestroyPendingSalesAction::execute($product));
+        return response()->json(DestroyPendingSalesAction::execute($product));
     }
 }
