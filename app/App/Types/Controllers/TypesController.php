@@ -39,6 +39,7 @@ class TypesController extends Controller
     /**
      * @param Type $type
      * @return JsonResponse
+     * @throws \JsonException
      */
     public function show(Type $type): JsonResponse
     {
@@ -62,6 +63,7 @@ class TypesController extends Controller
     {
         return response()->json(Type::orderBy(Type::NAME)->get());
     }
+
     /**
      * @param TypeStoreRequest $request
      * @return JsonResponse
@@ -70,13 +72,11 @@ class TypesController extends Controller
     {
         $typeStoreObject = TypeStoreObject::fromRequest($request->validated());
         $type = Type::where(Type::NAME, $typeStoreObject->name)->first();
-        if ($type) {
-            if ($typeStoreObject->force !== true) {
-                $status = Response::HTTP_ACCEPTED;
-            } else {
-                $status = Response::HTTP_OK;
-                $type = TypeStoreAction::execute($typeStoreObject);
-            }
+        if ($type && $typeStoreObject->force !== true) {
+            $status = Response::HTTP_ACCEPTED;
+        } elseif ($type) {
+            $status = Response::HTTP_OK;
+            $type = TypeStoreAction::execute($typeStoreObject);
         } else {
             $status = Response::HTTP_CREATED;
             $type = TypeStoreAction::execute($typeStoreObject);
