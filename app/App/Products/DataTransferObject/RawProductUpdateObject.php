@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace App\Products\DataTransferObject;
 
+use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
+use Domain\Products\Models\Type;
 use Spatie\DataTransferObject\DataTransferObject;
 
 /**
@@ -32,8 +34,8 @@ class RawProductUpdateObject extends DataTransferObject
     {
         return new self(
             [
-                'manufacturer' => $validated['manufacturer'],
-                'type' => $validated['type'],
+                Manufacturer::MANUFACTURER => $validated[Manufacturer::MANUFACTURER],
+                Type::TYPE => $validated[Type::TYPE],
                 Product::MODEL => $validated[Product::MODEL],
                 Product::VALUES => $validated[Product::VALUES],
             ]

@@ -22,15 +22,19 @@ class ProductStoreMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
+     * Adds all request variables except for those listed to the 'values' key.
+     * The 'values' key is used to add variable
+     *
+     * @param Request $request
      * @param \Closure $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
-        $values = $request->except('manufacturer', 'model', 'type', 'workorderId');
-        $request = $request->merge(['values' => $values]);
-
-        return $next($request);
+        return $next(
+            $request->merge(
+                ['values' => $request->except('manufacturer', 'model', 'type', 'workorderId')]
+            )
+        );
     }
 }

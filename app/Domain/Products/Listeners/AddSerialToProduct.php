@@ -25,7 +25,7 @@ class AddSerialToProduct
     {
         $product = $event->product;
         $potentialSerial = ($product->values['serial']) ?? null;
-        if ($potentialSerial && $potentialSerial !== $product->serial) {
+        if ($potentialSerial && ($potentialSerial !== $product->serial)) {
             $product->serial = $potentialSerial;
             $product->save();
         }

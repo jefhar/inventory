@@ -9,11 +9,10 @@ declare(strict_types=1);
 
 namespace App\Products\Requests;
 
-use App\Admin\Permissions\UserRoles;
-use App\User;
+use Domain\Products\Models\Manufacturer;
+use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class ProductUpdateRequest
@@ -23,33 +22,11 @@ use Illuminate\Support\Facades\Auth;
 class ProductUpdateRequest extends FormRequest
 {
     public const RULES = [
-        'manufacturer' => ['required'],
-        'model' => ['required'],
-        'type' => ['required', 'exists:' . Type::TABLE . ',' . Type::SLUG],
-        'values' => ['array'],
+        Manufacturer::MANUFACTURER => ['required'],
+        Product::MODEL => ['required'],
+        Type::TYPE => ['required', 'exists:' . Type::TABLE . ',' . Type::SLUG],
+        Product::VALUES => ['array'],
     ];
-
-    /**
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        /** @var User $user */
-        $user = Auth::user();
-        if (
-            $user->hasAnyRole(
-                [
-                UserRoles::TECHNICIAN,
-                UserRoles::OWNER,
-                UserRoles::SUPER_ADMIN,
-                ]
-            )
-        ) {
-            return true;
-        }
-
-        return false;
-    }
 
     /**
      * @return array

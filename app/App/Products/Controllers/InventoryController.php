@@ -26,6 +26,7 @@ class InventoryController extends Controller
 {
     public const INDEX_NAME = 'inventory.index';
     public const INDEX_PATH = '/inventory';
+    public const PAGINATE_PER_PAGE = 25;
     public const SHOW_NAME = 'inventory.show';
     public const SHOW_PATH = '/inventory/{product}';
     public const UPDATE_NAME = 'inventory.update';
@@ -36,7 +37,7 @@ class InventoryController extends Controller
      */
     public function index(): View
     {
-        $products = Product::paginate(25);
+        $products = Product::paginate(self::PAGINATE_PER_PAGE);
 
         return view('inventory.index', ['products' => $products]);
     }
@@ -59,8 +60,7 @@ class InventoryController extends Controller
     public function update(Product $product, ProductUpdateRequest $request): Product
     {
         $productUpdateObject = RawProductUpdateObject::fromRequest($request->validated());
-        $product = RawProductUpdateAction::execute($product, $productUpdateObject);
 
-        return $product;
+        return RawProductUpdateAction::execute($product, $productUpdateObject);
     }
 }

@@ -29,14 +29,25 @@ class RawProductUpdateAction
     public static function execute(Product $product, RawProductUpdateObject $rawProductUpdateObject): Product
     {
         $type = Type::where(Type::SLUG, $rawProductUpdateObject->type)->first();
-
         $manufacturer = Manufacturer::firstOrCreate([Manufacturer::NAME => $rawProductUpdateObject->manufacturer]);
+        $product = self::updateProduct($product, $rawProductUpdateObject);
 
-        $product->model = $rawProductUpdateObject->model;
-        $product->values = $rawProductUpdateObject->values;
         $product->type()->associate($type);
         $product->manufacturer()->associate($manufacturer);
         $product->save();
+
+        return $product;
+    }
+
+    /**
+     * @param Product $product
+     * @param RawProductUpdateObject $rawProductUpdateObject
+     * @return Product
+     */
+    private static function updateProduct(Product $product, RawProductUpdateObject $rawProductUpdateObject): Product
+    {
+        $product->model = $rawProductUpdateObject->model;
+        $product->values = $rawProductUpdateObject->values;
 
         return $product;
     }

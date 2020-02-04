@@ -24,9 +24,7 @@ class AddLuhnToProduct
      */
     public function handle(ProductCreated $event): void
     {
-        $id = $event->product->id;
-        $luhn = Luhn::create($id);
-        $event->product->luhn = $luhn;
+        $event->product->luhn = Luhn::create($event->product->id);
         $event->product->save();
     }
 }
