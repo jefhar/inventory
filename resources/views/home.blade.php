@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-sm-12 col-md-10">
                 <div class="card">
                     <div class="card-header border-primary bg-light">Dashboard</div>
 
@@ -46,22 +46,20 @@
                                     </div>
                                 </div>
                             </div>
-                            @hasanyrole(
-                            \App\Admin\Permissions\UserRoles::TECHNICIAN . '|' .
-                            \App\Admin\Permissions\UserRoles::OWNER. '|' .
-                            \App\Admin\Permissions\UserRoles::SUPER_ADMIN)
-                            <div class="col-6">
-                                <div class="card mb-4">
-                                    <div class="card-body">
-                                        <h3 class="card-title">Create a New Product Type</h3>
-                                        <p class="card-text">
-                                            Create or Edit a new Product Type using the formBuilder.
-                                        </p>
-                                        <a href="/types/create" class="btn btn-outline-primary">Edit Product Types</a>
+                            @can(\App\Admin\Permissions\UserPermissions::CREATE_OR_EDIT_PRODUCT_TYPE)
+                                <div class="col-6">
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <h3 class="card-title">Create a New Product Type</h3>
+                                            <p class="card-text">
+                                                Create or Edit a new Product Type using the formBuilder.
+                                            </p>
+                                            <a href="/types/create" class="btn btn-outline-primary">Edit Product
+                                                Types</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            @endhasanyrole
+                            @endcan
                             {{-- This is the log out card. Make sure it is last --}}
                             <div class="w-100"></div>
                             <div class="col-6">

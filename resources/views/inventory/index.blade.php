@@ -24,7 +24,7 @@
                     <tbody>
                     @foreach ($products as $product)
                         <tr>
-                            <th scope="row" class="col-1">
+                            <th scope="row">
                                 <a class="btn btn-info"
                                    href="/inventory/{{ $product->luhn }}">
                                     {{ str_pad($product->luhn, 7, '0', STR_PAD_LEFT) }}

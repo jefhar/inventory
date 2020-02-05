@@ -12,6 +12,7 @@ use App\Admin\Permissions\UserRoles;
 use App\Carts\Controllers\PendingSalesController;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 use Tests\Traits\FullUsers;
@@ -99,5 +100,40 @@ class PendingSalesControllerTest extends TestCase
         $this->actingAs($technician)
             ->delete(route(PendingSalesController::DESTROY_NAME, $product))
             ->assertForbidden();
+    }
+
+    /**
+     * @test
+     */
+    public function cannotAddProductToASecondCart(): void
+    {
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $cart = $this->makeFullCart();
+        $cart->save();
+        $product = $this->createFullProduct();
+        $salesRep->carts()->save($cart);
+
+        $this->actingAs($salesRep)
+            ->post(
+                route(PendingSalesController::STORE_NAME),
+                [Product::CART_ID => $cart->id, Product::ID => $product->id]
+            )
+            ->assertCreated()
+            ->assertJson(
+                [
+                    Product::CART_ID => $cart->id,
+                    Product::ID => $product->id,
+                ]
+            );
+
+        $secondCart = $this->makeFullCart();
+        $cart->save();
+        $salesRep->carts()->save($secondCart);
+
+        $this->post(
+            route(PendingSalesController::STORE_NAME),
+            [Product::CART_ID => $secondCart->id, Product::ID => $product->id]
+        )
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

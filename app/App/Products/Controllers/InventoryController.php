@@ -10,11 +10,14 @@ declare(strict_types=1);
 namespace App\Products\Controllers;
 
 use App\Admin\Controllers\Controller;
+use App\Admin\Permissions\UserPermissions;
 use App\Products\DataTransferObject\RawProductUpdateObject;
 use App\Products\Requests\ProductUpdateRequest;
+use Domain\Carts\Models\Cart;
 use Domain\Products\Actions\ProductShowAction;
 use Domain\Products\Actions\RawProductUpdateAction;
 use Domain\Products\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
@@ -49,7 +52,21 @@ class InventoryController extends Controller
      */
     public function show(Product $product): View
     {
-        return view('inventory.show', ['product' => $product, 'formData' => ProductShowAction::execute($product)]);
+        // Same code in CartsController::index.
+        if (Auth::user()->can(UserPermissions::SEE_ALL_OPEN_CARTS)) {
+            $carts = Cart::where(Cart::STATUS, Cart::STATUS_OPEN)->get();
+        } else {
+            $carts = Auth::user()->carts()->get();
+        }
+
+        return view(
+            'inventory.show',
+            [
+                'product' => $product,
+                'formData' => ProductShowAction::execute($product),
+                'carts' => $carts,
+            ]
+        );
     }
 
     /**

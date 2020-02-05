@@ -13,6 +13,7 @@ use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
 
@@ -45,8 +46,10 @@ trait FullObjects
      */
     private function makeFullCart(): Cart
     {
+        $person = factory(Person::class)->make();
         $client = factory(Client::class)->create();
         $cart = factory(Cart::class)->make();
+        $client->person()->save($person);
         $cart->client()->associate($client);
 
         return $cart;

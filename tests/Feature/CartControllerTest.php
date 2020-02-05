@@ -11,6 +11,8 @@ namespace Tests\Feature;
 use App\Admin\Permissions\UserRoles;
 use App\Carts\Controllers\CartsController;
 use Domain\Carts\Models\Cart;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 use Tests\Traits\FullUsers;
@@ -30,9 +32,14 @@ class CartControllerTest extends TestCase
      */
     public function salesRepCanCreateCart(): void
     {
-        $cart = factory(Cart::class)->make();
+        $cart = $this->makeFullCart();
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
-            ->post(route(CartsController::STORE_NAME), $cart->toArray())
+            ->post(route(CartsController::STORE_NAME),
+                   [
+                       Client::COMPANY_NAME => $cart->client->company_name,
+                       Person::FIRST_NAME => $cart->client->person->first_name,
+                       ]
+                       )
             ->assertCreated()
             ->assertJson(
                 [

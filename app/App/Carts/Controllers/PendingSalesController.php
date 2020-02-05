@@ -16,6 +16,7 @@ use Domain\PendingSales\Actions\DestroyPendingSalesAction;
 use Domain\Products\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class PendingSalesController
@@ -36,10 +37,14 @@ class PendingSalesController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        $product = Product::findOrFail($request->input(Product::ID));
+        if (!is_null($product->cart_id)) {
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
         return response()->json(
             CreatePendingSaleAction::execute(
                 Cart::findOrFail($request->input(Product::CART_ID)),
-                Product::findOrFail($request->input(Product::ID))
+                $product
             )
         )->setStatusCode(201);
     }

@@ -4,10 +4,7 @@
 
 @section('content')
     <script>
-      window.formRenderOptions = {
-        formData: '{!! json_encode($formData) !!}',
-        dataType: 'json'
-      }
+      window.formRenderOptions = { formData: '{!! json_encode($formData) !!}', dataType: 'json' }
     </script>
     <div class="container">
         <div class="card">
@@ -31,8 +28,25 @@
                         >Add To Cart &hellip;
                         </button>
                         <div class="dropdown-menu" aria-labelledby="addToCartButton">
-                            <a class="dropdown-item" href="#">New Cart</a>
+                            @foreach($carts as $cart)
+                                <button
+                                        class="dropdown-item"
+                                        id="cart_{{ $cart->id }}"
+                                        type="button"
+                                        onclick="addToCart({{ $cart->id }}, {{ $product->id }})"
+                                >{{$cart->client->company_name}}
+                                </button>
+                            @endforeach
+                            @if (count($carts)) > 0)
                             <div class="dropdown-divider" id="dropdownDivider"></div>
+                            @endif
+                            <button
+                                    class="dropdown-item"
+                                    id="newCart"
+                                    type="button"
+                                    onclick="createNewCart({{ $product->id }})"
+                            >New Cart
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -10,11 +10,13 @@ declare(strict_types=1);
 namespace App\Carts\Controllers;
 
 use App\Admin\Controllers\Controller;
+use App\Admin\Permissions\UserPermissions;
 use App\Carts\DataTransferObjects\CartStoreObject;
 use App\Carts\Requests\CartStoreRequest;
 use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
@@ -39,8 +41,24 @@ class CartsController extends Controller
     {
     }
 
+    /**
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|View
+     */
     public function index()
     {
+        // Same code in InventoryController::show
+        if (Auth::user()->can(UserPermissions::SEE_ALL_OPEN_CARTS)) {
+            $carts = Cart::where(Cart::STATUS, Cart::STATUS_OPEN)->get();
+        } else {
+            $carts = Auth::user()->carts()->get();
+        }
+        return view('carts.index')
+            ->with(
+                [
+                    'name' => Auth::user()->name,
+                    'carts' => $carts,
+                ]
+            );
     }
 
     /**

@@ -14,6 +14,7 @@ use App\Products\Controllers\InventoryController;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 use Tests\Traits\FullUsers;
 
 /**
@@ -24,6 +25,7 @@ use Tests\Traits\FullUsers;
 class InventoryControllerTest extends TestCase
 {
     use FullUsers;
+    use FullObjects;
 
     /**
      * @test
@@ -211,5 +213,137 @@ class InventoryControllerTest extends TestCase
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertDontSee('Add To Cart &hellip;');
+    }
+
+    /**
+     * @test
+     */
+    public function salesRepsSeeTheirExistingCartsOnInventoryPage(): void
+    {
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $workOrder = factory(WorkOrder::class)->create();
+        // Whip up around 20 carts to make sure they all appear
+        for ($i = 0; $i < 20; $i++) {
+            $product = factory(Product::class)->make();
+            $workOrder->products()->save($product);
+            $cart = $this->makeFullCart();
+            $salesRep->carts()->save($cart);
+            $carts[] = $cart;
+        }
+
+        $this->actingAs($salesRep)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+
+        $otherSalesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $this->actingAs($otherSalesRep)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertDontSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+    }
+
+    /**
+     * @test
+     */
+    public function nonSalesRepsDoNotSeeExistingCartsOnInventoryPage(): void
+    {
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $workOrder = factory(WorkOrder::class)->create();
+        // Whip up around 20 carts to make sure they all appear
+        for ($i = 0; $i < 20; $i++) {
+            $product = factory(Product::class)->make();
+            $workOrder->products()->save($product);
+            $cart = $this->makeFullCart();
+            $salesRep->carts()->save($cart);
+            $carts[] = $cart;
+        }
+        $technician = $this->createEmployee(UserRoles::TECHNICIAN);
+        $this->actingAs($technician)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertDontSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+        $employee = $this->createEmployee();
+        $this->actingAs($employee)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertDontSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+    }
+
+    /**
+     * @test
+     */
+    public function ownerSeesAllExistingCartsOnInventoryPage(): void
+    {
+        $salesRep1 = $this->createEmployee(UserRoles::SALES_REP);
+        $salesRep2 = $this->createEmployee(UserRoles::SALES_REP);
+        $workOrder = factory(WorkOrder::class)->create();
+        // Whip up around 20 carts to make sure they all appear
+        for ($i = 0; $i < 10; $i++) {
+            $product = factory(Product::class)->make();
+            $workOrder->products()->save($product);
+            $cart = $this->makeFullCart();
+            $salesRep1->carts()->save($cart);
+            $carts[] = $cart;
+        }
+        for ($i = 0; $i < 10; $i++) {
+            $product = factory(Product::class)->make();
+            $workOrder->products()->save($product);
+            $cart = $this->makeFullCart();
+            $salesRep2->carts()->save($cart);
+            $carts[] = $cart;
+        }
+
+        $owner = $this->createEmployee(UserRoles::OWNER);
+        $this->actingAs($owner)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[14]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[15]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[16]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[17]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[18]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[19]->client->company_name, ENT_QUOTES | ENT_HTML401));
     }
 }

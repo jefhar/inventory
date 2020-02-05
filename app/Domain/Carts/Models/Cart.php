@@ -12,6 +12,7 @@ namespace Domain\Carts\Models;
 use Domain\Carts\Events\CartCreated;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,8 +21,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * Class Cart
  *
- * @method static Cart findOrFail($input)
  * @package Domain\Carts\Models
+ * @method static Builder where(string|array $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static Cart findOrFail($input)
  * @property Client $client
  * @property int $id
  * @property int $luhn
@@ -39,6 +41,8 @@ class Cart extends Model
     public const STATUS_VOID = 'void';
     public const TABLE = 'carts';
     public const USER_ID = 'user_id';
+
+    public $with = ['client.person'];
 
     protected $attributes = [
         self::STATUS => self::STATUS_OPEN,
