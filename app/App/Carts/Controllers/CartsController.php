@@ -48,7 +48,7 @@ class CartsController extends Controller
     {
         // Same code in InventoryController::show
         if (Auth::user()->can(UserPermissions::SEE_ALL_OPEN_CARTS)) {
-            $carts = Cart::where(Cart::STATUS, Cart::STATUS_OPEN)->get();
+            $carts = Cart::where(Cart::STATUS, Cart::STATUS_OPEN)->orderBy(Cart::CREATED_AT)->get();
         } else {
             $carts = Auth::user()->carts()->get();
         }
