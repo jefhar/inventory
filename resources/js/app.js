@@ -4,6 +4,10 @@
  * building robust, powerful web applications using React + Laravel.
  */
 
+import ReactDOM from "react-dom";
+import React from "react";
+import CompanyClientName from "./components/WorkOrder/Elements/CompanyClientName";
+
 require("./bootstrap");
 require("jquery-ui-sortable");
 require("formBuilder");
@@ -15,6 +19,21 @@ const HTTP_OK = 200;
 const HTTP_CREATED = 201;
 const HTTP_ACCEPTED = 202;
 AutoComplete();
+
+const createNewCartSubmit = () => {
+  // Grab product_id from #product_id dataset
+  // Send axios post to server
+  //   Upon response, add alert to page,
+  //   Fire toaster to give alert
+  //   Add cart info above #dropdownDivider
+};
+
+const addToCart = cart_id => {
+  // Grab product_id from #product_id dataset
+  // Send axios post to server
+  //   Upon response, add alert to page,
+  //   Fire toaster to give alert
+};
 
 $(() => {
   AutoComplete(
@@ -231,11 +250,11 @@ A simple warning alert—check it out!
             const luhn = _.padStart(response.data.luhn, 6, "0");
             // Add Row to `<tbody id="products_table">`
             const tr = document.createElement("tr");
-            tr.innerHTML = `<th scope="row" class="col-1">\
-<a class="btn btn-info" href="/inventory/${luhn}">${luhn}</a></th>\
-<td>${manufacturer}</td>\
-<td>${model}</td>\
-<td>${type}</td>\
+            tr.innerHTML = `<th scope="row" class="col-1">
+<a class="btn btn-info" href="/inventory/${luhn}">${luhn}</a></th>
+<td>${manufacturer}</td>
+<td>${model}</td>
+<td>${type}</td>
 <td>${serial}</td>
 <td>${created_at}</td>`;
             document.getElementById("products_table").appendChild(tr);
@@ -258,9 +277,9 @@ A simple warning alert—check it out!
               "fade",
               "show"
             );
-            errorAlert.innerHTML = `${error}\
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">\
-<span aria-hidden="true">&times;</span>\
+            errorAlert.innerHTML = `${error}
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<span aria-hidden="true">&times;</span>
 </button>`;
             document.getElementById("productError").appendChild(errorAlert);
           });
@@ -324,15 +343,17 @@ A simple warning alert—check it out!
         axios
           .patch(url, data)
           .then(response => {
-            // At some point, give user a visual indication that fields have
-            // been updated. Even better, add onChange to the fields, and if
-            // they're dirty, give visual indication when changed.
+            // At some point, give user a visual indication that
+            // fields have been updated. Even better, add onChange
+            // to the fields, and if they're dirty, give visual
+            // indication when changed.
 
-            updateToast.innerHTML = `\  
+            updateToast.innerHTML = ` 
     <div class="toast-header">
       <i class="fas fa-check-square text-success"></i>&nbsp;
       <strong class="mr-auto">Success</strong>
-      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+              aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
@@ -351,7 +372,8 @@ A simple warning alert—check it out!
     <div class="toast-header">
       <i class="fas fa-exclamation-circle text-warning"></i>&nbsp;
       <strong class="mr-auto">Warning</strong>
-      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+              aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
@@ -490,18 +512,19 @@ if (document.getElementById("types_create")) {
             .then(response => {
               if (response.status === HTTP_CREATED) {
                 console.info("created.");
-                document.getElementById(
-                  "alert"
-                ).innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">\
-<h5>Product Type Saved.</h5>You may now use ${response.data.name} as a product type.\
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">\
-<span aria-hidden="true">&times;</span>\
-</button>\
+                document.getElementById("alert").innerHTML = `<div role="alert"
+class="alert alert-success alert-dismissible fade show">
+<h5>Product Type Saved.</h5>
+You may now use ${response.data.name} as a product type.
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
 </div>`;
               } else if (response.status === HTTP_ACCEPTED) {
                 console.info("accepted.");
                 const resave = window.confirm(
-                  "Type already exists. Press OK to update, CANCEL to rename"
+                  "Type already exists. " +
+                    "Press OK to update, CANCEL to rename"
                 );
                 if (resave) {
                   axios
@@ -515,22 +538,26 @@ if (document.getElementById("types_create")) {
                         console.info("forced created.");
                         document.getElementById(
                           "alert"
-                        ).innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">\
-<h5>Product Type Updated.</h5>${response.data.name} has been updated. Existing products of this type have not been updated.\
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">\
-<span aria-hidden="true">&times;</span>\
-</button>\
+                        ).innerHTML = `<div role="alert"
+class="alert alert-info alert-dismissible fade show">
+<h5>Product Type Updated.</h5>${response.data.name} has been updated.
+Existing products of this type have not been updated.
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
 </div>`;
                       } else {
                         console.info("unable to force create.");
                         document.getElementById(
                           "alert"
-                        ).innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">\
-<h5>Saving failed.</h5>${typeName} has not been updated. Existing products of this type have not been updated.\
-<strong>An unexpected response was tendered from the server. Please try again later.</strong>
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">\
-<span aria-hidden="true">&times;</span>\
-</button>\
+                        ).innerHTML = `<div role="alert"
+class="alert alert-warning alert-dismissible fade show">
+<h5>Saving failed.</h5>${typeName} has not been updated. Existing products of
+this type have not been updated. <strong>An unexpected response was tendered
+from the server. Please try again later.</strong>
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
 </div>`;
                       }
                     });
@@ -538,11 +565,13 @@ if (document.getElementById("types_create")) {
                   console.info("not force updating.");
                   document.getElementById(
                     "alert"
-                  ).innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">\
-<h5>Saving canceled.</h5>${typeName} has not been saved. Please choose a different name for the product type.\
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">\
-<span aria-hidden="true">&times;</span>\
-</button>\
+                  ).innerHTML = `<div role="alert"
+class="alert alert-warning alert-dismissible fade show">
+<h5>Saving canceled.</h5>${typeName} has not been saved. Please choose a
+different name for the product type.
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
 </div>`;
                 }
               } else {
@@ -602,36 +631,37 @@ if (document.getElementById("types_create")) {
           .then(response => {
             const formData = response.data;
             /*
-        // These need an ID so they can be removed via formBuilder.actions.removeField('tmp_header');
-        // Or maybe add them via prepend
-        formData.unshift(
-          {
-          id: tmp_header
-            type: 'header',
-            className: 'mt-3',
-            label: select.options[select.selectedIndex].innerText,
-            subtype: 'h3'
-          },
-          {
-            className: 'form-control',
-            dataAutocomplete: '/ajaxsearch/manufacturer',
-            label: 'Manufacturer',
-            name: 'manufacturer',
-            required: 'true',
-            subtype: 'text',
-            type: 'text'
-          },
-          {
-            className: 'form-control',
-            dataAutocomplete: '/ajaxsearch/model',
-            label: 'Model',
-            name: 'model',
-            required: 'true',
-            subtype: 'text',
-            type: 'text'
-          }
-        )
-         */
+// These need an ID so they can be removed via
+// formBuilder.actions.removeField('tmp_header');
+// Or maybe add them via prepend
+formData.unshift(
+{
+id: tmp_header
+type: 'header',
+className: 'mt-3',
+label: select.options[select.selectedIndex].innerText,
+subtype: 'h3'
+},
+{
+className: 'form-control',
+dataAutocomplete: '/ajaxsearch/manufacturer',
+label: 'Manufacturer',
+name: 'manufacturer',
+required: 'true',
+subtype: 'text',
+type: 'text'
+},
+{
+className: 'form-control',
+dataAutocomplete: '/ajaxsearch/model',
+label: 'Model',
+name: 'model',
+required: 'true',
+subtype: 'text',
+type: 'text'
+}
+)
+*/
 
             TC_toggleEdit();
             $("#fb-render").formRender({ formData });
@@ -667,7 +697,23 @@ A simple warning alert—check it out!
 }
 
 if (document.getElementById("product_show")) {
+  console.info("inventory page.");
   const wrapper = $("#product_show");
   wrapper.formRender(window.formRenderOptions);
   console.info(window.formRenderOptions);
+  document.getElementById("newCart").onclick = () => {
+    // Show popup modal
+    $("#newCartModal").on("shown.bs.modal", event => {
+      ReactDOM.render(
+        <CompanyClientName postPath="/carts" draft="Cart" />,
+        document.getElementById("carts_create")
+      );
+    });
+    $("#newCartModal").modal("show");
+    console.log("got carts_create");
+
+    // on submit:
+    //   close modal.
+    //   createNewCartSubmit()
+  };
 }
