@@ -708,6 +708,9 @@ if (document.getElementById("product_show")) {
         <CompanyClientName postPath="/carts" draft="Cart" />,
         document.getElementById("carts_create")
       );
+      document.getElementById("newCartButton").onclick = () => {
+        console.info('Here."');
+      };
     });
     $("#newCartModal").modal("show");
     console.log("got carts_create");

@@ -29,7 +29,8 @@
                                             Work&shy;Order should keep track of one decommission project.
                                         </p>
 
-                                        <a href="/workorders/create" class="btn btn-outline-primary">Create new
+                                        <a href="{{ route(\App\WorkOrders\Controllers\WorkOrdersController::CREATE_NAME) }}"
+                                           class="btn btn-outline-primary">Create new
                                             WorkOrder</a>
                                     </div>
                                 </div>
@@ -42,7 +43,7 @@
                                             See all items available for sale.
                                         </p>
 
-                                        <a href="/inventory" class="btn btn-outline-primary">View Inventory</a>
+                                        <a href="{{ route(\App\Products\Controllers\InventoryController::INDEX_NAME) }}" class="btn btn-outline-primary">View Inventory</a>
                                     </div>
                                 </div>
                             </div>
@@ -54,7 +55,7 @@
                                             <p class="card-text">
                                                 Create or Edit a new Product Type using the formBuilder.
                                             </p>
-                                            <a href="/types/create" class="btn btn-outline-primary">Edit Product
+                                            <a href="{{ route(\App\Types\Controllers\TypesController::CREATE_NAME) }}" class="btn btn-outline-primary">Edit Product
                                                 Types</a>
                                         </div>
                                     </div>
