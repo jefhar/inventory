@@ -22,7 +22,7 @@ use Tests\Traits\FullUsers;
  *
  * @package Tests\Feature
  */
-class CartControllerTest extends TestCase
+class CartsControllerTest extends TestCase
 {
     use FullObjects;
     use FullUsers;
@@ -34,12 +34,13 @@ class CartControllerTest extends TestCase
     {
         $cart = $this->makeFullCart();
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
-            ->post(route(CartsController::STORE_NAME),
-                   [
-                       Client::COMPANY_NAME => $cart->client->company_name,
-                       Person::FIRST_NAME => $cart->client->person->first_name,
-                       ]
-                       )
+            ->post(
+                route(CartsController::STORE_NAME),
+                [
+                    Client::COMPANY_NAME => $cart->client->company_name,
+                    Person::FIRST_NAME => $cart->client->person->first_name,
+                ]
+            )
             ->assertCreated()
             ->assertJson(
                 [
@@ -65,6 +66,7 @@ class CartControllerTest extends TestCase
     public function salesRepCanAccessCart(): void
     {
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
+            ->withoutMix()
             ->get(route(CartsController::INDEX_NAME))
             ->assertOk();
     }
@@ -75,6 +77,7 @@ class CartControllerTest extends TestCase
     public function ownerCanAccessCart(): void
     {
         $this->actingAs($this->createEmployee(UserRoles::OWNER))
+            ->withoutMix()
             ->get(route(CartsController::INDEX_NAME))
             ->assertOk();
     }

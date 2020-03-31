@@ -31,6 +31,7 @@ use Illuminate\Support\Collection;
  * @method static Model|EloquentCollection|static[]|static|null find(int $int)
  * @method static Product findOrFail($input)
  * @property array $values
+ * @property int|null $cart_id
  * @property int $id
  * @property int $luhn
  * @property int $price

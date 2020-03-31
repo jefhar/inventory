@@ -222,8 +222,9 @@ class InventoryControllerTest extends TestCase
     {
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $workOrder = factory(WorkOrder::class)->create();
+        $carts = [];
         // Whip up around 20 carts to make sure they all appear
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 19; $i++) {
             $product = factory(Product::class)->make();
             $workOrder->products()->save($product);
             $cart = $this->makeFullCart();
@@ -231,7 +232,15 @@ class InventoryControllerTest extends TestCase
             $carts[] = $cart;
         }
 
+        // Make one more outside the loop so `$product`  will be defined for phpstan
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+        $cart = $this->makeFullCart();
+        $salesRep->carts()->save($cart);
+        $carts[] = $cart;
+
         $this->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
             ->assertSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
@@ -268,16 +277,25 @@ class InventoryControllerTest extends TestCase
     {
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $workOrder = factory(WorkOrder::class)->create();
+        $carts = [];
         // Whip up around 20 carts to make sure they all appear
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 19; $i++) {
             $product = factory(Product::class)->make();
             $workOrder->products()->save($product);
             $cart = $this->makeFullCart();
             $salesRep->carts()->save($cart);
             $carts[] = $cart;
         }
+
+        // Make one more outside the loop so `$product`  will be defined for phpstan
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+        $cart = $this->makeFullCart();
+        $salesRep->carts()->save($cart);
+        $carts[] = $cart;
         $technician = $this->createEmployee(UserRoles::TECHNICIAN);
         $this->actingAs($technician)
+            ->withoutMix()
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertDontSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
             ->assertDontSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
@@ -314,6 +332,7 @@ class InventoryControllerTest extends TestCase
         $salesRep1 = $this->createEmployee(UserRoles::SALES_REP);
         $salesRep2 = $this->createEmployee(UserRoles::SALES_REP);
         $workOrder = factory(WorkOrder::class)->create();
+        $carts = [];
         // Whip up around 20 carts to make sure they all appear
         for ($i = 0; $i < 10; $i++) {
             $product = factory(Product::class)->make();
@@ -322,6 +341,13 @@ class InventoryControllerTest extends TestCase
             $salesRep1->carts()->save($cart);
             $carts[] = $cart;
         }
+
+        // Make one more outside the loop so `$product`  will be defined for phpstan
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+        $cart = $this->makeFullCart();
+        $salesRep1->carts()->save($cart);
+        $carts[] = $cart;
         for ($i = 0; $i < 10; $i++) {
             $product = factory(Product::class)->make();
             $workOrder->products()->save($product);
@@ -332,6 +358,7 @@ class InventoryControllerTest extends TestCase
 
         $owner = $this->createEmployee(UserRoles::OWNER);
         $this->actingAs($owner)
+            ->withoutMix()
             ->get(route(InventoryController::SHOW_NAME, $product))
             ->assertSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
             ->assertSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))

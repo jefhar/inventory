@@ -76,6 +76,7 @@ class CartsController extends Controller
      */
     public function store(CartStoreRequest $request): Cart
     {
+        // New Cart is sent with a productId;
         $cartStoreObject = CartStoreObject::fromRequest($request->validated());
 
         return CartStoreAction::execute($cartStoreObject);

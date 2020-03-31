@@ -13,7 +13,7 @@
                 <p class="lead">{{ $product->type->name }}</p>
             </div>
             <div class="card-body">
-                <div id="product_show"></div>
+                <div id="inventory_show"></div>
             </div>
             @can(\App\Admin\Permissions\UserPermissions::EDIT_SAVED_PRODUCT)
                 <div class="card-footer">
@@ -27,7 +27,7 @@
                                 type="button"
                         >Add To Cart &hellip;
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="addToCartButton">
+                        <div class="dropdown-menu" aria-labelledby="addToCartButton" id="cartsDropDownMenu">
                             @if (count($carts) > 0)
                                 @foreach($carts as $cart)
                                     <button

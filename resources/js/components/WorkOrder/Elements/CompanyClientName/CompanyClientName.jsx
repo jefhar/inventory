@@ -46,20 +46,17 @@ class CompanyClientName extends React.Component {
   };
 
   handleButtonClick = () => {
+    const data = {
+      company_name: this.state.company_name,
+      first_name: this.state.first_name,
+      last_name: this.state.last_name
+    };
+    if (document.getElementById('productId')) {
+      data.product_id = document.getElementById('productId').dataset.productId;``
+    }
     axios
-      .post(this.props.postPath, {
-        company_name: this.state.company_name,
-        first_name: this.state.first_name,
-        last_name: this.state.last_name
-      })
-      .then(response => {
-        // Create a post_post so workorders and carts can have their own post-post
-        // functions
-        if (response.data.workorder_id) {
-          window.location =
-            "/workorders/" + response.data.workorder_id + "/edit";
-        }
-      })
+      .post(this.props.postPath, data)
+      .then(this.props.handleResponse)
       .catch(error => {
         console.debug(error);
         if (error.response) {

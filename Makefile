@@ -55,7 +55,7 @@ pretest:
 	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods sh -c 'cd /app && composer pretest'
 
 test:
-	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods sh -c 'cd /app && composer pretest && composer test'
+	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods sh -c 'cd /app && composer test'
 
 testdusk:
 	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods:dusk sh -c 'cd /app && composer install --no-plugins --no-scripts --no-progress --no-suggest --prefer-dist  && cp .env.dusk.ci .env &&  composer dusk'
@@ -67,4 +67,4 @@ deploy:
 	docker-compose up -d php-fpm redis mysql webserver
 
 refresh:
-	docker-compose exec php-fpm bash && php artisan db:wipe && php artisan migrate && php artisan db:seed --class UsersTableSeeder && php artisan db:seed --class DummyDataSeeder
+	php artisan db:wipe && php artisan migrate && php artisan db:seed --class UsersTableSeeder && php artisan db:seed --class DummyDataSeeder

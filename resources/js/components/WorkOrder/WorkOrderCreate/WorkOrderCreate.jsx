@@ -18,6 +18,16 @@ class WorkOrderCreate extends React.Component {
     };
   }
 
+  handleResponse = response =>
+    {
+      // Create a post_post so workorders and carts can have their own post-post
+      // functions
+      if (response.data.workorder_id) {
+        window.location =
+          "/workorders/" + response.data.workorder_id + "/edit";
+      }
+  };
+
   render() {
     console.log("rendering");
     return (
@@ -40,7 +50,7 @@ export default WorkOrderCreate;
 if (document.getElementById("workorders_create")) {
   console.log("got workorders_create");
   ReactDOM.render(
-    <WorkOrderCreate postPath="/workorders/" draft="Work Order" />,
+    <WorkOrderCreate handleResponse={this.handleResponse} postPath="/workorders/" draft="Work Order" />,
     document.getElementById("workorders_create")
   );
 }
