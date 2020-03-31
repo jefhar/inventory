@@ -32,6 +32,12 @@ ci:
 yarninstall:
 	docker run --rm -v "$(CURDIR):/app:delegated" node:13-slim sh -c 'cd /app && yarn install'
 
+yarnaudit:
+	docker run --rm -v "$(CURDIR):/app:delegated" node:13-slim sh -c 'cd /app && yarn audit'
+
+yarnupgrade:
+	docker run --rm -v "$(CURDIR):/app:delegated" node:13-slim sh -c 'cd /app && yarn upgrade'
+
 npmdev:
 	docker run --rm -v "$(CURDIR):/app:delegated" node:13-slim sh -c 'cd /app && npm run development'
 
