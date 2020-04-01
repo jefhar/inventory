@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   Alert,
   Button,
@@ -9,21 +9,21 @@ import {
   Input,
   Label,
   Row
-} from "reactstrap";
-import CompanyName from "../CompanyName";
+} from 'reactstrap'
+import CompanyName from '../CompanyName'
 
 class CompanyClientName extends React.Component {
-  constructor(props) {
-    super(props);
-    console.log("CCN constructor");
+  constructor (props) {
+    super(props)
+    console.log('CCN constructor')
     this.state = {
-      company_name: "",
-      first_name: "",
+      company_name: '',
+      first_name: '',
       invalid_company_name: false,
       isLoading: false,
-      last_name: "",
+      last_name: '',
       login: true
-    };
+    }
   }
 
   /**
@@ -31,55 +31,59 @@ class CompanyClientName extends React.Component {
    * @param event
    */
   handleBlur = event => {
-    let company_name = this.state.company_name || "";
-    if (event.target.name === "company_name") {
-      company_name = event.target.defaultValue;
+    let company_name = this.state.company_name || ''
+    if (event.target.name === 'company_name') {
+      company_name = event.target.defaultValue
       this.setState({
         invalid_company_name: false
-      });
+      })
     }
     this.setState({
       company_name: company_name,
       first_name: this.state.first_name,
       last_name: this.state.last_name
-    });
-  };
+    })
+  }
 
   handleButtonClick = () => {
+    console.info("handleButtonClick")
+    const { company_name, last_name, first_name } = this.state
     const data = {
-      company_name: this.state.company_name,
-      first_name: this.state.first_name,
-      last_name: this.state.last_name
-    };
-    if (document.getElementById('productId')) {
-      data.product_id = document.getElementById('productId').dataset.productId;``
+      company_name: company_name,
+      first_name: first_name,
+      last_name: last_name
     }
-    axios
-      .post(this.props.postPath, data)
-      .then(this.props.handleResponse)
-      .catch(error => {
-        console.debug(error);
+    if (document.getElementById('productId')) {
+      data.product_id = document.getElementById('productId').dataset.productId
+    }
+    axios.post(this.props.postPath, data).
+      then(this.props.handleResponse).
+      catch(error => {
+        console.debug(error)
         if (error.response) {
           if (error.response.status === 422) {
-            console.log(error.response.data.errors);
+            console.log(error.response.data.errors)
             if (error.response.data.errors.company_name) {
               this.setState({
                 invalid_company_name: true
-              });
+              })
             }
           }
           if (error.response.status === 401) {
-            this.setState({ login: false });
+            this.setState({ login: false })
           }
-        } else if (error.request) {
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log("Error", error.message);
         }
-        console.log(error.config);
-      });
-  };
+        else if (error.request) {
+          console.log(error.request)
+        }
+        else {
+          // Something happened in setting up the request that triggered an
+          // Error
+          console.log('Error', error.message)
+        }
+        console.log(error.config)
+      })
+  }
 
   /**
    * @param selected The array of item objects. selected[0] is the
@@ -88,55 +92,53 @@ class CompanyClientName extends React.Component {
   handleChange = selected => {
     if (selected.length < 1) {
       this.setState({
-        company_name: "",
-        first_name: "",
+        company_name: '',
+        first_name: '',
         invalid_company_name: false,
-        last_name: ""
-      });
-    } else {
+        last_name: ''
+      })
+    }
+    else {
       this.setState({
         company_name: selected[0].company_name,
         first_name: selected[0].first_name || this.state.first_name,
         invalid_company_name: false,
         last_name: selected[0].last_name || this.state.last_name
-      });
+      })
     }
-  };
+  }
 
   /**
    * Handles changing of Name fields
    * @param event
    */
   handleNameChange = event => {
-    const target = event.target;
-    const value = target.type === "checkbox" ? target.checked : target.value;
-    const name = target.name;
+    const target = event.target
+    const value = target.type === 'checkbox' ? target.checked : target.value
+    const name = target.name
     this.setState({
       [name]: value
-    });
-  };
+    })
+  }
 
   /**
    * Handles api search
    * @param query
    */
   handleSearch = query => {
-    this.setState({ isLoading: true, company_name: query });
-    axios
-      .get(`/ajaxsearch/company_name?q=${query}`)
-      .then(response => {
-        this.setState({
-          isLoading: false,
-          options: response.data,
-          company_name: query
-        });
+    this.setState({ isLoading: true, company_name: query })
+    axios.get(`/ajaxsearch/company_name?q=${query}`).then(response => {
+      this.setState({
+        isLoading: false,
+        options: response.data,
+        company_name: query
       })
-      .catch(error => {
-        console.debug(error);
-      });
-  };
+    }).catch(error => {
+      console.debug(error)
+    })
+  }
 
-  render() {
+  render () {
     return (
       <Form>
         <Row form>
@@ -146,8 +148,8 @@ class CompanyClientName extends React.Component {
               <CompanyName
                 className={
                   (this.state.invalid_company_name
-                    ? "is-invalid"
-                    : "is-valid") + " form-control form-control-sm"
+                    ? 'is-invalid'
+                    : 'is-valid') + ' form-control form-control-sm'
                 }
                 id="company_name"
                 isLoading={this.state.isLoading}
@@ -221,17 +223,17 @@ class CompanyClientName extends React.Component {
           <Alert className="row" color="danger" isOpen={!this.state.login}>
             <h3 className="alert-heading">User Not Logged In</h3>
             <div>
-              You are not logged in to the application. Please{" "}
+              You are not logged in to the application. Please{' '}
               <a className="alert-link" href="/login">
                 login
-              </a>{" "}
+              </a>{' '}
               and try again.
             </div>
           </Alert>
         </FormGroup>
       </Form>
-    );
+    )
   }
 }
 
-export default CompanyClientName;
+export default CompanyClientName
