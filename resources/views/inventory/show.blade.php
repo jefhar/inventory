@@ -13,7 +13,7 @@
                 <p class="lead">{{ $product->type->name }}</p>
             </div>
             <div class="card-body">
-                <div id="inventory_show"></div>
+                <div id="product_show"></div>
             </div>
             @can(\App\Admin\Permissions\UserPermissions::EDIT_SAVED_PRODUCT)
                 <div class="card-footer">
