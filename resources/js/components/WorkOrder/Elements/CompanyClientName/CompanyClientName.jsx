@@ -59,10 +59,11 @@ class CompanyClientName extends React.Component {
     axios.post(this.props.postPath, data).
       then(this.props.handleResponse).
       catch(error => {
-        console.debug(error)
+        console.debug("error:",error)
         if (error.response) {
           if (error.response.status === 422) {
-            console.log(error.response.data.errors)
+            console.debug("error.response:",error.response)
+            console.log("error.response.data.errors:",error.response.data.errors)
             if (error.response.data.errors.company_name) {
               this.setState({
                 invalid_company_name: true
@@ -74,14 +75,14 @@ class CompanyClientName extends React.Component {
           }
         }
         else if (error.request) {
-          console.log(error.request)
+          console.log("error.request:",error.request)
         }
         else {
           // Something happened in setting up the request that triggered an
           // Error
-          console.log('Error', error.message)
+          console.log('error.message:', error.message)
         }
-        console.log(error.config)
+        console.log('error.config:',error.config)
       })
   }
 
@@ -134,7 +135,7 @@ class CompanyClientName extends React.Component {
         company_name: query
       })
     }).catch(error => {
-      console.debug(error)
+      console.debug('error:',error)
     })
   }
 

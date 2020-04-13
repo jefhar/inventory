@@ -194,8 +194,7 @@ if (document.getElementById('workorders_edit')) {
         })
         // Add autocomplete to Model
       }).catch(error => {
-        console.info('error')
-        console.info(error)
+        console.info('error:',error)
         // Create warning alert
         // Attach warning alert as a child to $formContainer
         /*
@@ -249,7 +248,7 @@ A simple warning alert—check it out!
           $('#productModal').modal('hide')
           $('.modal-backdrop').remove()
         }).catch(error => {
-          console.info(error)
+          console.info('error:',error)
           const errorAlert = document.createElement('div')
           errorAlert.classList.add(
             'alert',
@@ -289,7 +288,7 @@ A simple warning alert—check it out!
           response.data.is_locked
         WE_update()
       }).catch(error => {
-        console.info(error.response.data)
+        console.info('error.response.data:',error.response.data)
       })
     })
   }
@@ -336,7 +335,7 @@ A simple warning alert—check it out!
       Work Order successfully updated.
     </div>`
         }).catch(error => {
-          console.debug(error)
+          console.debug('error:',error)
           updateToast.innerHTML = `  <div
   style="position: absolute; top: 0; right: 0;"
   class="toast"
@@ -665,7 +664,7 @@ A simple warning alert—check it out!
 
 if (document.getElementById('inventory_show')) {
   const addToCart = function () {
-    console.info("inside const addToCart()");
+    console.info('inside const addToCart()')
   }
 
   console.info('inventory page.')
@@ -676,8 +675,9 @@ if (document.getElementById('inventory_show')) {
   document.getElementById('newCartButton').onclick = () => {
     // Show popup modal
     $newCartModal.on('shown.bs.modal', event => {
-        const handleResponse = response => {
-          console.info(response)
+        const handleResponse = async function(response) {
+          console.debug('app.js:680')
+          console.info('response:',response)
           const cart_id = response.data.id
           // Create button to add to to dropdown.
           const button = document.createElement('button')
@@ -695,7 +695,7 @@ if (document.getElementById('inventory_show')) {
           $newCartModal.modal('hide')
           // Create toast, attach
           // Show toast
-
+          return response
         }
         console.info('rendering CCN for inventory')
         ReactDOM.render(
