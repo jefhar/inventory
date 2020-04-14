@@ -16,41 +16,48 @@
                 <div id="product_show"></div>
             </div>
             @can(\App\Admin\Permissions\UserPermissions::EDIT_SAVED_PRODUCT)
-                <div class="card-footer">
-                    <div class="dropdown">
-                        <button
-                                aria-expanded="false"
-                                aria-haspopup="true"
-                                class="btn btn-outline-primary dropdown-toggle"
-                                data-toggle="dropdown"
-                                id="addToCardButton"
-                                type="button"
-                        >Add To Cart &hellip;
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="addToCartButton" id="cartsDropDownMenu">
-                            @if (count($carts) > 0)
-                                @foreach($carts as $cart)
-                                    <button
-                                            class="dropdown-item"
-                                            id="cart_{{ $cart->id }}"
-                                            type="button"
-                                            onclick="addToCart({{ $cart->id }})"
-                                    >{{$cart->client->company_name}}
-                                    </button>
-                                @endforeach
-
-                                <div class="dropdown-divider" id="dropdownDivider"></div>
-                            @endif
+                @if($product->status === \Domain\Products\Models\Product::STATUS_AVAILABLE)
+                    <div class="card-footer">
+                        <div class="dropdown">
                             <button
-                                    class="dropdown-item"
-                                    id="newCartButton"
+                                    aria-expanded="false"
+                                    aria-haspopup="true"
+                                    class="btn btn-outline-primary dropdown-toggle"
+                                    data-toggle="dropdown"
+                                    id="addToCardButton"
                                     type="button"
-                                    onclick="createNewCart()"
-                            >New Cart
+                            >Add To Cart &hellip;
                             </button>
+                            <div class="dropdown-menu" aria-labelledby="addToCartButton" id="cartsDropDownMenu">
+                                @if (count($carts) > 0)
+                                    @foreach($carts as $cart)
+                                        <button
+                                                class="dropdown-item"
+                                                id="cart_{{ $cart->id }}"
+                                                type="button"
+                                                onclick="addToCart({{ $cart->id }})"
+                                        >{{$cart->client->company_name}}
+                                        </button>
+                                    @endforeach
+
+                                    <div class="dropdown-divider" id="dropdownDivider"></div>
+                                @endif
+                                <button
+                                        class="dropdown-item"
+                                        id="newCartButton"
+                                        type="button"
+                                        onclick="createNewCart()"
+                                >New Cart
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                @elseif ($product->status === \Domain\Products\Models\Product::STATUS_IN_CART)
+                    <div class="card-footer">
+                        Product is in Cart for <a href="{{ route(\App\Carts\Controllers\CartsController::SHOW_NAME, $product->cart) }}">{{ $product->cart->client->company_name }}.</a>
+                        Not available for sale.
+                    </div>
+                @endif
             @endcan
         </div>
     </div>

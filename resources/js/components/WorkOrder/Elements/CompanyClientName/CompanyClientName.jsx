@@ -46,7 +46,7 @@ class CompanyClientName extends React.Component {
   }
 
   handleButtonClick = () => {
-    console.info("handleButtonClick")
+    console.info('handleButtonClick')
     const { company_name, last_name, first_name } = this.state
     const data = {
       company_name: company_name,
@@ -57,13 +57,25 @@ class CompanyClientName extends React.Component {
       data.product_id = document.getElementById('productId').dataset.productId
     }
     axios.post(this.props.postPath, data).
-      then(this.props.handleResponse).
+      then(response => this.props.handleResponse(response)).
+      then(response => function (response) {
+        this.setState({
+          company_name: '',
+          first_name: '',
+          last_name: ''
+        })
+      }).
       catch(error => {
-        console.debug("error:",error)
+        console.info('in catch(error =>')
+        console.debug('error:', error)
+        if (!error.data) {
+          return
+        }
         if (error.response) {
           if (error.response.status === 422) {
-            console.debug("error.response:",error.response)
-            console.log("error.response.data.errors:",error.response.data.errors)
+            console.debug('error.response:', error.response)
+            console.log('error.response.data.errors:',
+              error.response.data.errors)
             if (error.response.data.errors.company_name) {
               this.setState({
                 invalid_company_name: true
@@ -75,14 +87,14 @@ class CompanyClientName extends React.Component {
           }
         }
         else if (error.request) {
-          console.log("error.request:",error.request)
+          console.log('error.request:', error.request)
         }
         else {
           // Something happened in setting up the request that triggered an
           // Error
           console.log('error.message:', error.message)
         }
-        console.log('error.config:',error.config)
+        console.log('error.config:', error.config)
       })
   }
 
@@ -135,7 +147,7 @@ class CompanyClientName extends React.Component {
         company_name: query
       })
     }).catch(error => {
-      console.debug('error:',error)
+      console.debug('error:', error)
     })
   }
 

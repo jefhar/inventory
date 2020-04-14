@@ -194,7 +194,7 @@ if (document.getElementById('workorders_edit')) {
         })
         // Add autocomplete to Model
       }).catch(error => {
-        console.info('error:',error)
+        console.info('error:', error)
         // Create warning alert
         // Attach warning alert as a child to $formContainer
         /*
@@ -248,7 +248,7 @@ A simple warning alert—check it out!
           $('#productModal').modal('hide')
           $('.modal-backdrop').remove()
         }).catch(error => {
-          console.info('error:',error)
+          console.info('error:', error)
           const errorAlert = document.createElement('div')
           errorAlert.classList.add(
             'alert',
@@ -288,7 +288,7 @@ A simple warning alert—check it out!
           response.data.is_locked
         WE_update()
       }).catch(error => {
-        console.info('error.response.data:',error.response.data)
+        console.info('error.response.data:', error.response.data)
       })
     })
   }
@@ -335,7 +335,7 @@ A simple warning alert—check it out!
       Work Order successfully updated.
     </div>`
         }).catch(error => {
-          console.debug('error:',error)
+          console.debug('error:', error)
           updateToast.innerHTML = `  <div
   style="position: absolute; top: 0; right: 0;"
   class="toast"
@@ -675,27 +675,35 @@ if (document.getElementById('inventory_show')) {
   document.getElementById('newCartButton').onclick = () => {
     // Show popup modal
     $newCartModal.on('shown.bs.modal', event => {
-        const handleResponse = async function(response) {
-          console.debug('app.js:680')
-          console.info('response:',response)
-          const cart_id = response.data.id
+        const handleResponse = function (response) {
+          console.debug('app.js:679')
+          const data = response.data
+          const client = data.client
+          console.info('data:', data)
+          const cart_id = data.id
           // Create button to add to to dropdown.
           const button = document.createElement('button')
+          console.debug('app.js:686')
           button.classList.add('dropdown-item')
           button.setAttribute('id', 'cart_' + cart_id)
           button.setAttribute('type', 'button')
-          button.innerText = data.company_name
+
+          button.innerText = client.company_name
+          console.debug('app.js:692')
           button.onclick = (cart_id) => addToCart
+          console.debug('app.js:694')
           let insertedButton = document.getElementById(
             'cartsDropDownMenu').insertBefore(button,
             document.getElementById('dropdownDivider'))
 
+          console.debug('app.js:699')
           // Clear form - inside the react, how to get back in?
           // Close modal
           $newCartModal.modal('hide')
           // Create toast, attach
           // Show toast
-          return response
+          console.debug('app.js:705')
+          return Promise.resolve()
         }
         console.info('rendering CCN for inventory')
         ReactDOM.render(

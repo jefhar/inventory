@@ -58,6 +58,8 @@ class InventoryController extends Controller
         } else {
             $carts = Auth::user()->carts()->get();
         }
+        $product->load('cart');
+        $carts->load('client');
 
         return view(
             'inventory.show',

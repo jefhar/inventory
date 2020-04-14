@@ -30,7 +30,7 @@ class CartStoreObject extends DataTransferObject
     {
         return new self(
             [
-                'product_id' => $validated['product_id'],
+                'product_id' => (int)$validated['product_id'],
                 Client::COMPANY_NAME => $validated[Client::COMPANY_NAME],
             ]
         );
