@@ -663,64 +663,55 @@ A simple warning alert—check it out!
 }
 
 if (document.getElementById('inventory_show')) {
-  const addToCart = function () {
-    console.info('inside const addToCart()')
+  function addToCart (cart_id) {
+    console.info('inside const addToCart(' + cart_id + ')')
   }
+
+  document.querySelectorAll('[data-cart-id]').forEach(
+    function (currentValue, currentIndex, listObj) {
+      currentValue.addEventListener('click',
+        addToCart.bind(this, currentValue.dataset.cartId))
+    }
+  )
 
   console.info('inventory page.')
   const wrapper = $('#product_show')
   wrapper.formRender(window.formRenderOptions)
   console.info(window.formRenderOptions)
   const $newCartModal = $('#newCartModal')
-  document.getElementById('newCartButton').onclick = () => {
-    // Show popup modal
-    $newCartModal.on('shown.bs.modal', event => {
-        const handleResponse = function (response) {
-          console.debug('app.js:679')
-          const data = response.data
-          const client = data.client
-          console.info('data:', data)
-          const cart_id = data.id
-          // Create button to add to to dropdown.
-          const button = document.createElement('button')
-          console.debug('app.js:686')
-          button.classList.add('dropdown-item')
-          button.setAttribute('id', 'cart_' + cart_id)
-          button.setAttribute('type', 'button')
+  if (document.getElementById('newCartButton')) {
+    document.getElementById('newCartButton').onclick = () => {
+      // Show popup modal
+      $newCartModal.on('shown.bs.modal', event => {
+          const handleResponse = function (response) {
+            const { client, id: cart_id } = response.data
+            // Remove button
+            const addToCardButton = document.getElementById('addToCardButton')
+            const cardFooter = document.getElementById('cardFooter')
+            addToCardButton.remove();
+            const alert = document.createElement('div')
+            alert.classList.add('alert', 'alert-primary')
+            alert.innerText = `Product added to cart for ${client.company_name}.`
+            cardFooter.appendChild(alert)
 
-          button.innerText = client.company_name
-          console.debug('app.js:692')
-          button.onclick = (cart_id) => addToCart
-          console.debug('app.js:694')
-          let insertedButton = document.getElementById(
-            'cartsDropDownMenu').insertBefore(button,
-            document.getElementById('dropdownDivider'))
+            $newCartModal.modal('hide')
 
-          console.debug('app.js:699')
-          // Clear form - inside the react, how to get back in?
-          // Close modal
-          $newCartModal.modal('hide')
-          // Create toast, attach
-          // Show toast
-          console.debug('app.js:705')
-          return Promise.resolve()
+            return Promise.resolve()
+          }
+          console.info('rendering CCN for inventory')
+          ReactDOM.render(
+            <CompanyClientName handleResponse={handleResponse} postPath="/carts"
+                               draft="Cart"/>,
+            document.getElementById('carts_create')
+          )
+          document.getElementById('newCartButton').onclick = () => {
+            console.info('Here."')
+          }
         }
-        console.info('rendering CCN for inventory')
-        ReactDOM.render(
-          <CompanyClientName handleResponse={handleResponse} postPath="/carts"
-                             draft="Cart"/>,
-          document.getElementById('carts_create')
-        )
-        document.getElementById('newCartButton').onclick = () => {
-          console.info('Here."')
-        }
-      }
-    )
-    $newCartModal.modal('show')
-    console.log('got carts_create')
+      )
+      $newCartModal.modal('show')
+      console.log('got carts_create')
 
-// on submit:
-//   close modal.
-//   createNewCartSubmit()
+    }
   }
 }

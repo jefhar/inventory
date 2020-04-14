@@ -17,7 +17,7 @@
             </div>
             @can(\App\Admin\Permissions\UserPermissions::EDIT_SAVED_PRODUCT)
                 @if($product->status === \Domain\Products\Models\Product::STATUS_AVAILABLE)
-                    <div class="card-footer">
+                    <div class="card-footer" id="cardFooter">
                         <div class="dropdown">
                             <button
                                     aria-expanded="false"
@@ -35,7 +35,7 @@
                                                 class="dropdown-item"
                                                 id="cart_{{ $cart->id }}"
                                                 type="button"
-                                                onclick="addToCart({{ $cart->id }})"
+                                                data-cart-id="{{ $cart->id }}"
                                         >{{$cart->client->company_name}}
                                         </button>
                                     @endforeach
@@ -54,8 +54,12 @@
                     </div>
                 @elseif ($product->status === \Domain\Products\Models\Product::STATUS_IN_CART)
                     <div class="card-footer">
-                        Product is in Cart for <a href="{{ route(\App\Carts\Controllers\CartsController::SHOW_NAME, $product->cart) }}">{{ $product->cart->client->company_name }}.</a>
-                        Not available for sale.
+                        <div class="alert alert-secondary" role="alert">
+                            Product is in Cart for <a
+                                    href="{{ route(\App\Carts\Controllers\CartsController::SHOW_NAME, $product->cart) }}">{{ $product->cart->client->company_name }}
+                                .</a>
+                            Not available for sale.
+                        </div>
                     </div>
                 @endif
             @endcan
