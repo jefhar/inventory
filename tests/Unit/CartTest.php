@@ -19,6 +19,7 @@ use Domain\Carts\Events\CartCreated;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
@@ -57,9 +58,13 @@ class CartTest extends TestCase
     {
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
         $client = factory(Client::class)->create();
-        $cartStoreObject = CartStoreObject::fromRequest([
-            Client::COMPANY_NAME => $client->company_name
-                                                        ]);
+        $product = $this->createFullProduct();
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
         $cart = CartStoreAction::execute($cartStoreObject);
         $this->assertEquals($client->company_name, $cart->client->company_name);
     }
@@ -123,9 +128,15 @@ class CartTest extends TestCase
      */
     public function canCreateCart(): void
     {
-        /** @var Cart $cart */
-        $cart = factory(Cart::class)->make();
-        $cartStoreObject = CartStoreObject::fromRequest($cart->toArray());
+        /** @var Client $client */
+        $client = factory(Client::class)->create();
+        $product = $this->createFullProduct();
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
         $savedCart = CartStoreAction::execute($cartStoreObject);
 
@@ -135,7 +146,14 @@ class CartTest extends TestCase
                 Cart::ID => $savedCart->id,
                 Cart::LUHN => $savedCart->luhn,
             ]
-        );
+        )
+            ->assertDatabaseHas(
+                Product::TABLE,
+                [
+                    Product::ID => $product->id,
+                    Product::CART_ID => $savedCart->id,
+                ]
+            );
     }
 
     /**
@@ -188,5 +206,42 @@ class CartTest extends TestCase
                 Cart::STATUS => Cart::STATUS_VOID,
             ]
         );
+    }
+
+    /**
+     * @test
+     */
+    public function addingToCartUpdatesProductStatus(): void
+    {
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        $client = factory(Client::class)->create();
+        $product = $this->createFullProduct();
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
+        $cart = CartStoreAction::execute($cartStoreObject);
+        $product->refresh();
+        $this->assertEquals(Product::STATUS_IN_CART, $product->status);
+    }
+
+    /**
+     * @test
+     */
+    public function productMustExistBeforeBeingAddedToACart(): void
+    {
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        $this->expectException(ModelNotFoundException::class);
+        $client = factory(Client::class)->create();
+
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => 1,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
+        $cart = CartStoreAction::execute($cartStoreObject);
     }
 }

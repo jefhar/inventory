@@ -11,6 +11,7 @@ namespace Domain\Carts\Actions;
 
 use App\Carts\DataTransferObjects\CartStoreObject;
 use Domain\Carts\Models\Cart;
+use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,9 +32,13 @@ class CartStoreAction
     {
         $user = Auth::user();
         $cart = new Cart();
+        $product = Product::findOrFail($cartStoreObject->product_id);
+        $product->status = Product::STATUS_IN_CART;
+        $product->save();
         $client = Client::firstOrCreate([Client::COMPANY_NAME => $cartStoreObject->company_name]);
         $cart->client()->associate($client);
         $user->carts()->save($cart);
+        $cart->products()->save($product);
 
         return $cart;
     }

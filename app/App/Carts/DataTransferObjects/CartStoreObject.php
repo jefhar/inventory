@@ -19,6 +19,7 @@ use Spatie\DataTransferObject\DataTransferObject;
  */
 class CartStoreObject extends DataTransferObject
 {
+    public int $product_id;
     public string $company_name;
 
     /**
@@ -29,6 +30,7 @@ class CartStoreObject extends DataTransferObject
     {
         return new self(
             [
+                'product_id' => $validated['product_id'],
                 Client::COMPANY_NAME => $validated[Client::COMPANY_NAME],
             ]
         );

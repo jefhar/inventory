@@ -52,6 +52,7 @@ class Product extends Model
     public const SERIAL = 'serial';
     public const STATUS = 'status';
     public const STATUS_AVAILABLE = 'Available';
+    public const STATUS_IN_CART = 'In Cart';
     public const TABLE = 'products';
     public const TYPE_ID = 'type_id';
     public const VALUES = 'values';

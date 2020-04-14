@@ -33,10 +33,12 @@ class CartsControllerTest extends TestCase
     public function salesRepCanCreateCart(): void
     {
         $cart = $this->makeFullCart();
+        $product = $this->createFullProduct();
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->post(
                 route(CartsController::STORE_NAME),
                 [
+                    'product_id' => $product->id,
                     Client::COMPANY_NAME => $cart->client->company_name,
                     Person::FIRST_NAME => $cart->client->person->first_name,
                 ]
@@ -45,6 +47,9 @@ class CartsControllerTest extends TestCase
             ->assertJson(
                 [
                     Cart::ID => 1,
+                    'client' => [
+                        Client::COMPANY_NAME => $cart->client->company_name,
+                    ],
                 ]
             );
     }
