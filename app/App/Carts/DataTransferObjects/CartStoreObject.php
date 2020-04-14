@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Carts\DataTransferObjects;
 
+use Domain\WorkOrders\Models\Client;
 use Spatie\DataTransferObject\DataTransferObject;
 
 /**
@@ -18,16 +19,17 @@ use Spatie\DataTransferObject\DataTransferObject;
  */
 class CartStoreObject extends DataTransferObject
 {
+    public string $company_name;
 
     /**
      * @param array $validated
      * @return CartStoreObject
      */
-    public static function fromRequest(array $validated): self
+    public static function fromRequest(array $validated): CartStoreObject
     {
         return new self(
             [
-
+                Client::COMPANY_NAME => $validated[Client::COMPANY_NAME],
             ]
         );
     }

@@ -53,6 +53,20 @@ class CartTest extends TestCase
     /**
      * @test
      */
+    public function createdCartReturnsCompanyName(): void
+    {
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        $client = factory(Client::class)->create();
+        $cartStoreObject = CartStoreObject::fromRequest([
+            Client::COMPANY_NAME => $client->company_name
+                                                        ]);
+        $cart = CartStoreAction::execute($cartStoreObject);
+        $this->assertEquals($client->company_name, $cart->client->company_name);
+    }
+
+    /**
+     * @test
+     */
     public function cartCreatesItsOwnLuhn(): void
     {
         /** \Domain\Carts\Models\Cart $cart */
