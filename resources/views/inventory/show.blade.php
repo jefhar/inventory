@@ -4,12 +4,26 @@
 
 @section('content')
     <script>
+      function removeFromCart (productLuhn) {
+        axios.delete(
+          `/pendingSales/${productLuhn}`
+        ).then(response => {
+          // Remove alert
+          const productAddedAlert = document.getElementById('productAddedAlert')
+          productAddedAlert.classList.replace('alert-primary', 'alert-warning')
+          productAddedAlert.innerText = 'Product removed from cart. Reload page to add it to another cart.'
+        })
+      }
+
       window.formRenderOptions = { formData: '{!! json_encode($formData) !!}', dataType: 'json' }
     </script>
     <div class="container" id="inventory_show">
         <div class="card">
             <div class="card-header">
-                <h1 id="productId" data-product-id="{{ $product->id }}">Product #{{ $product->luhn }}</h1>
+                <h1 id="productId"
+                    data-product-id="{{ $product->id }}"
+                    data-product-luhn="{{ $product->luhn }}"
+                >Product #{{ $product->luhn }}</h1>
                 <p class="lead">{{ $product->type->name }}</p>
             </div>
             <div class="card-body">
@@ -54,11 +68,15 @@
                     </div>
                 @elseif ($product->status === \Domain\Products\Models\Product::STATUS_IN_CART)
                     <div class="card-footer">
-                        <div class="alert alert-secondary" role="alert">
+                        <div id="productAddedAlert" class="alert alert-secondary" role="alert">
                             Product is in Cart for <a
                                     href="{{ route(\App\Carts\Controllers\CartsController::SHOW_NAME, $product->cart) }}">{{ $product->cart->client->company_name }}
                                 .</a>
-                            Not available for sale.
+                            <br><br>
+                            <span class="text-danger"><a class="text-danger"
+                                                         onclick="removeFromCart({{ $product->luhn }});"><i
+                                            id="removeProduct" class="fas fa-unlink">&#8203;</i> Remove product from cart.</a>
+                                Not available for sale.</span>
                         </div>
                     </div>
                 @endif

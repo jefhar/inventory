@@ -10,8 +10,11 @@ namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
 use App\Carts\Controllers\PendingSalesController;
+use App\Carts\DataTransferObjects\CartStoreObject;
+use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
+use Domain\WorkOrders\Models\Client;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
@@ -75,15 +78,35 @@ class PendingSalesControllerTest extends TestCase
      */
     public function salesRepCanRemoveProductFromCart(): void
     {
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        $client = factory(Client::class)->create();
         $product = $this->createFullProduct();
-        $cart = factory(Cart::class)->make();
-        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
-        $salesRep->carts()->save($cart);
-        $cart->products()->save($product);
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
+        $cart = CartStoreAction::execute($cartStoreObject);
+        $product->refresh();
+        $this->assertDatabaseMissing(
+            Product::TABLE,
+            [
+                Product::ID => $product->id,
+                Product::STATUS => Product::STATUS_AVAILABLE,
+            ]
+        );
 
-        $this->actingAs($salesRep)
+        $this
             ->delete(route(PendingSalesController::DESTROY_NAME, $product))
             ->assertOk();
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::ID => $product->id,
+                Product::STATUS => Product::STATUS_AVAILABLE,
+            ]
+        );
     }
 
     /**

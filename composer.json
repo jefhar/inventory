@@ -70,8 +70,7 @@
     "pretest": [
       "vendor/bin/security-checker security:check composer.lock",
       "vendor/bin/phpstan analyse",
-      "rm -rf tests/coverage*",
-      "composer phpcs"
+      "@phpcs"
     ],
     "test": "vendor/bin/phpunit --coverage-text --colors=never --testdox -d memory_limit=2048M",
     "dusk": [

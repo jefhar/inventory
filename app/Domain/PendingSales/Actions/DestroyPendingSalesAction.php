@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Domain\PendingSales\Actions;
 
 use Domain\Products\Models\Product;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class DestroyPendingSalesAction
@@ -25,7 +26,11 @@ class DestroyPendingSalesAction
      */
     public static function execute(Product $product): Product
     {
+        if ($product->status !== Product::STATUS_IN_CART) {
+            abort(Response::HTTP_FORBIDDEN);
+        }
         $product->cart()->dissociate();
+        $product->status = Product::STATUS_AVAILABLE;
         $product->save();
 
         return $product;
