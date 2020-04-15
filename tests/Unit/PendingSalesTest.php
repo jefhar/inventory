@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\Admin\Permissions\UserRoles;
 use App\Carts\DataTransferObjects\CartStoreObject;
 use Domain\Carts\Actions\CartStoreAction;
 use Domain\PendingSales\Actions\PendingSalesDestroyAction;
@@ -18,6 +19,7 @@ use Domain\WorkOrders\Models\Client;
 use Faker\Factory;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
+use Tests\Traits\FullUsers;
 
 /**
  * Class PendingSalesTest
@@ -27,6 +29,7 @@ use Tests\Traits\FullObjects;
 class PendingSalesTest extends TestCase
 {
     use FullObjects;
+    use FullUsers;
 
     /**
      * @test
@@ -52,6 +55,7 @@ class PendingSalesTest extends TestCase
      */
     public function canDestroyPendingSale(): void
     {
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
         $client = factory(Client::class)->make();
         $product = $this->createFullProduct();
 
@@ -63,7 +67,7 @@ class PendingSalesTest extends TestCase
                 ]
             )
         );
-
+        $product->refresh();    // CartStoreAction updated product in database.
         PendingSalesDestroyAction::execute($product);
         $this->assertDatabaseHas(
             Product::TABLE,
