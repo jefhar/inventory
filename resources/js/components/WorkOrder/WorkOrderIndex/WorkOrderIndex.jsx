@@ -1,8 +1,9 @@
-import React, { Component } from "react";
-import ReactDOM from "react-dom";
-import { Container } from "reactstrap";
+//import React, { Component } from "react";
+import * as React from 'react'
+import ReactDOM from 'react-dom'
+import { Container } from 'reactstrap'
 
-class WorkOrderIndex extends Component {
+class WorkOrderIndex extends React.Component {
   render() {
     return <Container>WorkOrderIndex in JSX. Bitchin!</Container>;
   }

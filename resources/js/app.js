@@ -5,7 +5,7 @@
  */
 
 import ReactDOM from 'react-dom'
-import React from 'react'
+import * as React from 'react'
 import CompanyClientName
   from './components/WorkOrder/Elements/CompanyClientName'
 
@@ -674,16 +674,25 @@ A simple warning alert—check it out!
 }
 
 if (document.getElementById('inventory_show')) {
-  function addToCart (cart_id) {
-    console.info('inside const addToCart(' + cart_id + ')')
+  function addToExistingCart (cartId, productId) {
+    console.info('inside const addToCart(' + cartId + ', ' + productId + ')')
+    axios.post('/pendingSales',
+      {
+        cart_id: cartId,
+        id: productId
+      }
+    ).then(reponse => {
+      // Remove button
+      // Add alert
+    }).catch(error => {})
   }
 
-
-
+  const productId = document.getElementById('productId').dataset.productId
+  const productLuhn = document.getElementById('productId').dataset.productLuhn
   document.querySelectorAll('[data-cart-id]').forEach(
     function (currentValue, currentIndex, listObj) {
       currentValue.addEventListener('click',
-        addToCart.bind(this, currentValue.dataset.cartId))
+        addToExistingCart.bind(this, currentValue.dataset.cartId, productId))
     }
   )
 

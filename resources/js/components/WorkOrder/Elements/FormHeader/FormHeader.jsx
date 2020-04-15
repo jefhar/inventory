@@ -1,5 +1,5 @@
-import React from "react";
-import { CardHeader, Col, Row } from "reactstrap";
+import * as React from 'react'
+import { CardHeader, Col, Row } from 'reactstrap'
 
 function FormHeader(props) {
   return (
