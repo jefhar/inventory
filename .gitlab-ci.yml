@@ -8,6 +8,7 @@ test:
   stage: test
   script:
     - cp .env.testing .env
+    - touch database/database.sqlite
     - composer install --no-plugins --no-scripts
     - php artisan key:generate
     - composer pretest
