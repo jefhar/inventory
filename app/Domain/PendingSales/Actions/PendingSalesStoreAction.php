@@ -11,13 +11,14 @@ namespace Domain\PendingSales\Actions;
 
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class CreatePendingSaleAction
+ * Class PendingSalesStoreAction
  *
  * @package Domain\PendingSales\Actions
  */
-class CreatePendingSaleAction
+class PendingSalesStoreAction
 {
 
     /**
@@ -27,8 +28,12 @@ class CreatePendingSaleAction
      */
     public static function execute(Cart $cart, Product $product): Product
     {
+        if ($product->status !== Product::STATUS_AVAILABLE) {
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        $product->status = Product::STATUS_IN_CART;
         $cart->products()->save($product);
-
+        $product->load('cart');
         return $product;
     }
 }

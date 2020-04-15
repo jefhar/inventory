@@ -36,6 +36,7 @@ class CartStoreAction
         $product->status = Product::STATUS_IN_CART;
         $product->save();
         $client = Client::firstOrCreate([Client::COMPANY_NAME => $cartStoreObject->company_name]);
+
         $cart->client()->associate($client);
         $user->carts()->save($cart);
         $cart->products()->save($product);

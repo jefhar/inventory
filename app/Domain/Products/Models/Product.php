@@ -31,13 +31,14 @@ use Illuminate\Support\Collection;
  * @method static Model|EloquentCollection|static[]|static|null find(int $int)
  * @method static Product findOrFail($input)
  * @property array $values
- * @property int|null $cart_id
  * @property int $id
  * @property int $luhn
  * @property int $price
+ * @property int|null $cart_id
  * @property Manufacturer $manufacturer;
  * @property string $model
  * @property string $serial
+ * @property string $status
  * @property Type $type
  * @property WorkOrder $workOrder
  */

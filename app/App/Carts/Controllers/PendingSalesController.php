@@ -10,12 +10,12 @@ declare(strict_types=1);
 namespace App\Carts\Controllers;
 
 use App\Admin\Controllers\Controller;
+use App\Carts\Requests\PendingSalesStoreRequest;
 use Domain\Carts\Models\Cart;
-use Domain\PendingSales\Actions\CreatePendingSaleAction;
-use Domain\PendingSales\Actions\DestroyPendingSalesAction;
+use Domain\PendingSales\Actions\PendingSalesDestroyAction;
+use Domain\PendingSales\Actions\PendingSalesStoreAction;
 use Domain\Products\Models\Product;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -32,18 +32,20 @@ class PendingSalesController extends Controller
     public const DESTROY_PATH = '/pendingSales/{product}';
 
     /**
-     * @param Request $request
+     * @param PendingSalesStoreRequest $request
      * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(PendingSalesStoreRequest $request): JsonResponse
     {
-        $product = Product::findOrFail($request->input(Product::ID));
-        if (!is_null($product->cart_id)) {
+        $product = Product::find($request->input(Product::ID));
+        $cart = Cart::find($request->input(Product::CART_ID));
+        if ($product->cart_id !== null) {
             abort(Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+
         return response()->json(
-            CreatePendingSaleAction::execute(
-                Cart::findOrFail($request->input(Product::CART_ID)),
+            PendingSalesStoreAction::execute(
+                $cart,
                 $product
             )
         )->setStatusCode(201);
@@ -55,6 +57,6 @@ class PendingSalesController extends Controller
      */
     public function destroy(Product $product): JsonResponse
     {
-        return response()->json(DestroyPendingSalesAction::execute($product));
+        return response()->json(PendingSalesDestroyAction::execute($product));
     }
 }

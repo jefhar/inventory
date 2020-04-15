@@ -22,8 +22,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Cart
  *
  * @package Domain\Carts\Models
- * @method static Builder where(string|array $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static Builder where(string|array $column, mixed $operator = null, mixed $value = null, string $bool = 'and')
  * @method static Cart findOrFail($input)
+ * @method static Cart|null find($input)
  * @property Client $client
  * @property int $id
  * @property int $luhn

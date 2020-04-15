@@ -13,11 +13,11 @@ use Domain\Products\Models\Product;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class DestroyPendingSalesAction
+ * Class PendingSalesDestroyAction
  *
  * @package Domain\PendingSales\Actions
  */
-class DestroyPendingSalesAction
+class PendingSalesDestroyAction
 {
 
     /**

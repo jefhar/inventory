@@ -5,9 +5,7 @@
 @section('content')
     <script>
       function removeFromCart (productLuhn) {
-        axios.delete(
-          `/pendingSales/${productLuhn}`
-        ).then(response => {
+        axios.delete(`/pendingSales/${productLuhn}`).then(response => {
           // Remove alert
           const productAddedAlert = document.getElementById('productAddedAlert')
           productAddedAlert.classList.replace('alert-primary', 'alert-warning')

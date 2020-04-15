@@ -52,6 +52,7 @@ class CartsController extends Controller
         } else {
             $carts = Auth::user()->carts()->get();
         }
+
         return view('carts.index')
             ->with(
                 [

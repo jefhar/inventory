@@ -128,7 +128,7 @@ class PendingSalesControllerTest extends TestCase
     /**
      * @test
      */
-    public function cannotAddProductToASecondCart(): void
+    public function cannotAddSameProductToASecondCart(): void
     {
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $cart = $this->makeFullCart();
@@ -158,5 +158,41 @@ class PendingSalesControllerTest extends TestCase
             [Product::CART_ID => $secondCart->id, Product::ID => $product->id]
         )
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    /**
+     * @test
+     */
+    public function addingProductToExistingCartReturnsCartIdAndClient(): void
+    {
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        $product = $this->createFullProduct();
+        /** @var Client $client */
+        $client = factory(Client::class)->make();
+        $cart = CartStoreAction::execute(
+            CartStoreObject::fromRequest(
+                [
+                    'product_id' => $product->id,
+                    Client::COMPANY_NAME => $client->company_name,
+                ]
+            )
+        );
+        $secondProduct = $this->createFullProduct();
+        $this->post(
+            route(PendingSalesController::STORE_NAME),
+            [
+                Product::CART_ID => $cart->id,
+                Product::ID => $secondProduct->id,
+            ]
+        )->assertJson(
+            [
+                'cart_id' => $cart->id,
+                'cart' => [
+                    'client' => [
+                        Client::COMPANY_NAME => $client->company_name,
+                    ],
+                ],
+            ]
+        );
     }
 }
