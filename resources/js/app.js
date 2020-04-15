@@ -681,10 +681,25 @@ if (document.getElementById('inventory_show')) {
         cart_id: cartId,
         id: productId
       }
-    ).then(reponse => {
-      // Remove button
-      // Add alert
-    }).catch(error => {})
+    ).then(response => {
+      const { cart_id: cartId } = response.data
+      const { company_name: companyName } = response.data.cart.client
+      document.getElementById('addToCardButton').remove()
+      const alert = document.createElement('div')
+      alert.id = 'productAddedAlert'
+      alert.classList.add('alert', 'alert-primary')
+      alert.innerHTML =
+        `Product added to cart for <a href="/carts/${cartId}">${companyName}</a>.
+<br><br>
+<span class="text-danger" id="removeFromCartIcon"><i id="removeProduct" class="fas fa-unlink" >&#8203;</i> Remove product from cart.</span>`
+      document.getElementById('cardFooter').appendChild(alert)
+
+      document.getElementById('removeFromCartIcon').
+        addEventListener('click', removeFromCart.bind(this,
+          document.getElementById('productId').dataset.productLuhn))
+    }).catch(error => {
+      console.info('error: ', error)
+    })
   }
 
   const productId = document.getElementById('productId').dataset.productId
@@ -720,7 +735,7 @@ if (document.getElementById('inventory_show')) {
             alert.innerHTML =
               `Product added to cart for <a href="/carts/${id}">${client.company_name}</a>.
 <br><br>
-<span class="text-danger"><a id="removeFromCartIcon"><i id="removeProduct" class="fas fa-unlink" >&#8203;</i> Remove product from cart.</a></span>`
+<span class="text-danger" id="removeFromCartIcon"><i id="removeProduct" class="fas fa-unlink" >&#8203;</i> Remove product from cart.</span>`
             cardFooter.appendChild(alert)
             document.getElementById('removeFromCartIcon').
               addEventListener('click', removeFromCart.bind(this,
