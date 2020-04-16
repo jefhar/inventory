@@ -16,6 +16,7 @@ use Laravel\Dusk\Browser;
  * Class WorkOrderCreate
  *
  * @package Tests\Browser\Pages
+ * @codeCoverageIgnore
  */
 class WorkOrderCreate extends Page
 {

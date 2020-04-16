@@ -16,6 +16,12 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\App;
 use Laravel\Dusk\TestCase as BaseTestCase;
 
+/**
+ * Class DuskTestCase
+ *
+ * @package Tests
+ * @codeCoverageIgnore
+ */
 abstract class DuskTestCase extends BaseTestCase
 {
     use CreatesApplication;

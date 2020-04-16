@@ -19,6 +19,7 @@ use Tests\DuskTestCase;
  * Class WorkOrderCreateTest
  *
  * @package Tests\Browser
+ * @codeCoverageIgnore
  */
 class WorkOrderCreateTest extends DuskTestCase
 {
