@@ -51,6 +51,7 @@ class PendingSalesTest extends TestCase
             ]
         );
     }
+
     /**
      * @test
      */
@@ -62,7 +63,6 @@ class PendingSalesTest extends TestCase
         PendingSalesStoreAction::execute($cart, $product);
         $this->expectException(HttpException::class);
         PendingSalesStoreAction::execute($cart, $product);
-
     }
 
     /**
@@ -92,6 +92,7 @@ class PendingSalesTest extends TestCase
             ]
         );
     }
+
     /**
      * @test
      */
@@ -112,7 +113,6 @@ class PendingSalesTest extends TestCase
         );
         // $product->refresh();    // this `$product` is STATUS_AVAILABLE.
         PendingSalesDestroyAction::execute($product);
-
     }
 
     /**
