@@ -17,6 +17,8 @@ use Domain\PendingSales\Actions\PricePatchAction;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
 use Faker\Factory;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 use Tests\Traits\FullUsers;
@@ -49,6 +51,19 @@ class PendingSalesTest extends TestCase
             ]
         );
     }
+    /**
+     * @test
+     */
+    public function cannotCreatePendingSaleIfProductIsNotAvailable(): void
+    {
+        $cart = $this->makeFullCart();
+        $cart->save();
+        $product = $this->createFullProduct();
+        PendingSalesStoreAction::execute($cart, $product);
+        $this->expectException(HttpException::class);
+        PendingSalesStoreAction::execute($cart, $product);
+
+    }
 
     /**
      * @test
@@ -76,6 +91,28 @@ class PendingSalesTest extends TestCase
                 Product::CART_ID => null,
             ]
         );
+    }
+    /**
+     * @test
+     */
+    public function cannotDestroyPendingSaleIfProductIsNotInACart(): void
+    {
+        $this->expectException(HttpException::class);
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        $client = factory(Client::class)->make();
+        $product = $this->createFullProduct();
+
+        CartStoreAction::execute(
+            CartStoreObject::fromRequest(
+                [
+                    'product_id' => $product->id,
+                    Client::COMPANY_NAME => $client->company_name,
+                ]
+            )
+        );
+        // $product->refresh();    // this `$product` is STATUS_AVAILABLE.
+        PendingSalesDestroyAction::execute($product);
+
     }
 
     /**
