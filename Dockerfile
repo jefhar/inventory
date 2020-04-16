@@ -3,11 +3,10 @@
 # Set the base image for subsequent instructions
 FROM phpdockerio/php74-fpm:latest
 
-ARG PHPREDIS=5.1.1
-ARG XDEBUG=2.9.2
-
+# For local use:
+#   Sometimes github thinks you're spamming the site too much. Create an auth key
+#   and put it in the auth.json.example file and rename it to auth.json then uncomment.
 # ADD auth.json /root/.composer/auth.json
-
 
 # Update packages
 RUN apt-get update \
@@ -19,8 +18,8 @@ RUN apt-get update \
         php7.4-mysql \
         php7.4-opcache \
         php7.4-pdo \
-        php7.4-zip \
         php7.4-sqlite3 \
+        php7.4-zip \
         sqlite \
         unzip \
     && apt-get install -y --only-upgrade php7.4-cli php7.4-common \
