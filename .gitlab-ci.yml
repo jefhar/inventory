@@ -7,8 +7,8 @@ stages:
 test:
   stage: test
   script:
-    - apt update
-    - apt install -y php7.4-xdebug
+    - apt-get update
+    - apt-get install -y php7.4-xdebug
     - cp .env.testing .env
     - touch database/database.sqlite
     - composer install --no-plugins --no-scripts

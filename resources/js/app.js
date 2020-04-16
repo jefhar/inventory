@@ -682,13 +682,13 @@ if (document.getElementById("inventory_show")) {
         id: productId
       })
       .then(response => {
-        const { cartId: cartId } = response.data;
-        const { companyName: companyName } = response.data.cart.client;
+        const { luhn: cartLuhn } = response.data.cart;
+        const { company_name: companyName } = response.data.cart.client;
         document.getElementById("addToCardButton").remove();
         const alert = document.createElement("div");
         alert.id = "productAddedAlert";
         alert.classList.add("alert", "alert-primary");
-        alert.innerHTML = `Product added to cart for <a href="/carts/${cartId}">${companyName}</a>.
+        alert.innerHTML = `Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
 <br><br>
 <span class="text-danger" id="removeFromCartIcon"><i id="removeProduct" class="fas fa-unlink" >&#8203;</i> Remove product from cart.</span>`;
         document.getElementById("cardFooter").appendChild(alert);
@@ -731,8 +731,9 @@ if (document.getElementById("inventory_show")) {
       $newCartModal.on("shown.bs.modal", event => {
         const handleResponse = function(response) {
           console.debug("response.data:", response.data);
-          const { client, id: id } = response.data;
-          console.debug("id:", id);
+          const client = response.data.client;
+          const cartLuhn = response.data.luhn;
+
           // Remove button
           const addToCardButton = document.getElementById("addToCardButton");
           const cardFooter = document.getElementById("cardFooter");
@@ -740,7 +741,7 @@ if (document.getElementById("inventory_show")) {
           const alert = document.createElement("div");
           alert.id = "productAddedAlert";
           alert.classList.add("alert", "alert-primary");
-          alert.innerHTML = `Product added to cart for <a href="/carts/${id}">${client.company_name}</a>.
+          alert.innerHTML = `Product added to cart for <a href="/carts/${cartLuhn}">${client.company_name}</a>.
 <br><br>
 <span class="text-danger" id="removeFromCartIcon"><i id="removeProduct" class="fas fa-unlink" >&#8203;</i> Remove product from cart.</span>`;
           cardFooter.appendChild(alert);

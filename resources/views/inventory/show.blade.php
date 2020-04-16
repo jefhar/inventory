@@ -1,15 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'View Product')
+@section('title')
+    View Product - {{ $product->model}}
+@endsection
 
 @section('content')
     <script>
       function removeFromCart (productLuhn) {
-        axios.delete(`/pendingSales/${productLuhn}`).then(response => {
+        axios.delete(`/pendingSales/${productLuhn}`).then(() => {
           // Remove alert
           const productAddedAlert = document.getElementById('productAddedAlert')
           productAddedAlert.classList.replace('alert-primary', 'alert-warning')
-          productAddedAlert.innerText = 'Product removed from cart. Reload page to add it to another cart.'
+          productAddedAlert.innerHTML = `Product removed from cart. <a href="${window.location.href}">Reload page</a> to add it to a cart.`
         })
       }
 
@@ -43,12 +45,16 @@
                             <div class="dropdown-menu" aria-labelledby="addToCartButton" id="cartsDropDownMenu">
                                 @if (count($carts) > 0)
                                     @foreach($carts as $cart)
+
                                         <button
                                                 class="dropdown-item"
                                                 id="cart_{{ $cart->id }}"
                                                 type="button"
                                                 data-cart-id="{{ $cart->id }}"
                                         >{{$cart->client->company_name}}
+                                            - created
+                                            {{\Carbon\Carbon::createFromFormat("Y-m-d H:i:s", $cart->created_at)
+->diffForHumans(now(), ['syntax' => \Carbon\CarbonInterface::DIFF_RELATIVE_TO_NOW]) }}
                                         </button>
                                     @endforeach
 
