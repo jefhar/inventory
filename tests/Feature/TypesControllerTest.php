@@ -93,7 +93,7 @@ class TypesControllerTest extends TestCase
         $this->actingAs($this->createEmployee())
             ->get(route(TypesController::INDEX_NAME))
             ->assertOk()
-            ->assertSeeText(addslashes($type->name));
+            ->assertSeeText(json_encode($type->name));
     }
 
     /**
