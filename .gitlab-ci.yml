@@ -7,8 +7,6 @@ stages:
 test:
   stage: test
   script:
-    - apt-get update
-    - apt-get install -y php7.4-xdebug
     - cp .env.testing .env
     - touch database/database.sqlite
     - composer install --no-plugins --no-scripts
@@ -16,7 +14,7 @@ test:
     - composer pretest
     - composer test
   cache:
-    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_STAGE"
+    key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
     paths:
     - vendor/
   artifacts:
@@ -44,7 +42,7 @@ dusktest:
     - php artisan db:seed --class UsersTableSeeder
     - php artisan dusk
   cache:
-    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_STAGE"
+    key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
     paths:
       - vendor/
   except:
@@ -73,9 +71,9 @@ build_images:
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest .
-    - docker image tag registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest c11k/serviceandgoods
-    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk phpdocker/dusk
     - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
+    - docker image tag registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest $CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
+    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk phpdocker/dusk
     - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk
   when: manual
   only:
