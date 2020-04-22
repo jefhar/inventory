@@ -72,7 +72,7 @@
       "vendor/bin/phpstan analyse",
       "@phpcs"
     ],
-    "test": "php -d max_execution_time=900 vendor/bin/phpunit --coverage-text --colors=never --testdox -d memory_limit=2048M",
+    "test": "php -dmemory_limit=128M -dpcov.enabled=1 -dpcov.directory=. -dpcov.exclude='~vendor~' vendor/bin/phpunit --coverage-text --colors=never --testdox",
     "dusk": [
       "php artisan db:wipe",
       "php artisan db:migrate",

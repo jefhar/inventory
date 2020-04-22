@@ -73,6 +73,7 @@ build_images:
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest .
+    - docker image tag registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest c11k/serviceandgoods
     - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk phpdocker/dusk
     - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
     - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk

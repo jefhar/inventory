@@ -18,6 +18,7 @@ RUN apt-get update \
         php7.4-mysql \
         php7.4-opcache \
         php7.4-pdo \
+        php7.4-redis \
         php7.4-sqlite3 \
         php7.4-zip \
         sqlite \
