@@ -31,3 +31,5 @@ RUN apt-get update \
 RUN  composer self-update \
     && composer global require "laravel/envoy=~1.0" \
     && composer clear-cache
+
+RUN mkdir /application && ln -s /application /opt/project
