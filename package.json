@@ -46,8 +46,7 @@
     },
     "lint-staged": {
         "resources/{js,sass}/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-            "prettier --write --tab-width 2",
-            "git add"
+            "prettier --write --tab-width 2"
         ]
     },
     "dependencies": {
