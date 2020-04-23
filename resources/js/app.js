@@ -31,7 +31,7 @@ $(() => {
       MinChars: 2,
       Url: "/ajaxsearch",
       _RenderResponseItems: function (response) {
-        let ul = document.createElement("ul");
+        const ul = document.createElement("ul");
 
         let limit = this._Limit();
         if (limit < 0) {
@@ -46,8 +46,8 @@ $(() => {
           item < Math.min(Math.abs(limit), response.length);
           item++
         ) {
-          let li = document.createElement("li");
-          let a = document.createElement("a");
+          const li = document.createElement("li");
+          const a = document.createElement("a");
           a.href = response[item].Url;
           a.innerText = response[item].Label;
           li.appendChild(a);
@@ -58,7 +58,7 @@ $(() => {
       },
       _Post: function (response) {
         const json = JSON.parse(response);
-        let returnResponse = [];
+        const returnResponse = [];
         if (Array.isArray(json)) {
           console.info("json is array");
           for (let i = 0; i < Object.keys(json).length; i++) {
@@ -72,7 +72,7 @@ $(() => {
           }
         } else {
           console.info("json is not array");
-          for (let value in json) {
+          for (const value in json) {
             console.debug(value);
           }
         }
@@ -146,8 +146,8 @@ if (document.getElementById("workorders_edit")) {
       .addEventListener("change", (event) => {
         const { value } = event.target;
         const select = document.getElementById("productType");
-        let $formContainer = $(document.getElementById("typeForm"));
-        let spinner = document.getElementById("spinner");
+        const $formContainer = $(document.getElementById("typeForm"));
+        const spinner = document.getElementById("spinner");
         spinner.classList.remove("invisible");
         spinner.classList.add("visible");
 
@@ -196,7 +196,7 @@ if (document.getElementById("workorders_edit")) {
           })
           .catch((error) => {
             console.info("error:", error);
-            let alert = document.createElement("div");
+            const alert = document.createElement("div");
             alert.classList.add("alert", "alert-warning");
             alert.innerText = error;
             $formContainer.append(alert);
@@ -483,7 +483,7 @@ if (document.getElementById("types_create")) {
         console.info("Save button clicked.");
         const typeName = document.getElementById("saveType").value;
         const formData = TC_formBuilder.actions.getData("json", true);
-        let alert = "";
+        const alert = "";
         _.throttle(
           axios
             .post("/types", {
@@ -662,7 +662,7 @@ type: 'text'
 A simple warning alert—check it out!
 </div>
 */
-            let alert = document.createElement("div");
+            const alert = document.createElement("div");
             alert.classList.add("alert", "alert-warning");
             alert.innerText = error;
             document.getElementById("formbuilder").append(alert);

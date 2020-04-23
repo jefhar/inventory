@@ -70,7 +70,7 @@ builddusk:
 	docker build -t c11k/serviceandgoods:dusk phpdocker/dusk
 
 deploy:
-	docker network create web || echo "Docker network web already created."
+	docker network create web || echo q"Docker network web already created."
 	docker-compose up -d php-fpm redis mysql webserver
 
 refresh:
