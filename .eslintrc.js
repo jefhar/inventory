@@ -4,12 +4,21 @@ module.exports = {
     es6: true
   },
   extends: [
-    'eslint:recommended',
-    'plugin:react/recommended'
+    'plugin:react/recommended',
+    'standard',
+    'prettier',
+    "prettier/babel",
+    "prettier/react",
+    "prettier/standard"
   ],
   globals: {
     Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly'
+    SharedArrayBuffer: 'readonly',
+    '$': false,
+    '_': false,
+    'axios': false,
+    'Popper': false,
+    'window': false,
   },
   parserOptions: {
     ecmaFeatures: {
@@ -19,7 +28,20 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: [
-    'react'
+    'react',
+    'babel',
+    'standard',
+    'prettier'
   ],
-  rules: {}
+  rules: {
+    'standard/no-callback-literal': [2, ['cb', 'callback']],
+    'react/jsx-uses-react': 'error',
+    'react/jsx-uses-vars': 'error',
+  },
+  settings: {
+    react: {
+      'version': 'detect',
+      'pragma': 'React'
+    }
+  }
 }

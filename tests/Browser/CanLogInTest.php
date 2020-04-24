@@ -9,29 +9,33 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+use App\Admin\Permissions\UserRoles;
 use App\User;
-use App\WorkOrders\Controllers\WorkOrdersController;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\WorkOrderCreate;
 use Tests\DuskTestCase;
 
 /**
- * Class WorkOrderCreateTest
+ * Class CanLogInTest
  *
  * @package Tests\Browser
  * @codeCoverageIgnore
  */
-class WorkOrderCreateTest extends DuskTestCase
+class CanLogInTest extends DuskTestCase
 {
+    use DatabaseMigrations;
 
     /**
      * @test
      * @throws \Throwable
      */
-    public function pageExists(): void
+    public function technicianCanLogin(): void
     {
+        /** @var User $user */
         $user = factory(User::class)->create();
-        $user->givePermissionTo(WorkOrdersController::CREATE_NAME);
+        $user->assignRole(UserRoles::TECHNICIAN);
+        $user->save();
 
         $this->browse(
             static function (Browser $browser) use ($user) {
@@ -40,8 +44,7 @@ class WorkOrderCreateTest extends DuskTestCase
                     ->type('password', 'password')
                     ->press('Login')
                     ->assertPathIs('/home')
-                    ->visit(new WorkOrderCreate())
-                    ->assertSee('Work Order Estimate');
+                    ->assertSee($user->name);
                 //              $browser->loginAs($user)
                 //                   ->visit(new WorkOrderCreate())->dd();
                 //                    ->assertSee('Work Order Estimate');

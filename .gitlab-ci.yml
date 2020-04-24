@@ -7,8 +7,6 @@ stages:
 test:
   stage: test
   script:
-    - apt-get update
-    - apt-get install -y php7.4-xdebug
     - cp .env.testing .env
     - touch database/database.sqlite
     - composer install --no-plugins --no-scripts
@@ -16,7 +14,7 @@ test:
     - composer pretest
     - composer test
   cache:
-    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_STAGE"
+    key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
     paths:
     - vendor/
   artifacts:
@@ -27,29 +25,46 @@ test:
   interruptible: true
 
 dusktest:
-  when: manual
-  allow_failure: true
-  image: registry.gitlab.com/c11k/serviceandgoods:dusk
+  variables:
+    MYSQL_ROOT_PASSWORD: 'rootpw'
+    MYSQL_DATABASE: 'serviceandgoods'
+    MYSQL_USER: 'serviceandgoods'
+    MYSQL_PASSWORD: 'serviceandgoods'
   services:
-    - selenium/standalone-chrome
+    - mysql:8.0
+  allow_failure: true
+  image: edbizarro/gitlab-ci-pipeline-php:7.4-chromium
   stage: test
   script:
+    - yarn config set cache-folder .yarn
+    - yarn install --pure-lockfile
+    - yarn run prod
     - composer install --no-plugins --no-scripts --no-progress --no-suggest --prefer-dist --optimize-autoloader
+    - vendor/bin/dusk-updater detect --auto-update
     - cp .env.dusk.ci .env
     - php artisan key:generate
-    - php artisan dusk:chrome-driver
-    - ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
-    - php artisan serve > /dev/null 2>&1 &
-    - php artisan migrate
+    - php artisan migrate:refresh
     - php artisan db:seed --class UsersTableSeeder
+    - php artisan serve > /dev/null 2>&1 &
+    - ./vendor/laravel/dusk/bin/chromedriver-linux --verbose --port=9515 --whitelisted-ips= &
+    - sleep 5
     - php artisan dusk
   cache:
-    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_STAGE"
+    key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
     paths:
-      - vendor/
+      - vendor
+      - node_modules
+      - .yarn
   except:
     - ci
   interruptible: true
+  artifacts:
+    paths:
+      - ./storage/logs  # for debugging
+      - ./tests/Browser/screenshots # for Dusk screenshots
+      - ./tests/Browser/console
+    expire_in: 7 days
+    when: always
 
 deploy_staging:
   stage: stage
@@ -73,8 +88,9 @@ build_images:
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest .
-    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk phpdocker/dusk
     - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
+    - docker image tag registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest $CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
+    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk phpdocker/dusk
     - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk
   when: manual
   only:

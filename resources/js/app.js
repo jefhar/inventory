@@ -7,12 +7,12 @@
 import ReactDOM from "react-dom";
 import * as React from "react";
 import CompanyClientName from "./components/WorkOrder/Elements/CompanyClientName";
+import AutoComplete from "autocomplete-js";
 
 require("./bootstrap");
 require("jquery-ui-sortable");
 require("formBuilder");
 require("formBuilder/dist/form-render.min");
-const AutoComplete = require("autocomplete-js");
 require("./components/WorkOrder/WorkOrderIndex");
 require("./components/WorkOrder/WorkOrderCreate");
 const HTTP_OK = 200;
@@ -26,12 +26,12 @@ $(() => {
       EmptyMessage: "No results found",
       HttpHeaders: {
         "X-Requested-With": "XMLHttpRequest",
-        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
       },
       MinChars: 2,
       Url: "/ajaxsearch",
-      _RenderResponseItems: function(response) {
-        let ul = document.createElement("ul");
+      _RenderResponseItems: function (response) {
+        const ul = document.createElement("ul");
 
         let limit = this._Limit();
         if (limit < 0) {
@@ -46,8 +46,8 @@ $(() => {
           item < Math.min(Math.abs(limit), response.length);
           item++
         ) {
-          let li = document.createElement("li");
-          let a = document.createElement("a");
+          const li = document.createElement("li");
+          const a = document.createElement("a");
           a.href = response[item].Url;
           a.innerText = response[item].Label;
           li.appendChild(a);
@@ -56,9 +56,9 @@ $(() => {
         }
         return ul;
       },
-      _Post: function(response) {
+      _Post: function (response) {
         const json = JSON.parse(response);
-        let returnResponse = [];
+        const returnResponse = [];
         if (Array.isArray(json)) {
           console.info("json is array");
           for (let i = 0; i < Object.keys(json).length; i++) {
@@ -67,151 +67,154 @@ $(() => {
             returnResponse[returnResponse.length] = {
               Value: json[i].name,
               Label: json[i].name,
-              Url: json[i].url
+              Url: json[i].url,
             };
           }
         } else {
           console.info("json is not array");
-          for (let value in json) {
+          for (const value in json) {
             console.debug(value);
           }
         }
         return returnResponse;
-      }
+      },
     },
     "#site-search"
   );
 });
 
+function WE_update() {
+  console.log("WE_update function");
+  const inventoryButton = document.getElementById("addInventoryButton");
+  const isLockedButton = document.getElementById("lockButton");
+  const lockIcon = document.getElementById("lockIcon");
+  const outline = document.getElementById("outline");
+  const lockHeader = document.getElementById("lockedHeader");
+  const locked = {
+    clickTo: "Click to Unlock work order.",
+    isLockedButton: "btn-outline-danger",
+    lockHeader: "Locked",
+    lockIcon: "fa-unlock-alt",
+    outline: "border-primary",
+  };
+  const unlocked = {
+    clickTo: "Click to Lock work order.",
+    isLockedButton: "btn-outline-success",
+    lockHeader: "Unlocked",
+    lockIcon: "fa-lock",
+    outline: "border-warning",
+  };
+  const updateUI = (add, remove) => {
+    if (isLockedButton) {
+      isLockedButton.classList.add(add.isLockedButton);
+
+      lockIcon.classList.add(add.lockIcon);
+    }
+    outline.classList.add(add.outline);
+
+    if (isLockedButton) {
+      isLockedButton.classList.remove(remove.isLockedButton);
+
+      lockIcon.classList.remove(remove.lockIcon);
+    }
+    outline.classList.remove(remove.outline);
+
+    $('[data-toggle="tooltip"]').attr("data-original-title", add.clickTo);
+  };
+
+  if (document.getElementById("workOrderBody").dataset.isLocked === "true") {
+    updateUI(locked, unlocked);
+    lockHeader.innerText = locked.lockHeader;
+  } else {
+    updateUI(unlocked, locked);
+    lockHeader.innerText = unlocked.lockHeader;
+  }
+  if (inventoryButton) {
+    inventoryButton.disabled =
+      document.getElementById("workOrderBody").dataset.isLocked === "true";
+  }
+}
+
 if (document.getElementById("workorders_edit")) {
   console.info("workorders_edit");
 
-  function WE_update() {
-    const inventoryButton = document.getElementById("addInventoryButton");
-    const isLockedButton = document.getElementById("lockButton");
-    const lockIcon = document.getElementById("lockIcon");
-    const outline = document.getElementById("outline");
-    const lockHeader = document.getElementById("lockedHeader");
-    const locked = {
-      clickTo: "Click to Unlock work order.",
-      isLockedButton: "btn-outline-danger",
-      lockHeader: "Locked",
-      lockIcon: "fa-unlock-alt",
-      outline: "border-primary"
-    };
-    const unlocked = {
-      clickTo: "Click to Lock work order.",
-      isLockedButton: "btn-outline-success",
-      lockHeader: "Unlocked",
-      lockIcon: "fa-lock",
-      outline: "border-warning"
-    };
-    const updateUI = (add, remove) => {
-      if (isLockedButton) {
-        isLockedButton.classList.add(add.isLockedButton);
-
-        lockIcon.classList.add(add.lockIcon);
-      }
-      outline.classList.add(add.outline);
-
-      if (isLockedButton) {
-        isLockedButton.classList.remove(remove.isLockedButton);
-
-        lockIcon.classList.remove(remove.lockIcon);
-      }
-      outline.classList.remove(remove.outline);
-
-      $('[data-toggle="tooltip"]').attr("data-original-title", add.clickTo);
-    };
-
-    if (document.getElementById("workOrderBody").dataset.isLocked === "true") {
-      updateUI(locked, unlocked);
-      lockHeader.innerText = locked.lockHeader;
-    } else {
-      updateUI(unlocked, locked);
-      lockHeader.innerText = unlocked.lockHeader;
-    }
-    if (inventoryButton) {
-      inventoryButton.disabled =
-        document.getElementById("workOrderBody").dataset.isLocked === "true";
-    }
-  }
-
   $('[data-toggle="tooltip"]').tooltip();
-  $("#productModal").on("shown.bs.modal", event => {
+  $("#productModal").on("shown.bs.modal", (event) => {
     // Defer attaching event listener until modal opens
     // Because #productType is not attached until modal opens
-    document.getElementById("productType").addEventListener("change", event => {
-      const { value } = event.target;
-      const select = document.getElementById("productType");
-      let $formContainer = $(document.getElementById("typeForm"));
-      let spinner = document.getElementById("spinner");
-      spinner.classList.remove("invisible");
-      spinner.classList.add("visible");
+    document
+      .getElementById("productType")
+      .addEventListener("change", (event) => {
+        const { value } = event.target;
+        const select = document.getElementById("productType");
+        const $formContainer = $(document.getElementById("typeForm"));
+        const spinner = document.getElementById("spinner");
+        spinner.classList.remove("invisible");
+        spinner.classList.add("visible");
 
-      axios
-        .get(`/types/${value}`, value)
-        .then(response => {
-          const formData = response.data;
-          formData.unshift(
-            {
-              type: "header",
-              className: "mt-3",
-              label: select.options[select.selectedIndex].innerText,
-              subtype: "h3"
-            },
-            {
-              className: "form-control",
-              dataAutocomplete: "/ajaxsearch/manufacturer",
-              label: "Manufacturer",
-              name: "manufacturer",
-              required: "true",
-              subtype: "text",
-              type: "text"
-            },
-            {
-              className: "form-control",
-              dataAutocomplete: "/ajaxsearch/model",
-              label: "Model",
-              name: "model",
-              required: "true",
-              subtype: "text",
-              type: "text"
-            }
-          );
+        axios
+          .get(`/types/${value}`, value)
+          .then((response) => {
+            const formData = response.data;
+            formData.unshift(
+              {
+                type: "header",
+                className: "mt-3",
+                label: select.options[select.selectedIndex].innerText,
+                subtype: "h3",
+              },
+              {
+                className: "form-control",
+                dataAutocomplete: "/ajaxsearch/manufacturer",
+                label: "Manufacturer",
+                name: "manufacturer",
+                required: "true",
+                subtype: "text",
+                type: "text",
+              },
+              {
+                className: "form-control",
+                dataAutocomplete: "/ajaxsearch/model",
+                label: "Model",
+                name: "model",
+                required: "true",
+                subtype: "text",
+                type: "text",
+              }
+            );
 
-          $("form", $formContainer).formRender({
-            formData: formData
+            $("form", $formContainer).formRender({
+              formData: formData,
+            });
+            // Add autocomplete to Manufacturer
+            AutoComplete({
+              _Cache: function (value) {
+                value += this.Input.name;
+                return this.$Cache[value];
+              },
+            });
+            // Add autocomplete to Model
+          })
+          .catch((error) => {
+            console.info("error:", error);
+            const alert = document.createElement("div");
+            alert.classList.add("alert", "alert-warning");
+            alert.innerText = error;
+            $formContainer.append(alert);
+          })
+          .finally(() => {
+            spinner.classList.remove("visible");
+            spinner.classList.add("invisible");
           });
-          // Add autocomplete to Manufacturer
-          AutoComplete({
-            _Cache: function(value) {
-              value += this.Input.name;
-              return this.$Cache[value];
-            }
-          });
-          // Add autocomplete to Model
-        })
-        .catch(error => {
-          console.info("error:", error);
-          let alert = document.createElement("div");
-          alert.classList.add("alert", "alert-warning");
-          alert.innerText = error;
-          $formContainer.append(alert);
-        })
-        .finally(() => {
-          spinner.classList.remove("visible");
-          spinner.classList.add("invisible");
-        });
-    });
+      });
     document
       .getElementById("productSubmit")
-      .addEventListener("click", event => {
+      .addEventListener("click", (event) => {
         const formData = document.getElementById("productForm");
         const postData = {
           type: document.getElementById("productType").value,
           workOrderId: document.getElementById("workOrderBody").dataset
-            .workOrderId
+            .workOrderId,
         };
         for (let i = 0; i < formData.length; i++) {
           postData[formData[i].name] = formData[i].value;
@@ -220,7 +223,7 @@ if (document.getElementById("workorders_edit")) {
         const url = "/products";
         axios
           .post(url, postData)
-          .then(response => {
+          .then((response) => {
             const { model, createdAt, serial } = response.data;
             const { name: manufacturer } = response.data.manufacturer;
             const { name: type } = response.data.type;
@@ -244,7 +247,7 @@ if (document.getElementById("workorders_edit")) {
             $("#productModal").modal("hide");
             $(".modal-backdrop").remove();
           })
-          .catch(error => {
+          .catch((error) => {
             console.info("error:", error);
             const errorAlert = document.createElement("div");
             errorAlert.classList.add(
@@ -261,13 +264,15 @@ if (document.getElementById("workorders_edit")) {
             document.getElementById("productError").appendChild(errorAlert);
           });
       });
-    document.getElementById("cancelButton").addEventListener("click", event => {
-      const productForm = document.getElementById("productForm");
-      while (productForm.hasChildNodes()) {
-        productForm.removeChild(productForm.lastChild);
-      }
-      document.getElementById("productType").selectedIndex = 0;
-    });
+    document
+      .getElementById("cancelButton")
+      .addEventListener("click", (event) => {
+        const productForm = document.getElementById("productForm");
+        while (productForm.hasChildNodes()) {
+          productForm.removeChild(productForm.lastChild);
+        }
+        document.getElementById("productType").selectedIndex = 0;
+      });
   });
 
   // Lock/Unlock work order
@@ -282,12 +287,12 @@ if (document.getElementById("workorders_edit")) {
       }`;
       axios
         .patch(url, data)
-        .then(response => {
+        .then((response) => {
           document.getElementById("workOrderBody").dataset.isLocked =
             response.data.is_locked;
           WE_update();
         })
-        .catch(error => {
+        .catch((error) => {
           console.info("error.response.data:", error.response.data);
         });
     });
@@ -296,7 +301,7 @@ if (document.getElementById("workorders_edit")) {
   if (document.getElementById("update_button")) {
     document
       .getElementById("update_button")
-      .addEventListener("click", event => {
+      .addEventListener("click", (event) => {
         const cardBody = document.getElementById("workOrderBody");
         const updateToast = document.createElement("div");
         const url = `/workorders/${cardBody.dataset.workOrderId}`;
@@ -306,7 +311,7 @@ if (document.getElementById("workorders_edit")) {
           first_name: document.getElementById("first_name").value,
           intake: document.getElementById("intake").value,
           last_name: document.getElementById("last_name").value,
-          phone_number: document.getElementById("phone_number").value
+          phone_number: document.getElementById("phone_number").value,
         };
 
         updateToast.id = "updateToast";
@@ -319,7 +324,7 @@ if (document.getElementById("workorders_edit")) {
         // send PATCH via axios
         axios
           .patch(url, data)
-          .then(response => {
+          .then((response) => {
             // At some point, give user a visual indication that
             // fields have been updated. Even better, add onChange
             // to the fields, and if they're dirty, give visual
@@ -338,7 +343,7 @@ if (document.getElementById("workorders_edit")) {
       Work Order successfully updated.
     </div>`;
           })
-          .catch(error => {
+          .catch((error) => {
             console.debug("error:", error);
             updateToast.innerHTML = `  <div
   style="position: absolute; top: 0; right: 0;"
@@ -382,11 +387,11 @@ if (document.getElementById("types_create")) {
       "checkbox-group",
       "radio-group",
       "date",
-      "textarea"
+      "textarea",
     ],
     dataType: "json",
     disabledSubtypes: {
-      text: ["password", "color", "email"]
+      text: ["password", "color", "email"],
     },
     disableFields: [
       "autocomplete",
@@ -395,7 +400,7 @@ if (document.getElementById("types_create")) {
       "header",
       "hidden",
       "paragraph",
-      "starRating"
+      "starRating",
     ],
     fieldRemoveWarn: true,
     onSave: (event, formData) => {
@@ -403,7 +408,7 @@ if (document.getElementById("types_create")) {
       $("#fb-render").formRender({ formData });
       console.info(JSON.stringify(formData));
     },
-    showActionButtons: false
+    showActionButtons: false,
   };
 
   function TC_toggleEdit() {
@@ -472,21 +477,21 @@ if (document.getElementById("types_create")) {
     $("#saveProductModal").modal("show");
   };
 
-  $("#saveProductModal").on("shown.bs.modal", event => {
+  $("#saveProductModal").on("shown.bs.modal", (event) => {
     document
       .getElementById("saveTypeButton")
-      .addEventListener("click", event => {
+      .addEventListener("click", (event) => {
         console.info("Save button clicked.");
         const typeName = document.getElementById("saveType").value;
         const formData = TC_formBuilder.actions.getData("json", true);
-        let alert = "";
+        const alert = "";
         _.throttle(
           axios
             .post("/types", {
               form: formData,
-              name: typeName
+              name: typeName,
             })
-            .then(response => {
+            .then((response) => {
               if (response.status === HTTP_CREATED) {
                 console.info("created.");
                 document.getElementById("alert").innerHTML = `<div role="alert"
@@ -508,9 +513,9 @@ You may now use ${response.data.name} as a product type.
                     .post("/types", {
                       force: true,
                       form: formData,
-                      name: typeName
+                      name: typeName,
                     })
-                    .then(response => {
+                    .then((response) => {
                       if (response.status === HTTP_OK) {
                         console.info("forced created.");
                         document.getElementById(
@@ -556,7 +561,7 @@ different name for the product type.
                 console.info("Hmm.");
               }
             })
-            .finally(response => {
+            .finally((response) => {
               $("#saveProductModal").modal("hide");
               // Refresh typesList from server
               const typesList = document.getElementById("typesList");
@@ -564,8 +569,8 @@ different name for the product type.
                 typesList.removeChild(typesList.lastChild);
               }
 
-              axios.get("/types").then(response => {
-                response.data.forEach(item => {
+              axios.get("/types").then((response) => {
+                response.data.forEach((item) => {
                   const option = document.createElement("option");
                   option.value = item.slug;
                   option.innerText = item.name;
@@ -585,12 +590,12 @@ different name for the product type.
       });
   });
 
-  $("#loadProductModal").on("shown.bs.modal", event => {
+  $("#loadProductModal").on("shown.bs.modal", (event) => {
     // Defer attaching event listener until modal opens
     // Because #productType is not attached until modal opens
     document
       .getElementById("loadTypeButton")
-      .addEventListener("click", event => {
+      .addEventListener("click", (event) => {
         // Save selected slug
         const index = document.getElementById("typesList").selectedIndex;
         const value = document.getElementById("typesList").value;
@@ -605,7 +610,7 @@ different name for the product type.
 
         axios
           .get(`/types/${value}`, value)
-          .then(response => {
+          .then((response) => {
             const formData = response.data;
             /*
 // These need an ID so they can be removed via
@@ -648,7 +653,7 @@ type: 'text'
               document.getElementById("typesList")[index].label +
               "</h5>";
           })
-          .catch(error => {
+          .catch((error) => {
             console.info("error");
             console.info(error);
             // Create warning alert
@@ -658,7 +663,7 @@ type: 'text'
 A simple warning alert—check it out!
 </div>
 */
-            let alert = document.createElement("div");
+            const alert = document.createElement("div");
             alert.classList.add("alert", "alert-warning");
             alert.innerText = error;
             document.getElementById("formbuilder").append(alert);
@@ -679,9 +684,9 @@ if (document.getElementById("inventory_show")) {
     axios
       .post("/pendingSales", {
         cart_id: cartId,
-        id: productId
+        id: productId,
       })
-      .then(response => {
+      .then((response) => {
         const { luhn: cartLuhn } = response.data.cart;
         const { company_name: companyName } = response.data.cart.client;
         document.getElementById("addToCardButton").remove();
@@ -703,7 +708,7 @@ if (document.getElementById("inventory_show")) {
             )
           );
       })
-      .catch(error => {
+      .catch((error) => {
         console.info("error: ", error);
       });
   }
@@ -712,7 +717,7 @@ if (document.getElementById("inventory_show")) {
   const productLuhn = document.getElementById("productId").dataset.productLuhn;
   document
     .querySelectorAll("[data-cart-id]")
-    .forEach(function(currentValue, currentIndex, listObj) {
+    .forEach(function (currentValue, currentIndex, listObj) {
       currentValue.addEventListener(
         "click",
         addToExistingCart.bind(this, currentValue.dataset.cartId, productId)
@@ -728,8 +733,8 @@ if (document.getElementById("inventory_show")) {
   if (document.getElementById("newCartButton")) {
     document.getElementById("newCartButton").onclick = () => {
       // Show popup modal
-      $newCartModal.on("shown.bs.modal", event => {
-        const handleResponse = function(response) {
+      $newCartModal.on("shown.bs.modal", (event) => {
+        const handleResponse = function (response) {
           console.debug("response.data:", response.data);
           const client = response.data.client;
           const cartLuhn = response.data.luhn;
@@ -774,4 +779,8 @@ if (document.getElementById("inventory_show")) {
       console.info("got carts_create");
     };
   }
+}
+
+if (document.getElementById("cartIndex")) {
+  $(".collapse").collapse();
 }
