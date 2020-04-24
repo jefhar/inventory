@@ -47,7 +47,7 @@ dusktest:
     - php artisan migrate:refresh
     - php artisan db:seed --class UsersTableSeeder
     - php artisan serve > /dev/null 2>&1 &
-    - ./vendor/laravel/dusk/bin/chromedriver-linux --port=9515 &
+    - ./vendor/laravel/dusk/bin/chromedriver-linux --verbose --port=9515 --whitelisted-ips= &
     - sleep 5
     - php artisan dusk
   cache:
