@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4ef3f7c8c1aa4e99c199f508f5d4fdef",
+    "content-hash": "793fc82aeb8a5f70467ff0d613387056",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -5103,6 +5103,63 @@
                 }
             ],
             "time": "2020-03-26T18:13:35+00:00"
+        },
+        {
+            "name": "orchestra/dusk-updater",
+            "version": "v1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/orchestral/dusk-updater.git",
+                "reference": "f1814cdf8135420d6a4e89fb2bb60a61bf272242"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/orchestral/dusk-updater/zipball/f1814cdf8135420d6a4e89fb2bb60a61bf272242",
+                "reference": "f1814cdf8135420d6a4e89fb2bb60a61bf272242",
+                "shasum": ""
+            },
+            "require": {
+                "composer/semver": "^1.5",
+                "ext-openssl": "*",
+                "ext-zip": "*",
+                "symfony/console": "^4.0 || ^5.0",
+                "symfony/polyfill-ctype": "^1.9",
+                "symfony/process": "^4.2 || ^5.0"
+            },
+            "require-dev": {
+                "laravel/dusk": "^4.0 || ^5.0",
+                "phpunit/phpunit": "^7.5 || ^8.4"
+            },
+            "bin": [
+                "dusk-updater"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Orchestra\\DuskUpdater\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jonas Staudenmeir",
+                    "email": "mail@jonas-staudenmeir.de"
+                },
+                {
+                    "name": "Mior Muhammad Zaki",
+                    "email": "crynobone@gmail.com"
+                }
+            ],
+            "description": "Updater for Laravel Dusk ChromeDriver binaries",
+            "time": "2020-01-14T22:30:45+00:00"
         },
         {
             "name": "phar-io/manifest",
