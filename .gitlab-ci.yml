@@ -26,8 +26,10 @@ test:
 
 dusktest:
   variables:
-    MYSQL_DATABASE: "test"
-    MYSQL_ROOT_PASSWORD: "secret"
+    MYSQL_ROOT_PASSWORD: 'rootpw'
+    MYSQL_DATABASE: 'serviceandgoods'
+    MYSQL_USER: 'serviceandgoods'
+    MYSQL_PASSWORD: 'serviceandgoods'
   services:
     - mysql:8.0
   when: manual
