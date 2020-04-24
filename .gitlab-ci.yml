@@ -32,7 +32,6 @@ dusktest:
     MYSQL_PASSWORD: 'serviceandgoods'
   services:
     - mysql:8.0
-  when: manual
   allow_failure: true
   image: edbizarro/gitlab-ci-pipeline-php:7.4-chromium
   stage: test
