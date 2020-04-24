@@ -36,6 +36,7 @@ dusktest:
     - composer install --no-plugins --no-scripts --no-progress --no-suggest --prefer-dist --optimize-autoloader
     - cp .env.dusk.ci .env
     - php artisan key:generate
+    - touch database/database.sqlite
     - php artisan migrate:refresh
     - php artisan db:seed --class UsersTableSeeder
     - php artisan serve > /dev/null 2>&1 &
