@@ -1,18 +1,18 @@
-import * as React from 'react'
-import { AsyncTypeahead } from 'react-bootstrap-typeahead'
-import 'react-bootstrap-typeahead/css/Typeahead.css'
+import * as React from "react";
+import { AsyncTypeahead } from "react-bootstrap-typeahead";
+import "react-bootstrap-typeahead/css/Typeahead.css";
 
-function CompanyName (props) {
+function CompanyName(props) {
   return (
     <AsyncTypeahead
       allowNew={true}
       autoFocus={true}
-      bsSize="sm"
+      size="sm"
       id={props.id}
       inputProps={{
-        className: 'form-control form-control-sm',
-        name: 'company_name',
-        required: 'required'
+        className: "form-control form-control-sm",
+        name: "company_name",
+        required: "required",
       }}
       isLoading={props.isLoading}
       labelKey={props.labelKey}
@@ -25,7 +25,7 @@ function CompanyName (props) {
       selected={props.selected}
       selectHintOnEnter={true}
     />
-  )
+  );
 }
 
-export default CompanyName
+export default CompanyName;

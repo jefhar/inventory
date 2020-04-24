@@ -2,6 +2,18 @@
 # For unit testing and deployment
 # Set the base image for subsequent instructions
 FROM phpdockerio/php74-fpm:latest
+ARG BUILD_DATE
+ARG VCS_REF
+
+LABEL maintainer="Jeff Harris <jeff@jeffharris.us>" \
+  org.label-schema.build-date=$BUILD_DATE \
+  org.label-schema.description="Inventory system for a goods and services shop." \
+  org.label-schema.name="main.serviceandgoods" \
+  org.label-schema.schema-version="1.0" \
+  org.label-schema.url="https://inventory.jeffharris.us" \
+  org.label-schema.vcs-ref=$VCS_REF \
+  org.label-schema.vcs-url="https://gitlab.com/c11k/serviceandgoods" \
+  PHP="7.4"
 
 # For local use:
 #   Sometimes github thinks you're spamming the site too much. Create an auth key

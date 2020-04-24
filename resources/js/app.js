@@ -7,12 +7,12 @@
 import ReactDOM from "react-dom";
 import * as React from "react";
 import CompanyClientName from "./components/WorkOrder/Elements/CompanyClientName";
+import AutoComplete from "autocomplete-js";
 
 require("./bootstrap");
 require("jquery-ui-sortable");
 require("formBuilder");
 require("formBuilder/dist/form-render.min");
-const AutoComplete = require("autocomplete-js");
 require("./components/WorkOrder/WorkOrderIndex");
 require("./components/WorkOrder/WorkOrderCreate");
 const HTTP_OK = 200;
@@ -83,59 +83,60 @@ $(() => {
   );
 });
 
+function WE_update() {
+  console.log("WE_update function");
+  const inventoryButton = document.getElementById("addInventoryButton");
+  const isLockedButton = document.getElementById("lockButton");
+  const lockIcon = document.getElementById("lockIcon");
+  const outline = document.getElementById("outline");
+  const lockHeader = document.getElementById("lockedHeader");
+  const locked = {
+    clickTo: "Click to Unlock work order.",
+    isLockedButton: "btn-outline-danger",
+    lockHeader: "Locked",
+    lockIcon: "fa-unlock-alt",
+    outline: "border-primary",
+  };
+  const unlocked = {
+    clickTo: "Click to Lock work order.",
+    isLockedButton: "btn-outline-success",
+    lockHeader: "Unlocked",
+    lockIcon: "fa-lock",
+    outline: "border-warning",
+  };
+  const updateUI = (add, remove) => {
+    if (isLockedButton) {
+      isLockedButton.classList.add(add.isLockedButton);
+
+      lockIcon.classList.add(add.lockIcon);
+    }
+    outline.classList.add(add.outline);
+
+    if (isLockedButton) {
+      isLockedButton.classList.remove(remove.isLockedButton);
+
+      lockIcon.classList.remove(remove.lockIcon);
+    }
+    outline.classList.remove(remove.outline);
+
+    $('[data-toggle="tooltip"]').attr("data-original-title", add.clickTo);
+  };
+
+  if (document.getElementById("workOrderBody").dataset.isLocked === "true") {
+    updateUI(locked, unlocked);
+    lockHeader.innerText = locked.lockHeader;
+  } else {
+    updateUI(unlocked, locked);
+    lockHeader.innerText = unlocked.lockHeader;
+  }
+  if (inventoryButton) {
+    inventoryButton.disabled =
+      document.getElementById("workOrderBody").dataset.isLocked === "true";
+  }
+}
+
 if (document.getElementById("workorders_edit")) {
   console.info("workorders_edit");
-
-  function WE_update() {
-    const inventoryButton = document.getElementById("addInventoryButton");
-    const isLockedButton = document.getElementById("lockButton");
-    const lockIcon = document.getElementById("lockIcon");
-    const outline = document.getElementById("outline");
-    const lockHeader = document.getElementById("lockedHeader");
-    const locked = {
-      clickTo: "Click to Unlock work order.",
-      isLockedButton: "btn-outline-danger",
-      lockHeader: "Locked",
-      lockIcon: "fa-unlock-alt",
-      outline: "border-primary",
-    };
-    const unlocked = {
-      clickTo: "Click to Lock work order.",
-      isLockedButton: "btn-outline-success",
-      lockHeader: "Unlocked",
-      lockIcon: "fa-lock",
-      outline: "border-warning",
-    };
-    const updateUI = (add, remove) => {
-      if (isLockedButton) {
-        isLockedButton.classList.add(add.isLockedButton);
-
-        lockIcon.classList.add(add.lockIcon);
-      }
-      outline.classList.add(add.outline);
-
-      if (isLockedButton) {
-        isLockedButton.classList.remove(remove.isLockedButton);
-
-        lockIcon.classList.remove(remove.lockIcon);
-      }
-      outline.classList.remove(remove.outline);
-
-      $('[data-toggle="tooltip"]').attr("data-original-title", add.clickTo);
-    };
-
-    if (document.getElementById("workOrderBody").dataset.isLocked === "true") {
-      updateUI(locked, unlocked);
-      lockHeader.innerText = locked.lockHeader;
-    } else {
-      updateUI(unlocked, locked);
-      lockHeader.innerText = unlocked.lockHeader;
-    }
-    if (inventoryButton) {
-      inventoryButton.disabled =
-        document.getElementById("workOrderBody").dataset.isLocked === "true";
-    }
-  }
 
   $('[data-toggle="tooltip"]').tooltip();
   $("#productModal").on("shown.bs.modal", (event) => {

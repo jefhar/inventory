@@ -30,6 +30,7 @@ class WorkOrderCreateTest extends DuskTestCase
      */
     public function pageExists(): void
     {
+        /** @var User $user */
         $user = factory(User::class)->create();
         $user->givePermissionTo(WorkOrdersController::CREATE_NAME);
 

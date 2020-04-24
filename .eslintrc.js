@@ -18,6 +18,7 @@ module.exports = {
     '_': false,
     'axios': false,
     'Popper': false,
+    'window': false,
   },
   parserOptions: {
     ecmaFeatures: {
@@ -29,12 +30,13 @@ module.exports = {
   plugins: [
     'react',
     'babel',
-    'standard'
+    'standard',
+    'prettier'
   ],
   rules: {
-    'standard/no-callback-literal': [2, ["cb", "callback"]],
-    "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error",
+    'standard/no-callback-literal': [2, ['cb', 'callback']],
+    'react/jsx-uses-react': 'error',
+    'react/jsx-uses-vars': 'error',
   },
   settings: {
     react: {

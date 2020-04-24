@@ -27,19 +27,19 @@ test:
 dusktest:
   when: manual
   allow_failure: true
-  image: registry.gitlab.com/c11k/serviceandgoods:dusk
-  services:
-    - selenium/standalone-chrome
+  image: edbizarro/gitlab-ci-pipeline-php:7.4-chromium
   stage: test
   script:
+    - yarn config set cache-folder .yarn
+    - yarn install --pure-lockfile
     - composer install --no-plugins --no-scripts --no-progress --no-suggest --prefer-dist --optimize-autoloader
     - cp .env.dusk.ci .env
     - php artisan key:generate
-    - php artisan dusk:chrome-driver
-    - ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
-    - php artisan serve > /dev/null 2>&1 &
-    - php artisan migrate
+    - php artisan migrate:refresh
     - php artisan db:seed --class UsersTableSeeder
+    - php artisan serve > /dev/null 2>&1 &
+    - ./vendor/laravel/dusk/bin/chromedriver-linux --port=9515 &
+    - sleep 5
     - php artisan dusk
   cache:
     key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
@@ -48,6 +48,13 @@ dusktest:
   except:
     - ci
   interruptible: true
+  artifacts:
+    paths:
+      - ./storage/logs  # for debugging
+      - ./tests/Browser/screenshots # for Dusk screenshots
+      - ./tests/Browser/console
+    expire_in: 7 days
+    when: always
 
 deploy_staging:
   stage: stage
