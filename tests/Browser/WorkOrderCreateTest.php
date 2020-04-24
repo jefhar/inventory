@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Tests\Browser;
 
+use App\Admin\Permissions\UserRoles;
 use App\User;
-use App\WorkOrders\Controllers\WorkOrdersController;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\WorkOrderCreate;
 use Tests\DuskTestCase;
@@ -32,7 +32,8 @@ class WorkOrderCreateTest extends DuskTestCase
     {
         /** @var User $user */
         $user = factory(User::class)->create();
-        $user->givePermissionTo(WorkOrdersController::CREATE_NAME);
+        $user->assignRole(UserRoles::SALES_REP);
+        $user->save();
 
         $this->browse(
             static function (Browser $browser) use ($user) {
@@ -42,7 +43,7 @@ class WorkOrderCreateTest extends DuskTestCase
                     ->press('Login')
                     ->assertPathIs('/home')
                     ->visit(new WorkOrderCreate())
-                    ->assertSee('Work Order Estimate');
+                    ->assertSee('Create Work Order');
                 //              $browser->loginAs($user)
                 //                   ->visit(new WorkOrderCreate())->dd();
                 //                    ->assertSee('Work Order Estimate');
