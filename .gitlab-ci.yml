@@ -40,11 +40,12 @@ dusktest:
   script:
     - whoami
     - pwd
-    - ls -l vendor/composer/
     - yarn config set cache-folder .yarn
     - yarn install --pure-lockfile
     - yarn run prod
     - composer install --no-plugins --no-scripts --no-progress --no-suggest --prefer-dist --optimize-autoloader
+    - ls -l vendor
+    - ls -l vendor/composer
     - vendor/bin/dusk-updater detect --auto-update
     - cp .env.dusk.ci .env
     - php artisan key:generate
