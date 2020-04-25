@@ -1,8 +1,13 @@
-image: registry.gitlab.com/c11k/serviceandgoods:latest
+image: phpdockerio/php74-fpm:latest
 
 stages:
   - test
   - stage
+
+before_script:
+  - apt-get update
+  - apt-get -y --no-install-recommends install php7.4-dom php7.4-gd php7.4-json php7.4-mbstring php7.4-opcache php7.4-pcov php7.4-pdo php7.4-sqlite3 php7.4-zip sqlite unzip
+  - apt-get install -y --only-upgrade php7.4-cli php7.4-common
 
 test:
   stage: test
@@ -74,6 +79,7 @@ deploy_staging:
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - composer global require "laravel/envoy=~1.0"
     - ~/.composer/vendor/bin/envoy run deploy --web_hook=$LOG_SLACK_WEBHOOK_URL --release_url=$CI_ENVIRONMENT_URL
   environment:
     name: staging
