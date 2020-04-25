@@ -7,6 +7,8 @@ stages:
 test:
   stage: test
   script:
+    - apt-get update
+    - apt-get install -y php7.4-pcov
     - cp .env.testing .env
     - touch database/database.sqlite
     - composer install --no-plugins --no-scripts
@@ -36,6 +38,9 @@ dusktest:
   image: edbizarro/gitlab-ci-pipeline-php:7.4-chromium
   stage: test
   script:
+    - whoami
+    - pwd
+    - ls -l vendor/composer/
     - yarn config set cache-folder .yarn
     - yarn install --pure-lockfile
     - yarn run prod
