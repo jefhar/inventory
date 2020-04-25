@@ -4,14 +4,12 @@ stages:
   - test
   - stage
 
-before_script:
-  - apt-get update
-  - apt-get -y --no-install-recommends install php7.4-dom php7.4-gd php7.4-json php7.4-mbstring php7.4-opcache php7.4-pcov php7.4-pdo php7.4-sqlite3 php7.4-zip sqlite unzip
-  - apt-get install -y --only-upgrade php7.4-cli php7.4-common
-
 test:
   stage: test
   script:
+    - apt-get update
+    - apt-get -y --no-install-recommends install php7.4-dom php7.4-gd php7.4-json php7.4-mbstring php7.4-opcache php7.4-pcov php7.4-pdo php7.4-sqlite3 php7.4-zip sqlite unzip
+    - apt-get install -y --only-upgrade php7.4-cli php7.4-common
     - cp .env.testing .env
     - touch database/database.sqlite
     - composer install --no-plugins --no-scripts
