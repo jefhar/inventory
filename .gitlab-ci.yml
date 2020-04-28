@@ -1,8 +1,22 @@
 image: phpdockerio/php74-fpm:latest
 
 stages:
+  - build
   - test
   - stage
+
+refresh_cache:
+  stage: build
+  cache:
+    key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
+    paths:
+      - vendor
+      - node_modules
+      - .yarn
+  script:
+    - composer install --no-plugins --no-scripts
+    - yarn config set cache-folder .yarn
+    - yarn install --pure-lockfile
 
 test:
   stage: test
@@ -18,8 +32,12 @@ test:
     - composer test
   cache:
     key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
+    policy: pull
     paths:
-    - vendor/
+      - vendor
+      - node_modules
+      - .yarn
+    policy: pull
   artifacts:
     paths:
     - tests/coverage
@@ -55,6 +73,7 @@ dusktest:
     - php artisan dusk
   cache:
     key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
+    policy: pull
     paths:
       - vendor
       - node_modules
