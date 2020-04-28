@@ -12,6 +12,7 @@ namespace Domain\Carts\Actions;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Class CartDestroyAction
@@ -28,10 +29,18 @@ class CartDestroyAction
      */
     public static function execute(Cart $cart): Cart
     {
+        Gate::authorize('destroy-cart', $cart);
         DB::table(Product::TABLE)
             ->where(Product::CART_ID, $cart->id)
-            ->update([Product::CART_ID => null]);
+            ->update(
+                [
+                    Product::CART_ID => null,
+                    Product::STATUS => Product::STATUS_AVAILABLE,
+                ]
+            );
         $cart->delete();
+        $cart->status = Cart::STATUS_DESTROYED;
+        $cart->save();
 
         return $cart;
     }

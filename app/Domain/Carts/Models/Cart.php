@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Client $client
  * @property int $id
  * @property int $luhn
+ * @property int $user_id
  * @property string $status
  */
 class Cart extends Model
@@ -38,6 +39,7 @@ class Cart extends Model
     public const ID = 'id';
     public const LUHN = 'luhn';
     public const STATUS = 'status';
+    public const STATUS_DESTROYED = 'destroyed';
     public const STATUS_OPEN = 'open';
     public const STATUS_VOID = 'void';
     public const TABLE = 'carts';
@@ -51,6 +53,12 @@ class Cart extends Model
 
     protected $dispatchesEvents = [
         'created' => CartCreated::class,
+    ];
+
+    protected $casts = [
+        self::CLIENT_ID => 'integer',
+        self::LUHN => 'integer',
+        self::USER_ID => 'integer',
     ];
 
     /**

@@ -10,7 +10,9 @@ namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
 use App\Carts\Controllers\CartsController;
+use App\Products\Controllers\InventoryController;
 use Domain\Carts\Models\Cart;
+use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Tests\TestCase;
@@ -120,16 +122,37 @@ class CartsControllerTest extends TestCase
     /**
      * @test
      */
-    public function salesRepCanDestroyCart(): void
+    public function salesRepCanDestroyOwnCart(): void
     {
-        /** @var Cart $cart */
-        $cart = factory(Cart::class)->make();
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
-        $salesRep->carts()->save($cart);
+        $this->actingAs($salesRep);
 
-        $this->actingAs($salesRep)
-            ->delete(route(CartsController::DESTROY_NAME, $cart))
+        $cart = $this->makeFullCart();
+        $product = $this->createFullProduct();
+        $this->post(
+            route(CartsController::STORE_NAME),
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $cart->client->company_name,
+                Person::FIRST_NAME => $cart->client->person->first_name,
+            ]
+        );
+
+        $cart = Cart::find(1);
+        $this->delete(route(CartsController::DESTROY_NAME, $cart))
             ->assertOk();
+        $this->assertSoftDeleted(
+            Cart::TABLE,
+            [
+                Cart::ID => $cart->id,
+            ]
+        );
+        $this->assertDatabaseMissing(
+            Product::TABLE,
+            [
+                Product::CART_ID => $cart->id,
+            ]
+        );
     }
 
     /**
@@ -177,5 +200,26 @@ class CartsControllerTest extends TestCase
 
                 ]
             );
+    }
+
+    /**
+     * @test
+     */
+    public function cartIndexShowsProductModels(): void
+    {
+        $cart = $this->makeFullCart();
+        $cart->save();
+        $product = $this->createFullProduct();
+        $otherProduct = $this->createFullProduct();
+        $cart->products()->saveMany([$product, $otherProduct]);
+
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $salesRep->carts()->save($cart);
+        $cart->load('products');
+        $this
+            ->actingAs($salesRep)
+            ->get(route(InventoryController::INDEX_NAME))
+            ->assertSeeText($cart->products[0]->model)
+            ->assertSeeText($cart->products[1]->model);
     }
 }

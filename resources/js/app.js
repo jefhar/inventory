@@ -782,5 +782,33 @@ if (document.getElementById("inventory_show")) {
 }
 
 if (document.getElementById("cartIndex")) {
-  $(".collapse").collapse();
+  $(".collapse").collapse({ toggle: false });
+  $("#destroyCartModal").on("show.bs.modal", (event) => {
+    console.info("event:", event);
+    const sourceTarget = $(event.relatedTarget);
+    console.info("target:", sourceTarget);
+    const cart = sourceTarget.data("cart");
+    console.info("cart:", cart);
+
+    document
+      .getElementById("destroyCartButton")
+      .addEventListener("click", () => {
+        // Send destroy to /carts/destroy with cart luhn in field.
+        axios.delete(`/carts/${cart}`);
+
+        // Close modal
+        $("#destroyCartModal").modal("hide");
+        // Remove cart card from page
+        document.getElementById(`cart${cart}`).remove();
+
+        // Add toast
+        document.getElementById("toastBody").innerText =
+          "Cart " +
+          cart +
+          " has been destroyed. All items have been returned to inventory.";
+        const $destroyedToast = $("#destroyedToast");
+        $destroyedToast.toast();
+        $destroyedToast.toast("show");
+      });
+  });
 }

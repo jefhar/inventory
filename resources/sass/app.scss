@@ -84,3 +84,8 @@ body {
 .hyphenation {
   hyphens: auto;
 }
+
+.left-warning-border {
+  border-left: $warning 6px solid;
+  padding-left: 12px;
+}

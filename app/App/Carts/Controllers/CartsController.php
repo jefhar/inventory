@@ -13,6 +13,7 @@ use App\Admin\Controllers\Controller;
 use App\Admin\Permissions\UserPermissions;
 use App\Carts\DataTransferObjects\CartStoreObject;
 use App\Carts\Requests\CartStoreRequest;
+use Domain\Carts\Actions\CartDestroyAction;
 use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
 use Illuminate\Http\JsonResponse;
@@ -37,8 +38,10 @@ class CartsController extends Controller
     public const UPDATE_NAME = 'carts.update';
     public const UPDATE_PATH = '/carts/{cart}';
 
-    public function destroy()
+    public function destroy(Cart $cart)
     {
+        CartDestroyAction::execute($cart);
+        return $cart;
     }
 
     /**

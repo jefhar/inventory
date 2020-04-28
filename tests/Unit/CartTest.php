@@ -19,6 +19,7 @@ use Domain\Carts\Events\CartCreated;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
@@ -160,28 +161,71 @@ class CartTest extends TestCase
      * @test
      * @throws \Exception
      */
-    public function canDestroyCart(): void
+    public function canDestroyOwnCart(): void
     {
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        /** @var Client $client */
+        $client = factory(Client::class)->create();
         $product = $this->createFullProduct();
-        $cart = $this->makeFullCart();
-        $cart->save();
-        $cart->products()->save($product);
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
+        $cart = CartStoreAction::execute($cartStoreObject);
+
         $this->assertDatabaseHas(
             Product::TABLE,
             [
                 Product::ID => $product->id,
                 Product::CART_ID => $cart->id,
+                Product::STATUS => Product::STATUS_IN_CART,
             ]
         );
+
         CartDestroyAction::execute($cart);
         $this->assertSoftDeleted($cart);
         $this->assertDatabaseHas(
-            Product::TABLE,
+            Cart::TABLE,
             [
-                Product::ID => $product->id,
-                Product::CART_ID => null,
+                Cart::ID => $cart->id,
+                Cart::STATUS => Cart::STATUS_DESTROYED,
             ]
         );
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::CART_ID => null,
+                Product::ID => $product->id,
+                Product::STATUS => Product::STATUS_AVAILABLE,
+            ]
+        );
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function cannotDestroySomeoneElsesCart(): void
+    {
+        $myCartUser = $this->createEmployee(UserRoles::SALES_REP);
+        $notMyCartUser = $this->createEmployee(UserRoles::SALES_REP);
+        /** @var Client $client */
+        $client = factory(Client::class)->create();
+        $product = $this->createFullProduct();
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
+        $this->actingAs($myCartUser);
+        $savedCart = CartStoreAction::execute($cartStoreObject);
+
+        $this->actingAs($notMyCartUser);
+        $this->expectException(AuthorizationException::class);
+        CartDestroyAction::execute($savedCart);
     }
 
     /**
