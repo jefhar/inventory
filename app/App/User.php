@@ -20,7 +20,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @method User revokePermissionTo($permission)
  * @package App
  * @property Cart $carts
- * @property string email
+ * @property string $email
  */
 class User extends Authenticatable
 {

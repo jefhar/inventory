@@ -37,7 +37,7 @@ class SalesRepTest extends DuskTestCase
                 $lastName = $faker->lastName;
 
                 $browser->visit('/')
-                    ->click('Login')
+                    ->clickLink('Login')
                     ->type('email', $user->email)
                     ->type('password', 'password')
                     ->press('Login')
