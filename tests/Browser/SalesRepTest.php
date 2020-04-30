@@ -26,7 +26,7 @@ class SalesRepTest extends DuskTestCase
      * @throws \Throwable
      * @test
      */
-    public function canLogin(): void
+    public function salesRepCanLogin(): void
     {
         $faker = Factory::create();
         $user = $this->createEmployee(UserRoles::SALES_REP);
@@ -42,7 +42,7 @@ class SalesRepTest extends DuskTestCase
                     ->type('password', 'password')
                     ->press('Login')
                     ->assertPathIs('/home')
-                    ->clickLink('Create new WorkOrder')
+                    ->click('Create new WorkOrder') // clickLink, click
                     ->type('company_name', $companyName)
                     ->type('first_name', $firstName)
                     ->type('last_name', $lastName)
