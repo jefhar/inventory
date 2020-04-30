@@ -31,7 +31,7 @@ class TechnicianTest extends DuskTestCase
             function (Browser $browser) {
                 $browser->loginAs($this->createEmployee(UserRoles::TECHNICIAN))
                     ->visit(new TypesCreate())
-                    ->createType()
+                    ->createType('myProduct')
                     ->assertSee('Product Type Saved.');
             }
         );

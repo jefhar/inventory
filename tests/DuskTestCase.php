@@ -29,8 +29,8 @@ abstract class DuskTestCase extends BaseTestCase
 
     protected function setUp(): void
     {
-        echo '### ' . env('DUSK_DRIVER') . ' - ' . env('APP_NAME', 'no_name');
-        echo '### ' . env('DB_CONNECTION') . '::`' . env('DB_DATABASE') . '`';
+        // echo '### ' . env('DUSK_DRIVER') . ' - ' . env('APP_NAME', 'no_name');
+        // echo '### ' . env('DB_CONNECTION') . '::`' . env('DB_DATABASE') . '`';
         parent::setUp();
     }
 
@@ -42,7 +42,7 @@ abstract class DuskTestCase extends BaseTestCase
      */
     public static function prepare()
     {
-     //   static::useChromedriver(realpath(__DIR__ . '/../bin/chromedriver'));
+        //   static::useChromedriver(realpath(__DIR__ . '/../bin/chromedriver'));
         static::startChromeDriver();
     }
 
