@@ -44,7 +44,7 @@ class CanLogInTest extends DuskTestCase
                     ->press('Login')
                     ->assertPathIs('/home')
                     ->assertSee($technician->name)
-                    ->click($technician->name)
+                    ->clickLink($technician->name) // click
                     ->assertSee('Logout');
                 //              $browser->loginAs($user)
                 //                   ->visit(new WorkOrderCreate())->dd();
