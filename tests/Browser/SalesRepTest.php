@@ -32,16 +32,18 @@ class SalesRepTest extends DuskTestCase
         $user = $this->createEmployee(UserRoles::SALES_REP);
         $this->browse(
             function (Browser $browser) use ($faker, $user) {
+                $companyName = $faker->company;
+                $firstName = $faker->firstName;
+                $lastName = $faker->lastName;
+
                 $browser->visit('/')
                     ->click('Login')
                     ->type('email', $user->email)
                     ->type('password', 'password')
                     ->press('Login')
                     ->assertPathIs('/home');
-                $companyName = $faker->company;
-                $firstName = $faker->firstName;
-                $lastName = $faker->lastName;
-                $browser->press('Create New WorkOrder')
+                $browser
+                    ->press('Create New WorkOrder')
                     ->type('company_name', $companyName)
                     ->type('first_name', $firstName)
                     ->type('last_name', $lastName)
