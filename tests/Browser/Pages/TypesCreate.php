@@ -55,15 +55,24 @@ class TypesCreate extends Page
     public function createType(Browser $browser, string $formName): void
     {
         $browser
-            ->waitFor('.stage-wrap')
+            ->waitFor('.stage-wrap');
+        $formId = $browser->attribute('.form-wrap', 'id');
+        dd($formId);
+        $browser
             ->drag('.input-control-9', '.stage-wrap') // Text field.
             ->drag('.input-control-5', '.stage-wrap') // Select field.
             ->click('.icon-pencil')
+            ->waitFor()
             ->type('label', 'Form Factor')
             ->click('.close-field')
             ->press('Save Form')
-            ->waitFor('.modal-dialog')
-            ->type('saveType', $formName)
-            ->press('Save');
+            ->whenAvailable(
+                '.modal-dialog',
+                function ($modal) use ($formName) {
+                    $modal
+                        ->type('saveType', $formName)
+                        ->press('Save');
+                }
+            );
     }
 }
