@@ -56,11 +56,14 @@ class TypesCreate extends Page
     {
         $browser
             ->waitFor('.stage-wrap');
-        $formId = $browser->attribute('.form-wrap', 'id');
-        dd($formId);
+        $wrapper = $browser->attribute('.form-wrap', 'id');
+        $wrappers = explode('-', $wrapper);
+        $formId = $wrappers[1];
+
         $browser
             ->drag('.input-control-9', '.stage-wrap') // Text field.
             ->drag('.input-control-5', '.stage-wrap') // Select field.
+                ->mouseover('#frmb-' . $formId . '-fld-2')
             ->click('.icon-pencil')
             ->waitFor()
             ->type('label', 'Form Factor')
