@@ -55,6 +55,7 @@ class TypesCreate extends Page
     public function createType(Browser $browser, string $formName): void
     {
         $browser
+            ->waitFor('.stage-wrap')
             ->drag('.input-control-9', '.stage-wrap') // Text field.
             ->drag('.input-control-5', '.stage-wrap') // Select field.
             ->click('.icon-pencil')
