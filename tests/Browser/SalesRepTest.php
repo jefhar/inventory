@@ -42,7 +42,8 @@ class SalesRepTest extends DuskTestCase
                     ->type('password', 'password')
                     ->press('Login')
                     ->assertPathIs('/home')
-                    ->click('Create new WorkOrder') // clickLink, click
+                    ->waitForText('Create new WorkOrder')
+                    ->click('Create new WorkOrder')
                     ->type('company_name', $companyName)
                     ->type('first_name', $firstName)
                     ->type('last_name', $lastName)
