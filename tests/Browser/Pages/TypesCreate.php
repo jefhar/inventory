@@ -59,7 +59,7 @@ class TypesCreate extends Page
         $wrapper = $browser->attribute('.form-wrap', 'id');
         $wrappers = explode('-', $wrapper);
         $formId = $wrappers[1];
-        // var_dump($formId);   // correctly outputs `string(13) "1588805049862"`
+
         $browser
             ->drag('.input-control-9', '.stage-wrap') // Text field.
             ->drag('.input-control-5', '.stage-wrap') // Select field.

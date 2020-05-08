@@ -21,10 +21,10 @@ class PricePatchAction
 
     /**
      * @param Product $product
-     * @param int $price
+     * @param float $price
      * @return Product
      */
-    public static function execute(Product $product, int $price): Product
+    public static function execute(Product $product, float $price): Product
     {
         $product->price = $price;
         $product->save();

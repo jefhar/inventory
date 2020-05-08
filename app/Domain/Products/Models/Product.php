@@ -61,8 +61,10 @@ class Product extends Model
 
     protected $attributes = [
         self::STATUS => self::STATUS_AVAILABLE,
+        self::PRICE => 0,
     ];
     protected $casts = [
+        self::PRICE => 'decimal:2',
         self::VALUES => 'array',
     ];
     protected $fillable = [
@@ -79,6 +81,31 @@ class Product extends Model
         'created' => ProductCreated::class,
         'saving' => ProductSaved::class,
     ];
+
+    /**
+     * Accessor to retrieve product price as decimal value.
+     *
+     * @param int $price
+     * @return float
+     */
+    public function getPriceAttribute(int $price): float
+    {
+        return $price / 100;
+    }
+
+    /**
+     * Mutator to store product price as integer.
+     *
+     * @param float $price
+     */
+    public function setPriceAttribute(float $price): void
+    {
+        if ($price < 0.01) {
+            $price = 0.00;
+        }
+
+        $this->attributes[self::PRICE] = floor($price * 100);
+    }
 
     /**
      * @param string $searchString

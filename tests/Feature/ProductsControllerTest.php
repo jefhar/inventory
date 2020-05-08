@@ -16,6 +16,7 @@ use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 use Tests\Traits\FullUsers;
@@ -83,11 +84,11 @@ class ProductsControllerTest extends TestCase
 
     /**
      * @test
+     * @throws \Exception
      */
     public function salesRepCanAddPriceToProduct(): void
     {
-        $faker = Factory::create();
-        $price = $faker->randomNumber();
+        $price = random_int(100, PHP_INT_MAX) / 100;
         $product = $this->createFullProduct();
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price])
@@ -112,5 +113,18 @@ class ProductsControllerTest extends TestCase
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price,])
             ->assertForbidden();
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function negativePriceResultsInUnprocessableEntity(): void
+    {
+        $product = $this->createFullProduct();
+        $price = random_int(PHP_INT_MIN, 0) / 100;
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
+            ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price,])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

@@ -18,6 +18,7 @@ use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 use Tests\Traits\FullUsers;
 
 /**
@@ -28,6 +29,7 @@ use Tests\Traits\FullUsers;
 class ProductsTest extends TestCase
 {
     use FullUsers;
+    use FullObjects;
 
     /**
      * @test
@@ -65,10 +67,7 @@ class ProductsTest extends TestCase
      */
     public function createdProductHasLuhn(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
-
+        $this->createFullProduct();
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -83,9 +82,7 @@ class ProductsTest extends TestCase
      */
     public function createdProductIsAvailableForSale(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
+        $this->createFullProduct();
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -101,9 +98,7 @@ class ProductsTest extends TestCase
      */
     public function updateProductUpdatesProduct(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
+        $product = $this->createFullProduct();
         $update = factory(Product::class)->make();
         $productUpdateObject = RawProductUpdateObject::fromRequest(
             [
@@ -192,10 +187,7 @@ class ProductsTest extends TestCase
      */
     public function renderingProductViewCombinesValuesAndType(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
-
+        $product = $this->createFullProduct();
         $this->actingAs($this->createEmployee(UserRoles::EMPLOYEE));
 
         $formData = ProductShowAction::execute($product);
@@ -208,9 +200,7 @@ class ProductsTest extends TestCase
      */
     public function renderingProductViewAddsManufacturerAndModelFirst(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
+        $product = $this->createFullProduct();
 
         $this->actingAs($this->createEmployee(UserRoles::EMPLOYEE));
 
@@ -219,5 +209,39 @@ class ProductsTest extends TestCase
         $actionFormData = ProductShowAction::execute($product);
         $this->assertEquals('manufacturer', $actionFormData[0]['name']);
         $this->assertEquals('model', $actionFormData[1]['name']);
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function productPriceSavesAsPennies(): void
+    {
+        $product = $this->createFullProduct();
+        $price = random_int(100, mt_getrandmax()) / 100;
+        $product->price = $price;
+        $product->save();
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::ID => $product->id,
+                Product::PRICE => $price * 100,
+            ]
+        );
+        $product->refresh();
+        $this->assertEquals($price, $product->price);
+    }
+
+    /**
+     * @test
+     */
+    public function productPriceCanNotBeNegative(): void
+    {
+        $product = $this->createFullProduct();
+        $price = random_int(PHP_INT_MIN, 0);
+        $product->price = $price;
+        $product->save();
+        $product->refresh();
+        $this->assertEquals(0, $product->price);
     }
 }

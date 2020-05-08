@@ -16,6 +16,7 @@ use Domain\PendingSales\Actions\PricePatchAction;
 use Domain\Products\Actions\ProductStoreAction;
 use Domain\Products\Models\Product;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ProductsController
@@ -47,7 +48,11 @@ class ProductsController extends Controller
      */
     public function update(Product $product, Request $request): Product
     {
-        $price = (int)$request->input(Product::PRICE);
+        $price = $request->input(Product::PRICE);
+        if ($price < 0) {
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        $price = (floor($price * 100)) / 100;
 
         return PricePatchAction::execute($product, $price);
     }
