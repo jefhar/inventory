@@ -28,7 +28,7 @@
                     aria-live="polite"
                     class="card-body"
                     data-is-locked="{{ ($workOrder->is_locked) ? 'true' : 'false' }}"
-                    data-work-order-id="{{ $workOrder->id }}"
+                    data-work-order-id="{{ $workOrder->luhn }}"
                     id="workOrderBody"
                     style="position: relative; min-height: 200px;"
             >

@@ -132,7 +132,7 @@
     aria-atomic="true"
     aria-live="assertive"
     class="toast"
-    data-delay="4000"
+    data-delay="8000"
     id="destroyedToast"
     role="alert"
     style="position:absolute; top: 6rem; right: 0;"

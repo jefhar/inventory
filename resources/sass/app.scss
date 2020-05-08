@@ -89,3 +89,11 @@ body {
   border-left: $warning 6px solid;
   padding-left: 12px;
 }
+
+.cost::before {
+  content: "$\00a0";
+}
+
+.cost::after {
+  content: attr(data-productLuhn);
+}
