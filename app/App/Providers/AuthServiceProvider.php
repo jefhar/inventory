@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Admin\Gates;
 use App\User;
 use Domain\Carts\Models\Cart;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -33,10 +34,15 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::define(
-            'destroy-cart',
+            Gates::DESTROY_CART,
             function (User $user, Cart $cart) {
-
-                return $user->id === $cart->user_id;
+                return Gates::cartBelongsToUser($cart, $user);
+            }
+        );
+        Gate::define(
+            Gates::INVOICE_CART,
+            function (User $user, Cart $cart) {
+                return Gates::cartBelongsToUser($cart, $user);
             }
         );
     }

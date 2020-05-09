@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Domain\Carts\Actions;
+namespace App\Carts\DataTransferObjects;
 
 use App\Admin\Gates;
 use Domain\Carts\Models\Cart;
@@ -15,32 +15,26 @@ use Domain\Products\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
-/**
- * Class CartDestroyAction
- *
- * @package Domain\Carts\Action
- */
-class CartDestroyAction
+class CartInvoicedAction
 {
 
     /**
      * @param Cart $cart
      * @return Cart
-     * @throws \Exception Only if $cart doesn't have a primary key.
      */
     public static function execute(Cart $cart): Cart
     {
-        Gate::authorize(Gates::DESTROY_CART, $cart);
+        Gate::authorize(Gates::INVOICE_CART, $cart);
         DB::table(Product::TABLE)
             ->where(Product::CART_ID, $cart->id)
             ->update(
                 [
                     Product::CART_ID => null,
-                    Product::STATUS => Product::STATUS_AVAILABLE,
+                    Product::STATUS => Product::STATUS_INVOICED,
                 ]
             );
-        $cart->delete();
-        $cart->status = Cart::STATUS_VOID;
+
+        $cart->status = Cart::STATUS_INVOICED;
         $cart->save();
 
         return $cart;
