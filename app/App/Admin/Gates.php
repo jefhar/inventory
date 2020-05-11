@@ -25,6 +25,6 @@ class Gates
      */
     public static function cartBelongsToUser(Cart $cart, User $user): bool
     {
-        return $cart->id === $user->id;
+        return $cart->user_id === $user->id;
     }
 }

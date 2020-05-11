@@ -39,7 +39,11 @@ class Cart extends Model
     public const ID = 'id';
     public const LUHN = 'luhn';
     public const STATUS = 'status';
-
+    public const STATUSES = [
+        self::STATUS_INVOICED,
+        self::STATUS_VOID,
+        self::STATUS_OPEN,
+    ];
     public const STATUS_INVOICED = 'invoiced';
     public const STATUS_OPEN = 'open';
     public const STATUS_VOID = 'void';

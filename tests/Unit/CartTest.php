@@ -237,7 +237,9 @@ class CartTest extends TestCase
     {
         /** @var Cart $cart */
         $cart = factory(Cart::class)->create();
-        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $salesRep->carts()->save($cart);
+        $this->actingAs($salesRep);
         $cartPatchObject = CartPatchObject::fromRequest(
             [
                 Cart::STATUS => Cart::STATUS_VOID,
@@ -296,6 +298,7 @@ class CartTest extends TestCase
      */
     public function updateCartToStatusInvoicedMarksCartInvoiced(): void
     {
+        // setup open cart
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
         $client = factory(Client::class)->create();
         $product = $this->createFullProduct();
@@ -306,8 +309,24 @@ class CartTest extends TestCase
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
+        $this->assertDatabaseHas(
+            Cart::TABLE,
+            [
+                Cart::ID => $cart->id,
+                Cart::STATUS => CART::STATUS_OPEN,
+            ]
+        );
+
+        // Test
         $cart = CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
         $this->assertEquals(Cart::STATUS_INVOICED, $cart->status);
+        $this->assertDatabaseHas(
+            Cart::TABLE,
+            [
+                Cart::ID => $cart->id,
+                Cart::STATUS => CART::STATUS_INVOICED,
+            ]
+        );
     }
 
     /**

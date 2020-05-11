@@ -185,19 +185,43 @@ class CartsControllerTest extends TestCase
     public function salesRepCanUpdateCartStatus(): void
     {
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
-        /** @var Cart $cart */
-        $cart = factory(Cart::class)->make();
-        $salesRep->carts()->save($cart);
-        $this->actingAs($salesRep)
+        $this->actingAs($salesRep);
+        $voidingCart = factory(Cart::class)->make();
+        $salesRep->carts()->save($voidingCart);
+        $this
             ->patch(
-                route(CartsController::UPDATE_NAME, $cart),
+                route(CartsController::UPDATE_NAME, $voidingCart),
                 [Cart::STATUS => Cart::STATUS_VOID]
-            )->assertOk()
+            )
+            ->assertOk()
             ->assertJson(
                 [
-                    Cart::ID => $cart->id,
+                    Cart::ID => $voidingCart->id,
                     Cart::STATUS => Cart::STATUS_VOID,
 
+                ]
+            );
+
+        $invoicingCart = factory(Cart::class)->make();
+        $salesRep->carts()->save($invoicingCart);
+        $this->assertDatabaseHas(
+            Cart::TABLE,
+            [
+                Cart::ID => $invoicingCart->id,
+                Cart::STATUS => Cart::STATUS_OPEN,
+            ]
+        );
+
+        $response = $this->patch(
+            route(CartsController::UPDATE_NAME, $invoicingCart),
+            [Cart::STATUS => Cart::STATUS_INVOICED]
+        );
+
+        $response->assertOk()
+            ->assertJson(
+                [
+                    Cart::ID => $invoicingCart->id,
+                    Cart::STATUS => Cart::STATUS_INVOICED,
                 ]
             );
     }
