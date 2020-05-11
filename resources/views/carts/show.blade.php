@@ -17,7 +17,7 @@
           <br>Created at {{ $cart->created_at->format('j M Y H:i') }}</p>
       </div>
       <div class="card-body">
-       <button type="button" class="btn btn-outline-primary">Mark Invoiced</button>
+        <button type="button" class="btn btn-outline-primary">Mark Invoiced</button>
         <button type="button" class="btn btn-outline-danger">Destroy Cart</button>
       </div>
 

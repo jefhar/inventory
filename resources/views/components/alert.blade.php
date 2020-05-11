@@ -1,7 +1,7 @@
 <!-- /resources/components/alert.blade.php -->
 
 <div class="alert alert-danger">
-    <div class="alert-title">{{ $title }}</div>
+  <div class="alert-title">{{ $title }}</div>
 
-    {{ $slot }}
+  {{ $slot }}
 </div>
