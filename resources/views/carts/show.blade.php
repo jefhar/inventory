@@ -3,22 +3,32 @@
 @section('title', 'Cart ' . $cart->luhn . ': ' . $cart->client->company_name)
 
 @section('content')
+  @php
+    $border = [
+      \Domain\Carts\Models\Cart::STATUS_INVOICED => 'success',
+    \Domain\Carts\Models\Cart::STATUS_OPEN => 'secondary',
+    \Domain\Carts\Models\Cart::STATUS_VOID => 'danger',
+    ];
+  @endphp
   <div id="cartShow"
        class="container">
-    <div class="card">
+    <div class="card border-{{ $border[$cart->status] }}">
       <div class="card-header">
         <h1
           id="cartId"
           data-cart-luhn="{{ $cart->luhn }}">
-          Cart # {{ $cart->luhn }}</h1>
+          Cart # {{ $cart->luhn }}: {{ \Illuminate\Support\Str::title($cart->status) }}</h1>
         <p class="lead">{{ $cart->client->company_name }}</p>
         <p>{{ $cart->client->person->first_name }} {{ $cart->client->person->last_name }}
           <i class="pl-4 fas fa-phone-alt"></i>&nbsp;{{ $cart->client->person->phone_number }}
           <br>Created at {{ $cart->created_at->format('j M Y H:i') }}</p>
       </div>
       <div class="card-body">
-        <button type="button" class="btn btn-outline-primary">Mark Invoiced</button>
-        <button type="button" class="btn btn-outline-danger">Destroy Cart</button>
+        <button id="invoiceButton" type="button"
+                class="btn btn-outline-primary" {{ $cart->status === \Domain\Carts\Models\Cart::STATUS_INVOICED ? 'disabled' : '' }}>
+          Mark Invoiced
+        </button>
+        <button id="destroyButton" type="button" class="btn btn-outline-danger">Destroy Cart</button>
       </div>
 
       <div class="card-body">
@@ -95,7 +105,7 @@
             </div>
             <div class="invalid-feedback">Please enter a positive dollar value.</div>
           </form>
-          <small id="originalPriceHelp" class="form-text text-muted">Changing from $<span
+          <small id="originalPriceHelp" class="form-text text-muted">Changing from <span
               id="originalPrice"></span>.</small>
         </div>
         <div class="modal-footer">
