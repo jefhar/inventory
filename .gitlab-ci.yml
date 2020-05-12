@@ -14,6 +14,7 @@ refresh_cache:
       - node_modules
       - .yarn
   script:
+    - echo "Inb4: need to install yarn. Base image is ubuntu:bionic"
     - composer install --no-plugins --no-scripts
     - yarn config set cache-folder .yarn
     - yarn install --pure-lockfile
@@ -37,7 +38,6 @@ test:
       - vendor
       - node_modules
       - .yarn
-    policy: pull
   artifacts:
     paths:
     - tests/coverage

@@ -379,7 +379,8 @@ if (document.getElementById("workorders_edit")) {
 
 if (document.getElementById("types_create")) {
   console.info("types_create");
-  const TC_formBuilderOptions = {
+  const emptyArray = "[]";
+  const typeCreateFormBuilderOptions = {
     controlOrder: [
       "text",
       "number",
@@ -404,14 +405,18 @@ if (document.getElementById("types_create")) {
     ],
     fieldRemoveWarn: true,
     onSave: (event, formData) => {
-      TC_toggleEdit(false);
+      typeCreateToggleEdit(false);
       $("#fb-render").formRender({ formData });
       console.info(JSON.stringify(formData));
     },
     showActionButtons: false,
   };
+  const typeCreateFormBuilder = $("#fb-editor").formBuilder(
+    typeCreateFormBuilderOptions
+  );
 
-  function TC_toggleEdit() {
+  // methods
+  const typeCreateToggleEdit = () => {
     const previewButton = document.getElementById("previewButton");
     const editing = previewButton.dataset.showOnClick;
     let renderPreview = false;
@@ -426,39 +431,38 @@ if (document.getElementById("types_create")) {
     document
       .getElementById("formbuilder")
       .classList.toggle("form-rendered", !renderPreview);
-  }
-
-  /**
-   * @return {boolean}
-   */
-  function TC_checkAndClear(formBuilder) {
+  };
+  const typeCreateCheckAndClear = (formBuilder) => {
     const formData = formBuilder.actions.getData("json", true);
-    if (formData !== "[]") {
-      if (window.confirm("Are you sure you want to clear all fields?")) {
-        formBuilder.actions.clearFields();
-        $("#fb-render").formRender({ formData });
-        return true;
-      }
-      return false;
-    }
-    return true;
-  }
 
-  const TC_formBuilder = $("#fb-editor").formBuilder(TC_formBuilderOptions);
+    // True if user confirms clearing non-empty form (or hasn't started a form)
+    if (
+      formData === emptyArray ||
+      window.confirm("Are you sure you want to clear all fields?")
+    ) {
+      formBuilder.actions.clearFields();
+      $("#fb-render").formRender({ formData });
+      return true;
+    }
+    // Form is not empty and user did not confirm clear.
+    return false;
+  };
+
   $("#fb-render").formRender();
 
+  // Events
   document.getElementById("previewButton").onclick = () => {
-    TC_toggleEdit();
-    const formData = TC_formBuilder.actions.getData("json", true);
+    typeCreateToggleEdit();
+    const formData = typeCreateFormBuilder.actions.getData("json", true);
     $("#fb-render").formRender({ formData });
   };
 
   document.getElementById("clearButton").onclick = () => {
-    TC_checkAndClear(TC_formBuilder);
+    typeCreateCheckAndClear(typeCreateFormBuilder);
   };
 
   document.getElementById("loadButton").onclick = () => {
-    if (!TC_checkAndClear(TC_formBuilder)) {
+    if (!typeCreateCheckAndClear(typeCreateFormBuilder)) {
       return;
     }
 
@@ -467,7 +471,7 @@ if (document.getElementById("types_create")) {
   };
 
   document.getElementById("saveButton").onclick = () => {
-    const formData = TC_formBuilder.actions.getData("json", true);
+    const formData = typeCreateFormBuilder.actions.getData("json", true);
     if (formData === "[]") {
       alert("Nothing to save!");
       return;
@@ -483,7 +487,7 @@ if (document.getElementById("types_create")) {
       .addEventListener("click", (event) => {
         console.info("Save button clicked.");
         const typeName = document.getElementById("saveType").value;
-        const formData = TC_formBuilder.actions.getData("json", true);
+        const formData = typeCreateFormBuilder.actions.getData("json", true);
         const alert = "";
         _.throttle(
           axios
@@ -612,57 +616,16 @@ different name for the product type.
           .get(`/types/${value}`, value)
           .then((response) => {
             const formData = response.data;
-            /*
-// These need an ID so they can be removed via
-// formBuilder.actions.removeField('tmp_header');
-// Or maybe add them via prepend
-formData.unshift(
-{
-id: tmp_header
-type: 'header',
-className: 'mt-3',
-label: select.options[select.selectedIndex].innerText,
-subtype: 'h3'
-},
-{
-className: 'form-control',
-dataAutocomplete: '/ajaxsearch/manufacturer',
-label: 'Manufacturer',
-name: 'manufacturer',
-required: 'true',
-subtype: 'text',
-type: 'text'
-},
-{
-className: 'form-control',
-dataAutocomplete: '/ajaxsearch/model',
-label: 'Model',
-name: 'model',
-required: 'true',
-subtype: 'text',
-type: 'text'
-}
-)
-*/
-
-            TC_toggleEdit();
+            typeCreateToggleEdit();
             $("#fb-render").formRender({ formData });
-            TC_formBuilder.actions.setData(formData);
+            typeCreateFormBuilder.actions.setData(formData);
             document.getElementById("productType").innerHTML =
               "<h5>" +
               document.getElementById("typesList")[index].label +
               "</h5>";
           })
           .catch((error) => {
-            console.info("error");
-            console.info(error);
-            // Create warning alert
-            // Attach warning alert as a child to $formContainer
-            /*
-<div class="alert alert-warning" role="alert">
-A simple warning alert—check it out!
-</div>
-*/
+            console.info("error", error);
             const alert = document.createElement("div");
             alert.classList.add("alert", "alert-warning");
             alert.innerText = error;
@@ -679,7 +642,7 @@ A simple warning alert—check it out!
 }
 
 if (document.getElementById("inventory_show")) {
-  function addToExistingCart(cartId, productId) {
+  const addToExistingCart = (cartId, productId) => {
     console.info("inside const addToCart(" + cartId + ", " + productId + ")");
     axios
       .post("/pendingSales", {
@@ -689,7 +652,6 @@ if (document.getElementById("inventory_show")) {
       .then((response) => {
         const { luhn: cartLuhn } = response.data.cart;
         const { company_name: companyName } = response.data.cart.client;
-        document.getElementById("addToCardButton").remove();
         const alert = document.createElement("div");
         alert.id = "productAddedAlert";
         alert.classList.add("alert", "alert-primary");
@@ -697,7 +659,7 @@ if (document.getElementById("inventory_show")) {
 <br><br>
 <span class="text-danger" id="removeFromCartIcon"><i id="removeProduct" class="fas fa-unlink" >&#8203;</i> Remove product from cart.</span>`;
         document.getElementById("cardFooter").appendChild(alert);
-
+        document.getElementById("addToCardButton").remove();
         document
           .getElementById("removeFromCartIcon")
           .addEventListener(
@@ -711,7 +673,7 @@ if (document.getElementById("inventory_show")) {
       .catch((error) => {
         console.info("error: ", error);
       });
-  }
+  };
 
   const productId = document.getElementById("productId").dataset.productId;
   const productLuhn = document.getElementById("productId").dataset.productLuhn;
@@ -728,28 +690,26 @@ if (document.getElementById("inventory_show")) {
   const wrapper = $("#product_show");
   wrapper.formRender(window.formRenderOptions);
   console.info(window.formRenderOptions);
-  const $newCartModal = $("#newCartModal");
 
   if (document.getElementById("newCartButton")) {
-    document.getElementById("newCartButton").onclick = () => {
-      // Show popup modal
-      $newCartModal.on("shown.bs.modal", (event) => {
-        const handleResponse = function (response) {
-          console.debug("response.data:", response.data);
-          const client = response.data.client;
-          const cartLuhn = response.data.luhn;
+    const newCartButtonClickHandler = (event) => {
+      // selector
+      const $newCartModal = $("#newCartModal");
 
-          // Remove button
-          const addToCardButton = document.getElementById("addToCardButton");
-          const cardFooter = document.getElementById("cardFooter");
-          addToCardButton.remove();
+      // method
+      const newCartModalOnShow = () => {
+        const clientCompanyNameHandleResponse = (response) => {
+          console.debug("response.data:", response.data);
+          const { client, luhn: cartLuhn } = response.data;
           const alert = document.createElement("div");
+
           alert.id = "productAddedAlert";
           alert.classList.add("alert", "alert-primary");
           alert.innerHTML = `Product added to cart for <a href="/carts/${cartLuhn}">${client.company_name}</a>.
 <br><br>
 <span class="text-danger" id="removeFromCartIcon"><i id="removeProduct" class="fas fa-unlink" >&#8203;</i> Remove product from cart.</span>`;
-          cardFooter.appendChild(alert);
+          document.getElementById("cardFooter").appendChild(alert);
+          document.getElementById("addToCardButton").remove();
           document
             .getElementById("removeFromCartIcon")
             .addEventListener(
@@ -765,7 +725,7 @@ if (document.getElementById("inventory_show")) {
         console.info("rendering CCN for inventory");
         ReactDOM.render(
           <CompanyClientName
-            handleResponse={handleResponse}
+            handleResponse={clientCompanyNameHandleResponse}
             postPath="/carts"
             draft="Cart"
           />,
@@ -774,10 +734,21 @@ if (document.getElementById("inventory_show")) {
         document.getElementById("newCartButton").onclick = () => {
           console.info('Here."');
         };
+      };
+
+      // Attach event to popup modal
+      $newCartModal.on("shown.bs.modal", (event) => {
+        newCartModalOnShow();
       });
+
+      // Show modal
       $newCartModal.modal("show");
       console.info("got carts_create");
     };
+
+    document
+      .getElementById("newCartButton")
+      .addEventListener("click", newCartButtonClickHandler);
   }
 }
 

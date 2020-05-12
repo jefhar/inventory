@@ -18,6 +18,7 @@ module.exports = {
     '_': false,
     'axios': false,
     'Popper': false,
+    'removeFromCart': false,
     'window': false,
   },
   parserOptions: {
