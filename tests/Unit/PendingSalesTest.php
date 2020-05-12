@@ -16,8 +16,6 @@ use Domain\PendingSales\Actions\PendingSalesStoreAction;
 use Domain\PendingSales\Actions\PricePatchAction;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
-use Faker\Factory;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
@@ -117,11 +115,11 @@ class PendingSalesTest extends TestCase
 
     /**
      * @test
+     * @throws \Exception
      */
     public function canPatchProductPendingSaleToAddPrice(): void
     {
-        $faker = Factory::create();
-        $price = $faker->randomNumber();
+        $price = random_int(0, PHP_INT_MAX) / 100;
         $product = $this->createFullProduct();
 
         PricePatchAction::execute($product, $price);
@@ -129,7 +127,7 @@ class PendingSalesTest extends TestCase
             Product::TABLE,
             [
                 Product::ID => $product->id,
-                Product::PRICE => $price,
+                Product::PRICE => $price * 100,
             ]
         );
     }

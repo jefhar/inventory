@@ -11,11 +11,14 @@ namespace App\Carts\Controllers;
 
 use App\Admin\Controllers\Controller;
 use App\Admin\Permissions\UserPermissions;
+use App\Carts\DataTransferObjects\CartPatchObject;
 use App\Carts\DataTransferObjects\CartStoreObject;
+use App\Carts\Requests\CartPatchRequest;
 use App\Carts\Requests\CartStoreRequest;
+use Domain\Carts\Actions\CartDestroyAction;
+use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -37,8 +40,11 @@ class CartsController extends Controller
     public const UPDATE_NAME = 'carts.update';
     public const UPDATE_PATH = '/carts/{cart}';
 
-    public function destroy()
+    public function destroy(Cart $cart)
     {
+        CartDestroyAction::execute($cart);
+
+        return $cart;
     }
 
     /**
@@ -84,10 +90,15 @@ class CartsController extends Controller
     }
 
     /**
-     * @return JsonResponse
+     * @param Cart $cart
+     * @param CartPatchRequest $request
+     * @return Cart
+     * @throws \Exception
      */
-    public function update(): JsonResponse
+    public function update(Cart $cart, CartPatchRequest $request): Cart
     {
-        return response()->json(['id' => 1, 'status' => 'void']);
+        $cartPatchObject = CartPatchObject::fromRequest($request->validated());
+
+        return CartPatchAction::execute($cart, $cartPatchObject);
     }
 }

@@ -692,13 +692,11 @@ if (document.getElementById("inventory_show")) {
   console.info(window.formRenderOptions);
 
   if (document.getElementById("newCartButton")) {
-    const newCartButtonClickHandler = (event) => {
-      // selector
+    document.getElementById("newCartButton").onclick = () => {
+      // Show popup modal
       const $newCartModal = $("#newCartModal");
-
-      // method
-      const newCartModalOnShow = () => {
-        const clientCompanyNameHandleResponse = (response) => {
+      $newCartModal.on("shown.bs.modal", (event) => {
+        const handleResponse = function (response) {
           console.debug("response.data:", response.data);
           const { client, luhn: cartLuhn } = response.data;
           const alert = document.createElement("div");
@@ -734,24 +732,131 @@ if (document.getElementById("inventory_show")) {
         document.getElementById("newCartButton").onclick = () => {
           console.info('Here."');
         };
-      };
 
-      // Attach event to popup modal
-      $newCartModal.on("shown.bs.modal", (event) => {
-        newCartModalOnShow();
+        // Attach event to popup modal
+        $newCartModal.on("shown.bs.modal", (event) => {
+          newCartModalOnShow();
+        });
+
+        // Show modal
+        $newCartModal.modal("show");
+        console.info("got carts_create");
       });
 
-      // Show modal
-      $newCartModal.modal("show");
-      console.info("got carts_create");
+      document
+        .getElementById("newCartButton")
+        .addEventListener("click", newCartButtonClickHandler);
+    };
+  }
+
+  /** Don't refactor above this line; refactoring in other branch
+   * @TODO: remove these 2 comments.
+   */
+  if (document.getElementById("cartIndex")) {
+    $(".collapse").collapse({ toggle: false });
+    $("#destroyCartModal").on("show.bs.modal", (event) => {
+      console.info("event:", event);
+      const sourceTarget = $(event.relatedTarget);
+      console.info("target:", sourceTarget);
+      const cart = sourceTarget.data("cart");
+      console.info("cart:", cart);
+
+      document
+        .getElementById("destroyCartButton")
+        .addEventListener("click", () => {
+          // Send destroy to /carts/destroy with cart luhn in field.
+          axios.delete(`/carts/${cart}`);
+
+          // Close modal
+          $("#destroyCartModal").modal("hide");
+          // Remove cart card from page
+          document.getElementById(`cart${cart}`).remove();
+
+          // Add toast
+          document.getElementById("toastBody").innerText =
+            "Cart " +
+            cart +
+            " has been destroyed. All items have been returned to inventory.";
+          const $destroyedToast = $("#destroyedToast");
+          $destroyedToast.toast();
+          $destroyedToast.toast("show");
+        });
+    });
+  }
+
+  if (document.getElementById("cartShow")) {
+    // elements
+    const $costModal = $("#productCostModal");
+    const editIcons = document.getElementsByClassName("fa-edit");
+    console.info("editIcons", editIcons);
+
+    // methods
+    const productCostPopup = (dataset) => {
+      console.info("opening product", dataset.productLuhn);
+      const {
+        productLuhn: luhn,
+        productManufacturer: manufacturer,
+        productModel: model,
+      } = dataset;
+      console.info(dataset.productPrice);
+      document.getElementById("originalPrice").innerText = dataset.productPrice;
+
+      document.getElementById(
+        "modalProductLuhn"
+      ).innerText = `${luhn} ${manufacturer} ${model}`;
+      document
+        .getElementById("costSubmitButton")
+        .addEventListener("click", () => {
+          const price = document.getElementById("productPrice").value;
+          if (price < 0) {
+            return false;
+          }
+          axios
+            .patch(`/products/${luhn}`, { price: price })
+            .then((response) => {
+              // Close modal
+              $costModal.modal("hide");
+              // display success toast
+              const $toast = $("#productPriceToast");
+              document.getElementById("toastBody").innerHTML =
+                `Product ${luhn} has been updated. ` +
+                `The price is now $${response.data.price}.<br />` +
+                `This price will remain even if the product is removed from this cart.`;
+              document.getElementById(`price${luhn}`).innerText =
+                response.data.price;
+              $toast.toast();
+              $toast.toast("show");
+            })
+            .catch((error) => {
+              console.error(error);
+              // display error toast
+              const $toast = $("productUpdateErrorToast");
+              document.getElementById("toastErrorBody").innerHTML =
+                `There was an error updating the price of product ${luhn}.` +
+                `<br>${error}`;
+              $toast.toast();
+              $toast.toast("show");
+            });
+        });
+      $costModal.modal("show");
     };
 
-    document
-      .getElementById("newCartButton")
-      .addEventListener("click", newCartButtonClickHandler);
-  }
-}
+    // events
+    $costModal.on("shown.bs.modal", (event) => {
+      $("#productPrice").trigger("focus");
+      $("#form").bind("keypress", function (event) {
+        if (event.keyCode === 13) {
+          document.getElementById("costSubmitButton").click();
+          return false;
+        }
+      });
+    });
 
-if (document.getElementById("cartIndex")) {
-  $(".collapse").collapse();
+    for (let i = 0, len = editIcons.length | 0; i < len; i = (i + 1) | 0) {
+      console.info("dataset", editIcons[i].dataset);
+      editIcons[i].addEventListener("click", () => {
+        productCostPopup(editIcons[i].dataset);
+      });
+    }
+  }
 }

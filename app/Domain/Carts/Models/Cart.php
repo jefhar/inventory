@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Client $client
  * @property int $id
  * @property int $luhn
+ * @property int $user_id
  * @property string $status
  */
 class Cart extends Model
@@ -38,6 +39,12 @@ class Cart extends Model
     public const ID = 'id';
     public const LUHN = 'luhn';
     public const STATUS = 'status';
+    public const STATUSES = [
+        self::STATUS_INVOICED,
+        self::STATUS_VOID,
+        self::STATUS_OPEN,
+    ];
+    public const STATUS_INVOICED = 'invoiced';
     public const STATUS_OPEN = 'open';
     public const STATUS_VOID = 'void';
     public const TABLE = 'carts';
@@ -52,6 +59,18 @@ class Cart extends Model
     protected $dispatchesEvents = [
         'created' => CartCreated::class,
     ];
+
+    protected $casts = [
+        self::CLIENT_ID => 'integer',
+        self::LUHN => 'integer',
+        self::USER_ID => 'integer',
+    ];
+
+    /** Include soft-deleted models */
+    public function resolveRouteBinding($value)
+    {
+        return self::withTrashed()->where($this->getRouteKeyName(), $value)->first();
+    }
 
     /**
      * Get the route key for the model.

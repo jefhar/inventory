@@ -63,10 +63,7 @@ test:
 	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods sh -c 'cd /app && composer test'
 
 testdusk:
-	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods:dusk sh -c 'cd /app && composer install --no-plugins --no-scripts --no-progress --no-suggest --prefer-dist  && cp .env.dusk.ci .env &&  composer dusk'
-
-builddusk:
-	docker build -t c11k/serviceandgoods:dusk phpdocker/dusk
+	gitlab-runner exec docker dusktest
 
 deploy:
 	docker network create web || echo "Docker network web already created."

@@ -10,11 +10,10 @@ declare(strict_types=1);
 namespace Tests\Browser;
 
 use App\Admin\Permissions\UserRoles;
-use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
-use Tests\Browser\Pages\WorkOrderCreate;
 use Tests\DuskTestCase;
+use Tests\Traits\FullUsers;
 
 /**
  * Class CanLogInTest
@@ -25,6 +24,7 @@ use Tests\DuskTestCase;
 class CanLogInTest extends DuskTestCase
 {
     use DatabaseMigrations;
+    use FullUsers;
 
     /**
      * @test
@@ -32,19 +32,18 @@ class CanLogInTest extends DuskTestCase
      */
     public function technicianCanLogin(): void
     {
-        /** @var User $user */
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::TECHNICIAN);
-        $user->save();
+        $technician = $this->createEmployee(UserRoles::TECHNICIAN);
 
         $this->browse(
-            static function (Browser $browser) use ($user) {
+            static function (Browser $browser) use ($technician) {
                 $browser->visit('/login')
-                    ->type('email', $user->email)
+                    ->type('email', $technician->email)
                     ->type('password', 'password')
                     ->press('Login')
                     ->assertPathIs('/home')
-                    ->assertSee($user->name);
+                    ->assertSee($technician->name)
+                    ->clickLink($technician->name)
+                    ->assertSee('Logout');
                 //              $browser->loginAs($user)
                 //                   ->visit(new WorkOrderCreate())->dd();
                 //                    ->assertSee('Work Order Estimate');

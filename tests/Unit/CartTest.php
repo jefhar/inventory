@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\Admin\Exceptions\InvalidAction;
 use App\Admin\Permissions\UserRoles;
 use App\Carts\DataTransferObjects\CartPatchObject;
 use App\Carts\DataTransferObjects\CartStoreObject;
@@ -19,6 +20,7 @@ use Domain\Carts\Events\CartCreated;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
@@ -160,38 +162,84 @@ class CartTest extends TestCase
      * @test
      * @throws \Exception
      */
-    public function canDestroyCart(): void
+    public function canDestroyOwnCart(): void
     {
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        /** @var Client $client */
+        $client = factory(Client::class)->create();
         $product = $this->createFullProduct();
-        $cart = $this->makeFullCart();
-        $cart->save();
-        $cart->products()->save($product);
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
+        $cart = CartStoreAction::execute($cartStoreObject);
+
         $this->assertDatabaseHas(
             Product::TABLE,
             [
                 Product::ID => $product->id,
                 Product::CART_ID => $cart->id,
+                Product::STATUS => Product::STATUS_IN_CART,
             ]
         );
+
         CartDestroyAction::execute($cart);
         $this->assertSoftDeleted($cart);
         $this->assertDatabaseHas(
+            Cart::TABLE,
+            [
+                Cart::ID => $cart->id,
+                Cart::STATUS => Cart::STATUS_VOID,
+            ]
+        );
+        $this->assertDatabaseHas(
             Product::TABLE,
             [
-                Product::ID => $product->id,
                 Product::CART_ID => null,
+                Product::ID => $product->id,
+                Product::STATUS => Product::STATUS_AVAILABLE,
             ]
         );
     }
 
     /**
      * @test
+     * @throws \Exception
+     */
+    public function cannotDestroySomeoneElsesCart(): void
+    {
+        $myCartUser = $this->createEmployee(UserRoles::SALES_REP);
+        $notMyCartUser = $this->createEmployee(UserRoles::SALES_REP);
+        /** @var Client $client */
+        $client = factory(Client::class)->create();
+        $product = $this->createFullProduct();
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
+        $this->actingAs($myCartUser);
+        $savedCart = CartStoreAction::execute($cartStoreObject);
+
+        $this->actingAs($notMyCartUser);
+        $this->expectException(AuthorizationException::class);
+        CartDestroyAction::execute($savedCart);
+    }
+
+    /**
+     * @test
+     * @throws \Exception
      */
     public function canPatchCartStatus(): void
     {
         /** @var Cart $cart */
         $cart = factory(Cart::class)->create();
-
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $salesRep->carts()->save($cart);
+        $this->actingAs($salesRep);
         $cartPatchObject = CartPatchObject::fromRequest(
             [
                 Cart::STATUS => Cart::STATUS_VOID,
@@ -222,7 +270,7 @@ class CartTest extends TestCase
                 Client::COMPANY_NAME => $client->company_name,
             ]
         );
-        $cart = CartStoreAction::execute($cartStoreObject);
+        CartStoreAction::execute($cartStoreObject);
         $product->refresh();
         $this->assertEquals(Product::STATUS_IN_CART, $product->status);
     }
@@ -230,10 +278,10 @@ class CartTest extends TestCase
     /**
      * @test
      */
-    public function productMustExistBeforeBeingAddedToACart(): void
+    public function productMustExistBeforeBeingAddedToACartOrItThrowsException(): void
     {
-        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
         $this->expectException(ModelNotFoundException::class);
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
         $client = factory(Client::class)->create();
 
         $cartStoreObject = CartStoreObject::fromRequest(
@@ -242,6 +290,88 @@ class CartTest extends TestCase
                 Client::COMPANY_NAME => $client->company_name,
             ]
         );
+        CartStoreAction::execute($cartStoreObject);
+    }
+
+    /**
+     * @test
+     */
+    public function updateCartToStatusInvoicedMarksCartInvoiced(): void
+    {
+        // setup open cart
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        $client = factory(Client::class)->create();
+        $product = $this->createFullProduct();
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
         $cart = CartStoreAction::execute($cartStoreObject);
+        $this->assertDatabaseHas(
+            Cart::TABLE,
+            [
+                Cart::ID => $cart->id,
+                Cart::STATUS => CART::STATUS_OPEN,
+            ]
+        );
+
+        // Test
+        $cart = CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
+        $this->assertEquals(Cart::STATUS_INVOICED, $cart->status);
+        $this->assertDatabaseHas(
+            Cart::TABLE,
+            [
+                Cart::ID => $cart->id,
+                Cart::STATUS => CART::STATUS_INVOICED,
+            ]
+        );
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function updateCartToStatusInvoicedMarksProductsInvoiced(): void
+    {
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        /** @var Client $client */
+        $client = factory(Client::class)->create();
+        $product = $this->createFullProduct();
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
+        $cart = CartStoreAction::execute($cartStoreObject);
+        CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
+        $product->refresh();
+        $this->assertEquals(Product::STATUS_INVOICED, $product->status);
+        $this->assertDatabaseHas(Product::TABLE, [
+            Product::ID => $product->id,
+            Product::STATUS => Product::STATUS_INVOICED
+        ]);
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function updateCartToBadStatusThrowsException(): void
+    {
+        $this->expectException(InvalidAction::class);
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        $client = factory(Client::class)->create();
+        $product = $this->createFullProduct();
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
+        $cart = CartStoreAction::execute($cartStoreObject);
+        CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => 'flarp']));
     }
 }

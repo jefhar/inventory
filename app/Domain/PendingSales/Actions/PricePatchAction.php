@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Domain\PendingSales\Actions;
 
+use App\Admin\Exceptions\LockedProductException;
 use Domain\Products\Models\Product;
 
 /**
@@ -21,11 +22,14 @@ class PricePatchAction
 
     /**
      * @param Product $product
-     * @param int $price
+     * @param float $price
      * @return Product
      */
-    public static function execute(Product $product, int $price): Product
+    public static function execute(Product $product, float $price): Product
     {
+        if ($product->status === Product::STATUS_INVOICED) {
+            throw new LockedProductException("Product is already invoiced.");
+        }
         $product->price = $price;
         $product->save();
 

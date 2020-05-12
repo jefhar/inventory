@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Products\Requests;
 
 use App\Admin\Permissions\UserPermissions;
+use App\User;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
@@ -35,6 +36,7 @@ class ProductUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        /** @var User $user */
         $user = Auth::user();
 
         return $user->hasPermissionTo(UserPermissions::UPDATE_RAW_PRODUCTS);
