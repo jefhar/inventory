@@ -10,11 +10,17 @@ namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
 use App\Carts\Controllers\CartsController;
+use App\Carts\DataTransferObjects\CartPatchObject;
+use App\Carts\DataTransferObjects\CartStoreObject;
 use App\Products\Controllers\InventoryController;
+use App\User;
+use Domain\Carts\Actions\CartPatchAction;
+use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 use Tests\Traits\FullUsers;
@@ -246,4 +252,127 @@ class CartsControllerTest extends TestCase
             ->assertSeeText($cart->products[0]->model)
             ->assertSeeText($cart->products[1]->model);
     }
+
+    /**
+     * @test
+     */
+    public function showCartDisplaysCartStatus(): void
+    {
+        // Setup
+        /** @var Cart $cart */
+        /** @var Client $client */
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+
+        $product = $this->createFullProduct();
+        $cart = $this->makeFullCart();
+        $salesRep->carts()->save($cart);
+        $cart->products()->save($product);
+        $cart->status = Cart::STATUS_OPEN;
+        $cart->save();
+
+        // Test
+        $this->actingAs($salesRep)
+            ->get(route(CartsController::SHOW_NAME, $cart))
+            ->assertSee(Str::title($cart->status));
+
+        $cart->status = Cart::STATUS_INVOICED;
+        $cart->save();
+        $this
+            ->get(route(CartsController::SHOW_NAME, $cart))
+            ->assertSee(Str::title($cart->status));
+
+        $cart->status = Cart::STATUS_VOID;
+        $cart->save();
+        $this
+            ->get(route(CartsController::SHOW_NAME, $cart))
+            ->assertSee(Str::title($cart->status));
+    }
+
+    /**
+     * @test
+     */
+    public function showOpenCartDisplaysProducts(): void
+    {
+        // Setup
+        /** @var Cart $cart */
+        /** @var Client $client */
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        for ($i = 0; $i < 20; ++$i) {
+            $products[] = $this->createFullProduct();
+        }
+        $cart = $this->makeFullCart();
+        $salesRep->carts()->save($cart);
+        $cart->products()->saveMany($products);
+        $cart->status = Cart::STATUS_OPEN;
+        $cart->save();
+        $response = $this
+            ->actingAs($salesRep)
+            ->get(route(CartsController::SHOW_NAME, $cart));
+        for ($i = 0; $i < 20; ++$i) {
+            $response->assertSeeText(htmlspecialchars($products[$i]->manufacturer->name, ENT_QUOTES | ENT_HTML401));
+            $response->assertSeeText(htmlspecialchars($products[$i]->model, ENT_QUOTES | ENT_HTML401));
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function showInvoicedCartDisplaysProducts(): void
+    {
+        // Setup
+        /** @var Cart $cart */
+        /** @var Client $client */
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $this->actingAs($salesRep);
+        for ($i = 0; $i < 20; ++$i) {
+            $products[] = $this->createFullProduct();
+        }
+        $cart = $this->makeFullCart();
+        $salesRep->carts()->save($cart);
+        $cart->products()->saveMany($products);
+        CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
+
+        $response = $this
+            ->actingAs($salesRep)
+            ->get(route(CartsController::SHOW_NAME, $cart));
+        for ($i = 0; $i < 20; ++$i) {
+            $this->assertDatabaseHas(
+                Product::TABLE,
+                [
+                    Product::ID => $products[$i]->id,
+                    Product::STATUS => Product::STATUS_INVOICED,
+                ]
+            );
+            $response->assertSeeText(htmlspecialchars($products[$i]->manufacturer->name, ENT_QUOTES | ENT_HTML401));
+            $response->assertSeeText(htmlspecialchars($products[$i]->model, ENT_QUOTES | ENT_HTML401));
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function showVoidedCartDisplaysNoProducts(): void
+    {
+        // Setup
+        /** @var Cart $cart */
+        /** @var Client $client */
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $this->actingAs($salesRep);
+        for ($i = 0; $i < 20; ++$i) {
+            $products[] = $this->createFullProduct();
+        }
+        $cart = $this->makeFullCart();
+        $salesRep->carts()->save($cart);
+        $cart->products()->saveMany($products);
+        CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_VOID]));
+
+        $response = $this
+            ->actingAs($salesRep)
+            ->get(route(CartsController::SHOW_NAME, $cart));
+        for ($i = 0; $i < 20; ++$i) {
+            $response->assertDontSeeText(htmlspecialchars($products[$i]->manufacturer->name, ENT_QUOTES | ENT_HTML401));
+            $response->assertDontSeeText(htmlspecialchars($products[$i]->model, ENT_QUOTES | ENT_HTML401));
+        }
+    }
+
 }

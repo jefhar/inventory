@@ -331,10 +331,12 @@ class CartTest extends TestCase
 
     /**
      * @test
+     * @throws \Exception
      */
     public function updateCartToStatusInvoicedMarksProductsInvoiced(): void
     {
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
@@ -347,6 +349,10 @@ class CartTest extends TestCase
         CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
         $product->refresh();
         $this->assertEquals(Product::STATUS_INVOICED, $product->status);
+        $this->assertDatabaseHas(Product::TABLE, [
+            Product::ID => $product->id,
+            Product::STATUS => Product::STATUS_INVOICED
+        ]);
     }
 
     /**

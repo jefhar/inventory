@@ -29,7 +29,6 @@ class CartInvoicedAction
             ->where(Product::CART_ID, $cart->id)
             ->update(
                 [
-                    Product::CART_ID => null,
                     Product::STATUS => Product::STATUS_INVOICED,
                 ]
             );

@@ -66,6 +66,12 @@ class Cart extends Model
         self::USER_ID => 'integer',
     ];
 
+    /** Include soft-deleted models */
+    public function resolveRouteBinding($value)
+    {
+        return self::withTrashed()->where($this->getRouteKeyName(), $value)->first();
+    }
+
     /**
      * Get the route key for the model.
      *
