@@ -16,7 +16,7 @@
             Work Order #
           </div>
           <div class="row justify-content-center workorder-id">
-            {{ str_pad($workOrder->luhn, 6, '0', STR_PAD_LEFT) }}
+            {{ str_pad($workOrder->luhn, config('app.padding.workorders'), '0', STR_PAD_LEFT) }}
           </div>
           <div class="row justify-content-center">
             {{ $workOrder->created_at->format('j M Y') }}
@@ -152,7 +152,7 @@
               <th scope="row" class="col-1">
                 <a class="btn btn-info"
                    href="/inventory/{{ $product->luhn }}">
-                  {{ str_pad($product->luhn, 7, '0', STR_PAD_LEFT) }}
+                  {{ str_pad($product->luhn, config('app.padding.products'), '0', STR_PAD_LEFT) }}
                 </a>
               </th>
               <td>{{$product->manufacturer->name}}</td>

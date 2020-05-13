@@ -6,8 +6,8 @@
   @php
     $border = [
       \Domain\Carts\Models\Cart::STATUS_INVOICED => 'success',
-    \Domain\Carts\Models\Cart::STATUS_OPEN => 'secondary',
-    \Domain\Carts\Models\Cart::STATUS_VOID => 'danger',
+      \Domain\Carts\Models\Cart::STATUS_OPEN => 'secondary',
+      \Domain\Carts\Models\Cart::STATUS_VOID => 'danger',
     ];
   @endphp
   <div id="cartShow"
@@ -51,7 +51,7 @@
               <th scope="row">
                 <a class="btn btn-info"
                    href="/inventory/{{ $product->luhn }}">
-                  {{ str_pad($product->luhn, 7, '0', STR_PAD_LEFT) }}
+                  {{ str_pad($product->luhn, config('app.padding.products'), '0', STR_PAD_LEFT) }}
                 </a>
               </th>
 
