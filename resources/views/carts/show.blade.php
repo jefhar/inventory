@@ -12,12 +12,13 @@
   @endphp
   <div id="cartShow"
        class="container">
-    <div class="card border-{{ $border[$cart->status] }}">
+    <div id="card-border" class="card border-{{ $border[$cart->status] }}">
       <div class="card-header">
         <h1
           id="cartId"
           data-cart-luhn="{{ $cart->luhn }}">
-          Cart # {{ $cart->luhn }}: {{ \Illuminate\Support\Str::title($cart->status) }}</h1>
+          Cart # {{ $cart->luhn }}: <span id="cartStatus" class="capitalize">{{ $cart->status }}</span>
+        </h1>
         <p class="lead">{{ $cart->client->company_name }}</p>
         <p>{{ $cart->client->person->first_name }} {{ $cart->client->person->last_name }}
           <i class="pl-4 fas fa-phone-alt"></i>&nbsp;{{ $cart->client->person->phone_number }}
@@ -45,7 +46,7 @@
             <th scope="col">Price</th>
           </tr>
           </thead>
-          <tbody>
+          <tbody id="cartTableBody">
           @foreach ($cart->products as $product)
             <tr>
               <th scope="row">
@@ -62,7 +63,7 @@
               <td><span
                   id="price{{ $product->luhn }}"
                   class="price"
-                >{{ sprintf('%03.2F', $product->price) }}</span> <i
+                >${{ sprintf('%03.2F', $product->price) }}</span> <i
                   class="far fa-edit text-light float-right"
                   data-product-luhn="{{ $product->luhn }}"
                   data-product-manufacturer="{{ $product->manufacturer->name }}"

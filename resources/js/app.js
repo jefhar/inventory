@@ -835,10 +835,24 @@ if (document.getElementById('cartShow')) {
       .patch(`/carts/${cartLuhn}`, { status: status })
       .then((result) => {
         console.info('result', result);
+        const cardBorder = document.getElementById('card-border');
+        console.info('cardBorder', cardBorder);
+        const classes = cardBorder.classList;
+        classes.remove('border-secondary');
+        classes.add(
+          `border-${status === CART_INVOICED ? 'success' : 'danger'}`
+        );
+        document.getElementById('cartStatus').innerHTML = status;
       })
       .catch((error) => {
         console.info('error', error);
       });
+  };
+
+  const removeEditIcons = () => {
+    for (let i = 0, len = editIcons.length | 0; i < len; i = (i + 1) | 0) {
+      editIcons[i].remove();
+    }
   };
 
   const productCostPopup = (dataset) => {
@@ -846,20 +860,33 @@ if (document.getElementById('cartShow')) {
       productLuhn: luhn,
       productManufacturer: manufacturer,
       productModel: model,
+      productPrice: price,
     } = dataset;
-    document.getElementById(
-      'originalPrice'
-    ).innerText = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(dataset.productPrice);
+    document.getElementById('originalPrice').innerText = new Intl.NumberFormat(
+      'en-US',
+      {
+        style: 'currency',
+        currency: 'USD',
+      }
+    ).format(price);
 
     document.getElementById(
       'modalProductLuhn'
     ).innerText = `${luhn} ${manufacturer} ${model}`;
+    document.getElementById('modalProductLuhn').dataset.productLuhn = luhn;
+
+    $costModal.modal('show');
+  };
+
+  // events
+  $costModal.on('shown.bs.modal', (event) => {
+    $('#productPrice').trigger('focus');
+
     document
       .getElementById('costSubmitButton')
       .addEventListener('click', () => {
+        const luhn = document.getElementById('modalProductLuhn').dataset
+          .productLuhn;
         const price = document.getElementById('productPrice').value;
         if (price < 0) {
           return false;
@@ -873,8 +900,13 @@ if (document.getElementById('cartShow')) {
               `Product ${luhn} has been updated. ` +
               `The price is now $${response.data.price}.<br />` +
               `This price will remain even if the product is removed from this cart.`;
-            document.getElementById(`price${luhn}`).innerText =
-              response.data.price;
+            document.getElementById(
+              `price${luhn}`
+            ).innerText = new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'USD',
+            }).format(response.data.price);
+
             $toast.toast();
             $toast.toast('show');
           })
@@ -889,12 +921,7 @@ if (document.getElementById('cartShow')) {
             $toast.toast('show');
           });
       });
-    $costModal.modal('show');
-  };
 
-  // events
-  $costModal.on('shown.bs.modal', (event) => {
-    $('#productPrice').trigger('focus');
     $('#form').bind('keypress', function (event) {
       if (event.keyCode === 13) {
         document.getElementById('costSubmitButton').click();
@@ -910,14 +937,17 @@ if (document.getElementById('cartShow')) {
   }
 
   invoiceButton.addEventListener('click', function () {
+    invoiceButton.disabled = true;
+    destroyButton.disabled = true;
     changeInvoiceStatus(CART_INVOICED);
-    window.location.reload(true);
-    return false;
+
+    removeEditIcons();
   });
 
   destroyButton.addEventListener('click', function () {
+    invoiceButton.disabled = true;
+    destroyButton.disabled = true;
     changeInvoiceStatus(CART_VOID);
-    window.location.reload(true);
-    return false;
+    document.getElementById('cartTableBody').remove();
   });
 }
