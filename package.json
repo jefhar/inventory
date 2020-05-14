@@ -77,7 +77,10 @@
     ]
   },
   "prettier": {
+    "quoteProps": "as-needed",
+    "semi": false,
     "singleQuote": true,
-    "tabWidth": 2
+    "tabWidth": 2,
+    "useTabs": false
   }
 }

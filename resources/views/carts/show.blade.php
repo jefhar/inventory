@@ -25,11 +25,23 @@
           <br>Created at {{ $cart->created_at->format('j M Y H:i') }}</p>
       </div>
       <div class="card-body">
-        <button id="invoiceButton" type="button"
-                class="btn btn-outline-primary" {{ $cart->status === \Domain\Carts\Models\Cart::STATUS_INVOICED ? 'disabled' : '' }}>
+        <button
+          class="btn btn-outline-primary mr-sm-4"
+          id="invoiceButton"
+          type="button"
+          {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}>
           Mark Invoiced
         </button>
-        <button id="destroyButton" type="button" class="btn btn-outline-danger">Destroy Cart</button>
+        <button
+          class="btn btn-outline-danger"
+          id="destroyButton"
+          type="button"
+          {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}
+        >Destroy Cart
+        </button>
+        <span id="totalPrice" class="float-right">Cart Total:&nbsp;
+        <span id="cartTotalPrice" class="float-right"></span>
+      </span>
       </div>
 
       <div class="card-body">
@@ -55,7 +67,6 @@
                   {{ str_pad($product->luhn, config('app.padding.products'), '0', STR_PAD_LEFT) }}
                 </a>
               </th>
-
               <td>{{$product->manufacturer->name}}</td>
               <td>{{$product->model}}</td>
               <td>{{$product->type->name}}</td>
