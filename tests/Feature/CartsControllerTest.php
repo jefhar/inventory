@@ -259,8 +259,6 @@ class CartsControllerTest extends TestCase
     public function showCartDisplaysCartStatus(): void
     {
         // Setup
-        /** @var Cart $cart */
-        /** @var Client $client */
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
 
         $product = $this->createFullProduct();
@@ -294,9 +292,8 @@ class CartsControllerTest extends TestCase
     public function showOpenCartDisplaysProducts(): void
     {
         // Setup
-        /** @var Cart $cart */
-        /** @var Client $client */
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $products = [];
         for ($i = 0; $i < 20; ++$i) {
             $products[] = $this->createFullProduct();
         }
@@ -320,10 +317,9 @@ class CartsControllerTest extends TestCase
     public function showInvoicedCartDisplaysProducts(): void
     {
         // Setup
-        /** @var Cart $cart */
-        /** @var Client $client */
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
+        $products = [];
         for ($i = 0; $i < 20; ++$i) {
             $products[] = $this->createFullProduct();
         }
@@ -354,10 +350,9 @@ class CartsControllerTest extends TestCase
     public function showVoidedCartDisplaysNoProducts(): void
     {
         // Setup
-        /** @var Cart $cart */
-        /** @var Client $client */
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
+        $products = [];
         for ($i = 0; $i < 20; ++$i) {
             $products[] = $this->createFullProduct();
         }
@@ -374,5 +369,4 @@ class CartsControllerTest extends TestCase
             $response->assertDontSeeText(htmlspecialchars($products[$i]->model, ENT_QUOTES | ENT_HTML401));
         }
     }
-
 }
