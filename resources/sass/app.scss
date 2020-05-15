@@ -1,17 +1,17 @@
 // Fonts
-@import url("https://fonts.googleapis.com/css?family=Lato&display=swap");
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
 
 // Variables
-@import "variables";
+@import 'variables';
 
 // Bootstrap
-@import "~bootstrap/scss/bootstrap";
+@import '~bootstrap/scss/bootstrap';
 
 //Fontawesome
-@import "~@fortawesome/fontawesome-free/css/all.css";
+@import '~@fortawesome/fontawesome-free/css/all.css';
 
 // Autocomplete [in NavBar]
-@import "~autocomplete-js/dist/autocomplete.min.css";
+@import '~autocomplete-js/dist/autocomplete.min.css';
 
 /*
  * Package additions
@@ -90,10 +90,10 @@ body {
   padding-left: 12px;
 }
 
-.cost::before {
-  content: "$\00a0";
+.price::after {
+  content: attr(data-productLuhn);
 }
 
-.cost::after {
-  content: attr(data-productLuhn);
+.capitalize {
+  text-transform: capitalize;
 }

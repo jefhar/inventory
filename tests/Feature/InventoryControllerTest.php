@@ -10,7 +10,10 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
+use App\Carts\DataTransferObjects\CartPatchObject;
 use App\Products\Controllers\InventoryController;
+use Domain\Carts\Actions\CartPatchAction;
+use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
@@ -254,6 +257,142 @@ class InventoryControllerTest extends TestCase
             ->assertSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
             ->assertSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
             ->assertSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+
+        $otherSalesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $this->actingAs($otherSalesRep)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertDontSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function salesRepsDoNotSeeInvoicedCartsOnInventoryPage(): void
+    {
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $this->actingAs($salesRep);
+        /** @var WorkOrder $workOrder */
+        $workOrder = factory(WorkOrder::class)->create();
+        $carts = [];
+        // Whip up around 20 carts to make sure they all appear
+        for ($i = 0; $i < 19; $i++) {
+            $product = factory(Product::class)->make();
+            $workOrder->products()->save($product);
+            $cart = $this->makeFullCart();
+            $salesRep->carts()->save($cart);
+            $carts[] = $cart;
+        }
+
+        // Make one more outside the loop so `$product`  will be defined for phpstan
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+        $cart = $this->makeFullCart();
+        $salesRep->carts()->save($cart);
+        $carts[] = $cart;
+
+        // Update a cart to be invoiced
+        CartPatchAction::execute(
+            $carts[4],
+            CartPatchObject::fromRequest(
+                [
+                    Cart::STATUS => Cart::STATUS_INVOICED,
+                ]
+            )
+        );
+
+        $this
+            ->withoutMix()
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401));
+
+        $otherSalesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $this->actingAs($otherSalesRep)
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertDontSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function salesRepsDoNotSeeVoidedCartsOnInventoryPage(): void
+    {
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $this->actingAs($salesRep);
+        /** @var WorkOrder $workOrder */
+        $workOrder = factory(WorkOrder::class)->create();
+        $carts = [];
+        // Whip up around 20 carts to make sure they all appear
+        for ($i = 0; $i < 19; $i++) {
+            $product = factory(Product::class)->make();
+            $workOrder->products()->save($product);
+            $cart = $this->makeFullCart();
+            $salesRep->carts()->save($cart);
+            $carts[] = $cart;
+        }
+
+        // Make one more outside the loop so `$product`  will be defined for phpstan
+        $product = factory(Product::class)->make();
+        $workOrder->products()->save($product);
+        $cart = $this->makeFullCart();
+        $salesRep->carts()->save($cart);
+        $carts[] = $cart;
+
+        // Update a cart to be invoiced
+        CartPatchAction::execute(
+            $carts[4],
+            CartPatchObject::fromRequest(
+                [
+                    Cart::STATUS => Cart::STATUS_VOID,
+                ]
+            )
+        );
+
+        $this
+            ->withoutMix()
+            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->assertSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401))
+            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401));
 
         $otherSalesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($otherSalesRep)

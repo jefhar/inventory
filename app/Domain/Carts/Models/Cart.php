@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Domain\Carts\Models;
 
+use App\User;
 use Domain\Carts\Events\CartCreated;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
@@ -96,5 +97,13 @@ class Cart extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

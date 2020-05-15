@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Products;
 
+use App\Admin\Exceptions\LockedProductException;
 use App\Admin\Permissions\UserRoles;
 use App\Carts\DataTransferObjects\CartPatchObject;
 use App\Products\DataTransferObject\RawProductUpdateObject;
@@ -19,7 +20,6 @@ use Domain\Products\Actions\ProductShowAction;
 use Domain\Products\Actions\RawProductUpdateAction;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
-use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
 use Tests\TestCase;
@@ -268,7 +268,7 @@ class ProductsTest extends TestCase
         $product->refresh();
 
         // Test
-        $this->expectException(\App\Admin\Exceptions\LockedProductException::class);
+        $this->expectException(LockedProductException::class);
         PricePatchAction::execute($product, random_int(0, PHP_INT_MAX) / 100);
     }
 }

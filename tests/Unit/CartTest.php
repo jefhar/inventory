@@ -16,6 +16,7 @@ use App\User;
 use Domain\Carts\Actions\CartDestroyAction;
 use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Actions\CartStoreAction;
+use Domain\Carts\CartInvoiced;
 use Domain\Carts\Events\CartCreated;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
@@ -23,6 +24,7 @@ use Domain\WorkOrders\Models\Client;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 use Tests\Traits\FullUsers;
@@ -104,6 +106,9 @@ class CartTest extends TestCase
                 Cart::USER_ID => $user->id,
             ]
         );
+
+        $cart->refresh();
+        $this->assertEquals($cart->user->name, $user->name);
     }
 
     /**
@@ -300,7 +305,7 @@ class CartTest extends TestCase
     {
         // setup open cart
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
-        $client = factory(Client::class)->create();
+        $client = $this->createFullClient();
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
@@ -336,8 +341,7 @@ class CartTest extends TestCase
     public function updateCartToStatusInvoicedMarksProductsInvoiced(): void
     {
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
-        /** @var Client $client */
-        $client = factory(Client::class)->create();
+        $client = $this->createFullClient();
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
@@ -349,10 +353,13 @@ class CartTest extends TestCase
         CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
         $product->refresh();
         $this->assertEquals(Product::STATUS_INVOICED, $product->status);
-        $this->assertDatabaseHas(Product::TABLE, [
-            Product::ID => $product->id,
-            Product::STATUS => Product::STATUS_INVOICED
-        ]);
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::ID => $product->id,
+                Product::STATUS => Product::STATUS_INVOICED,
+            ]
+        );
     }
 
     /**
@@ -373,5 +380,38 @@ class CartTest extends TestCase
         );
         $cart = CartStoreAction::execute($cartStoreObject);
         CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => 'flarp']));
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function invoicingCartGeneratesEmailToSalesRep(): void
+    {
+        Mail::fake();
+        Mail::assertNothingSent();
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $this->actingAs($salesRep);
+
+        $client = $this->createFullClient();
+        $product = $this->createFullProduct();
+        $cartStoreObject = CartStoreObject::fromRequest(
+            [
+                'product_id' => $product->id,
+                Client::COMPANY_NAME => $client->company_name,
+            ]
+        );
+        $cart = CartStoreAction::execute($cartStoreObject);
+
+        CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
+        $cart->refresh();
+
+        Mail::assertQueued(
+            CartInvoiced::class,
+            function ($mail) use ($salesRep, $cart) {
+                return $mail->hasCC($salesRep->email) &&
+                    $mail->hasTo($cart->client->person->email);
+            }
+        );
     }
 }

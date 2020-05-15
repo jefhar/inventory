@@ -11,11 +11,8 @@ namespace Tests\Feature;
 use App\Admin\Permissions\UserRoles;
 use App\Carts\Controllers\CartsController;
 use App\Carts\DataTransferObjects\CartPatchObject;
-use App\Carts\DataTransferObjects\CartStoreObject;
 use App\Products\Controllers\InventoryController;
-use App\User;
 use Domain\Carts\Actions\CartPatchAction;
-use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
@@ -101,10 +98,12 @@ class CartsControllerTest extends TestCase
     public function othersCantAccessCart(): void
     {
         $this->actingAs($this->createEmployee())
+            ->withoutMix()
             ->get(route(CartsController::INDEX_NAME))
             ->assertForbidden();
 
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
+            ->withoutMix()
             ->get(route(CartsController::INDEX_NAME))
             ->assertForbidden();
     }
@@ -118,8 +117,8 @@ class CartsControllerTest extends TestCase
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $salesRep->carts()->save($cart);
 
-        $this->withoutMix()
-            ->actingAs($salesRep)
+        $this->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart))
             ->assertOk()
             ->assertSee(htmlspecialchars($cart->client->company_name, ENT_QUOTES | ENT_HTML401));
@@ -192,7 +191,7 @@ class CartsControllerTest extends TestCase
     {
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
-        $voidingCart = factory(Cart::class)->make();
+        $voidingCart = $this->makeFullCart();
         $salesRep->carts()->save($voidingCart);
         $this
             ->patch(
@@ -208,7 +207,7 @@ class CartsControllerTest extends TestCase
                 ]
             );
 
-        $invoicingCart = factory(Cart::class)->make();
+        $invoicingCart = $this->makeFullCart();
         $salesRep->carts()->save($invoicingCart);
         $this->assertDatabaseHas(
             Cart::TABLE,
@@ -242,12 +241,12 @@ class CartsControllerTest extends TestCase
         $product = $this->createFullProduct();
         $otherProduct = $this->createFullProduct();
         $cart->products()->saveMany([$product, $otherProduct]);
-
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $salesRep->carts()->save($cart);
         $cart->load('products');
         $this
             ->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(InventoryController::INDEX_NAME))
             ->assertSeeText($cart->products[0]->model)
             ->assertSeeText($cart->products[1]->model);
@@ -260,7 +259,6 @@ class CartsControllerTest extends TestCase
     {
         // Setup
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
-
         $product = $this->createFullProduct();
         $cart = $this->makeFullCart();
         $salesRep->carts()->save($cart);
@@ -270,8 +268,9 @@ class CartsControllerTest extends TestCase
 
         // Test
         $this->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart))
-            ->assertSee(Str::title($cart->status));
+            ->assertSee($cart->status);
 
         $cart->status = Cart::STATUS_INVOICED;
         $cart->save();
@@ -283,7 +282,7 @@ class CartsControllerTest extends TestCase
         $cart->save();
         $this
             ->get(route(CartsController::SHOW_NAME, $cart))
-            ->assertSee(Str::title($cart->status));
+            ->assertSee($cart->status);
     }
 
     /**
@@ -304,6 +303,7 @@ class CartsControllerTest extends TestCase
         $cart->save();
         $response = $this
             ->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart));
         for ($i = 0; $i < 20; ++$i) {
             $response->assertSeeText(htmlspecialchars($products[$i]->manufacturer->name, ENT_QUOTES | ENT_HTML401));
@@ -330,6 +330,7 @@ class CartsControllerTest extends TestCase
 
         $response = $this
             ->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart));
         for ($i = 0; $i < 20; ++$i) {
             $this->assertDatabaseHas(
@@ -346,6 +347,7 @@ class CartsControllerTest extends TestCase
 
     /**
      * @test
+     * @throws \Exception
      */
     public function showVoidedCartDisplaysNoProducts(): void
     {
@@ -363,6 +365,7 @@ class CartsControllerTest extends TestCase
 
         $response = $this
             ->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart));
         for ($i = 0; $i < 20; ++$i) {
             $response->assertDontSeeText(htmlspecialchars($products[$i]->manufacturer->name, ENT_QUOTES | ENT_HTML401));

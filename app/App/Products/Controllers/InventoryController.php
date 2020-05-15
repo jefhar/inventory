@@ -13,6 +13,7 @@ use App\Admin\Controllers\Controller;
 use App\Admin\Permissions\UserPermissions;
 use App\Products\DataTransferObject\RawProductUpdateObject;
 use App\Products\Requests\ProductUpdateRequest;
+use App\User;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Actions\ProductShowAction;
 use Domain\Products\Actions\RawProductUpdateAction;
@@ -52,11 +53,12 @@ class InventoryController extends Controller
      */
     public function show(Product $product): View
     {
-        // Same code in CartsController::index.
-        if (Auth::user()->can(UserPermissions::SEE_ALL_OPEN_CARTS)) {
+        /** @var User $user */
+        $user = Auth::user();
+        if ($user->can(UserPermissions::SEE_ALL_OPEN_CARTS)) {
             $carts = Cart::where(Cart::STATUS, Cart::STATUS_OPEN)->get();
         } else {
-            $carts = Auth::user()->carts()->get();
+            $carts = $user->carts()->where(Cart::STATUS, Cart::STATUS_OPEN)->get();
         }
         $product->load('cart');
         $carts->load('client');

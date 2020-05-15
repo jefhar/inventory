@@ -3,22 +3,45 @@
 @section('title', 'Cart ' . $cart->luhn . ': ' . $cart->client->company_name)
 
 @section('content')
+  @php
+    $border = [
+      \Domain\Carts\Models\Cart::STATUS_INVOICED => 'success',
+      \Domain\Carts\Models\Cart::STATUS_OPEN => 'secondary',
+      \Domain\Carts\Models\Cart::STATUS_VOID => 'danger',
+    ];
+  @endphp
   <div id="cartShow"
        class="container">
-    <div class="card">
+    <div id="card-border" class="card border-{{ $border[$cart->status] }}">
       <div class="card-header">
         <h1
           id="cartId"
           data-cart-luhn="{{ $cart->luhn }}">
-          Cart # {{ $cart->luhn }}</h1>
+          Cart # {{ $cart->luhn }}: <span id="cartStatus" class="capitalize">{{ $cart->status }}</span>
+        </h1>
         <p class="lead">{{ $cart->client->company_name }}</p>
         <p>{{ $cart->client->person->first_name }} {{ $cart->client->person->last_name }}
           <i class="pl-4 fas fa-phone-alt"></i>&nbsp;{{ $cart->client->person->phone_number }}
           <br>Created at {{ $cart->created_at->format('j M Y H:i') }}</p>
       </div>
       <div class="card-body">
-        <button type="button" class="btn btn-outline-primary">Mark Invoiced</button>
-        <button type="button" class="btn btn-outline-danger">Destroy Cart</button>
+        <button
+          class="btn btn-outline-primary mr-sm-4"
+          id="invoiceButton"
+          type="button"
+          {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}>
+          Mark Invoiced
+        </button>
+        <button
+          class="btn btn-outline-danger"
+          id="destroyButton"
+          type="button"
+          {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}
+        >Destroy Cart
+        </button>
+        <span id="totalPrice" class="float-right">Cart Total:&nbsp;
+        <span id="cartTotalPrice" class="float-right"></span>
+      </span>
       </div>
 
       <div class="card-body">
@@ -35,16 +58,15 @@
             <th scope="col">Price</th>
           </tr>
           </thead>
-          <tbody>
+          <tbody id="cartTableBody">
           @foreach ($cart->products as $product)
             <tr>
               <th scope="row">
                 <a class="btn btn-info"
                    href="/inventory/{{ $product->luhn }}">
-                  {{ str_pad($product->luhn, 7, '0', STR_PAD_LEFT) }}
+                  {{ str_pad($product->luhn, config('app.padding.products'), '0', STR_PAD_LEFT) }}
                 </a>
               </th>
-
               <td>{{$product->manufacturer->name}}</td>
               <td>{{$product->model}}</td>
               <td>{{$product->type->name}}</td>
@@ -52,7 +74,7 @@
               <td><span
                   id="price{{ $product->luhn }}"
                   class="price"
-                >{{ sprintf('%03.2F', $product->price) }}</span> <i
+                >${{ sprintf('%03.2F', $product->price) }}</span> <i
                   class="far fa-edit text-light float-right"
                   data-product-luhn="{{ $product->luhn }}"
                   data-product-manufacturer="{{ $product->manufacturer->name }}"
@@ -95,7 +117,7 @@
             </div>
             <div class="invalid-feedback">Please enter a positive dollar value.</div>
           </form>
-          <small id="originalPriceHelp" class="form-text text-muted">Changing from $<span
+          <small id="originalPriceHelp" class="form-text text-muted">Changing from <span
               id="originalPrice"></span>.</small>
         </div>
         <div class="modal-footer">
