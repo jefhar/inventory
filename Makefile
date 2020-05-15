@@ -26,6 +26,7 @@ checkcomposer:
 	docker run --rm -v "$(CURDIR):/app:delegated" c11k/serviceandgoods sh -c 'cd /app && vendor/bin/security-checker security:check composer.lock'
 
 ci:
+	docker login registry.gitlab.com
 	gitlab-runner exec docker test
 
 yarninstall:

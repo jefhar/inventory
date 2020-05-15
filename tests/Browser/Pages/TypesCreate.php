@@ -15,6 +15,16 @@ use Laravel\Dusk\Browser;
 class TypesCreate extends Page
 {
     /**
+     * Get the URL for the page.
+     *
+     * @return string
+     */
+    public function url(): string
+    {
+        return '/types/create';
+    }
+
+    /**
      * Assert that the browser is on the page.
      *
      * @param Browser $browser
@@ -23,16 +33,6 @@ class TypesCreate extends Page
     public function assert(Browser $browser): void
     {
         $browser->assertPathIs($this->url());
-    }
-
-    /**
-     * Get the URL for the page.
-     *
-     * @return string
-     */
-    public function url(): string
-    {
-        return '/types/create';
     }
 
     /**

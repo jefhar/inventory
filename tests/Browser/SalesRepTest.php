@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Tests\Browser;
 
 use App\Admin\Permissions\UserRoles;
+use App\User;
 use Faker\Factory;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;

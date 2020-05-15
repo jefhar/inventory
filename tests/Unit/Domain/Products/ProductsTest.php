@@ -257,6 +257,8 @@ class ProductsTest extends TestCase
     public function invoicedProductCannotChangePrice(): void
     {
         // Setup
+        /** @var Cart $cart */
+        /** @var Client $client */
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
 
