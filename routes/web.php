@@ -17,9 +17,25 @@ use App\Products\Controllers\InventoryController;
 use App\Products\Controllers\ProductsController;
 use App\Types\Controllers\TypesController;
 use App\WorkOrders\Controllers\ClientsController;
+use Domain\Carts\CartInvoiced;
+use Domain\Carts\Models\Cart;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpFoundation\Response;
 
+Route::get(
+    'mailable',
+    function () {
+        if (Auth::user() && (!App::environment('production'))) {
+            $cart = Cart::find(1);
+
+            return new CartInvoiced($cart);
+        } else {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+    }
+);
 Route::get(
     '/',
     function () {

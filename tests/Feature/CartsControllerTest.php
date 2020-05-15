@@ -11,11 +11,8 @@ namespace Tests\Feature;
 use App\Admin\Permissions\UserRoles;
 use App\Carts\Controllers\CartsController;
 use App\Carts\DataTransferObjects\CartPatchObject;
-use App\Carts\DataTransferObjects\CartStoreObject;
 use App\Products\Controllers\InventoryController;
-use App\User;
 use Domain\Carts\Actions\CartPatchAction;
-use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
@@ -192,7 +189,7 @@ class CartsControllerTest extends TestCase
     {
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
-        $voidingCart = factory(Cart::class)->make();
+        $voidingCart = $this->makeFullCart();
         $salesRep->carts()->save($voidingCart);
         $this
             ->patch(
@@ -208,7 +205,7 @@ class CartsControllerTest extends TestCase
                 ]
             );
 
-        $invoicingCart = factory(Cart::class)->make();
+        $invoicingCart = $this->makeFullCart();
         $salesRep->carts()->save($invoicingCart);
         $this->assertDatabaseHas(
             Cart::TABLE,
@@ -242,7 +239,6 @@ class CartsControllerTest extends TestCase
         $product = $this->createFullProduct();
         $otherProduct = $this->createFullProduct();
         $cart->products()->saveMany([$product, $otherProduct]);
-
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $salesRep->carts()->save($cart);
         $cart->load('products');
@@ -259,10 +255,7 @@ class CartsControllerTest extends TestCase
     public function showCartDisplaysCartStatus(): void
     {
         // Setup
-        /** @var Cart $cart */
-        /** @var Client $client */
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
-
         $product = $this->createFullProduct();
         $cart = $this->makeFullCart();
         $salesRep->carts()->save($cart);
@@ -273,7 +266,7 @@ class CartsControllerTest extends TestCase
         // Test
         $this->actingAs($salesRep)
             ->get(route(CartsController::SHOW_NAME, $cart))
-            ->assertSee(Str::title($cart->status));
+            ->assertSee($cart->status);
 
         $cart->status = Cart::STATUS_INVOICED;
         $cart->save();
@@ -285,7 +278,7 @@ class CartsControllerTest extends TestCase
         $cart->save();
         $this
             ->get(route(CartsController::SHOW_NAME, $cart))
-            ->assertSee(Str::title($cart->status));
+            ->assertSee($cart->status);
     }
 
     /**
@@ -294,9 +287,8 @@ class CartsControllerTest extends TestCase
     public function showOpenCartDisplaysProducts(): void
     {
         // Setup
-        /** @var Cart $cart */
-        /** @var Client $client */
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $products = [];
         for ($i = 0; $i < 20; ++$i) {
             $products[] = $this->createFullProduct();
         }
@@ -320,10 +312,9 @@ class CartsControllerTest extends TestCase
     public function showInvoicedCartDisplaysProducts(): void
     {
         // Setup
-        /** @var Cart $cart */
-        /** @var Client $client */
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
+        $products = [];
         for ($i = 0; $i < 20; ++$i) {
             $products[] = $this->createFullProduct();
         }
@@ -350,14 +341,14 @@ class CartsControllerTest extends TestCase
 
     /**
      * @test
+     * @throws \Exception
      */
     public function showVoidedCartDisplaysNoProducts(): void
     {
         // Setup
-        /** @var Cart $cart */
-        /** @var Client $client */
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
+        $products = [];
         for ($i = 0; $i < 20; ++$i) {
             $products[] = $this->createFullProduct();
         }
@@ -374,5 +365,4 @@ class CartsControllerTest extends TestCase
             $response->assertDontSeeText(htmlspecialchars($products[$i]->model, ENT_QUOTES | ENT_HTML401));
         }
     }
-
 }

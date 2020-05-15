@@ -857,9 +857,8 @@ if (document.getElementById('cartShow')) {
     let totalPrice = 0
     for (let i = 0, len = editIcons.length | 0; i < len; i = (i + 1) | 0) {
       let price = editIcons[i].dataset.productPrice
-      console.info('editIcons[i].dataset', editIcons[i].dataset)
       price = price.replace(/[^\d.-]/g, '')
-      totalPrice += parseInt(price, 10) * 100
+      totalPrice += parseFloat(price, 10) * 100
     }
     document.getElementById('cartTotalPrice').innerText = new Intl.NumberFormat(
       'en-US',
@@ -915,12 +914,15 @@ if (document.getElementById('cartShow')) {
               `Product ${luhn} has been updated. ` +
               `The price is now $${response.data.price}. ` +
               `This price will remain even if the product is removed from this cart.`
-            document.getElementById(
-              `price${luhn}`
-            ).innerText = new Intl.NumberFormat('en-US', {
+            const priceId = document.getElementById(`price${luhn}`)
+            priceId.innerText = new Intl.NumberFormat('en-US', {
               style: 'currency',
               currency: 'USD',
             }).format(response.data.price)
+            const editElement = priceId.nextElementSibling
+            editElement.dataset.productPrice = response.data.price
+            console.info('editElement', editElement)
+            console.info('productPrice', response.data.price)
 
             $toast.toast()
             $toast.toast('show')
@@ -935,7 +937,9 @@ if (document.getElementById('cartShow')) {
             $toast.toast()
             $toast.toast('show')
           })
-        updateTotalPrice()
+          .finally(() => {
+            updateTotalPrice()
+          })
       })
 
     $('#form').bind('keypress', function (event) {

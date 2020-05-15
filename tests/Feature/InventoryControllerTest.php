@@ -279,9 +279,9 @@ class InventoryControllerTest extends TestCase
      */
     public function salesRepsDoNotSeeInvoicedCartsOnInventoryPage(): void
     {
-        /** @var WorkOrder $workOrder */
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $carts = [];
         // Whip up around 20 carts to make sure they all appear
@@ -347,9 +347,9 @@ class InventoryControllerTest extends TestCase
      */
     public function salesRepsDoNotSeeVoidedCartsOnInventoryPage(): void
     {
-        /** @var WorkOrder $workOrder */
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $carts = [];
         // Whip up around 20 carts to make sure they all appear

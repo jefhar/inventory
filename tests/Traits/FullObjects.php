@@ -54,4 +54,13 @@ trait FullObjects
 
         return $cart;
     }
+
+    private function createFullClient(): Client
+    {
+        $person = factory(Person::class)->make();
+        $client = factory(Client::class)->create();
+        $client->person()->save($person);
+        $client->save();
+        return $client;
+    }
 }
