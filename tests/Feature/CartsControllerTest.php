@@ -98,10 +98,12 @@ class CartsControllerTest extends TestCase
     public function othersCantAccessCart(): void
     {
         $this->actingAs($this->createEmployee())
+            ->withoutMix()
             ->get(route(CartsController::INDEX_NAME))
             ->assertForbidden();
 
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
+            ->withoutMix()
             ->get(route(CartsController::INDEX_NAME))
             ->assertForbidden();
     }
@@ -115,8 +117,8 @@ class CartsControllerTest extends TestCase
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $salesRep->carts()->save($cart);
 
-        $this->withoutMix()
-            ->actingAs($salesRep)
+        $this->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart))
             ->assertOk()
             ->assertSee(htmlspecialchars($cart->client->company_name, ENT_QUOTES | ENT_HTML401));
@@ -244,6 +246,7 @@ class CartsControllerTest extends TestCase
         $cart->load('products');
         $this
             ->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(InventoryController::INDEX_NAME))
             ->assertSeeText($cart->products[0]->model)
             ->assertSeeText($cart->products[1]->model);
@@ -265,6 +268,7 @@ class CartsControllerTest extends TestCase
 
         // Test
         $this->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart))
             ->assertSee($cart->status);
 
@@ -299,6 +303,7 @@ class CartsControllerTest extends TestCase
         $cart->save();
         $response = $this
             ->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart));
         for ($i = 0; $i < 20; ++$i) {
             $response->assertSeeText(htmlspecialchars($products[$i]->manufacturer->name, ENT_QUOTES | ENT_HTML401));
@@ -325,6 +330,7 @@ class CartsControllerTest extends TestCase
 
         $response = $this
             ->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart));
         for ($i = 0; $i < 20; ++$i) {
             $this->assertDatabaseHas(
@@ -359,6 +365,7 @@ class CartsControllerTest extends TestCase
 
         $response = $this
             ->actingAs($salesRep)
+            ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart));
         for ($i = 0; $i < 20; ++$i) {
             $response->assertDontSeeText(htmlspecialchars($products[$i]->manufacturer->name, ENT_QUOTES | ENT_HTML401));
