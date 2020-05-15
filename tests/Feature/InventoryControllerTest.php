@@ -224,7 +224,6 @@ class InventoryControllerTest extends TestCase
     public function salesRepsSeeTheirExistingCartsOnInventoryPage(): void
     {
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
-        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $carts = [];
         // Whip up around 20 carts to make sure they all appear
