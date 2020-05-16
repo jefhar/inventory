@@ -63,7 +63,6 @@ class Type extends Model
     {
         $this->attributes[self::SLUG] = Str::slug($name);
         $this->attributes[self::NAME] = Str::title($name);
-        parent::select();
     }
 
     /**
