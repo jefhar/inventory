@@ -14,7 +14,11 @@ refresh_cache:
       - node_modules
       - .yarn
   script:
-    - echo "Inb4: need to install yarn. Base image is ubuntu:bionic"
+    - curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+    - echo "deb https://deb.nodesource.com/node_13.x bionic main" | tee /etc/apt/sources.list.d/nodesource.list
+    - apt-get update
+    - apt-get install -y nodejs
+    - npm install -g yarn
     - composer install --no-plugins --no-scripts
     - yarn config set cache-folder .yarn
     - yarn install --pure-lockfile
