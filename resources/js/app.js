@@ -153,8 +153,6 @@ if (document.getElementById('WorkOrdersEdit')) {
     const data = { is_locked: wantOrderToBeLocked }
     const url = `/workorders/${workOrderBody.dataset.workOrderId}`
 
-    // Actions
-
     // Do Stuff
     axios
       .patch(url, data)
@@ -225,6 +223,7 @@ if (document.getElementById('WorkOrdersEdit')) {
 </div>`
     }
     const afterPatch = () => {
+      // Do Stuff
       document.getElementById('workOrderBody').appendChild(updateToast)
       const $updateToast = $('#updateToast') // Grab jQuery handle element
       $updateToast.toast()
@@ -271,10 +270,6 @@ if (document.getElementById('WorkOrdersEdit')) {
       const onGet = (response) => {
         // Definitions
         const formData = response.data
-
-        // Actions
-
-        // Attachments
 
         // Do Stuff
         formData.unshift(
@@ -325,8 +320,6 @@ if (document.getElementById('WorkOrdersEdit')) {
         alert.innerText = error
         $formContainer.append(alert)
       }
-      // Attachments
-
       // Do Stuff
       spinner.classList.remove('invisible')
       spinner.classList.add('visible')
@@ -387,10 +380,6 @@ if (document.getElementById('WorkOrdersEdit')) {
         const errorAlert = document.createElement('div')
         const productError = document.getElementById('productError')
 
-        // Actions
-
-        // Attachments
-
         // Do Stuff
         errorAlert.classList.add(
           'alert',
@@ -424,10 +413,6 @@ if (document.getElementById('WorkOrdersEdit')) {
       // Definitions
       const productForm = document.getElementById('productForm')
       const productType = document.getElementById('productType')
-
-      // Actions
-
-      // Attachments
 
       // Do Stuff
       while (productForm.hasChildNodes()) {
@@ -609,8 +594,6 @@ if (document.getElementById('typesCreate')) {
           }
         }
 
-        // Attachments
-
         // Do Stuff
         if (response.status === HTTP_CREATED) {
           console.info('created.')
@@ -647,7 +630,7 @@ if (document.getElementById('typesCreate')) {
           console.info('Hmm.')
         }
       }
-      const afterTypesPost = (response) => {
+      const afterTypesPost = () => {
         // Definitions
         const typesList = document.getElementById('typesList')
 
@@ -660,8 +643,6 @@ if (document.getElementById('typesCreate')) {
             typesList.append(option)
           })
         }
-
-        // Attachments
 
         // Do Stuff
         $('#saveProductModal').modal('hide')
@@ -681,8 +662,6 @@ if (document.getElementById('typesCreate')) {
           }
         }, 8000)
       }
-
-      // Attachments
 
       // Do Stuff
       axios
@@ -739,10 +718,6 @@ if (document.getElementById('typesCreate')) {
         // Definitions
         console.info('error', error)
         const alert = document.createElement('div')
-
-        // Actions
-
-        // Attachments
 
         // Do Stuff
         alert.classList.add('alert', 'alert-warning')
@@ -836,8 +811,6 @@ if (document.getElementById('inventoryShow')) {
       const { company_name: companyName } = response.data.cart.client
       const alert = document.createElement('div')
 
-      // Actions
-
       // Attachments
       removeFromCartIcon.addEventListener(
         'click',
@@ -861,8 +834,6 @@ Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
       cardFooter.appendChild(alert)
     }
 
-    // Attachments
-
     // Do Stuff
     axios
       .post('/pendingSales', postData)
@@ -874,14 +845,12 @@ Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
       })
   }
   const newCartButtonClick = () => {
-    // Definitions
-
     // Actions
     const newCartModalShown = () => {
       // Definitions
 
       // Actions
-      const handleResponse = function (response) {
+      const handleResponse = (response) => {
         // Definitions
         console.info('response.data:', response.data)
         const client = response.data.client
@@ -891,8 +860,6 @@ Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
         const alert = document.createElement('div')
         const removeFromCartIcon = document.getElementById('removeFromCartIcon')
         const productId = document.getElementById('productId')
-        // Actions
-
         // Attachments
         removeFromCartIcon.addEventListener(
           'click',
@@ -959,8 +926,6 @@ Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
 }
 
 if (document.getElementById('cartIndex')) {
-  // Definitions
-
   // Actions
   const destroyCartModalShow = (event) => {
     // Definitions
@@ -979,12 +944,6 @@ if (document.getElementById('cartIndex')) {
 
       // Actions
       const onDeleteCart = () => {
-        // Definitions
-
-        // Actions
-
-        // Attachments
-
         // Do Stuff
         $('#destroyCartModal').modal('hide')
         document.getElementById(`cart${cart}`).remove()
@@ -995,7 +954,6 @@ if (document.getElementById('cartIndex')) {
         $destroyedToast.toast()
         $destroyedToast.toast('show')
       }
-      // Attachments
 
       // Do Stuff
       // Send destroy to /carts/destroy with cart luhn in field.
@@ -1133,10 +1091,6 @@ if (document.getElementById('cartShow')) {
         const priceId = document.getElementById(`price${luhn}`)
         const editElement = priceId.nextElementSibling
 
-        // Actions
-
-        // Attachments
-
         // Do Stuff
         $costModal.modal('hide')
         document.getElementById('toastBody').innerHTML =
@@ -1160,10 +1114,6 @@ if (document.getElementById('cartShow')) {
         const $toast = $('productUpdateErrorToast')
         const toastErrorBody = document.getElementById('toastErrorBody')
 
-        // Actions
-
-        // Attachments
-
         // Do Stuff
         console.error(error)
         // display error toast
@@ -1171,7 +1121,6 @@ if (document.getElementById('cartShow')) {
         $toast.toast()
         $toast.toast('show')
       }
-      // Attachments
 
       // Do stuff
       if (price < 0) {
@@ -1202,7 +1151,7 @@ if (document.getElementById('cartShow')) {
       costSubmitButtonClick()
     })
     $('#form').bind('keypress', (event) => {
-      formKeyPress()
+      formKeyPress(event)
     })
 
     // Do Stuff
