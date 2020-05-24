@@ -141,9 +141,14 @@ function WorkOrderEditUpdateUI() {
 
 if (document.getElementById('workorders_edit')) {
   console.info('workorders_edit')
+  const lockButton = document.getElementById('lockButton')
+  const updateButton = document.getElementById('updateButton')
 
-  $('[data-toggle="tooltip"]').tooltip()
-  $('#productModal').on('shown.bs.modal', (event) => {
+  const productModalShown = (event) => {
+    // Identifiers
+
+    // Attributes
+
     // Defer attaching event listener until modal opens
     // Because #productType is not attached until modal opens
     document
@@ -277,64 +282,56 @@ if (document.getElementById('workorders_edit')) {
         }
         document.getElementById('productType').selectedIndex = 0
       })
-  })
-
-  // Lock/Unlock work order
-  if (document.getElementById('lockButton')) {
-    document.getElementById('lockButton').addEventListener('click', () => {
-      const wantOrderToBeLocked = !(
-        document.getElementById('workOrderBody').dataset.isLocked === 'true'
-      )
-      const data = { is_locked: wantOrderToBeLocked }
-      const url = `/workorders/${
-        document.getElementById('workOrderBody').dataset.workOrderId
-      }`
-      axios
-        .patch(url, data)
-        .then((response) => {
-          document.getElementById('workOrderBody').dataset.isLocked =
-            response.data.is_locked
-          WorkOrderEditUpdateUI()
-        })
-        .catch((error) => {
-          console.info('error.response.data:', error.response.data)
-        })
-    })
   }
-  // Submit changed field data to UPDATE
-  if (document.getElementById('update_button')) {
-    document
-      .getElementById('update_button')
-      .addEventListener('click', (event) => {
-        const cardBody = document.getElementById('workOrderBody')
-        const updateToast = document.createElement('div')
-        const url = `/workorders/${cardBody.dataset.workOrderId}`
-        const data = {
-          company_name: document.getElementById('company_name').value,
-          email: document.getElementById('email').value,
-          first_name: document.getElementById('first_name').value,
-          intake: document.getElementById('intake').value,
-          last_name: document.getElementById('last_name').value,
-          phone_number: document.getElementById('phone_number').value,
-        }
+  const lockButtonClick = () => {
+    const wantOrderToBeLocked = !(
+      document.getElementById('workOrderBody').dataset.isLocked === 'true'
+    )
+    const data = { is_locked: wantOrderToBeLocked }
+    const url = `/workorders/${
+      document.getElementById('workOrderBody').dataset.workOrderId
+    }`
+    axios
+      .patch(url, data)
+      .then((response) => {
+        document.getElementById('workOrderBody').dataset.isLocked =
+          response.data.is_locked
+        WorkOrderEditUpdateUI()
+      })
+      .catch((error) => {
+        console.info('error.response.data:', error.response.data)
+      })
+  }
+  const updateButtonClick = () => {
+    const cardBody = document.getElementById('workOrderBody')
+    const updateToast = document.createElement('div')
+    const url = `/workorders/${cardBody.dataset.workOrderId}`
+    const data = {
+      company_name: document.getElementById('company_name').value,
+      email: document.getElementById('email').value,
+      first_name: document.getElementById('first_name').value,
+      intake: document.getElementById('intake').value,
+      last_name: document.getElementById('last_name').value,
+      phone_number: document.getElementById('phone_number').value,
+    }
 
-        updateToast.id = 'updateToast'
-        updateToast.classList.add('toast')
-        updateToast.style.position = 'absolute'
-        updateToast.style.top = '0'
-        updateToast.style.right = '0'
-        updateToast.dataset.delay = '8000'
+    updateToast.id = 'updateToast'
+    updateToast.classList.add('toast')
+    updateToast.style.position = 'absolute'
+    updateToast.style.top = '0'
+    updateToast.style.right = '0'
+    updateToast.dataset.delay = '8000'
 
-        // send PATCH via axios
-        axios
-          .patch(url, data)
-          .then((response) => {
-            // At some point, give user a visual indication that
-            // fields have been updated. Even better, add onChange
-            // to the fields, and if they're dirty, give visual
-            // indication when changed.
+    // send PATCH via axios
+    axios
+      .patch(url, data)
+      .then((response) => {
+        // At some point, give user a visual indication that
+        // fields have been updated. Even better, add onChange
+        // to the fields, and if they're dirty, give visual
+        // indication when changed.
 
-            updateToast.innerHTML = ` 
+        updateToast.innerHTML = ` 
     <div class="toast-header">
       <i class="fas fa-check-square text-success"></i>&nbsp;
       <strong class="mr-auto">Success</strong>
@@ -346,10 +343,10 @@ if (document.getElementById('workorders_edit')) {
     <div class="toast-body">
       Work Order successfully updated.
     </div>`
-          })
-          .catch((error) => {
-            console.debug('error:', error)
-            updateToast.innerHTML = `  <div
+      })
+      .catch((error) => {
+        console.debug('error:', error)
+        updateToast.innerHTML = `  <div
   style="position: absolute; top: 0; right: 0;"
   class="toast"
   role="alert"
@@ -367,17 +364,35 @@ if (document.getElementById('workorders_edit')) {
       ${error}
     </div>
   </div>`
-          })
-          .finally(() => {
-            document.getElementById('workOrderBody').appendChild(updateToast)
-            const $updateToast = $('#updateToast')
-            $updateToast.toast()
-            $updateToast.toast('show')
-          })
-
-        event.preventDefault()
       })
+      .finally(() => {
+        document.getElementById('workOrderBody').appendChild(updateToast)
+        const $updateToast = $('#updateToast')
+        $updateToast.toast()
+        $updateToast.toast('show')
+      })
+
+    event.preventDefault()
   }
+
+  $('[data-toggle="tooltip"]').tooltip()
+  $('#productModal').on('shown.bs.modal', (event) => {
+    productModalShown(event)
+  })
+
+  // Lock/Unlock work order
+  if (lockButton) {
+    lockButton.addEventListener('click', () => {
+      lockButtonClick()
+    })
+  }
+  // Submit changed field data to UPDATE
+  if (updateButton) {
+    updateButton.addEventListener('click', (event) => {
+      updateButtonClick()
+    })
+  }
+
   WorkOrderEditUpdateUI()
 }
 

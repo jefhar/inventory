@@ -119,7 +119,7 @@
           <div class="row">
             <button
               class="btn btn-outline-primary col-4 offset-1"
-              id="update_button"
+              id="updateButton"
               type="submit">
               Commit Changes
             </button>
