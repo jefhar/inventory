@@ -228,7 +228,6 @@ if (document.getElementById('WorkOrdersEdit')) {
 
     event.preventDefault()
   }
-
   const productModalShown = (event) => {
     // Identifiers
     const productType = document.getElementById('productType')
@@ -306,20 +305,25 @@ if (document.getElementById('WorkOrdersEdit')) {
         workOrderId: document.getElementById('workOrderBody').dataset
           .workOrderId,
       }
+      const url = '/products'
       for (let i = 0; i < formData.length; i++) {
         postData[formData[i].name] = formData[i].value
       }
+
       // Post Form
-      const url = '/products'
       axios
         .post(url, postData)
         .then((response) => {
+          // Define stuff
           const { model, createdAt, serial } = response.data
           const { name: manufacturer } = response.data.manufacturer
           const { name: type } = response.data.type
           const luhn = _.padStart(response.data.luhn, 6, '0')
+          const productForm = document.getElementById('productForm')
           // Add Row to `<tbody id="products_table">`
           const tr = document.createElement('tr')
+
+          // Do stuff
           tr.innerHTML = `<th scope="row" class="col-1">
 <a class="btn btn-info" href="/inventory/${luhn}">${luhn}</a></th>
 <td>${manufacturer}</td>
@@ -328,7 +332,7 @@ if (document.getElementById('WorkOrdersEdit')) {
 <td>${serial}</td>
 <td>${createdAt}</td>`
           document.getElementById('products_table').appendChild(tr)
-          const productForm = document.getElementById('productForm')
+
           while (productForm.hasChildNodes()) {
             productForm.removeChild(productForm.lastChild)
           }
