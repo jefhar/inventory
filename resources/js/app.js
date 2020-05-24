@@ -688,7 +688,7 @@ if (document.getElementById('inventoryShow')) {
   const wrapper = $('#product_show')
   const newCartButton = document.getElementById('newCartButton')
   const productId = document.getElementById('productId').dataset.productId
-  const productLuhn = document.getElementById('productId').dataset.productLuhn
+  // let productLuhn = document.getElementById('productId').dataset.productLuhn
 
   // Actions
   const addToExistingCart = (cartId, productId) => {
@@ -796,35 +796,49 @@ Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
 }
 
 if (document.getElementById('cartIndex')) {
-  $('.collapse').collapse({ toggle: false })
-  $('#destroyCartModal').on('show.bs.modal', (event) => {
+  // Definitions
+
+  // Actions
+  const destroyCartModalShow = (event) => {
     console.info('event:', event)
     const sourceTarget = $(event.relatedTarget)
     console.info('target:', sourceTarget)
     const cart = sourceTarget.data('cart')
     console.info('cart:', cart)
+    const destroyCartButton = document.getElementById('destroyCartButton')
 
-    document
-      .getElementById('destroyCartButton')
-      .addEventListener('click', () => {
-        // Send destroy to /carts/destroy with cart luhn in field.
-        axios.delete(`/carts/${cart}`)
+    const destroyCartButtonClick = () => {
+      const toastBody = document.getElementById('toastBody')
+      const $destroyedToast = $('#destroyedToast')
+      // Send destroy to /carts/destroy with cart luhn in field.
+      axios
+        .delete(`/carts/${cart}`)
 
-        // Close modal
-        $('#destroyCartModal').modal('hide')
-        // Remove cart card from page
-        document.getElementById(`cart${cart}`).remove()
+        .then(() => {
+          // Close modal
+          $('#destroyCartModal').modal('hide')
+          // Remove cart card from page
+          document.getElementById(`cart${cart}`).remove()
 
-        // Add toast
-        document.getElementById('toastBody').innerText =
-          'Cart ' +
-          cart +
-          ' has been destroyed. All items have been returned to inventory.'
-        const $destroyedToast = $('#destroyedToast')
-        $destroyedToast.toast()
-        $destroyedToast.toast('show')
-      })
+          // Add toast
+          toastBody.innerText = `Cart ${cart} has been destroyed. All items have been returned to inventory.`
+
+          $destroyedToast.toast()
+          $destroyedToast.toast('show')
+        })
+    }
+    destroyCartButton.addEventListener('click', () => {
+      destroyCartButtonClick()
+    })
+  }
+
+  // Attachments
+  $('#destroyCartModal').on('show.bs.modal', (event) => {
+    destroyCartModalShow(event)
   })
+
+  // Do Stuff
+  $('.collapse').collapse({ toggle: false })
 }
 
 if (document.getElementById('cartShow')) {
