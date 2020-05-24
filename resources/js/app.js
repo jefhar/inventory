@@ -94,6 +94,7 @@ function WorkOrderEditUpdateUI() {
   const lockIcon = document.getElementById('lockIcon')
   const outline = document.getElementById('outline')
   const lockHeader = document.getElementById('lockedHeader')
+  const workOrderBody = document.getElementById('workOrderBody')
   const locked = {
     clickTo: 'Click to Unlock work order.',
     isLockedButton: 'btn-outline-danger',
@@ -111,14 +112,12 @@ function WorkOrderEditUpdateUI() {
   const updateUI = (add, remove) => {
     if (isLockedButton) {
       isLockedButton.classList.add(add.isLockedButton)
-
       lockIcon.classList.add(add.lockIcon)
     }
     outline.classList.add(add.outline)
 
     if (isLockedButton) {
       isLockedButton.classList.remove(remove.isLockedButton)
-
       lockIcon.classList.remove(remove.lockIcon)
     }
     outline.classList.remove(remove.outline)
@@ -126,7 +125,7 @@ function WorkOrderEditUpdateUI() {
     $('[data-toggle="tooltip"]').attr('data-original-title', add.clickTo)
   }
 
-  if (document.getElementById('workOrderBody').dataset.isLocked === 'true') {
+  if (workOrderBody.dataset.isLocked === 'true') {
     updateUI(locked, unlocked)
     lockHeader.innerText = locked.lockHeader
   } else {
@@ -134,8 +133,7 @@ function WorkOrderEditUpdateUI() {
     lockHeader.innerText = unlocked.lockHeader
   }
   if (inventoryButton) {
-    inventoryButton.disabled =
-      document.getElementById('workOrderBody').dataset.isLocked === 'true'
+    inventoryButton.disabled = workOrderBody.dataset.isLocked === 'true'
   }
 }
 
@@ -143,146 +141,6 @@ if (document.getElementById('workorders_edit')) {
   console.info('workorders_edit')
   const lockButton = document.getElementById('lockButton')
   const updateButton = document.getElementById('updateButton')
-
-  const productModalShown = (event) => {
-    // Identifiers
-
-    // Attributes
-
-    // Defer attaching event listener until modal opens
-    // Because #productType is not attached until modal opens
-    document
-      .getElementById('productType')
-      .addEventListener('change', (event) => {
-        const { value } = event.target
-        const select = document.getElementById('productType')
-        const $formContainer = $(document.getElementById('typeForm'))
-        const spinner = document.getElementById('spinner')
-        spinner.classList.remove('invisible')
-        spinner.classList.add('visible')
-
-        axios
-          .get(`/types/${value}`, value)
-          .then((response) => {
-            const formData = response.data
-            formData.unshift(
-              {
-                type: 'header',
-                className: 'mt-3',
-                label: select.options[select.selectedIndex].innerText,
-                subtype: 'h3',
-              },
-              {
-                className: 'form-control',
-                dataAutocomplete: '/ajaxsearch/manufacturer',
-                label: 'Manufacturer',
-                name: 'manufacturer',
-                required: 'true',
-                subtype: 'text',
-                type: 'text',
-              },
-              {
-                className: 'form-control',
-                dataAutocomplete: '/ajaxsearch/model',
-                label: 'Model',
-                name: 'model',
-                required: 'true',
-                subtype: 'text',
-                type: 'text',
-              }
-            )
-
-            $('form', $formContainer).formRender({
-              formData: formData,
-            })
-            // Add autocomplete to Manufacturer
-            AutoComplete({
-              _Cache: function (value) {
-                value += this.Input.name
-                return this.$Cache[value]
-              },
-            })
-            // Add autocomplete to Model
-          })
-          .catch((error) => {
-            console.info('error:', error)
-            const alert = document.createElement('div')
-            alert.classList.add('alert', 'alert-warning')
-            alert.innerText = error
-            $formContainer.append(alert)
-          })
-          .finally(() => {
-            spinner.classList.remove('visible')
-            spinner.classList.add('invisible')
-          })
-      })
-    document
-      .getElementById('productSubmit')
-      .addEventListener('click', (event) => {
-        const formData = document.getElementById('productForm')
-        const postData = {
-          type: document.getElementById('productType').value,
-          workOrderId: document.getElementById('workOrderBody').dataset
-            .workOrderId,
-        }
-        for (let i = 0; i < formData.length; i++) {
-          postData[formData[i].name] = formData[i].value
-        }
-        // Post Form
-        const url = '/products'
-        axios
-          .post(url, postData)
-          .then((response) => {
-            const { model, createdAt, serial } = response.data
-            const { name: manufacturer } = response.data.manufacturer
-            const { name: type } = response.data.type
-            const luhn = _.padStart(response.data.luhn, 6, '0')
-            // Add Row to `<tbody id="products_table">`
-            const tr = document.createElement('tr')
-            tr.innerHTML = `<th scope="row" class="col-1">
-<a class="btn btn-info" href="/inventory/${luhn}">${luhn}</a></th>
-<td>${manufacturer}</td>
-<td>${model}</td>
-<td>${type}</td>
-<td>${serial}</td>
-<td>${createdAt}</td>`
-            document.getElementById('products_table').appendChild(tr)
-            const productForm = document.getElementById('productForm')
-            while (productForm.hasChildNodes()) {
-              productForm.removeChild(productForm.lastChild)
-            }
-            document.getElementById('productType').selectedIndex = 0
-            // close modal
-            $('#productModal').modal('hide')
-            $('.modal-backdrop').remove()
-          })
-          .catch((error) => {
-            console.info('error:', error)
-            const errorAlert = document.createElement('div')
-            errorAlert.classList.add(
-              'alert',
-              'alert-warning',
-              'alert-dismissible',
-              'fade',
-              'show'
-            )
-            errorAlert.innerHTML = `${error}
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-<span aria-hidden="true">&times;</span>
-</button>`
-            document.getElementById('productError').appendChild(errorAlert)
-          })
-      })
-    document
-      .getElementById('cancelButton')
-      .addEventListener('click', (event) => {
-        const productForm = document.getElementById('productForm')
-        while (productForm.hasChildNodes()) {
-          productForm.removeChild(productForm.lastChild)
-        }
-        document.getElementById('productType').selectedIndex = 0
-      })
-  }
   const lockButtonClick = () => {
     const wantOrderToBeLocked = !(
       document.getElementById('workOrderBody').dataset.isLocked === 'true'
@@ -373,6 +231,152 @@ if (document.getElementById('workorders_edit')) {
       })
 
     event.preventDefault()
+  }
+  const productModalShown = (event) => {
+    // Identifiers
+    const productType = document.getElementById('productType')
+    const productSubmit = document.getElementById('productSubmit')
+    const cancelButton = document.getElementById('cancelButton')
+
+    // Attributes
+    const productTypeChange = (event) => {
+      const { value } = event.target
+      const select = document.getElementById('productType')
+      const $formContainer = $(document.getElementById('typeForm'))
+      const spinner = document.getElementById('spinner')
+      spinner.classList.remove('invisible')
+      spinner.classList.add('visible')
+
+      axios
+        .get(`/types/${value}`, value)
+        .then((response) => {
+          const formData = response.data
+          formData.unshift(
+            {
+              type: 'header',
+              className: 'mt-3',
+              label: select.options[select.selectedIndex].innerText,
+              subtype: 'h3',
+            },
+            {
+              className: 'form-control',
+              dataAutocomplete: '/ajaxsearch/manufacturer',
+              label: 'Manufacturer',
+              name: 'manufacturer',
+              required: 'true',
+              subtype: 'text',
+              type: 'text',
+            },
+            {
+              className: 'form-control',
+              dataAutocomplete: '/ajaxsearch/model',
+              label: 'Model',
+              name: 'model',
+              required: 'true',
+              subtype: 'text',
+              type: 'text',
+            }
+          )
+
+          $('form', $formContainer).formRender({
+            formData: formData,
+          })
+          // Add autocomplete to Manufacturer
+          AutoComplete({
+            _Cache: function (value) {
+              value += this.Input.name
+              return this.$Cache[value]
+            },
+          })
+          // Add autocomplete to Model
+        })
+        .catch((error) => {
+          console.info('error:', error)
+          const alert = document.createElement('div')
+          alert.classList.add('alert', 'alert-warning')
+          alert.innerText = error
+          $formContainer.append(alert)
+        })
+        .finally(() => {
+          spinner.classList.remove('visible')
+          spinner.classList.add('invisible')
+        })
+    }
+    const productSubmitClick = (event) => {
+      const formData = document.getElementById('productForm')
+      const postData = {
+        type: document.getElementById('productType').value,
+        workOrderId: document.getElementById('workOrderBody').dataset
+          .workOrderId,
+      }
+      for (let i = 0; i < formData.length; i++) {
+        postData[formData[i].name] = formData[i].value
+      }
+      // Post Form
+      const url = '/products'
+      axios
+        .post(url, postData)
+        .then((response) => {
+          const { model, createdAt, serial } = response.data
+          const { name: manufacturer } = response.data.manufacturer
+          const { name: type } = response.data.type
+          const luhn = _.padStart(response.data.luhn, 6, '0')
+          // Add Row to `<tbody id="products_table">`
+          const tr = document.createElement('tr')
+          tr.innerHTML = `<th scope="row" class="col-1">
+<a class="btn btn-info" href="/inventory/${luhn}">${luhn}</a></th>
+<td>${manufacturer}</td>
+<td>${model}</td>
+<td>${type}</td>
+<td>${serial}</td>
+<td>${createdAt}</td>`
+          document.getElementById('products_table').appendChild(tr)
+          const productForm = document.getElementById('productForm')
+          while (productForm.hasChildNodes()) {
+            productForm.removeChild(productForm.lastChild)
+          }
+          document.getElementById('productType').selectedIndex = 0
+          // close modal
+          $('#productModal').modal('hide')
+          $('.modal-backdrop').remove()
+        })
+        .catch((error) => {
+          console.info('error:', error)
+          const errorAlert = document.createElement('div')
+          errorAlert.classList.add(
+            'alert',
+            'alert-warning',
+            'alert-dismissible',
+            'fade',
+            'show'
+          )
+          errorAlert.innerHTML = `${error}
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>`
+          document.getElementById('productError').appendChild(errorAlert)
+        })
+    }
+    const cancelButtonClick = (event) => {
+      const productForm = document.getElementById('productForm')
+      while (productForm.hasChildNodes()) {
+        productForm.removeChild(productForm.lastChild)
+      }
+      document.getElementById('productType').selectedIndex = 0
+    }
+
+    // Event Listeners
+    // Defer attaching event listener until modal opens
+    // Because #productType is not attached until modal opens
+    productType.addEventListener('change', (event) => {
+      productTypeChange(event)
+    })
+    productSubmit.addEventListener('click', (event) => {
+      productSubmitClick(event)
+    })
+    cancelButton.addEventListener('click', (event) => {
+      cancelButtonClick(event)
+    })
   }
 
   $('[data-toggle="tooltip"]').tooltip()
