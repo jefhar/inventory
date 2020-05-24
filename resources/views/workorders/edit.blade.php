@@ -3,7 +3,7 @@
 @section('title', 'Edit Work Order #' . $workOrder->luhn . ': ' . $workOrder->client->company_name )
 
 @section('content')
-  <div id="workorders_edit"></div>
+  <div id="WorkOrdersEdit"></div>
   <div class="container">
     <div class="border border-{{ $workOrder->is_locked ? 'warning' : 'primary' }} card col-md rounded-sm row shadow"
          id="outline">

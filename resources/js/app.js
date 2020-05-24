@@ -76,9 +76,7 @@ $(() => {
           }
         } else {
           console.info('json is not array')
-          for (const value in json) {
-            console.debug(value)
-          }
+          console.info(JSON.stringify(json))
         }
         return returnResponse
       },
@@ -137,30 +135,27 @@ function WorkOrderEditUpdateUI() {
   }
 }
 
-if (document.getElementById('workorders_edit')) {
-  console.info('workorders_edit')
+if (document.getElementById('WorkOrdersEdit')) {
+  console.info('WorkOrdersEdit')
   const lockButton = document.getElementById('lockButton')
   const updateButton = document.getElementById('updateButton')
+  const workOrderBody = document.getElementById('workOrderBody')
+
   const lockButtonClick = () => {
-    const wantOrderToBeLocked = !(
-      document.getElementById('workOrderBody').dataset.isLocked === 'true'
-    )
+    const wantOrderToBeLocked = !(workOrderBody.dataset.isLocked === 'true')
     const data = { is_locked: wantOrderToBeLocked }
-    const url = `/workorders/${
-      document.getElementById('workOrderBody').dataset.workOrderId
-    }`
+    const url = `/workorders/${workOrderBody.dataset.workOrderId}`
     axios
       .patch(url, data)
       .then((response) => {
-        document.getElementById('workOrderBody').dataset.isLocked =
-          response.data.is_locked
+        workOrderBody.dataset.isLocked = response.data.is_locked
         WorkOrderEditUpdateUI()
       })
       .catch((error) => {
         console.info('error.response.data:', error.response.data)
       })
   }
-  const updateButtonClick = () => {
+  const updateButtonClick = (event) => {
     const cardBody = document.getElementById('workOrderBody')
     const updateToast = document.createElement('div')
     const url = `/workorders/${cardBody.dataset.workOrderId}`
@@ -190,38 +185,39 @@ if (document.getElementById('workorders_edit')) {
         // indication when changed.
 
         updateToast.innerHTML = ` 
-    <div class="toast-header">
-      <i class="fas fa-check-square text-success"></i>&nbsp;
-      <strong class="mr-auto">Success</strong>
-      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast"
-              aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="toast-body">
-      Work Order successfully updated.
-    </div>`
+<div class="toast-header">
+  <i class="fas fa-check-square text-success"></i>&nbsp;
+  <strong class="mr-auto">Success</strong>
+  <button type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+          aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="toast-body">
+  Work Order successfully updated.
+</div>`
       })
       .catch((error) => {
-        console.debug('error:', error)
-        updateToast.innerHTML = `  <div
+        console.info('error:', error)
+        updateToast.innerHTML = `
+<div
   style="position: absolute; top: 0; right: 0;"
   class="toast"
   role="alert"
   aria-live="assertive" 
   aria-atomic="true">
-    <div class="toast-header">
-      <i class="fas fa-exclamation-circle text-warning"></i>&nbsp;
-      <strong class="mr-auto">Warning</strong>
-      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast"
-              aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="toast-body">
-      ${error}
-    </div>
-  </div>`
+  <div class="toast-header">
+    <i class="fas fa-exclamation-circle text-warning"></i>&nbsp;
+    <strong class="mr-auto">Warning</strong>
+    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+            aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="toast-body">
+    ${error}
+  </div>
+</div>`
       })
       .finally(() => {
         document.getElementById('workOrderBody').appendChild(updateToast)
@@ -232,6 +228,7 @@ if (document.getElementById('workorders_edit')) {
 
     event.preventDefault()
   }
+
   const productModalShown = (event) => {
     // Identifiers
     const productType = document.getElementById('productType')
@@ -759,7 +756,7 @@ if (document.getElementById('inventory_show')) {
       // Show popup modal
       $newCartModal.on('shown.bs.modal', (event) => {
         const handleResponse = function (response) {
-          console.debug('response.data:', response.data)
+          console.info('response.data:', response.data)
           const client = response.data.client
           const cartLuhn = response.data.luhn
 
