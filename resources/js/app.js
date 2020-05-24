@@ -87,8 +87,8 @@ $(() => {
   )
 })
 
-function WE_update() {
-  console.log('WE_update function')
+function WorkOrderEditUpdateUI() {
+  console.log('WorkOrderEditUpdateUI function')
   const inventoryButton = document.getElementById('addInventoryButton')
   const isLockedButton = document.getElementById('lockButton')
   const lockIcon = document.getElementById('lockIcon')
@@ -294,7 +294,7 @@ if (document.getElementById('workorders_edit')) {
         .then((response) => {
           document.getElementById('workOrderBody').dataset.isLocked =
             response.data.is_locked
-          WE_update()
+          WorkOrderEditUpdateUI()
         })
         .catch((error) => {
           console.info('error.response.data:', error.response.data)
@@ -378,7 +378,7 @@ if (document.getElementById('workorders_edit')) {
         event.preventDefault()
       })
   }
-  WE_update()
+  WorkOrderEditUpdateUI()
 }
 
 if (document.getElementById('types_create')) {
