@@ -6,7 +6,7 @@
 
 @section('content')
   <script>
-    function removeFromCart (productLuhn) {
+    const removeFromCart = productLuhn => {
       axios.delete(`/pendingSales/${productLuhn}`).then(() => {
         // Remove alert
         const productAddedAlert = document.getElementById('productAddedAlert')
@@ -19,10 +19,10 @@
       formData: '{!! json_encode(
     $formData,
     JSON_THROW_ON_ERROR | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
-    ) !!}', dataType: 'json'
+    ) !!}', dataType: 'json',
     }
   </script>
-  <div class="container" id="inventory_show">
+  <div class="container" id="inventoryShow">
     <div class="card">
       <div class="card-header">
         <h1 id="productId"

@@ -680,26 +680,73 @@ if (document.getElementById('typesCreate')) {
   $('#fb-render').formRender()
 }
 
-if (document.getElementById('inventory_show')) {
-  function addToExistingCart(cartId, productId) {
-    console.info('inside const addToCart(' + cartId + ', ' + productId + ')')
+if (document.getElementById('inventoryShow')) {
+  console.info('inventory page.')
+  // Definitions
+  const dataCartMap = document.querySelectorAll('[data-cart-id]')
+  const $newCartModal = $('#newCartModal')
+  const wrapper = $('#product_show')
+  const newCartButton = document.getElementById('newCartButton')
+  const productId = document.getElementById('productId').dataset.productId
+  const productLuhn = document.getElementById('productId').dataset.productLuhn
+
+  // Actions
+  const addToExistingCart = (cartId, productId) => {
+    console.info(`inside const addToCart(${cartId}, ${productId})`)
     axios
       .post('/pendingSales', {
         cart_id: cartId,
         id: productId,
       })
       .then((response) => {
+        const cardFooter = document.getElementById('cardFooter')
+        const removeFromCartIcon = document.getElementById('removeFromCartIcon')
         const { luhn: cartLuhn } = response.data.cart
         const { company_name: companyName } = response.data.cart.client
         document.getElementById('addToCardButton').remove()
         const alert = document.createElement('div')
         alert.id = 'productAddedAlert'
         alert.classList.add('alert', 'alert-primary')
-        alert.innerHTML = `Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
+        alert.innerHTML = `
+Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
+<br><br>
+<span class="text-danger" id="removeFromCartIcon">
+  <i id="removeProduct" class="fas fa-unlink" >&#8203;</i>
+  Remove product from cart.</span>`
+
+        cardFooter.appendChild(alert)
+
+        removeFromCartIcon.addEventListener(
+          'click',
+          removeFromCart.bind(
+            this,
+            document.getElementById('productId').dataset.productLuhn
+          )
+        )
+      })
+      .catch((error) => {
+        console.info('error: ', error)
+      })
+  }
+  const newCartButtonClick = () => {
+    // Show popup modal
+    $newCartModal.on('shown.bs.modal', (event) => {
+      const handleResponse = function (response) {
+        console.info('response.data:', response.data)
+        const client = response.data.client
+        const cartLuhn = response.data.luhn
+
+        // Remove button
+        const addToCardButton = document.getElementById('addToCardButton')
+        const cardFooter = document.getElementById('cardFooter')
+        addToCardButton.remove()
+        const alert = document.createElement('div')
+        alert.id = 'productAddedAlert'
+        alert.classList.add('alert', 'alert-primary')
+        alert.innerHTML = `Product added to cart for <a href="/carts/${cartLuhn}">${client.company_name}</a>.
 <br><br>
 <span class="text-danger" id="removeFromCartIcon"><i id="removeProduct" class="fas fa-unlink" >&#8203;</i> Remove product from cart.</span>`
-        document.getElementById('cardFooter').appendChild(alert)
-
+        cardFooter.appendChild(alert)
         document
           .getElementById('removeFromCartIcon')
           .addEventListener(
@@ -709,83 +756,45 @@ if (document.getElementById('inventory_show')) {
               document.getElementById('productId').dataset.productLuhn
             )
           )
-      })
-      .catch((error) => {
-        console.info('error: ', error)
-      })
+        $newCartModal.modal('hide')
+        return Promise.resolve()
+      }
+      console.info('rendering CCN for inventory')
+      ReactDOM.render(
+        <CompanyClientName
+          handleResponse={handleResponse}
+          postPath="/carts"
+          draft="Cart"
+        />,
+        document.getElementById('carts_create')
+      )
+      document.getElementById('newCartButton').onclick = () => {
+        console.info('Here.')
+      }
+    })
+    $newCartModal.modal('show')
+    console.info('got carts_create')
   }
 
-  const productId = document.getElementById('productId').dataset.productId
-  const productLuhn = document.getElementById('productId').dataset.productLuhn
-  document
-    .querySelectorAll('[data-cart-id]')
-    .forEach(function (currentValue, currentIndex, listObj) {
-      currentValue.addEventListener(
-        'click',
-        addToExistingCart.bind(this, currentValue.dataset.cartId, productId)
-      )
-    })
+  // Attachments
+  dataCartMap.forEach(function (currentValue, currentIndex, listObj) {
+    currentValue.addEventListener(
+      'click',
+      addToExistingCart.bind(this, currentValue.dataset.cartId, productId)
+    )
+  })
 
-  console.info('inventory page.')
-  const wrapper = $('#product_show')
-  wrapper.formRender(window.formRenderOptions)
-  console.info(window.formRenderOptions)
-  const $newCartModal = $('#newCartModal')
-
-  if (document.getElementById('newCartButton')) {
-    document.getElementById('newCartButton').onclick = () => {
-      // Show popup modal
-      $newCartModal.on('shown.bs.modal', (event) => {
-        const handleResponse = function (response) {
-          console.info('response.data:', response.data)
-          const client = response.data.client
-          const cartLuhn = response.data.luhn
-
-          // Remove button
-          const addToCardButton = document.getElementById('addToCardButton')
-          const cardFooter = document.getElementById('cardFooter')
-          addToCardButton.remove()
-          const alert = document.createElement('div')
-          alert.id = 'productAddedAlert'
-          alert.classList.add('alert', 'alert-primary')
-          alert.innerHTML = `Product added to cart for <a href="/carts/${cartLuhn}">${client.company_name}</a>.
-<br><br>
-<span class="text-danger" id="removeFromCartIcon"><i id="removeProduct" class="fas fa-unlink" >&#8203;</i> Remove product from cart.</span>`
-          cardFooter.appendChild(alert)
-          document
-            .getElementById('removeFromCartIcon')
-            .addEventListener(
-              'click',
-              removeFromCart.bind(
-                this,
-                document.getElementById('productId').dataset.productLuhn
-              )
-            )
-          $newCartModal.modal('hide')
-          return Promise.resolve()
-        }
-        console.info('rendering CCN for inventory')
-        ReactDOM.render(
-          <CompanyClientName
-            handleResponse={handleResponse}
-            postPath="/carts"
-            draft="Cart"
-          />,
-          document.getElementById('carts_create')
-        )
-        document.getElementById('newCartButton').onclick = () => {
-          console.info('Here.')
-        }
-      })
-      $newCartModal.modal('show')
-      console.info('got carts_create')
+  if (newCartButton) {
+    newCartButton.onclick = () => {
+      newCartButtonClick()
     }
   }
+
+  // Do Stuff
+  wrapper.formRender(window.formRenderOptions)
+  console.info(window.formRenderOptions)
 }
 
-/** Don't refactor above this line; refactoring in other branch
- * @TODO: remove these 2 comments.
- */
 if (document.getElementById('cartIndex')) {
   $('.collapse').collapse({ toggle: false })
   $('#destroyCartModal').on('show.bs.modal', (event) => {
