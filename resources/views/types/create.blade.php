@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-  <div id="types_create" class="container">
+  <div id="typesCreate" class="container">
     <div class="row">
       <div class="card col-12">
         <h2 class="card-header">Create New Product Type</h2>
