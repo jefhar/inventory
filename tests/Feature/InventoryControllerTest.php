@@ -16,6 +16,7 @@ use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 use Tests\Traits\FullUsers;
@@ -167,6 +168,7 @@ class InventoryControllerTest extends TestCase
      */
     public function othersSeeInventoryItemAsReadOnly(): void
     {
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
@@ -174,11 +176,11 @@ class InventoryControllerTest extends TestCase
         $this->withoutMix()
             ->actingAs($this->createEmployee())
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertSee('"className":"form-control-plaintext"');
+            ->assertSeeText('"className":"form-control-plaintext"', false);
 
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertSee('"className":"form-control-plaintext"');
+            ->assertSee('"className":"form-control-plaintext"', false);
     }
 
     /**
@@ -187,17 +189,18 @@ class InventoryControllerTest extends TestCase
     public function salesRepsSeeAddToCartButton(): void
     {
         $this->withoutMix();
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
 
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertSee('Add To Cart &hellip;');
+            ->assertSee('Add To Cart &hellip;', false);
 
         $this->actingAs($this->createEmployee(UserRoles::OWNER))
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertSee('Add To Cart &hellip;');
+            ->assertSee('Add To Cart &hellip;', false);
     }
 
     /**
@@ -245,32 +248,32 @@ class InventoryControllerTest extends TestCase
         $this->actingAs($salesRep)
             ->withoutMix()
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+            ->assertSee($carts[0]->client->company_name)
+            ->assertSee($carts[1]->client->company_name)
+            ->assertSee($carts[2]->client->company_name)
+            ->assertSee($carts[3]->client->company_name)
+            ->assertSee($carts[4]->client->company_name)
+            ->assertSee($carts[5]->client->company_name)
+            ->assertSee($carts[6]->client->company_name)
+            ->assertSee($carts[7]->client->company_name)
+            ->assertSee($carts[8]->client->company_name)
+            ->assertSee($carts[9]->client->company_name)
+            ->assertSee($carts[10]->client->company_name);
 
         $otherSalesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($otherSalesRep)
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertDontSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+            ->assertDontSee($carts[0]->client->company_name)
+            ->assertDontSee($carts[1]->client->company_name)
+            ->assertDontSee($carts[2]->client->company_name)
+            ->assertDontSee($carts[3]->client->company_name)
+            ->assertDontSee($carts[4]->client->company_name)
+            ->assertDontSee($carts[5]->client->company_name)
+            ->assertDontSee($carts[6]->client->company_name)
+            ->assertDontSee($carts[7]->client->company_name)
+            ->assertDontSee($carts[8]->client->company_name)
+            ->assertDontSee($carts[9]->client->company_name)
+            ->assertDontSee($carts[10]->client->company_name);
     }
 
     /**
@@ -279,6 +282,8 @@ class InventoryControllerTest extends TestCase
      */
     public function salesRepsDoNotSeeInvoicedCartsOnInventoryPage(): void
     {
+        Mail::fake();
+
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
         /** @var WorkOrder $workOrder */
@@ -313,32 +318,32 @@ class InventoryControllerTest extends TestCase
         $this
             ->withoutMix()
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401));
+            ->assertSee($carts[0]->client->company_name)
+            ->assertSee($carts[1]->client->company_name)
+            ->assertSee($carts[2]->client->company_name)
+            ->assertSee($carts[3]->client->company_name)
+            ->assertSee($carts[5]->client->company_name)
+            ->assertSee($carts[6]->client->company_name)
+            ->assertSee($carts[7]->client->company_name)
+            ->assertSee($carts[8]->client->company_name)
+            ->assertSee($carts[9]->client->company_name)
+            ->assertSee($carts[10]->client->company_name)
+            ->assertDontSee($carts[4]->client->company_name);
 
         $otherSalesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($otherSalesRep)
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertDontSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+            ->assertDontSee($carts[0]->client->company_name)
+            ->assertDontSee($carts[1]->client->company_name)
+            ->assertDontSee($carts[2]->client->company_name)
+            ->assertDontSee($carts[3]->client->company_name)
+            ->assertDontSee($carts[4]->client->company_name)
+            ->assertDontSee($carts[5]->client->company_name)
+            ->assertDontSee($carts[6]->client->company_name)
+            ->assertDontSee($carts[7]->client->company_name)
+            ->assertDontSee($carts[8]->client->company_name)
+            ->assertDontSee($carts[9]->client->company_name)
+            ->assertDontSee($carts[10]->client->company_name);
     }
 
     /**
@@ -347,6 +352,8 @@ class InventoryControllerTest extends TestCase
      */
     public function salesRepsDoNotSeeVoidedCartsOnInventoryPage(): void
     {
+        Mail::fake();
+
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
         /** @var WorkOrder $workOrder */
@@ -381,32 +388,32 @@ class InventoryControllerTest extends TestCase
         $this
             ->withoutMix()
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401));
+            ->assertSee($carts[0]->client->company_name)
+            ->assertSee($carts[1]->client->company_name)
+            ->assertSee($carts[2]->client->company_name)
+            ->assertSee($carts[3]->client->company_name)
+            ->assertSee($carts[5]->client->company_name)
+            ->assertSee($carts[6]->client->company_name)
+            ->assertSee($carts[7]->client->company_name)
+            ->assertSee($carts[8]->client->company_name)
+            ->assertSee($carts[9]->client->company_name)
+            ->assertSee($carts[10]->client->company_name)
+            ->assertDontSee($carts[4]->client->company_name);
 
         $otherSalesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($otherSalesRep)
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertDontSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+            ->assertDontSee($carts[0]->client->company_name)
+            ->assertDontSee($carts[1]->client->company_name)
+            ->assertDontSee($carts[2]->client->company_name)
+            ->assertDontSee($carts[3]->client->company_name)
+            ->assertDontSee($carts[4]->client->company_name)
+            ->assertDontSee($carts[5]->client->company_name)
+            ->assertDontSee($carts[6]->client->company_name)
+            ->assertDontSee($carts[7]->client->company_name)
+            ->assertDontSee($carts[8]->client->company_name)
+            ->assertDontSee($carts[9]->client->company_name)
+            ->assertDontSee($carts[10]->client->company_name);
     }
 
     /**
@@ -436,31 +443,31 @@ class InventoryControllerTest extends TestCase
         $this->actingAs($technician)
             ->withoutMix()
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertDontSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+            ->assertDontSee($carts[0]->client->company_name)
+            ->assertDontSee($carts[1]->client->company_name)
+            ->assertDontSee($carts[2]->client->company_name)
+            ->assertDontSee($carts[3]->client->company_name)
+            ->assertDontSee($carts[4]->client->company_name)
+            ->assertDontSee($carts[5]->client->company_name)
+            ->assertDontSee($carts[6]->client->company_name)
+            ->assertDontSee($carts[7]->client->company_name)
+            ->assertDontSee($carts[8]->client->company_name)
+            ->assertDontSee($carts[9]->client->company_name)
+            ->assertDontSee($carts[10]->client->company_name);
         $employee = $this->createEmployee();
         $this->actingAs($employee)
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertDontSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[6]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[7]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[8]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[9]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertDontSee(htmlspecialchars($carts[10]->client->company_name, ENT_QUOTES | ENT_HTML401));
+            ->assertDontSee($carts[0]->client->company_name)
+            ->assertDontSee($carts[1]->client->company_name)
+            ->assertDontSee($carts[2]->client->company_name)
+            ->assertDontSee($carts[3]->client->company_name)
+            ->assertDontSee($carts[4]->client->company_name)
+            ->assertDontSee($carts[5]->client->company_name)
+            ->assertDontSee($carts[6]->client->company_name)
+            ->assertDontSee($carts[7]->client->company_name)
+            ->assertDontSee($carts[8]->client->company_name)
+            ->assertDontSee($carts[9]->client->company_name)
+            ->assertDontSee($carts[10]->client->company_name);
     }
 
     /**
@@ -499,17 +506,17 @@ class InventoryControllerTest extends TestCase
         $this->actingAs($owner)
             ->withoutMix()
             ->get(route(InventoryController::SHOW_NAME, $product))
-            ->assertSee(htmlspecialchars($carts[0]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[1]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[2]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[3]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[4]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[5]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[14]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[15]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[16]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[17]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[18]->client->company_name, ENT_QUOTES | ENT_HTML401))
-            ->assertSee(htmlspecialchars($carts[19]->client->company_name, ENT_QUOTES | ENT_HTML401));
+            ->assertSee($carts[0]->client->company_name)
+            ->assertSee($carts[1]->client->company_name)
+            ->assertSee($carts[2]->client->company_name)
+            ->assertSee($carts[3]->client->company_name)
+            ->assertSee($carts[4]->client->company_name)
+            ->assertSee($carts[5]->client->company_name)
+            ->assertSee($carts[14]->client->company_name)
+            ->assertSee($carts[15]->client->company_name)
+            ->assertSee($carts[16]->client->company_name)
+            ->assertSee($carts[17]->client->company_name)
+            ->assertSee($carts[18]->client->company_name)
+            ->assertSee($carts[19]->client->company_name);
     }
 }

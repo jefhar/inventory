@@ -29,6 +29,7 @@ class ClientsControllerTest extends TestCase
      */
     public function clientsShowPageListsWorkOrders(): void
     {
+        /** @var Client $client */
         $client = factory(Client::class)->make();
         $client->company_name = "O'" . $client->company_name;
         $person = factory(Person::class)->make();
@@ -37,6 +38,6 @@ class ClientsControllerTest extends TestCase
         $this->withoutMix()
             ->actingAs($this->createEmployee())
             ->get(route(ClientsController::SHOW_NAME, $client))
-            ->assertSeeText(htmlspecialchars($client->company_name, ENT_QUOTES | ENT_HTML401));
+            ->assertSeeText($client->company_name);
     }
 }

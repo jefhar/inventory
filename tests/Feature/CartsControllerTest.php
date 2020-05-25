@@ -17,6 +17,7 @@ use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
@@ -121,7 +122,7 @@ class CartsControllerTest extends TestCase
             ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart))
             ->assertOk()
-            ->assertSee(htmlspecialchars($cart->client->company_name, ENT_QUOTES | ENT_HTML401));
+            ->assertSee($cart->client->company_name);
     }
 
     /**
@@ -189,6 +190,7 @@ class CartsControllerTest extends TestCase
      */
     public function salesRepCanUpdateCartStatus(): void
     {
+        Mail::fake();
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
         $voidingCart = $this->makeFullCart();
@@ -306,16 +308,19 @@ class CartsControllerTest extends TestCase
             ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart));
         for ($i = 0; $i < 20; ++$i) {
-            $response->assertSeeText(htmlspecialchars($products[$i]->manufacturer->name, ENT_QUOTES | ENT_HTML401));
-            $response->assertSeeText(htmlspecialchars($products[$i]->model, ENT_QUOTES | ENT_HTML401));
+            $response->assertSeeText($products[$i]->manufacturer->name);
+            $response->assertSeeText($products[$i]->model);
         }
     }
 
     /**
      * @test
+     * @throws \Exception
      */
     public function showInvoicedCartDisplaysProducts(): void
     {
+        Mail::fake();
+
         // Setup
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);
@@ -340,8 +345,8 @@ class CartsControllerTest extends TestCase
                     Product::STATUS => Product::STATUS_INVOICED,
                 ]
             );
-            $response->assertSeeText(htmlspecialchars($products[$i]->manufacturer->name, ENT_QUOTES | ENT_HTML401));
-            $response->assertSeeText(htmlspecialchars($products[$i]->model, ENT_QUOTES | ENT_HTML401));
+            $response->assertSeeText($products[$i]->manufacturer->name);
+            $response->assertSeeText($products[$i]->model);
         }
     }
 
@@ -368,8 +373,8 @@ class CartsControllerTest extends TestCase
             ->withoutMix()
             ->get(route(CartsController::SHOW_NAME, $cart));
         for ($i = 0; $i < 20; ++$i) {
-            $response->assertDontSeeText(htmlspecialchars($products[$i]->manufacturer->name, ENT_QUOTES | ENT_HTML401));
-            $response->assertDontSeeText(htmlspecialchars($products[$i]->model, ENT_QUOTES | ENT_HTML401));
+            $response->assertDontSeeText($products[$i]->manufacturer->name);
+            $response->assertDontSeeText($products[$i]->model);
         }
     }
 }

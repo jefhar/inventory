@@ -300,9 +300,11 @@ class CartTest extends TestCase
 
     /**
      * @test
+     * @throws \Exception
      */
     public function updateCartToStatusInvoicedMarksCartInvoiced(): void
     {
+        Mail::fake();
         // setup open cart
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
         $client = $this->createFullClient();
@@ -340,6 +342,7 @@ class CartTest extends TestCase
      */
     public function updateCartToStatusInvoicedMarksProductsInvoiced(): void
     {
+        Mail::fake();
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
         $client = $this->createFullClient();
         $product = $this->createFullProduct();

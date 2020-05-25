@@ -42,11 +42,12 @@ class TypesControllerTest extends TestCase
      */
     public function authorizedTypesControllerIsOk(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->create();
         $this->actingAs($this->createEmployee())
             ->get(route(TypesController::SHOW_NAME, $type->slug))
             ->assertOk()
-            ->assertSeeText($type->form);
+            ->assertSeeText($type->form, false);
     }
 
     /**
@@ -83,6 +84,7 @@ class TypesControllerTest extends TestCase
 
     /**
      * @test
+     * @throws \JsonException
      */
     public function typeIndexApiExistsAndIsAccessible(): void
     {
@@ -93,7 +95,7 @@ class TypesControllerTest extends TestCase
         $this->actingAs($this->createEmployee())
             ->get(route(TypesController::INDEX_NAME))
             ->assertOk()
-            ->assertSeeText(json_encode($type->name));
+            ->assertSeeText(json_encode($type->name, JSON_THROW_ON_ERROR), false);
     }
 
     /**

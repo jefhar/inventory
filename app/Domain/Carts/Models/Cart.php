@@ -67,10 +67,15 @@ class Cart extends Model
         self::USER_ID => 'integer',
     ];
 
-    /** Include soft-deleted models */
-    public function resolveRouteBinding($value)
+    /** Include soft-deleted models
+     *
+     * @param $value
+     * @param $field
+     * @return Cart|Builder|Model|\Illuminate\Database\Query\Builder|object|null
+     */
+    public function resolveRouteBinding($value, $field = null)
     {
-        return self::withTrashed()->where($this->getRouteKeyName(), $value)->first();
+        return self::withTrashed()->where($field ?? $this->getRouteKeyName(), $value)->first();
     }
 
     /**
