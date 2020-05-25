@@ -22,6 +22,7 @@ use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 use Tests\Traits\FullUsers;
@@ -256,6 +257,7 @@ class ProductsTest extends TestCase
      */
     public function invoicedProductCannotChangePrice(): void
     {
+        Mail::fake();
         // Setup
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this->actingAs($salesRep);

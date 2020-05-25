@@ -159,11 +159,14 @@ class WorkOrdersControllerTest extends TestCase
     public function editPageExists(): void
     {
         $manufacturer = factory(Manufacturer::class)->create();
+        /** @var Product $product */
         $product = factory(Product::class)->make();
         $product->manufacturer()->associate($manufacturer);
 
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
 
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $person = factory(Person::class)->make();
         $client->person()->save($person);
@@ -175,7 +178,7 @@ class WorkOrdersControllerTest extends TestCase
             ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(WorkOrdersController::EDIT_NAME, $workOrder))
             ->assertOk()->assertSeeText('Edit Work Order')
-            ->assertSeeText(htmlspecialchars($product->manufacturer->name, ENT_QUOTES | ENT_HTML401))
+            ->assertSeeText($product->manufacturer->name)
             ->assertSeeText($product->model);
     }
 
@@ -184,9 +187,9 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function canToggleLockedWorkOrder(): void
     {
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->make();
         $person = factory(Person::class)->make();
-        /** @var Client $client */
         $client = $workOrder->client;
         $client->person()->save($person);
         $workOrder->is_locked = false;
