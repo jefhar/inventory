@@ -14,9 +14,7 @@ refresh_cache:
       - node_modules
       - .yarn
   script:
-    - curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-    - echo "deb https://deb.nodesource.com/node_13.x bionic main" | tee /etc/apt/sources.list.d/nodesource.list
-    - apt-get update
+    - curl -sL https://deb.nodesource.com/setup_14.x | bash -
     - apt-get install -y nodejs
     - npm install -g yarn
     - composer install --no-plugins --no-scripts

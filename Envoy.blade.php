@@ -75,5 +75,5 @@
 
 @task('run_npm')
     echo 'Installing npm modules
-    docker run --rm -v "$(pwd):/src" node:13-slim sh -c 'cd /src && yarn install && ls && npm run prod'
+    docker run --rm -v "$(pwd):/src" node:14-slim sh -c 'cd /src && yarn install && ls && npm run prod'
 @endtask

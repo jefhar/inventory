@@ -29,22 +29,22 @@ ci:
 	gitlab-runner exec docker test
 
 yarninstall:
-	docker run --rm -v "$(CURDIR):/app:delegated" node:13-slim sh -c 'cd /app && yarn install'
+	docker run --rm -v "$(CURDIR):/app:delegated" node:14-slim sh -c 'cd /app && yarn install'
 
 yarnaudit:
-	docker run --rm -v "$(CURDIR):/app:delegated" node:13-slim sh -c 'cd /app && yarn audit'
+	docker run --rm -v "$(CURDIR):/app:delegated" node:14-slim sh -c 'cd /app && yarn audit'
 
 yarnupgrade:
-	docker run --rm -v "$(CURDIR):/app:delegated" node:13-slim sh -c 'cd /app && yarn upgrade'
+	docker run --rm -v "$(CURDIR):/app:delegated" node:14-slim sh -c 'cd /app && yarn upgrade'
 
 npmdev:
-	docker run --rm -v "$(CURDIR):/app:delegated" node:13-slim sh -c 'cd /app && npm run development'
+	docker run --rm -v "$(CURDIR):/app:delegated" node:14-slim sh -c 'cd /app && npm run development'
 
 npmprod:
-	docker run --rm -v "$(CURDIR):/app:delegated" node:13-slim sh -c 'cd /app && npm run production'
+	docker run --rm -v "$(CURDIR):/app:delegated" node:14-slim sh -c 'cd /app && npm run production'
 
 npmwatch:
-	docker run --rm -v $(CURDIR):/app:delegated node:13-slim sh -c 'cd /app && npm run development -- --watch'
+	docker run --rm -v $(CURDIR):/app:delegated node:14-slim sh -c 'cd /app && npm run development -- --watch'
 
 swagger:
 	docker run --rm -p 8088:8080 swaggerapi/swagger-editor

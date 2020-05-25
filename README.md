@@ -3,7 +3,7 @@
 [![pipeline status](https://gitlab.com/c11k/serviceandgoods/badges/master/pipeline.svg)](https://gitlab.com/c11k/serviceandgoods/-/commits/master)
 [![coverage report](https://gitlab.com/c11k/serviceandgoods/badges/master/coverage.svg)](https://gitlab.com/c11k/serviceandgoods/-/commits/master)
 This is a bespoke application for the keeping track of inventory from a company that
-deals with a Service and Goods. This is for use with php7.4 and uses node:13-slim
+deals with a Service and Goods. This is for use with php7.4 and uses node:14-slim
 to compile the front end assets.
 
 ## Table of Contents
