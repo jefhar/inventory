@@ -96,7 +96,18 @@ if (document.getElementById('WorkOrdersEdit')) {
   const WorkOrderEditUpdateUI = () => {
     // Definitions
     console.log('WorkOrderEditUpdateUI function')
-    const inventoryButton = document.getElementById('addInventoryButton')
+    const CommitChangesButton = document.getElementById('commitChangesButton')
+    const formFields = [
+      document.getElementById('firstName'),
+      document.getElementById('lastName'),
+      document.getElementById('companyName'),
+      document.getElementById('email'),
+      document.getElementById('intake'),
+      document.getElementById('phoneNumber'),
+    ]
+    const addInventoryItemButton = document.getElementById(
+      'addInventoryItemButton'
+    )
     const isLockedButton = document.getElementById('lockButton')
     const lockIcon = document.getElementById('lockIcon')
     const outline = document.getElementById('outline')
@@ -134,7 +145,12 @@ if (document.getElementById('WorkOrdersEdit')) {
 
       $('[data-toggle="tooltip"]').attr('data-original-title', add.clickTo)
     }
-
+    const ableForm = (locked) => {
+      const boolLocked = locked === 'true' || locked === true
+      formFields.forEach((element) => {
+        element.disabled = boolLocked
+      })
+    }
     // Do Stuff
     if (workOrderBody.dataset.isLocked === 'true') {
       updateUI(locked, unlocked)
@@ -143,9 +159,12 @@ if (document.getElementById('WorkOrdersEdit')) {
       updateUI(unlocked, locked)
       lockHeader.innerText = unlocked.lockHeader
     }
-    if (inventoryButton) {
-      inventoryButton.disabled = workOrderBody.dataset.isLocked === 'true'
+    if (addInventoryItemButton) {
+      addInventoryItemButton.disabled =
+        workOrderBody.dataset.isLocked === 'true'
     }
+    ableForm(workOrderBody.dataset.isLocked)
+    CommitChangesButton.disabled = workOrderBody.dataset.isLocked === 'true'
   }
   const lockButtonClick = () => {
     // Definitions
@@ -252,7 +271,7 @@ if (document.getElementById('WorkOrdersEdit')) {
 
     event.preventDefault()
   }
-  const productModalShown = () => {
+  const addNewProductModalShown = () => {
     // Definitions
     const productType = document.getElementById('productType')
     const productSubmit = document.getElementById('productSubmit')
@@ -335,6 +354,7 @@ if (document.getElementById('WorkOrdersEdit')) {
         .finally(() => {
           spinner.classList.remove('visible')
           spinner.classList.add('invisible')
+          productSubmit.disabled = false
         })
     }
     const productSubmitClick = () => {
@@ -350,7 +370,7 @@ if (document.getElementById('WorkOrdersEdit')) {
       // Actions
       const onPost = (response) => {
         // Definitions
-        const { model, createdAt, serial } = response.data
+        const { model, created_at: createdAt, serial } = response.data
         const { name: manufacturer } = response.data.manufacturer
         const { name: type } = response.data.type
         const luhn = _.padStart(response.data.luhn, 6, '0')
@@ -371,7 +391,7 @@ if (document.getElementById('WorkOrdersEdit')) {
         }
         document.getElementById('productType').selectedIndex = 0
         // close modal
-        $('#productModal').modal('hide')
+        $('#addNewProductModal').modal('hide')
         $('.modal-backdrop').remove()
       }
       const postError = (error) => {
@@ -431,11 +451,14 @@ if (document.getElementById('WorkOrdersEdit')) {
     cancelButton.addEventListener('click', (event) => {
       cancelButtonClick(event)
     })
+
+    // Do Stuff
+    productSubmit.disabled = true
   }
 
   // Attachments
-  $('#productModal').on('shown.bs.modal', (event) => {
-    productModalShown(event)
+  $('#addNewProductModal').on('shown.bs.modal', (event) => {
+    addNewProductModalShown(event)
   })
   if (lockButton) {
     lockButton.addEventListener('click', () => {

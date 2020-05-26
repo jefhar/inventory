@@ -15,6 +15,7 @@ use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
 use Domain\WorkOrders\Models\WorkOrder;
+use Exception;
 use Faker\Factory;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -39,6 +40,7 @@ class ProductsControllerTest extends TestCase
         $faker = Factory::create();
         $manufacturer = $faker->company;
         $model = $faker->title;
+        /** @var Type $type */
         $type = factory(Type::class)->create();
         /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
@@ -49,7 +51,7 @@ class ProductsControllerTest extends TestCase
             'select-1575689474390' => 'option-2',
             'textarea-1575689477555' => 'textarea text. Bwahahahahaaaa',
             'type' => $type->slug,
-            'workOrderId' => $workOrder->id,
+            'workOrderId' => $workOrder->luhn,
         ];
 
         $this->actingAs($this->createEmployee())
@@ -79,12 +81,12 @@ class ProductsControllerTest extends TestCase
         );
         /** @var Product $theProduct */
         $theProduct = Product::find(1);
-        $this->assertContains('option-3', $theProduct->values);
+        $this->assertContains('option-3', $theProduct->values, '`option-3` not found in $product->values array.');
     }
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
     public function salesRepCanAddPriceToProduct(): void
     {
@@ -117,7 +119,7 @@ class ProductsControllerTest extends TestCase
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
     public function negativePriceResultsInUnprocessableEntity(): void
     {

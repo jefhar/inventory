@@ -23,7 +23,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class ProductStoreRequest extends FormRequest
 {
     public const RULES = [
-        'workOrderId' => ['required', 'exists:' . WorkOrder::TABLE . ',' . WorkOrder::ID],
+        'workOrderId' => ['required', 'exists:' . WorkOrder::TABLE . ',' . WorkOrder::LUHN],
         Manufacturer::MANUFACTURER => ['required'],
         Product::MODEL => ['required'],
         Product::VALUES => ['array'],
