@@ -93,3 +93,16 @@ services:
       - traefik.enable=false
     networks:
       - internal
+
+  yarn:
+    image: node:14
+    container_name: serviceandgoods-yarn
+    restart: unless-stopped
+    labels:
+      - traefik.enable=false
+    networks:
+      - internal
+    volumes:
+      - .:/application:delegated
+    working_dir: /application
+
