@@ -19,9 +19,9 @@ use Illuminate\Contracts\Console\Kernel;
  */
 trait DatabaseSetup
 {
-    protected static $migrated = false;
+    protected static bool $migrated = false;
 
-    public function setupDatabase()
+    public function setupDatabase(): void
     {
         if ($this->isInMemory()) {
             $this->setupInMemoryDatabase();
@@ -30,18 +30,21 @@ trait DatabaseSetup
         }
     }
 
-    protected function isInMemory()
+    /**
+     * @return bool
+     */
+    protected function isInMemory(): bool
     {
-        return config('database.connections')[config('database.default')]['database'] == ':memory:';
+        return config('database.connections')[config('database.default')]['database'] === ':memory:';
     }
 
-    protected function setupInMemoryDatabase()
+    protected function setupInMemoryDatabase(): void
     {
         $this->artisan('migrate');
         $this->app[Kernel::class]->setArtisan(null);
     }
 
-    protected function setupTestDatabase()
+    protected function setupTestDatabase(): void
     {
         if (!static::$migrated) {
             $this->artisan('migrate:refresh');
@@ -51,7 +54,7 @@ trait DatabaseSetup
         $this->beginDatabaseTransaction();
     }
 
-    public function beginDatabaseTransaction()
+    public function beginDatabaseTransaction(): void
     {
         $database = $this->app->make('db');
 
@@ -66,7 +69,7 @@ trait DatabaseSetup
         });
     }
 
-    protected function connectionsToTransact()
+    protected function connectionsToTransact(): array
     {
         return property_exists($this, 'connectionsToTransact')
             ? $this->connectionsToTransact : [null];
