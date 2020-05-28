@@ -1,57 +1,70 @@
 import * as React from 'react'
+import CompanyClientName from '../Elements/CompanyClientName'
+import FormHeader from '../Elements/FormHeader'
+import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import { Card, CardBody, Container, Row } from 'reactstrap'
-import FormHeader from '../Elements/FormHeader'
-import CompanyClientName from '../Elements/CompanyClientName'
 
-const handleResponse = response =>
-{
-  console.info("WOC handleResponse")
+const handleResponse = (response) => {
+  console.info('WOC handleResponse')
   // Create a post_post so workorders and carts can have their own post-post
   // functions
   if (response.data.workorder_id) {
-    window.location =
-      "/workorders/" + response.data.workorder_id + "/edit";
+    window.location = '/workorders/' + response.data.workorder_id + '/edit'
   }
-};
-class WorkOrderCreate extends React.Component {
+}
 
+class WorkOrderCreate extends React.Component {
   constructor(props) {
-    super(props);
-    console.log("WOC constructor");
+    super(props)
+    console.log('WOC constructor')
     this.state = {
-      company_name: "",
-      first_name: "",
+      company_name: '',
+      first_name: '',
       invalid_company_name: false,
       isLoading: false,
-      last_name: "",
-      login: true
-    };
+      last_name: '',
+      login: true,
+    }
   }
 
   render() {
-    console.log("rendering");
+    console.log('rendering')
     return (
       <Container>
         <Row className="shadow-sm">
           <Card className="col-md">
             <FormHeader workOrderId="-----" />
             <CardBody>
-              <CompanyClientName handleResponse={this.props.handleResponse} postPath={this.props.postPath} draft={this.props.draft} />
+              <CompanyClientName
+                draft={this.props.draft}
+                handleResponse={this.props.handleResponse}
+                postPath={this.props.postPath}
+              />
             </CardBody>
           </Card>
         </Row>
       </Container>
-    );
+    )
   }
 }
 
-export default WorkOrderCreate;
+WorkOrderCreate.propTypes = {
+  draft: PropTypes.string.isRequired,
+  handleResponse: PropTypes.func,
+  postPath: PropTypes.string.isRequired,
+}
 
-if (document.getElementById("workorders_create")) {
-  console.log("got workorders_create");
+export default WorkOrderCreate
+
+if (document.getElementById('workorder_create')) {
+  console.log('got workorder_create')
   ReactDOM.render(
-    <WorkOrderCreate handleResponse={handleResponse} postPath="/workorders/" draft="Work Order" />,
-    document.getElementById("workorders_create")
-  );
+    <WorkOrderCreate
+      draft="Work Order"
+      handleResponse={handleResponse}
+      postPath="/workorders/"
+    />,
+    document.getElementById('workorder_create')
+  )
 }

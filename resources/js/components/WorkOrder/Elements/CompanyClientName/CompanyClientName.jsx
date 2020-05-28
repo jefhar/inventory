@@ -16,7 +16,6 @@ import CompanyName from '../CompanyName'
 class CompanyClientName extends React.Component {
   constructor(props) {
     super(props)
-    console.log('CCN constructor')
     this.state = {
       companyName: '',
       firstName: '',
@@ -25,6 +24,11 @@ class CompanyClientName extends React.Component {
       lastName: '',
       login: true,
     }
+    this.handleBlur = this.handleBlur.bind(this)
+    this.handleButtonClick = this.handleButtonClick.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+    this.handleNameChange = this.handleNameChange.bind(this)
+    this.handleSearch = this.handleSearch.bind(this)
   }
 
   /**
@@ -43,7 +47,6 @@ class CompanyClientName extends React.Component {
   }
 
   handleButtonClick() {
-    console.info('handleButtonClick')
     const productId = document.getElementById('productId')
     const { companyName, lastName, firstName } = this.state
     const data = {
@@ -65,15 +68,14 @@ class CompanyClientName extends React.Component {
         })
       })
       .catch((error) => {
-        console.info('in catch(error =>')
-        console.debug('error:', error)
+        console.info('error:', error)
         if (!error.data) {
           return
         }
         if (error.response) {
           if (error.response.status === 422) {
-            console.debug('error.response:', error.response)
-            console.log(
+            console.info('error.response:', error.response)
+            console.info(
               'error.response.data.errors:',
               error.response.data.errors
             )
@@ -87,13 +89,13 @@ class CompanyClientName extends React.Component {
             this.setState({ login: false })
           }
         } else if (error.request) {
-          console.log('error.request:', error.request)
+          console.info('error.request:', error.request)
         } else {
           // Something happened in setting up the request that triggered an
           // Error
-          console.log('error.message:', error.message)
+          console.info('error.message:', error.message)
         }
-        console.log('error.config:', error.config)
+        console.info('error.config:', error.config)
       })
   }
 
@@ -148,7 +150,7 @@ class CompanyClientName extends React.Component {
         })
       })
       .catch((error) => {
-        console.debug('error:', error)
+        console.info('error:', error)
       })
   }
 
@@ -168,7 +170,7 @@ class CompanyClientName extends React.Component {
                 id="companyName"
                 isLoading={this.state.isLoading}
                 handleChange={this.handleChange}
-                labelKey="companyName"
+                labelKey="company_name"
                 name="companyName"
                 newSelectionPrefix="New Client:"
                 onSearch={this.handleSearch}
