@@ -37,18 +37,20 @@ class PendingSalesController extends Controller
      */
     public function store(PendingSalesStoreRequest $request): JsonResponse
     {
-        $product = Product::find($request->input(Product::ID));
-        $cart = Cart::find($request->input(Product::CART_ID));
+        $product = Product::where(Product::LUHN, $request->input(Product::ID))->first();
+        $cart = Cart::where(Cart::LUHN, $request->input(Product::CART_ID))->first();
+
         if ($product->cart_id !== null) {
             abort(Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        return response()->json(
-            PendingSalesStoreAction::execute(
-                $cart,
-                $product
-            )
-        )->setStatusCode(201);
+        return
+            response()->json(
+                PendingSalesStoreAction::execute(
+                    $cart,
+                    $product
+                )
+            )->setStatusCode(201);
     }
 
     /**
