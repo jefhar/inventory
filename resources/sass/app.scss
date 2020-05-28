@@ -1,8 +1,8 @@
-// Fonts
-@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
-
 // Variables
 @import 'variables';
+
+// Fonts
+@import url($web-font-path);
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
