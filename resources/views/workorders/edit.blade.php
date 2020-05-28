@@ -5,7 +5,7 @@
 @section('content')
   <div id="WorkOrdersEdit"></div>
   <div class="container">
-    <div class="border border-{{ $workOrder->is_locked ? 'warning' : 'primary' }} card col-md rounded-sm row shadow"
+    <div class="border card col-md rounded-sm row shadow"
          id="outline">
       <div class="card-header row">
         <div class="col">
@@ -139,7 +139,7 @@
             <th scope="col">Created At</th>
           </tr>
           </thead>
-          <tbody id="products_table">
+          <tbody id="productsTable">
 
           @foreach ($workOrder->products as $product)
             <tr>
@@ -235,7 +235,7 @@
               <button
                 class="btn btn-outline-secondary mr-4"
                 data-dismiss="modal"
-                id="cancelButton"
+                id="cancelNewProductButton"
                 type="button"
               >Cancel
               </button>
