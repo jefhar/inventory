@@ -60,15 +60,15 @@
                    href="{{ route(\App\Types\Controllers\TypesController::CREATE_NAME) }}">Product Types</a>
               </div>
             </li>
-          @elsecan
-          <li class="nav-item">
+          @endcan
+          @cannot(\App\Admin\Permissions\UserPermissions::CREATE_OR_EDIT_PRODUCT_TYPE)
+            <li class="nav-item">
             <li class="nav-item">
               <a class="nav-link" href="{{ route(\App\Products\Controllers\InventoryController::INDEX_NAME) }}">
                 Inventory
               </a>
             </li>
-          </li>
-              @endcan
+          @endcannot
           @can(\App\Admin\Permissions\UserPermissions::MUTATE_CART)
             <li class="nav-item">
               <a class="nav-link" href="{{ route(\App\Carts\Controllers\CartsController::INDEX_NAME) }}">
