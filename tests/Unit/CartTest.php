@@ -25,6 +25,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
+use Support\CartStore;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 use Tests\Traits\FullUsers;
@@ -61,12 +62,13 @@ class CartTest extends TestCase
     public function createdCartReturnsCompanyName(): void
     {
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                'product_id' => $product->id,
-                Client::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->id,
+                CartStore::COMPANY_NAME => $client->company_name,
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
@@ -96,6 +98,7 @@ class CartTest extends TestCase
      */
     public function cartBelongsToUser(): void
     {
+        /** @var User $user */
         $user = factory(User::class)->create();
         $cart = factory(Cart::class)->make();
         $user->carts()->save($cart);
@@ -116,8 +119,10 @@ class CartTest extends TestCase
      */
     public function cartBelongsToAClient(): void
     {
+        /** @var User $user */
         $user = factory(User::class)->create();
         $cart = factory(Cart::class)->make();
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $user->carts()->save($cart);
         $client->carts()->save($cart);
@@ -140,8 +145,8 @@ class CartTest extends TestCase
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                'product_id' => $product->id,
-                Client::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->id,
+                CartStore::COMPANY_NAME => $client->company_name,
             ]
         );
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
@@ -175,8 +180,8 @@ class CartTest extends TestCase
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                'product_id' => $product->id,
-                Client::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->id,
+                CartStore::COMPANY_NAME => $client->company_name,
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
@@ -222,8 +227,8 @@ class CartTest extends TestCase
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                'product_id' => $product->id,
-                Client::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->id,
+                CartStore::COMPANY_NAME => $client->company_name,
             ]
         );
         $this->actingAs($myCartUser);
@@ -267,12 +272,13 @@ class CartTest extends TestCase
     public function addingToCartUpdatesProductStatus(): void
     {
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                'product_id' => $product->id,
-                Client::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->id,
+                CartStore::COMPANY_NAME => $client->company_name,
             ]
         );
         CartStoreAction::execute($cartStoreObject);
@@ -287,12 +293,13 @@ class CartTest extends TestCase
     {
         $this->expectException(ModelNotFoundException::class);
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        /** @var Client $client */
         $client = factory(Client::class)->create();
 
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                'product_id' => 1,
-                Client::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => 1,
+                CartStore::COMPANY_NAME => $client->company_name,
             ]
         );
         CartStoreAction::execute($cartStoreObject);
@@ -311,8 +318,8 @@ class CartTest extends TestCase
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                'product_id' => $product->id,
-                Client::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->id,
+                CartStore::COMPANY_NAME => $client->company_name,
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
@@ -348,8 +355,8 @@ class CartTest extends TestCase
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                'product_id' => $product->id,
-                Client::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->id,
+                CartStore::COMPANY_NAME => $client->company_name,
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
@@ -377,8 +384,8 @@ class CartTest extends TestCase
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                'product_id' => $product->id,
-                Client::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->id,
+                CartStore::COMPANY_NAME => $client->company_name,
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
@@ -400,8 +407,8 @@ class CartTest extends TestCase
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                'product_id' => $product->id,
-                Client::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->id,
+                CartStore::COMPANY_NAME => $client->company_name,
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);

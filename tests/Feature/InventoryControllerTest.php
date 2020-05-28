@@ -61,7 +61,9 @@ class InventoryControllerTest extends TestCase
             ->assertOk()
             ->assertSee('No Products Available For Sale.');
 
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
+        /** @var Product $product */
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
         $this->actingAs($this->createEmployee())
@@ -75,6 +77,7 @@ class InventoryControllerTest extends TestCase
      */
     public function productPageForUnauthorizedUserIsUnauthorized(): void
     {
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
@@ -87,6 +90,7 @@ class InventoryControllerTest extends TestCase
      */
     public function productPageForUserIsOk(): void
     {
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
@@ -102,9 +106,11 @@ class InventoryControllerTest extends TestCase
      */
     public function updateProductForbiddenForNonTechs(): void
     {
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
+        /** @var Product $update */
         $update = factory(Product::class)->make();
         $this->patch(route(InventoryController::UPDATE_NAME, $product), [Product::MODEL => $update->model,])
             ->assertRedirect();
@@ -118,18 +124,21 @@ class InventoryControllerTest extends TestCase
      */
     public function updateProductForTechsIsOk(): void
     {
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
+        /** @var Product $update */
         $update = factory(Product::class)->make();
+
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(InventoryController::UPDATE_NAME, $product),
                 [
-                    'manufacturer' => $update->manufacturer->name,
+                    Product::MANUFACTURER_NAME => $update->manufacturer->name,
                     Product::MODEL => $update->model,
-                    'type' => $update->type->slug,
-                    'values' => [],
+                    Product::TYPE => $update->type->slug,
+                    Product::VALUES => [],
                 ]
             )
             ->assertOk()
@@ -152,6 +161,7 @@ class InventoryControllerTest extends TestCase
      */
     public function salesRepsSeeInventoryAsEditable(): void
     {
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
@@ -208,6 +218,7 @@ class InventoryControllerTest extends TestCase
      */
     public function othersDontSeeAddToCartButton(): void
     {
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
@@ -227,6 +238,7 @@ class InventoryControllerTest extends TestCase
     public function salesRepsSeeTheirExistingCartsOnInventoryPage(): void
     {
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $carts = [];
         // Whip up around 20 carts to make sure they all appear
@@ -289,8 +301,8 @@ class InventoryControllerTest extends TestCase
         /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $carts = [];
-        // Whip up around 20 carts to make sure they all appear
-        for ($i = 0; $i < 19; $i++) {
+        // Whip up some carts to make sure they all appear
+        for ($i = 0; $i < 10; $i++) {
             $product = factory(Product::class)->make();
             $workOrder->products()->save($product);
             $cart = $this->makeFullCart();
@@ -359,8 +371,8 @@ class InventoryControllerTest extends TestCase
         /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $carts = [];
-        // Whip up around 20 carts to make sure they all appear
-        for ($i = 0; $i < 19; $i++) {
+        // Whip up some carts to make sure they all appear
+        for ($i = 0; $i < 10; $i++) {
             $product = factory(Product::class)->make();
             $workOrder->products()->save($product);
             $cart = $this->makeFullCart();
@@ -422,10 +434,11 @@ class InventoryControllerTest extends TestCase
     public function nonSalesRepsDoNotSeeExistingCartsOnInventoryPage(): void
     {
         $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $carts = [];
-        // Whip up around 20 carts to make sure they all appear
-        for ($i = 0; $i < 19; $i++) {
+        // Whip up some carts to make sure they all appear
+        for ($i = 0; $i < 10; $i++) {
             $product = factory(Product::class)->make();
             $workOrder->products()->save($product);
             $cart = $this->makeFullCart();
@@ -477,9 +490,10 @@ class InventoryControllerTest extends TestCase
     {
         $salesRep1 = $this->createEmployee(UserRoles::SALES_REP);
         $salesRep2 = $this->createEmployee(UserRoles::SALES_REP);
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $carts = [];
-        // Whip up around 20 carts to make sure they all appear
+        // Whip up some carts to make sure they all appear
         for ($i = 0; $i < 10; $i++) {
             $product = factory(Product::class)->make();
             $workOrder->products()->save($product);
@@ -488,13 +502,7 @@ class InventoryControllerTest extends TestCase
             $carts[] = $cart;
         }
 
-        // Make one more outside the loop so `$product`  will be defined for phpstan
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
-        $cart = $this->makeFullCart();
-        $salesRep1->carts()->save($cart);
-        $carts[] = $cart;
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             $product = factory(Product::class)->make();
             $workOrder->products()->save($product);
             $cart = $this->makeFullCart();

@@ -16,6 +16,7 @@ use Domain\PendingSales\Actions\PendingSalesStoreAction;
 use Domain\PendingSales\Actions\PricePatchAction;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
+use Support\CartStore;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
@@ -69,14 +70,15 @@ class PendingSalesTest extends TestCase
     public function canDestroyPendingSale(): void
     {
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        /** @var Client $client */
         $client = factory(Client::class)->make();
         $product = $this->createFullProduct();
 
         CartStoreAction::execute(
             CartStoreObject::fromRequest(
                 [
-                    'product_id' => $product->id,
-                    Client::COMPANY_NAME => $client->company_name,
+                    CartStore::PRODUCT_ID => $product->id,
+                    CartStore::COMPANY_NAME => $client->company_name,
                 ]
             )
         );
@@ -98,14 +100,15 @@ class PendingSalesTest extends TestCase
     {
         $this->expectException(HttpException::class);
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        /** @var Client $client */
         $client = factory(Client::class)->make();
         $product = $this->createFullProduct();
 
         CartStoreAction::execute(
             CartStoreObject::fromRequest(
                 [
-                    'product_id' => $product->id,
-                    Client::COMPANY_NAME => $client->company_name,
+                    CartStore::PRODUCT_ID => $product->id,
+                    CartStore::COMPANY_NAME => $client->company_name,
                 ]
             )
         );

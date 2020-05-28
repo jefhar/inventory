@@ -90,6 +90,7 @@ class WorkOrderStoreActionTest extends TestCase
      */
     public function storingWorkOrderStoresWorkOrderSuccessfullyIfClientAlreadyExists(): void
     {
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $person = factory(Person::class)->make();
         $client->person()->save($person);

@@ -15,6 +15,7 @@ use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
+use Support\CartStore;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
@@ -44,7 +45,7 @@ class PendingSalesControllerTest extends TestCase
         $this->actingAs($salesRep)
             ->post(
                 route(PendingSalesController::STORE_NAME),
-                [Product::CART_ID => $cart->id, Product::ID => $product->id,]
+                [Product::CART_ID => $cart->luhn, Product::ID => $product->luhn,]
             )
             ->assertCreated()
             ->assertJson(
@@ -79,15 +80,17 @@ class PendingSalesControllerTest extends TestCase
     public function salesRepCanRemoveProductFromCart(): void
     {
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                'product_id' => $product->id,
-                Client::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->id,
+                CartStore::COMPANY_NAME => $client->company_name,
+
             ]
         );
-        $cart = CartStoreAction::execute($cartStoreObject);
+        CartStoreAction::execute($cartStoreObject);
         $product->refresh();
         $this->assertDatabaseMissing(
             Product::TABLE,
@@ -115,6 +118,7 @@ class PendingSalesControllerTest extends TestCase
     public function technicianCantRemoveProductFromCart(): void
     {
         $product = $this->createFullProduct();
+        /** @var Cart $cart */
         $cart = factory(Cart::class)->make();
         $technician = $this->createEmployee(UserRoles::TECHNICIAN);
         $technician->carts()->save($cart);
@@ -139,7 +143,7 @@ class PendingSalesControllerTest extends TestCase
         $this->actingAs($salesRep)
             ->post(
                 route(PendingSalesController::STORE_NAME),
-                [Product::CART_ID => $cart->id, Product::ID => $product->id]
+                [Product::CART_ID => $cart->luhn, Product::ID => $product->luhn]
             )
             ->assertCreated()
             ->assertJson(
@@ -155,7 +159,7 @@ class PendingSalesControllerTest extends TestCase
 
         $this->post(
             route(PendingSalesController::STORE_NAME),
-            [Product::CART_ID => $secondCart->id, Product::ID => $product->id]
+            [Product::CART_ID => $cart->luhn, Product::ID => $product->luhn]
         )
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
@@ -172,8 +176,8 @@ class PendingSalesControllerTest extends TestCase
         $cart = CartStoreAction::execute(
             CartStoreObject::fromRequest(
                 [
-                    'product_id' => $product->id,
-                    Client::COMPANY_NAME => $client->company_name,
+                    CartStore::PRODUCT_ID => $product->id,
+                    CartStore::COMPANY_NAME => $client->company_name,
                 ]
             )
         );
@@ -181,8 +185,8 @@ class PendingSalesControllerTest extends TestCase
         $this->post(
             route(PendingSalesController::STORE_NAME),
             [
-                Product::CART_ID => $cart->id,
-                Product::ID => $secondProduct->id,
+                Product::CART_ID => $cart->luhn,
+                Product::ID => $secondProduct->luhn,
             ]
         )->assertJson(
             [

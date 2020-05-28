@@ -70,16 +70,13 @@ class TypesControllerTest extends TestCase
     public function typeCreatePageExistsAndIsAccessible(): void
     {
         $this->withoutMix();
-        $type = factory(Type::class)->create();
         $this->get(route(TypesController::CREATE_NAME))
             ->assertRedirect();
 
         $this->actingAs($this->createEmployee())
             ->get(route(TypesController::CREATE_NAME))
             ->assertOk()
-            ->assertSeeText('Create New Product Type')
-            ->assertSeeText($type->name)
-            ->assertSee($type->slug);
+            ->assertSeeText('Create New Product Type');
     }
 
     /**
@@ -103,6 +100,7 @@ class TypesControllerTest extends TestCase
      */
     public function typeStoreExistsAndStoresForAuthorizedPerson(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->make();
         $this->post(
             route(TypesController::STORE_NAME),
@@ -150,6 +148,7 @@ class TypesControllerTest extends TestCase
      */
     public function savingExistingFormWithoutForceReturnsAccepted(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->create();
         $this->actingAs($this->createEmployee())
             ->post(
@@ -171,6 +170,7 @@ class TypesControllerTest extends TestCase
      */
     public function savingExistingFormCanBeForced(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->create();
         $this->actingAs($this->createEmployee())
             ->post(

@@ -29,6 +29,7 @@ class AjaxSearchActionTest extends TestCase
     public function searchActionReturnsACollection(): void
     {
         for ($i = 0; $i < 50; $i++) {
+            /** @var Client $client */
             $client = factory(Client::class)->create();
             $person = factory(Person::class)->make();
             $client->person()->save($person);
@@ -36,9 +37,9 @@ class AjaxSearchActionTest extends TestCase
         }
 
         // Ensure that 2 companies contain 'John'
-        $red_herring_company_name = 'John ' . uniqid('A', false);
-        $red_herring_client = new Client();
-        $red_herring_person = new Person(
+        $redHerringCompanyName = 'John ' . uniqid('A', false);
+        $redHerringClient = new Client();
+        $redHerringPerson = new Person(
             [
                 Person::FIRST_NAME => 'Redd',
                 Person::LAST_NAME => 'Herring',
@@ -46,21 +47,21 @@ class AjaxSearchActionTest extends TestCase
                 Person::PHONE_NUMBER => '12345',
             ]
         );
-        $red_herring_client->company_name = $red_herring_company_name;
-        $red_herring_client->save();
-        $red_herring_client->person()->save($red_herring_person);
+        $redHerringClient->company_name = $redHerringCompanyName;
+        $redHerringClient->save();
+        $redHerringClient->person()->save($redHerringPerson);
 
-        $company_name = 'John ' . uniqid('-', false);
+        $companyName = 'John ' . uniqid('-', false);
         $client = factory(Client::class)->make();
         $person = factory(Person::class)->make();
-        $client->company_name = $company_name;
+        $client->company_name = $companyName;
         $client->save();
         $client->person()->save($person);
 
         $options = AjaxSearchAction::findBy(Client::COMPANY_NAME, 'J');
         // dd($options->pluck(Client::COMPANY_NAME));
 
-        $this->assertContains($company_name, $options->pluck(Client::COMPANY_NAME));
+        $this->assertContains($companyName, $options->pluck(Client::COMPANY_NAME));
     }
 
     /**
@@ -69,6 +70,7 @@ class AjaxSearchActionTest extends TestCase
     public function ajaxSearchIndexFindsCompanyName(): void
     {
         factory(Client::class, 50)->create();
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $options = AjaxSearchAction::findAll(substr($client->company_name, 0, 2));
         $this->assertStringContainsString($client->company_name, $options->toJson());
@@ -79,10 +81,12 @@ class AjaxSearchActionTest extends TestCase
      */
     public function ajaxSearchIndexFindsLastName(): void
     {
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $people = factory(Person::class, 50)->make([Person::CLIENT_ID => 1]);
         $client->person()->saveMany($people);
 
+        /** @var Person $person */
         $person = factory(Person::class)->create([Person::CLIENT_ID => 1]);
         $options = AjaxSearchAction::findAll(substr($person->last_name, 0, 2));
         $this->assertStringContainsString($person->last_name, $options->toJson());
@@ -94,6 +98,7 @@ class AjaxSearchActionTest extends TestCase
     public function ajaxSearchIndexFindsManufacturerName(): void
     {
         factory(Manufacturer::class, 50)->create();
+        /** @var Manufacturer $manufacturer */
         $manufacturer = factory(Manufacturer::class)->create();
         $options = AjaxSearchAction::findBy('manufacturer', substr($manufacturer->name, 0, 2));
         $this->assertStringContainsString($manufacturer->name, $options->toJson());
@@ -104,8 +109,10 @@ class AjaxSearchActionTest extends TestCase
      */
     public function ajaxSearchIndexFindsModelName(): void
     {
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         factory(Product::class, 50)->create([Product::WORK_ORDER_ID => $workOrder->id]);
+        /** @var Product $product */
         $product = factory(Product::class)->create([Product::WORK_ORDER_ID => $workOrder->id]);
 
         $options = AjaxSearchAction::findBy(Product::MODEL, substr($product->model, 0, 2));

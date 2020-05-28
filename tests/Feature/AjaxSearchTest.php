@@ -75,21 +75,24 @@ class AjaxSearchTest extends TestCase
     {
         $company_name = 'John';
         for ($i = 0; $i < 50; $i++) {
+            /** @var Client $client */
             $client = factory(Client::class)->create();
             $person = factory(Person::class)->make();
             $client->person()->save($person);
         }
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $client->company_name = $company_name . uniqid('4', false);
         $client->save();
         $person = factory(Person::class)->make();
         $client->person()->save($person);
 
-        $red_herring_client = factory(Client::class)->create();
-        $red_herring_client->company_name = $company_name . uniqid('e', false);
-        $red_herring_client->save();
+        /** @var Client $redHerringClient */
+        $redHerringClient = factory(Client::class)->create();
+        $redHerringClient->company_name = $company_name . uniqid('e', false);
+        $redHerringClient->save();
         $red_herring_person = factory(Person::class)->make();
-        $red_herring_client->person()->save($red_herring_person);
+        $redHerringClient->person()->save($red_herring_person);
 
         $this->actingAs($this->createEmployee())
             ->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME, 'q' => 'J']))
@@ -105,8 +108,9 @@ class AjaxSearchTest extends TestCase
     /**
      * @test
      */
-    public function indexReturnsSomething(): void
+    public function ajaxIndexReturnsDirectMatch(): void
     {
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $this->actingAs($this->createEmployee())
             ->get(route(AjaxSearchController::INDEX_NAME, ['q' => $client->company_name]))
@@ -137,7 +141,7 @@ class AjaxSearchTest extends TestCase
                 'manufacturer' => $unsavedProduct->manufacturer->name,
                 'model' => $unsavedProduct->model,
                 'type' => $unsavedProduct->type->slug,
-                'workOrderId' => $workOrder->id,
+                'workorder_id' => $workOrder->luhn,
             ];
             $product = ProductStoreAction::execute(ProductStoreObject::fromRequest($formRequest));
         }

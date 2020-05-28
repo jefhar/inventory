@@ -31,6 +31,7 @@ class WorkOrderUpdateActionTest extends TestCase
      */
     public function togglesIsLocked(): void
     {
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->make();
         $workOrder->is_locked = false;
         $workOrder->save();
@@ -112,8 +113,10 @@ class WorkOrderUpdateActionTest extends TestCase
      */
     public function updateUpdatesExistingPersonFirstName(): void
     {
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $person = factory(Person::class)->make();
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->make();
         $client->person()->save($person);
         $workOrder->client()->associate($client);
@@ -149,8 +152,10 @@ class WorkOrderUpdateActionTest extends TestCase
      */
     public function updateUpdatesExistingPersonLastName(): void
     {
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $person = factory(Person::class)->make();
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->make();
         $client->person()->save($person);
         $workOrder->client()->associate($client);
@@ -228,12 +233,15 @@ class WorkOrderUpdateActionTest extends TestCase
      */
     public function updateUpdatesExistingPersonPhoneNumber(): void
     {
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $person = factory(Person::class)->make();
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->make();
         $client->person()->save($person);
         $workOrder->client()->associate($client);
         $client->push();
+        /** @var Person $newPerson */
         $newPerson = factory(Person::class)->make();
         $workOrderUpdateObject = WorkOrderUpdateObject::fromRequest(
             [
@@ -254,8 +262,10 @@ class WorkOrderUpdateActionTest extends TestCase
      */
     public function updateDoesNotUpdateBlankFields(): void
     {
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $person = factory(Person::class)->make();
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->make();
         $client->person()->save($person);
         $workOrder->client()->associate($client);
@@ -281,6 +291,7 @@ class WorkOrderUpdateActionTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        /** @var User $user */
         $user = factory(User::class)->create();
         $user->givePermissionTo(UserPermissions::IS_EMPLOYEE);
         $this->user = $user;

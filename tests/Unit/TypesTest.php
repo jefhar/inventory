@@ -65,6 +65,7 @@ class TypesTest extends TestCase
      */
     public function canUpdateType(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->create();
         $form = json_decode($type->form, true, 512, JSON_THROW_ON_ERROR);
         array_pop($form);

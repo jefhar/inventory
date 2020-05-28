@@ -81,7 +81,7 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function technicianCanStoreWorkOrderWithCompanyNameOnly(): void
     {
-        $checksum = Luhn::create(1);
+        $luhn = Luhn::create(1);
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->post(
                 route(WorkOrdersController::STORE_NAME),
@@ -90,7 +90,7 @@ class WorkOrdersControllerTest extends TestCase
             ->assertJson(['created' => true,])
             ->assertCreated()->assertHeader(
                 'Location',
-                url(route(WorkOrdersController::SHOW_NAME, ['workorder' => $checksum]))
+                url(route(WorkOrdersController::SHOW_NAME, ['workorder' => $luhn]))
             );
 
         $this->assertDatabaseHas(
@@ -105,6 +105,7 @@ class WorkOrdersControllerTest extends TestCase
     public function technicianCanStoreWorkOrderWithCompanyNameAndPerson(): void
     {
         $company_name = self::COMPANY_NAME . uniqid('b', true);
+        /** @var Person $person */
         $person = factory(Person::class)->make();
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->post(
@@ -295,7 +296,9 @@ class WorkOrdersControllerTest extends TestCase
     public function updateOnlyReturnsWhatIsSent(): void
     {
         $faker = Factory::create();
+        /** @var Client $newClient */
         $newClient = factory(Client::class)->make();
+        /** @var Person $newPerson */
         $newPerson = factory(Person::class)->make();
         $workOrder = factory(WorkOrder::class)->create();
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))

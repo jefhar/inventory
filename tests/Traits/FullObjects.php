@@ -32,6 +32,7 @@ trait FullObjects
         $faker = Factory::create();
         $manufacturerName = $faker->company;
         $workOrder = factory(WorkOrder::class)->create();
+        /** @var Product $product */
         $product = factory(Product::class)->make();
         $manufacturer = Manufacturer::firstOrCreate([Manufacturer::NAME => $manufacturerName]);
         $product->manufacturer()->associate($manufacturer);
@@ -47,7 +48,9 @@ trait FullObjects
     private function makeFullCart(): Cart
     {
         $person = factory(Person::class)->make();
+        /** @var Client $client */
         $client = factory(Client::class)->create();
+        /** @var Cart $cart */
         $cart = factory(Cart::class)->make();
         $client->person()->save($person);
         $cart->client()->associate($client);
@@ -58,6 +61,7 @@ trait FullObjects
     private function createFullClient(): Client
     {
         $person = factory(Person::class)->make();
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $client->person()->save($person);
         $client->save();
