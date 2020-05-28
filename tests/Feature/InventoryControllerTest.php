@@ -16,6 +16,7 @@ use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
+use Exception;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
@@ -92,6 +93,7 @@ class InventoryControllerTest extends TestCase
     {
         /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
+        /** @var Product $product */
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
         $this->withoutMix()
@@ -126,6 +128,7 @@ class InventoryControllerTest extends TestCase
     {
         /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
+        /** @var Product $product */
         $product = factory(Product::class)->make();
         $workOrder->products()->save($product);
         /** @var Product $update */
@@ -290,7 +293,7 @@ class InventoryControllerTest extends TestCase
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
     public function salesRepsDoNotSeeInvoicedCartsOnInventoryPage(): void
     {
@@ -360,7 +363,7 @@ class InventoryControllerTest extends TestCase
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
     public function salesRepsDoNotSeeVoidedCartsOnInventoryPage(): void
     {
@@ -490,30 +493,30 @@ class InventoryControllerTest extends TestCase
     {
         $salesRep1 = $this->createEmployee(UserRoles::SALES_REP);
         $salesRep2 = $this->createEmployee(UserRoles::SALES_REP);
-        /** @var WorkOrder $workOrder */
-        $workOrder = factory(WorkOrder::class)->create();
         $carts = [];
         // Whip up some carts to make sure they all appear
         for ($i = 0; $i < 10; $i++) {
-            $product = factory(Product::class)->make();
-            $workOrder->products()->save($product);
             $cart = $this->makeFullCart();
             $salesRep1->carts()->save($cart);
             $carts[] = $cart;
         }
 
         for ($i = 0; $i < 20; $i++) {
-            $product = factory(Product::class)->make();
-            $workOrder->products()->save($product);
             $cart = $this->makeFullCart();
             $salesRep2->carts()->save($cart);
             $carts[] = $cart;
         }
 
+        $routerProduct = $this->createFullProduct();
+        $cart = $this->makeFullCart();
+        $salesRep2->carts()->save($cart);
+        $cart->products()->save($routerProduct);
+        $carts[] = $cart;
+
         $owner = $this->createEmployee(UserRoles::OWNER);
         $this->actingAs($owner)
             ->withoutMix()
-            ->get(route(InventoryController::SHOW_NAME, $product))
+            ->get(route(InventoryController::SHOW_NAME, $routerProduct))
             ->assertSee($carts[0]->client->company_name)
             ->assertSee($carts[1]->client->company_name)
             ->assertSee($carts[2]->client->company_name)

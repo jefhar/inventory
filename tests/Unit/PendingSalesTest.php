@@ -16,7 +16,7 @@ use Domain\PendingSales\Actions\PendingSalesStoreAction;
 use Domain\PendingSales\Actions\PricePatchAction;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
-use Support\CartStore;
+use Support\Requests\CartStore;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;

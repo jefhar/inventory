@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Support;
+namespace Support\Requests;
 
 class CartStore
 {

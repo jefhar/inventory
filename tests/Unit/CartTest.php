@@ -25,7 +25,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
-use Support\CartStore;
+use Support\Requests\CartStore;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 use Tests\Traits\FullUsers;

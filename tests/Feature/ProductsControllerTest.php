@@ -17,7 +17,7 @@ use Domain\Products\Models\Type;
 use Domain\WorkOrders\Models\WorkOrder;
 use Exception;
 use Faker\Factory;
-use Support\ProductStore;
+use Support\Requests\ProductStore;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
@@ -46,12 +46,12 @@ class ProductsControllerTest extends TestCase
         /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $formRequest = [
-            ProductStore::MANUFACTURER,
+            ProductStore::MANUFACTURER_NAME,
             ProductStore::MODEL => $model,
             'radio-group-1575689472139' => 'option-3',
             'select-1575689474390' => 'option-2',
             'textarea-1575689477555' => 'textarea text. Bwahahahahaaaa',
-            'type' => $type->slug,
+            ProductStore::TYPE => $type->slug,
             ProductStore::WORK_ORDER_ID => $workOrder->luhn,
         ];
 

@@ -15,7 +15,7 @@ use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
-use Support\CartStore;
+use Support\Requests\CartStore;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
