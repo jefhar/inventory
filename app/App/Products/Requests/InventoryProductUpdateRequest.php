@@ -11,7 +11,6 @@ namespace App\Products\Requests;
 
 use App\Admin\Permissions\UserPermissions;
 use App\User;
-use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
 use Illuminate\Foundation\Http\FormRequest;
@@ -25,9 +24,9 @@ use Illuminate\Support\Facades\Auth;
 class InventoryProductUpdateRequest extends FormRequest
 {
     public const RULES = [
-        Manufacturer::MANUFACTURER => ['required'],
+        Product::MANUFACTURER_NAME => ['required'],
         Product::MODEL => ['required'],
-        Type::TYPE => ['required', 'exists:' . Type::TABLE . ',' . Type::SLUG],
+        Product::TYPE => ['required', 'exists:' . Type::TABLE . ',' . Type::SLUG],
         Product::VALUES => ['array'],
     ];
 

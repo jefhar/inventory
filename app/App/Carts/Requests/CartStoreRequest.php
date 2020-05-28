@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace App\Carts\Requests;
 
 use Domain\Products\Models\Product;
-use Domain\WorkOrders\Models\Client;
 use Illuminate\Foundation\Http\FormRequest;
+use Support\Requests\CartStore;
 
 /**
  * Class CartStoreRequest
@@ -21,8 +21,8 @@ use Illuminate\Foundation\Http\FormRequest;
 class CartStoreRequest extends FormRequest
 {
     private const RULES = [
-        'product_id' => ['required', 'exists:' . Product::TABLE . ',' . Product::ID],
-        Client::COMPANY_NAME => ['required'],
+        CartStore::PRODUCT_ID => ['required', 'exists:' . Product::TABLE . ',' . Product::ID],
+        CartStore::COMPANY_NAME => ['required'],
     ];
 
     /**

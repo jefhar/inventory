@@ -21,8 +21,8 @@ use Illuminate\Foundation\Http\FormRequest;
 class PendingSalesStoreRequest extends FormRequest
 {
     private const RULES = [
-        Product::CART_ID => ['required', 'exists:' . Cart::TABLE . ',' . Cart::ID],
-        Product::ID => ['required', 'exists:' . Product::TABLE . ',' . Product::ID],
+        Product::CART_ID => ['required', 'exists:' . Cart::TABLE . ',' . Cart::LUHN],
+        Product::ID => ['required', 'exists:' . Product::TABLE . ',' . Product::LUHN],
     ];
 
     /**
