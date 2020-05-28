@@ -16,6 +16,7 @@ use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
+use Support\Requests\ProductStore;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tests\Traits\FullUsers;
@@ -133,15 +134,15 @@ class AjaxSearchTest extends TestCase
             /** @var Product $unsavedProduct */
             $unsavedProduct = factory(Product::class)->make();
             $formRequest = [
-                'values' => [
+                ProductStore::VALUES => [
                     'radio-group-1575689472139' => $faker->word,
                     'select-1575689474390' => $faker->word,
                     'serial' => $serial,
                 ],
-                'manufacturer' => $unsavedProduct->manufacturer->name,
-                'model' => $unsavedProduct->model,
-                'type' => $unsavedProduct->type->slug,
-                'workorder_id' => $workOrder->luhn,
+                ProductStore::MANUFACTURER_NAME => $unsavedProduct->manufacturer->name,
+                ProductStore::MODEL => $unsavedProduct->model,
+                ProductStore::TYPE => $unsavedProduct->type->slug,
+                ProductStore::WORK_ORDER_ID => $workOrder->luhn,
             ];
             $product = ProductStoreAction::execute(ProductStoreObject::fromRequest($formRequest));
         }

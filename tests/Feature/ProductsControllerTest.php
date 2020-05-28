@@ -39,14 +39,14 @@ class ProductsControllerTest extends TestCase
     public function storeProductReturnsProduct(): void
     {
         $faker = Factory::create();
-        $manufacturer = $faker->company;
+        $manufacturerName = $faker->company;
         $model = $faker->title;
         /** @var Type $type */
         $type = factory(Type::class)->create();
         /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $formRequest = [
-            ProductStore::MANUFACTURER_NAME,
+            ProductStore::MANUFACTURER_NAME => $manufacturerName,
             ProductStore::MODEL => $model,
             'radio-group-1575689472139' => 'option-3',
             'select-1575689474390' => 'option-2',
@@ -58,7 +58,7 @@ class ProductsControllerTest extends TestCase
         $this->actingAs($this->createEmployee())
             ->postJson(route(ProductsController::STORE_NAME), $formRequest)
             ->assertCreated()
-            ->assertSee($manufacturer)
+            ->assertSee($manufacturerName)
             ->assertSee(Product::ID)
             ->assertSee(Product::TYPE_ID)
             ->assertSee(Product::WORK_ORDER_ID);
@@ -77,7 +77,7 @@ class ProductsControllerTest extends TestCase
             Manufacturer::TABLE,
             [
                 Manufacturer::ID => 1,
-                Manufacturer::NAME => $manufacturer,
+                Manufacturer::NAME => $manufacturerName,
             ]
         );
         /** @var Product $theProduct */
