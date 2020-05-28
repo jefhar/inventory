@@ -95,16 +95,14 @@ const formKeyPress = (event, element = 'buttonElem') => {
 
 if (document.getElementById('WorkOrdersEdit')) {
   // Definitions
-  console.info('WorkOrdersEdit')
+  const commitChangesButton = document.getElementById('commitChangesButton')
   const lockButton = document.getElementById('lockButton')
-  const updateButton = document.getElementById('updateButton')
   const workOrderBody = document.getElementById('workOrderBody')
 
   // Actions
   const WorkOrderEditUpdateUI = () => {
     // Definitions
     console.log('WorkOrderEditUpdateUI function')
-    const CommitChangesButton = document.getElementById('commitChangesButton')
     const formFields = [
       document.getElementById('firstName'),
       document.getElementById('lastName'),
@@ -126,29 +124,26 @@ if (document.getElementById('WorkOrdersEdit')) {
       isLockedButton: 'btn-outline-danger',
       lockHeader: 'Locked',
       lockIcon: 'fa-unlock-alt',
-      outline: 'border-primary',
+      outline: 'border-danger',
     }
     const unlocked = {
       clickTo: 'Click to Lock work order.',
       isLockedButton: 'btn-outline-success',
       lockHeader: 'Unlocked',
       lockIcon: 'fa-lock',
-      outline: 'border-warning',
+      outline: 'border-success',
     }
 
     // Actions
-    const updateUI = (add, remove) => {
+    const updateLockButtonView = (add, remove) => {
       // Do Stuff
       if (isLockedButton) {
         isLockedButton.classList.add(add.isLockedButton)
-        lockIcon.classList.add(add.lockIcon)
-      }
-      outline.classList.add(add.outline)
-
-      if (isLockedButton) {
         isLockedButton.classList.remove(remove.isLockedButton)
+        lockIcon.classList.add(add.lockIcon)
         lockIcon.classList.remove(remove.lockIcon)
       }
+      outline.classList.add(add.outline)
       outline.classList.remove(remove.outline)
 
       $('[data-toggle="tooltip"]').attr('data-original-title', add.clickTo)
@@ -161,10 +156,10 @@ if (document.getElementById('WorkOrdersEdit')) {
     }
     // Do Stuff
     if (workOrderBody.dataset.isLocked === 'true') {
-      updateUI(locked, unlocked)
+      updateLockButtonView(locked, unlocked)
       lockHeader.innerText = locked.lockHeader
     } else {
-      updateUI(unlocked, locked)
+      updateLockButtonView(unlocked, locked)
       lockHeader.innerText = unlocked.lockHeader
     }
     if (addInventoryItemButton) {
@@ -172,42 +167,21 @@ if (document.getElementById('WorkOrdersEdit')) {
         workOrderBody.dataset.isLocked === 'true'
     }
     ableForm(workOrderBody.dataset.isLocked)
-    CommitChangesButton.disabled = workOrderBody.dataset.isLocked === 'true'
+    commitChangesButton.disabled = workOrderBody.dataset.isLocked === 'true'
   }
-  const lockButtonClick = () => {
-    // Definitions
-    const wantOrderToBeLocked = !(workOrderBody.dataset.isLocked === 'true')
-    const data = { is_locked: wantOrderToBeLocked }
-    const url = `/workorders/${workOrderBody.dataset.workOrderId}`
-
-    // Do Stuff
-    axios
-      .patch(url, data)
-      .then((response) => {
-        workOrderBody.dataset.isLocked = response.data.is_locked
-        WorkOrderEditUpdateUI()
-      })
-      .catch((error) => {
-        console.info('error.response.data:', error.response.data)
-      })
-  }
-  const updateButtonClick = (event) => {
+  const storeChanges = (data) => {
     // Definitions
     const cardBody = document.getElementById('workOrderBody')
     const updateToast = document.createElement('div')
     const url = `/workorders/${cardBody.dataset.workOrderId}`
-    const data = {
-      company_name: document.getElementById('company_name').value,
-      email: document.getElementById('email').value,
-      first_name: document.getElementById('first_name').value,
-      intake: document.getElementById('intake').value,
-      last_name: document.getElementById('last_name').value,
-      phone_number: document.getElementById('phone_number').value,
-    }
 
     // Actions
-    const onPatch = () => {
+    const onPatch = (response) => {
+      console.info('response', response)
       // Do Stuff
+      if ('is_locked' in response.data) {
+        workOrderBody.dataset.isLocked = response.data.is_locked
+      }
 
       // At some point, give user a visual indication that
       // fields have been updated. Even better, add onChange
@@ -251,41 +225,67 @@ if (document.getElementById('WorkOrdersEdit')) {
     }
     const afterPatch = () => {
       // Do Stuff
+      updateToast.id = 'updateToast'
+      updateToast.classList.add('toast')
+      updateToast.style.position = 'absolute'
+      updateToast.style.top = '0'
+      updateToast.style.right = '0'
+      updateToast.dataset.delay = '8000'
+
       document.getElementById('workOrderBody').appendChild(updateToast)
       const $updateToast = $('#updateToast') // Grab jQuery handle element
       $updateToast.toast()
       $updateToast.toast('show')
     }
+
     // Do Stuff
-    updateToast.id = 'updateToast'
-    updateToast.classList.add('toast')
-    updateToast.style.position = 'absolute'
-    updateToast.style.top = '0'
-    updateToast.style.right = '0'
-    updateToast.dataset.delay = '8000'
 
     // send PATCH via axios
     axios
       .patch(url, data)
-      .then(() => {
-        onPatch()
+      .then((response) => {
+        onPatch(response)
       })
       .catch((error) => {
         onPatchError(error)
       })
       .finally(() => {
         afterPatch()
+        WorkOrderEditUpdateUI()
       })
-
-    event.preventDefault()
+  }
+  const lockButtonClick = () => {
+    console.info('lockButtonClick')
+    // Definitions
+    const wantOrderToBeLocked = !(workOrderBody.dataset.isLocked === 'true')
+    const data = { is_locked: wantOrderToBeLocked }
+    storeChanges(data)
+  }
+  const commitChangesClick = () => {
+    storeChanges({
+      company_name: document.getElementById('companyName').value,
+      email: document.getElementById('email').value,
+      first_name: document.getElementById('firstName').value,
+      intake: document.getElementById('intake').value,
+      last_name: document.getElementById('lastName').value,
+      phone_number: document.getElementById('phoneNumber').value,
+    })
   }
   const addNewProductModalShown = () => {
+    // TODO: Incorporate fetchTypesList() here so typeslist is always refreshed.
     // Definitions
     const productType = document.getElementById('productType')
     const productSubmit = document.getElementById('productSubmit')
-    const cancelButton = document.getElementById('cancelButton')
+    const cancelNewProductButton = document.getElementById(
+      'cancelNewProductButton'
+    )
 
     // Actions
+    const removeChildren = (element) => {
+      while (element.hasChildNodes()) {
+        element.removeChild(element.lastChild)
+      }
+    }
     const productTypeChange = (event) => {
       // Definitions
       const { value } = event.target
@@ -310,7 +310,7 @@ if (document.getElementById('WorkOrdersEdit')) {
             className: 'form-control',
             dataAutocomplete: '/ajaxsearch/manufacturer',
             label: 'Manufacturer',
-            name: 'manufacturer',
+            name: 'manufacturer_name',
             required: 'true',
             subtype: 'text',
             type: 'text',
@@ -370,7 +370,7 @@ if (document.getElementById('WorkOrdersEdit')) {
       const formData = document.getElementById('productForm')
       const postData = {
         type: document.getElementById('productType').value,
-        workOrderId: document.getElementById('workOrderBody').dataset
+        workorder_id: document.getElementById('workOrderBody').dataset
           .workOrderId,
       }
       const url = '/products'
@@ -378,26 +378,32 @@ if (document.getElementById('WorkOrdersEdit')) {
       // Actions
       const onPost = (response) => {
         // Definitions
-        const { model, created_at: createdAt, serial } = response.data
-        const { name: manufacturer } = response.data.manufacturer
+        const {
+          created_at: createdAt,
+          manufacturer_name: manufacturerName,
+          model,
+          serial,
+        } = response.data
         const { name: type } = response.data.type
-        const luhn = _.padStart(response.data.luhn, 6, '0')
+        const id = _.padStart(response.data.id, 6, '0')
         const productForm = document.getElementById('productForm')
+        const productsTable = document.getElementById('productsTable')
+        const productType = document.getElementById('productType')
         const tr = document.createElement('tr')
-
         // Do stuff
         tr.innerHTML = `<th scope="row" class="col-1">
-<a class="btn btn-info" href="/inventory/${luhn}">${luhn}</a></th>
-<td>${manufacturer}</td>
+<a class="btn btn-info" href="/inventory/${id}">${id}</a></th>
+<td>${manufacturerName}</td>
 <td>${model}</td>
 <td>${type}</td>
 <td>${serial}</td>
 <td>${createdAt}</td>`
-        document.getElementById('products_table').appendChild(tr)
-        while (productForm.hasChildNodes()) {
-          productForm.removeChild(productForm.lastChild)
-        }
-        document.getElementById('productType').selectedIndex = 0
+        productsTable.appendChild(tr)
+
+        // reset modal form:
+        removeChildren(productForm)
+        productType.selectedIndex = 0
+
         // close modal
         $('#addNewProductModal').modal('hide')
         $('.modal-backdrop').remove()
@@ -443,9 +449,8 @@ if (document.getElementById('WorkOrdersEdit')) {
       const productType = document.getElementById('productType')
 
       // Do Stuff
-      while (productForm.hasChildNodes()) {
-        productForm.removeChild(productForm.lastChild)
-      }
+      // reset modal form:
+      removeChildren(productForm)
       productType.selectedIndex = 0
     }
 
@@ -456,7 +461,7 @@ if (document.getElementById('WorkOrdersEdit')) {
     productSubmit.addEventListener('click', (event) => {
       productSubmitClick(event)
     })
-    cancelButton.addEventListener('click', (event) => {
+    cancelNewProductButton.addEventListener('click', (event) => {
       cancelButtonClick(event)
     })
 
@@ -473,9 +478,9 @@ if (document.getElementById('WorkOrdersEdit')) {
       lockButtonClick()
     })
   }
-  if (updateButton) {
-    updateButton.addEventListener('click', () => {
-      updateButtonClick()
+  if (commitChangesButton) {
+    commitChangesButton.addEventListener('click', () => {
+      commitChangesClick()
     })
   }
 
@@ -905,22 +910,25 @@ if (document.getElementById('typesCreate')) {
 }
 
 if (document.getElementById('inventoryShow')) {
-  console.info('inventory page.')
+  // @TODO: post updated product to InventoryController::UPDATE_NAME, $product
+
+  console.info('inventoryShow page.')
   // Definitions
   const dataCartMap = document.querySelectorAll('[data-cart-id]')
   const $newCartModal = $('#newCartModal')
-  const wrapper = $('#product_show')
+  const $productView = $('#productView')
   const newCartButton = document.getElementById('newCartButton')
   const productId = document.getElementById('productId').dataset.productId
-  // let productLuhn = document.getElementById('productId').dataset.productLuhn
+  // let productLuhn =
+  // document.getElementById('productId').dataset.productLuhn
 
   // Actions
-  const addToExistingCart = (cartId, productId) => {
-    console.info(`inside const addToCart(${cartId}, ${productId})`)
+  const addToExistingCart = (cartLuhn, productLuhn) => {
+    console.info(`inside const addToCart(${cartLuhn}, ${productLuhn})`)
     // Definitions
     const postData = {
-      cart_id: cartId,
-      id: productId,
+      cart_id: cartLuhn,
+      id: productLuhn,
     }
 
     // Actions
@@ -1011,7 +1019,7 @@ Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
         <CompanyClientName
           handleResponse={handleResponse}
           postPath="/carts"
-          draft="Cart"
+          draft="Cart and Add Product"
         />,
         document.getElementById('carts_create')
       )
@@ -1028,13 +1036,14 @@ Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
   }
 
   // Attachments
-  dataCartMap.forEach(function (currentValue) {
+  dataCartMap.forEach((currentValue) => {
     currentValue.addEventListener(
       'click',
-      addToExistingCart.bind(this, currentValue.dataset.cartId, productId)
+      addToExistingCart.bind(this, currentValue.dataset.cartLuhn, productId)
     )
   })
 
+  // Only shown if user has UserPermissions::EDIT_SAVED_PRODUCT
   if (newCartButton) {
     newCartButton.onclick = () => {
       newCartButtonClick()
@@ -1042,7 +1051,7 @@ Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
   }
 
   // Do Stuff
-  wrapper.formRender(window.formRenderOptions)
+  $productView.formRender(window.formRenderOptions)
   console.info(window.formRenderOptions)
 }
 
@@ -1142,6 +1151,7 @@ if (document.getElementById('cartShow')) {
   const updateTotalPrice = () => {
     // Definitions
     let totalPrice = 0
+    const cartTotalPrice = document.getElementById('cartTotalPrice')
 
     // Do Stuff
     for (let i = 0, len = editIcons.length | 0; i < len; i = (i + 1) | 0) {
@@ -1149,13 +1159,10 @@ if (document.getElementById('cartShow')) {
       price = price.replace(/[^\d.-]/g, '')
       totalPrice += parseFloat(price) * 100
     }
-    document.getElementById('cartTotalPrice').innerText = new Intl.NumberFormat(
-      'en-US',
-      {
-        style: 'currency',
-        currency: 'USD',
-      }
-    ).format(totalPrice / 100)
+    cartTotalPrice.innerText = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(totalPrice / 100)
   }
   const productCostPopup = (dataset) => {
     // Definitions
