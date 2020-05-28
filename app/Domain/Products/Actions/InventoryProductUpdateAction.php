@@ -23,14 +23,18 @@ class InventoryProductUpdateAction
 {
     /**
      * @param Product $product
-     * @param InventoryProductUpdateObject $rawProductUpdateObject
+     * @param InventoryProductUpdateObject $inventoryProductUpdateObject
      * @return Product
      */
-    public static function execute(Product $product, InventoryProductUpdateObject $rawProductUpdateObject): Product
-    {
-        $type = Type::where(Type::SLUG, $rawProductUpdateObject->type)->first();
-        $manufacturer = Manufacturer::firstOrCreate([Manufacturer::NAME => $rawProductUpdateObject->manufacturer]);
-        $product = self::updateProduct($product, $rawProductUpdateObject);
+    public static function execute(
+        Product $product,
+        InventoryProductUpdateObject $inventoryProductUpdateObject
+    ): Product {
+        $type = Type::where(Type::SLUG, $inventoryProductUpdateObject->type)->first();
+        $manufacturer = Manufacturer::firstOrCreate(
+            [Manufacturer::NAME => $inventoryProductUpdateObject->manufacturer_name]
+        );
+        $product = self::updateProduct($product, $inventoryProductUpdateObject);
 
         $product->type()->associate($type);
         $product->manufacturer()->associate($manufacturer);
@@ -41,13 +45,15 @@ class InventoryProductUpdateAction
 
     /**
      * @param Product $product
-     * @param InventoryProductUpdateObject $rawProductUpdateObject
+     * @param InventoryProductUpdateObject $inventoryProductUpdateObject
      * @return Product
      */
-    private static function updateProduct(Product $product, InventoryProductUpdateObject $rawProductUpdateObject): Product
-    {
-        $product->model = $rawProductUpdateObject->model;
-        $product->values = $rawProductUpdateObject->values;
+    private static function updateProduct(
+        Product $product,
+        InventoryProductUpdateObject $inventoryProductUpdateObject
+    ): Product {
+        $product->model = $inventoryProductUpdateObject->model;
+        $product->values = $inventoryProductUpdateObject->values;
 
         return $product;
     }

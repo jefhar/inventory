@@ -9,10 +9,8 @@ declare(strict_types=1);
 
 namespace App\Products\DataTransferObject;
 
-use Domain\Products\Models\Manufacturer;
-use Domain\Products\Models\Product;
-use Domain\Products\Models\Type;
 use Spatie\DataTransferObject\DataTransferObject;
+use Support\Requests\ProductStore;
 
 /**
  * Class ProductStoreObject
@@ -23,8 +21,8 @@ use Spatie\DataTransferObject\DataTransferObject;
 class ProductStoreObject extends DataTransferObject
 {
     public array $values;
-    public int $workOrderId;
-    public string $manufacturer;
+    public int $workorder_id;
+    public string $manufacturer_name;
     public string $model;
     public string $type;
 
@@ -36,11 +34,11 @@ class ProductStoreObject extends DataTransferObject
     {
         return new self(
             [
-                'workOrderId' => (int)$validated['workOrderId'],
-                Manufacturer::MANUFACTURER => $validated[Manufacturer::MANUFACTURER],
-                Product::MODEL => $validated[Product::MODEL],
-                Product::VALUES => $validated[Product::VALUES],
-                Type::TYPE => $validated[Type::TYPE],
+                ProductStore::WORK_ORDER_ID => (int)$validated[ProductStore::WORK_ORDER_ID],
+                ProductStore::MANUFACTURER_NAME => $validated[ProductStore::MANUFACTURER_NAME],
+                ProductStore::MODEL => $validated[ProductStore::MODEL],
+                ProductStore::VALUES => $validated[ProductStore::VALUES],
+                ProductStore::TYPE => $validated[ProductStore::TYPE],
             ]
         );
     }

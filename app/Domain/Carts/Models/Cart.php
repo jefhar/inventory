@@ -18,14 +18,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 /**
  * Class Cart
  *
- * @package Domain\Carts\Models
- * @method static Builder where(string|array $column, mixed $operator = null, mixed $value = null, string $bool = 'and')
- * @method static Cart findOrFail($input)
+ * @method Cart first(array|string $columns = ['*'])
+ * @method Collection get(array|string $columns = ['*'])
+ * @method static Cart findOrFail(mixed $id, array $columns = ['*'])
+ * @method static Cart where(string|array $column, mixed $operator = null, mixed $value = null, string $bool = 'and')
  * @method static Cart|null find($input)
+ * @method static Collection firstOrFail($columns = ['*'])
+ * @package Domain\Carts\Models
  * @property Client $client
  * @property int $id
  * @property int $luhn
