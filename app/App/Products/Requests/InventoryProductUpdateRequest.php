@@ -18,11 +18,11 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Class ProductUpdateRequest
+ * Class InventoryProductUpdateRequest
  *
  * @package App\Products\Requests
  */
-class ProductUpdateRequest extends FormRequest
+class InventoryProductUpdateRequest extends FormRequest
 {
     public const RULES = [
         Manufacturer::MANUFACTURER => ['required'],

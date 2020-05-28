@@ -19,7 +19,7 @@ use Spatie\DataTransferObject\DataTransferObject;
  *
  * @package App\Products\DataTransferObject
  */
-class RawProductUpdateObject extends DataTransferObject
+class InventoryProductUpdateObject extends DataTransferObject
 {
     public array $values;
     public string $manufacturer;
@@ -28,9 +28,9 @@ class RawProductUpdateObject extends DataTransferObject
 
     /**
      * @param array $validated
-     * @return RawProductUpdateObject
+     * @return InventoryProductUpdateObject
      */
-    public static function fromRequest(array $validated): RawProductUpdateObject
+    public static function fromRequest(array $validated): InventoryProductUpdateObject
     {
         return new self(
             [

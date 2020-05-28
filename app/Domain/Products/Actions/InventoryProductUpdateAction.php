@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Domain\Products\Actions;
 
-use App\Products\DataTransferObject\RawProductUpdateObject;
+use App\Products\DataTransferObject\InventoryProductUpdateObject;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
@@ -19,14 +19,14 @@ use Domain\Products\Models\Type;
  *
  * @package Domain\Products\Actions
  */
-class RawProductUpdateAction
+class InventoryProductUpdateAction
 {
     /**
      * @param Product $product
-     * @param RawProductUpdateObject $rawProductUpdateObject
+     * @param InventoryProductUpdateObject $rawProductUpdateObject
      * @return Product
      */
-    public static function execute(Product $product, RawProductUpdateObject $rawProductUpdateObject): Product
+    public static function execute(Product $product, InventoryProductUpdateObject $rawProductUpdateObject): Product
     {
         $type = Type::where(Type::SLUG, $rawProductUpdateObject->type)->first();
         $manufacturer = Manufacturer::firstOrCreate([Manufacturer::NAME => $rawProductUpdateObject->manufacturer]);
@@ -41,10 +41,10 @@ class RawProductUpdateAction
 
     /**
      * @param Product $product
-     * @param RawProductUpdateObject $rawProductUpdateObject
+     * @param InventoryProductUpdateObject $rawProductUpdateObject
      * @return Product
      */
-    private static function updateProduct(Product $product, RawProductUpdateObject $rawProductUpdateObject): Product
+    private static function updateProduct(Product $product, InventoryProductUpdateObject $rawProductUpdateObject): Product
     {
         $product->model = $rawProductUpdateObject->model;
         $product->values = $rawProductUpdateObject->values;
