@@ -57,7 +57,7 @@
                 <a class="dropdown-item"
                    href="{{ route(\App\Products\Controllers\InventoryController::INDEX_NAME) }}">List Inventory</a>
                 <a class="dropdown-item"
-                   href="{{ route(\App\Types\Controllers\TypesController::CREATE_NAME) }}">Product Types</a>
+                   href="{{ route(\App\Types\Controllers\TypesController::CREATE_NAME) }}">Create and Edit Product Types</a>
               </div>
             </li>
           @endcan
