@@ -8,7 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Tdely\Luhn\Luhn;
+use App\Support\Luhn;
 
 class UpdateProductTable extends Migration
 {

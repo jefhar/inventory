@@ -17,7 +17,7 @@ use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
-use Tdely\Luhn\Luhn;
+use App\Support\Luhn;
 use Tests\TestCase;
 use Tests\Traits\FullUsers;
 
