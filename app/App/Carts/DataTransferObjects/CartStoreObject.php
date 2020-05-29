@@ -34,7 +34,7 @@ class CartStoreObject extends DataTransferObject
         return new self(
             [
                 self::CLIENT_COMPANY_NAME => $validated[CartStoreRequest::CLIENT_COMPANY_NAME],
-                self::PRODUCT_ID => Luhn::unLuhn($validated[CartStoreRequest::PRODUCT_ID]),
+                self::PRODUCT_ID => Luhn::unLuhn((int)$validated[CartStoreRequest::PRODUCT_ID]),
             ]
         );
     }
