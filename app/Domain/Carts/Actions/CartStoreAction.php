@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Domain\Carts\Actions;
 
 use App\Carts\DataTransferObjects\CartStoreObject;
+use App\User;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
@@ -30,12 +31,13 @@ class CartStoreAction
      */
     public static function execute(CartStoreObject $cartStoreObject): Cart
     {
+        /** @var User $user */
         $user = Auth::user();
         $cart = new Cart();
         $product = Product::findOrFail($cartStoreObject->product_id);
         $product->status = Product::STATUS_IN_CART;
         $product->save();
-        $client = Client::firstOrCreate([Client::COMPANY_NAME => $cartStoreObject->company_name]);
+        $client = Client::firstOrCreate([Client::COMPANY_NAME => $cartStoreObject->client_company_name]);
 
         $cart->client()->associate($client);
         $user->carts()->save($cart);

@@ -25,6 +25,7 @@ use Illuminate\Support\Collection;
  *
  * @method Cart first(array|string $columns = ['*'])
  * @method Collection get(array|string $columns = ['*'])
+ * @method Collection orderBy($column, $direction = 'asc')
  * @method static Cart findOrFail(mixed $id, array $columns = ['*'])
  * @method static Cart where(string|array $column, mixed $operator = null, mixed $value = null, string $bool = 'and')
  * @method static Cart|null find($input)
@@ -41,17 +42,18 @@ class Cart extends Model
     use SoftDeletes;
 
     public const CLIENT_ID = 'client_id';
+    public const CLIENT_COMPANY_NAME = 'client_name';
     public const ID = 'id';
     public const LUHN = 'luhn';
     public const STATUS = 'status';
+    public const STATUS_INVOICED = 'invoiced';
+    public const STATUS_OPEN = 'open';
+    public const STATUS_VOID = 'void';
     public const STATUSES = [
         self::STATUS_INVOICED,
         self::STATUS_VOID,
         self::STATUS_OPEN,
     ];
-    public const STATUS_INVOICED = 'invoiced';
-    public const STATUS_OPEN = 'open';
-    public const STATUS_VOID = 'void';
     public const TABLE = 'carts';
     public const USER_ID = 'user_id';
 

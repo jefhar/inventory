@@ -12,6 +12,9 @@ use App\Admin\Exceptions\InvalidAction;
 use App\Admin\Permissions\UserRoles;
 use App\Carts\DataTransferObjects\CartPatchObject;
 use App\Carts\DataTransferObjects\CartStoreObject;
+use App\Carts\Requests\CartPatchRequest;
+use App\Carts\Requests\CartStoreRequest;
+use App\Support\Luhn;
 use App\User;
 use Domain\Carts\Actions\CartDestroyAction;
 use Domain\Carts\Actions\CartPatchAction;
@@ -20,7 +23,6 @@ use Domain\Carts\CartInvoiced;
 use Domain\Carts\Events\CartCreated;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
-use Domain\WorkOrders\Models\Client;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Event;
@@ -62,13 +64,12 @@ class CartTest extends TestCase
     public function createdCartReturnsCompanyName(): void
     {
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
-        /** @var Client $client */
-        $client = factory(Client::class)->create();
+        $client = $this->createFullClient();
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                CartStore::PRODUCT_ID => $product->id,
-                CartStore::COMPANY_NAME => $client->company_name,
+                CartStoreRequest::PRODUCT_ID => $product->luhn,
+                CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
@@ -80,7 +81,7 @@ class CartTest extends TestCase
      */
     public function cartCreatesItsOwnLuhn(): void
     {
-        /** \Domain\Carts\Models\Cart $cart */
+        /** @var Cart $cart */
         $cart = factory(Cart::class)->make();
         $this->assertArrayNotHasKey(Cart::LUHN, $cart->toArray());
         $cart->save();
@@ -100,7 +101,7 @@ class CartTest extends TestCase
     {
         /** @var User $user */
         $user = factory(User::class)->create();
-        $cart = factory(Cart::class)->make();
+        $cart = $this->makeFullCart();
         $user->carts()->save($cart);
         $this->assertDatabaseHas(
             Cart::TABLE,
@@ -121,9 +122,9 @@ class CartTest extends TestCase
     {
         /** @var User $user */
         $user = factory(User::class)->create();
+        /** @var Cart $cart */
         $cart = factory(Cart::class)->make();
-        /** @var Client $client */
-        $client = factory(Client::class)->create();
+        $client = $this->createFullClient();
         $user->carts()->save($cart);
         $client->carts()->save($cart);
         $this->assertDatabaseHas(
@@ -140,13 +141,12 @@ class CartTest extends TestCase
      */
     public function canCreateCart(): void
     {
-        /** @var Client $client */
-        $client = factory(Client::class)->create();
+        $client = $this->createFullClient();
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                CartStore::PRODUCT_ID => $product->id,
-                CartStore::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->luhn,
+                CartStore::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
@@ -175,13 +175,12 @@ class CartTest extends TestCase
     public function canDestroyOwnCart(): void
     {
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
-        /** @var Client $client */
-        $client = factory(Client::class)->create();
+        $client = $this->createFullClient();
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                CartStore::PRODUCT_ID => $product->id,
-                CartStore::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->luhn,
+                CartStore::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
@@ -220,22 +219,21 @@ class CartTest extends TestCase
      */
     public function cannotDestroySomeoneElsesCart(): void
     {
+        $this->expectException(AuthorizationException::class);
+
         $myCartUser = $this->createEmployee(UserRoles::SALES_REP);
         $notMyCartUser = $this->createEmployee(UserRoles::SALES_REP);
-        /** @var Client $client */
-        $client = factory(Client::class)->create();
+        $client = $this->createFullClient();
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                CartStore::PRODUCT_ID => $product->id,
-                CartStore::COMPANY_NAME => $client->company_name,
+                CartStore::PRODUCT_ID => $product->luhn,
+                CartStore::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
         $this->actingAs($myCartUser);
         $savedCart = CartStoreAction::execute($cartStoreObject);
-
         $this->actingAs($notMyCartUser);
-        $this->expectException(AuthorizationException::class);
         CartDestroyAction::execute($savedCart);
     }
 
@@ -252,7 +250,7 @@ class CartTest extends TestCase
         $this->actingAs($salesRep);
         $cartPatchObject = CartPatchObject::fromRequest(
             [
-                Cart::STATUS => Cart::STATUS_VOID,
+                CartPatchRequest::STATUS => Cart::STATUS_VOID,
             ]
         );
         CartPatchAction::execute($cart, $cartPatchObject);
@@ -272,13 +270,12 @@ class CartTest extends TestCase
     public function addingToCartUpdatesProductStatus(): void
     {
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
-        /** @var Client $client */
-        $client = factory(Client::class)->create();
+        $client = $this->createFullClient();
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                CartStore::PRODUCT_ID => $product->id,
-                CartStore::COMPANY_NAME => $client->company_name,
+                CartStoreRequest::PRODUCT_ID => $product->luhn,
+                CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
         CartStoreAction::execute($cartStoreObject);
@@ -292,14 +289,14 @@ class CartTest extends TestCase
     public function productMustExistBeforeBeingAddedToACartOrItThrowsException(): void
     {
         $this->expectException(ModelNotFoundException::class);
+
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
-        /** @var Client $client */
-        $client = factory(Client::class)->create();
+        $client = $this->createFullClient();
 
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                CartStore::PRODUCT_ID => 1,
-                CartStore::COMPANY_NAME => $client->company_name,
+                CartStoreRequest::PRODUCT_ID => Luhn::create(1),
+                CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
         CartStoreAction::execute($cartStoreObject);
@@ -318,11 +315,12 @@ class CartTest extends TestCase
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                CartStore::PRODUCT_ID => $product->id,
-                CartStore::COMPANY_NAME => $client->company_name,
+                CartStoreRequest::PRODUCT_ID => $product->luhn,
+                CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
+
         $this->assertDatabaseHas(
             Cart::TABLE,
             [
@@ -332,7 +330,10 @@ class CartTest extends TestCase
         );
 
         // Test
-        $cart = CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
+        $cart = CartPatchAction::execute(
+            $cart,
+            CartPatchObject::fromRequest([CartPatchRequest::STATUS => Cart::STATUS_INVOICED])
+        );
         $this->assertEquals(Cart::STATUS_INVOICED, $cart->status);
         $this->assertDatabaseHas(
             Cart::TABLE,
@@ -355,12 +356,12 @@ class CartTest extends TestCase
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                CartStore::PRODUCT_ID => $product->id,
-                CartStore::COMPANY_NAME => $client->company_name,
+                CartStoreRequest::PRODUCT_ID => $product->luhn,
+                CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
-        CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
+        CartPatchAction::execute($cart, CartPatchObject::fromRequest([CartPatchRequest::STATUS => Cart::STATUS_INVOICED]));
         $product->refresh();
         $this->assertEquals(Product::STATUS_INVOICED, $product->status);
         $this->assertDatabaseHas(
@@ -380,16 +381,16 @@ class CartTest extends TestCase
     {
         $this->expectException(InvalidAction::class);
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
-        $client = factory(Client::class)->create();
+        $client = $this->createFullClient();
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                CartStore::PRODUCT_ID => $product->id,
-                CartStore::COMPANY_NAME => $client->company_name,
+                CartStoreRequest::PRODUCT_ID => $product->luhn,
+                CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
-        CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => 'flarp']));
+        CartPatchAction::execute($cart, CartPatchObject::fromRequest([CartPatchRequest::STATUS => 'flarp']));
     }
 
     /**
@@ -407,13 +408,13 @@ class CartTest extends TestCase
         $product = $this->createFullProduct();
         $cartStoreObject = CartStoreObject::fromRequest(
             [
-                CartStore::PRODUCT_ID => $product->id,
-                CartStore::COMPANY_NAME => $client->company_name,
+                CartStoreRequest::PRODUCT_ID => $product->luhn,
+                CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
 
-        CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
+        CartPatchAction::execute($cart, CartPatchObject::fromRequest([CartPatchRequest::STATUS => Cart::STATUS_INVOICED]));
         $cart->refresh();
 
         Mail::assertQueued(

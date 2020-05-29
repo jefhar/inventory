@@ -9,7 +9,8 @@ declare(strict_types=1);
 
 namespace App\Carts\DataTransferObjects;
 
-use Domain\WorkOrders\Models\Client;
+use App\Carts\Requests\CartStoreRequest;
+use App\Support\Luhn;
 use Spatie\DataTransferObject\DataTransferObject;
 
 /**
@@ -19,8 +20,10 @@ use Spatie\DataTransferObject\DataTransferObject;
  */
 class CartStoreObject extends DataTransferObject
 {
+    public const CLIENT_COMPANY_NAME = 'client_company_name';
+    public const PRODUCT_ID = 'product_id';
     public int $product_id;
-    public string $company_name;
+    public string $client_company_name;
 
     /**
      * @param array $validated
@@ -30,8 +33,8 @@ class CartStoreObject extends DataTransferObject
     {
         return new self(
             [
-                'product_id' => (int)$validated['product_id'],
-                Client::COMPANY_NAME => $validated[Client::COMPANY_NAME],
+                self::CLIENT_COMPANY_NAME => $validated[CartStoreRequest::CLIENT_COMPANY_NAME],
+                self::PRODUCT_ID => Luhn::unLuhn($validated[CartStoreRequest::PRODUCT_ID]),
             ]
         );
     }

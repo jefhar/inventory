@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Domain\Carts\Actions;
 
 use App\Admin\Exceptions\InvalidAction;
-use App\Carts\DataTransferObjects\CartInvoicedAction;
 use App\Carts\DataTransferObjects\CartPatchObject;
 use Domain\Carts\Models\Cart;
 

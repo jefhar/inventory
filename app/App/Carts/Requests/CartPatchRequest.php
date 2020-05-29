@@ -15,11 +15,13 @@ use Illuminate\Validation\Rule;
 
 class CartPatchRequest extends FormRequest
 {
+    public const STATUS = 'status';
+
     public function rules(): array
     {
         return
             [
-                Cart::STATUS => [
+                self::STATUS => [
                     'required',
                     Rule::in(Cart::STATUSES),
                 ],

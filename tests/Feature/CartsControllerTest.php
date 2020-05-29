@@ -11,12 +11,14 @@ namespace Tests\Feature;
 use App\Admin\Permissions\UserRoles;
 use App\Carts\Controllers\CartsController;
 use App\Carts\DataTransferObjects\CartPatchObject;
+use App\Carts\Requests\CartPatchRequest;
+use App\Carts\Requests\CartStoreRequest;
+use App\Carts\Resources\CartResource;
 use App\Products\Controllers\InventoryController;
+use App\Support\Luhn;
 use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
-use Domain\WorkOrders\Models\Client;
-use Domain\WorkOrders\Models\Person;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -44,18 +46,16 @@ class CartsControllerTest extends TestCase
             ->post(
                 route(CartsController::STORE_NAME),
                 [
-                    'product_id' => $product->id,
-                    Client::COMPANY_NAME => $cart->client->company_name,
-                    Person::FIRST_NAME => $cart->client->person->first_name,
+                    CartStoreRequest::PRODUCT_ID => $product->luhn,
+                    CartStoreRequest::CLIENT_COMPANY_NAME => $cart->client->company_name,
+                    CartStoreRequest::FIRST_NAME => $cart->client->person->first_name,
                 ]
             )
             ->assertCreated()
             ->assertJson(
                 [
-                    Cart::ID => 1,
-                    'client' => [
-                        Client::COMPANY_NAME => $cart->client->company_name,
-                    ],
+                    CartResource::CLIENT_COMPANY_NAME => $cart->client->company_name,
+                    CartResource::CART_ID => Luhn::create(1),
                 ]
             );
     }
@@ -138,9 +138,9 @@ class CartsControllerTest extends TestCase
         $this->post(
             route(CartsController::STORE_NAME),
             [
-                'product_id' => $product->id,
-                Client::COMPANY_NAME => $cart->client->company_name,
-                Person::FIRST_NAME => $cart->client->person->first_name,
+                CartStoreRequest::PRODUCT_ID => $product->luhn,
+                CartStoreRequest::CLIENT_COMPANY_NAME => $cart->client->company_name,
+                CartStoreRequest::FIRST_NAME => $cart->client->person->first_name,
             ]
         );
 
@@ -198,16 +198,11 @@ class CartsControllerTest extends TestCase
         $this
             ->patch(
                 route(CartsController::UPDATE_NAME, $voidingCart),
-                [Cart::STATUS => Cart::STATUS_VOID]
+                [CartPatchRequest::STATUS => Cart::STATUS_VOID]
             )
             ->assertOk()
-            ->assertJson(
-                [
-                    Cart::ID => $voidingCart->id,
-                    Cart::STATUS => Cart::STATUS_VOID,
-
-                ]
-            );
+            ->assertJson([CartResource::CART_ID => $voidingCart->luhn])
+            ->assertJson([CartResource::STATUS => Cart::STATUS_VOID]);
 
         $invoicingCart = $this->makeFullCart();
         $salesRep->carts()->save($invoicingCart);
@@ -221,16 +216,12 @@ class CartsControllerTest extends TestCase
 
         $response = $this->patch(
             route(CartsController::UPDATE_NAME, $invoicingCart),
-            [Cart::STATUS => Cart::STATUS_INVOICED]
+            [CartPatchRequest::STATUS => Cart::STATUS_INVOICED]
         );
 
         $response->assertOk()
-            ->assertJson(
-                [
-                    Cart::ID => $invoicingCart->id,
-                    Cart::STATUS => Cart::STATUS_INVOICED,
-                ]
-            );
+            ->assertJson([CartResource::CART_ID => $invoicingCart->luhn])
+            ->assertJson([CartResource::STATUS => Cart::STATUS_INVOICED]);
     }
 
     /**
@@ -331,7 +322,12 @@ class CartsControllerTest extends TestCase
         $cart = $this->makeFullCart();
         $salesRep->carts()->save($cart);
         $cart->products()->saveMany($products);
-        CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
+        CartPatchAction::execute(
+            $cart,
+            CartPatchObject::fromRequest(
+                [CartPatchRequest::STATUS => Cart::STATUS_INVOICED]
+            )
+        );
 
         $response = $this
             ->actingAs($salesRep)
@@ -366,7 +362,12 @@ class CartsControllerTest extends TestCase
         $cart = $this->makeFullCart();
         $salesRep->carts()->save($cart);
         $cart->products()->saveMany($products);
-        CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_VOID]));
+        CartPatchAction::execute(
+            $cart,
+            CartPatchObject::fromRequest(
+                [CartPatchRequest::STATUS => Cart::STATUS_VOID]
+            )
+        );
 
         $response = $this
             ->actingAs($salesRep)

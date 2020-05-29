@@ -11,7 +11,7 @@ namespace Support\Requests;
 
 class CartStore
 {
-
     public const PRODUCT_ID = 'product_id';
-    public const COMPANY_NAME = 'company_name';
+    public const CLIENT_COMPANY_NAME = 'client_company_name';
+    public const PRODUCT_LUHN = 'product_luhn';
 }

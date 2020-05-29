@@ -11,7 +11,6 @@ namespace App\Carts\Requests;
 
 use Domain\Products\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
-use Support\Requests\CartStore;
 
 /**
  * Class CartStoreRequest
@@ -20,10 +19,15 @@ use Support\Requests\CartStore;
  */
 class CartStoreRequest extends FormRequest
 {
+    public const CLIENT_COMPANY_NAME = 'client_company_name';
+    public const FIRST_NAME = 'first_name';
+    public const PRODUCT_ID = 'product_id';
+
     private const RULES = [
-        CartStore::PRODUCT_ID => ['required', 'exists:' . Product::TABLE . ',' . Product::ID],
-        CartStore::COMPANY_NAME => ['required'],
+        self::PRODUCT_ID => ['required', 'exists:' . Product::TABLE . ',' . Product::LUHN],
+        self::CLIENT_COMPANY_NAME => ['required'],
     ];
+
 
     /**
      * @return array
