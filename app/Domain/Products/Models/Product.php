@@ -15,7 +15,6 @@ use Domain\Products\Events\ProductSaved;
 use Domain\WorkOrders\Models\WorkOrder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
@@ -30,7 +29,7 @@ use Illuminate\Support\Collection;
  * @method static Builder whereIn(string $ID, Collection $product_ids)
  * @method static Collection firstOrFail($columns = ['*'])
  * @method static LengthAwarePaginator paginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null)
- * @method static Model|EloquentCollection|static[]|static|null find(int $int)
+ * @method static Product|null find(int $int)
  * @method static Product findOrFail(mixed $id, array $columns = ['*'])
  * @method static Product where($column, $operator = null, $value = null, $boolean = 'and')
  * @property array $values

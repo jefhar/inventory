@@ -13,6 +13,7 @@ use App\Carts\Controllers\PendingSalesController;
 use App\Carts\DataTransferObjects\CartStoreObject;
 use App\Carts\Requests\CartStoreRequest;
 use App\Carts\Requests\PendingSalesStoreRequest;
+use App\Carts\Resources\ProductResource;
 use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
@@ -54,8 +55,8 @@ class PendingSalesControllerTest extends TestCase
             ->assertCreated()
             ->assertJson(
                 [
-                    Product::CART_ID => $cart->id,
-                    Product::ID => $product->id,
+                    ProductResource::CART_ID => $cart->luhn,
+                    ProductResource::PRODUCT_ID => $product->luhn,
                 ]
             );
     }
@@ -158,8 +159,8 @@ class PendingSalesControllerTest extends TestCase
             ->assertCreated()
             ->assertJson(
                 [
-                    Product::CART_ID => $cart->id,
-                    Product::ID => $product->id,
+                    ProductResource::CART_ID => $cart->luhn,
+                    ProductResource::PRODUCT_ID => $product->luhn,
                 ]
             );
 
@@ -203,12 +204,8 @@ class PendingSalesControllerTest extends TestCase
             ]
         )->assertJson(
             [
-                'cart_id' => $cart->id,
-                'cart' => [
-                    'client' => [
-                        Client::COMPANY_NAME => $client->company_name,
-                    ],
-                ],
+                ProductResource::CART_ID => $cart->luhn,
+                ProductResource::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
     }

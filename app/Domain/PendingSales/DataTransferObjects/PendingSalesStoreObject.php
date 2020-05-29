@@ -23,8 +23,10 @@ class PendingSalesStoreObject extends DataTransferObject
     {
         return new self(
             [
-                PendingSalesStoreRequest::CART_ID => Luhn::unLuhn($validated[PendingSalesStoreRequest::CART_ID]),
-                PendingSalesStoreRequest::PRODUCT_ID => Luhn::unLuhn($validated[PendingSalesStoreRequest::PRODUCT_ID]),
+                PendingSalesStoreRequest::CART_ID => Luhn::unLuhn((int)$validated[PendingSalesStoreRequest::CART_ID]),
+                PendingSalesStoreRequest::PRODUCT_ID => Luhn::unLuhn(
+                    (int)$validated[PendingSalesStoreRequest::PRODUCT_ID]
+                ),
             ]
         );
     }
