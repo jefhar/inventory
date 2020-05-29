@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
+use App\Support\Luhn;
 use App\User;
 use App\WorkOrders\Controllers\WorkOrdersController;
 use App\WorkOrders\Requests\WorkOrderStoreRequest;
@@ -20,7 +21,6 @@ use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
-use App\Support\Luhn;
 use Tests\TestCase;
 use Tests\Traits\FullUsers;
 
@@ -308,7 +308,7 @@ class WorkOrdersControllerTest extends TestCase
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [WorkOrderUpdateRequest::CLIENT_COMPANY_NAME => $newClient->company_name,]
             )
-            ->assertDontSee( WorkOrderResource::EMAIL)
+            ->assertDontSee(WorkOrderResource::EMAIL)
             ->assertDontSee(WorkOrderResource::FIRST_NAME)
             ->assertDontSee(WorkOrderResource::LAST_NAME)
             ->assertDontSee(WorkOrderResource::PHONE_NUMBER)
