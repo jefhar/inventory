@@ -30,6 +30,5 @@ class AppServiceProvider extends ServiceProvider
 
         // Remove wrapping from JsonResources:
         JsonResource::withoutWrapping();
-
     }
 }

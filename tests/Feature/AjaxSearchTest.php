@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\AjaxSearch\Controllers\AjaxSearchController;
+use App\AjaxSearch\Requests\AjaxSearchRequest;
+use App\AjaxSearch\Resources\AjaxSearchCollectionResource;
 use App\Products\DataTransferObject\ProductStoreObject;
 use Domain\Products\Actions\ProductStoreAction;
 use Domain\Products\Models\Product;
@@ -35,7 +37,12 @@ class AjaxSearchTest extends TestCase
      */
     public function anonymousOrUnauthorizedIsUnauthorized(): void
     {
-        $this->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))
+        $this->get(
+            route(
+                AjaxSearchController::SHOW_NAME,
+                [AjaxSearchRequest::FIELD => AjaxSearchRequest::SEARCH_COMPANY_NAME]
+            )
+        )
             ->assertRedirect('/login');
     }
 
@@ -45,7 +52,15 @@ class AjaxSearchTest extends TestCase
     public function authorizedIsOk(): void
     {
         $this->actingAs($this->createEmployee())
-            ->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))
+            ->get(
+                route(
+                    AjaxSearchController::SHOW_NAME,
+                    [
+                        AjaxSearchRequest::FIELD => AjaxSearchRequest::SEARCH_COMPANY_NAME,
+                        AjaxSearchRequest::Q => 'a',
+                    ]
+                )
+            )
             ->assertOk();
     }
 
@@ -55,17 +70,28 @@ class AjaxSearchTest extends TestCase
     public function knownFieldIsOk(): void
     {
         $this->actingAs($this->createEmployee())
-            ->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))
+            ->get(
+                route(
+                    AjaxSearchController::SHOW_NAME,
+                    [
+                        AjaxSearchRequest::FIELD => AjaxSearchRequest::SEARCH_COMPANY_NAME,
+                        AjaxSearchRequest::Q => 'foo',
+                    ]
+                )
+            )
             ->assertOk();
     }
 
     /**
      * @test
      */
-    public function unknownFieldIsBad(): void
+    public function unknownFieldIsNotAcceptable(): void
     {
         $this->actingAs($this->createEmployee())
-            ->get(route(AjaxSearchController::SHOW_NAME, ['field' => 'flarp']))
+            ->get(route(AjaxSearchController::SHOW_NAME, [
+                AjaxSearchRequest::FIELD => 'flarp',
+                AjaxSearchRequest::Q => 'q'
+            ]))
             ->assertStatus(Response::HTTP_NOT_ACCEPTABLE);
     }
 
@@ -96,12 +122,19 @@ class AjaxSearchTest extends TestCase
         $redHerringClient->person()->save($red_herring_person);
 
         $this->actingAs($this->createEmployee())
-            ->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME, 'q' => 'J']))
-            ->assertJsonFragment(
+            ->get(
+                route(
+                    AjaxSearchController::SHOW_NAME,
+                    [
+                        AjaxSearchRequest::FIELD => AjaxSearchRequest::SEARCH_COMPANY_NAME,
+                        AjaxSearchRequest::Q => 'J',
+                    ]
+                )
+            )->assertJsonFragment(
                 [
-                    Client::COMPANY_NAME => $client->company_name,
-                    Person::FIRST_NAME => $client->person->first_name,
-                    Person::LAST_NAME => $client->person->last_name,
+                    AjaxSearchCollectionResource::CLIENT_COMPANY_NAME => $client->company_name,
+                    AjaxSearchCollectionResource::CLIENT_FIRST_NAME => $client->person->first_name,
+                    AjaxSearchCollectionResource::CLIENT_LAST_NAME => $client->person->last_name,
                 ]
             );
     }

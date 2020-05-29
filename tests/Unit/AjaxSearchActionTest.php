@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\AjaxSearch\DataTransferObjects\AjaxSearchObject;
+use App\AjaxSearch\Requests\AjaxSearchRequest;
 use Domain\AjaxSearch\Actions\AjaxSearchAction;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
@@ -58,8 +60,9 @@ class AjaxSearchActionTest extends TestCase
         $client->save();
         $client->person()->save($person);
 
-        $options = AjaxSearchAction::findBy(Client::COMPANY_NAME, 'J');
-        // dd($options->pluck(Client::COMPANY_NAME));
+        $options = AjaxSearchAction::findBy(
+            AjaxSearchObject::fromRequest(AjaxSearchRequest::SEARCH_COMPANY_NAME, ['q' => 'j'])
+        );
 
         $this->assertContains($companyName, $options->pluck(Client::COMPANY_NAME));
     }
@@ -100,7 +103,12 @@ class AjaxSearchActionTest extends TestCase
         factory(Manufacturer::class, 50)->create();
         /** @var Manufacturer $manufacturer */
         $manufacturer = factory(Manufacturer::class)->create();
-        $options = AjaxSearchAction::findBy('manufacturer', substr($manufacturer->name, 0, 2));
+        $options = AjaxSearchAction::findBy(
+            AjaxSearchObject::fromRequest(
+                AjaxSearchRequest::SEARCH_MANUFACTURER,
+                ['q' => substr($manufacturer->name, 0, 2)]
+            )
+        );
         $this->assertStringContainsString($manufacturer->name, $options->toJson());
     }
 
@@ -115,7 +123,12 @@ class AjaxSearchActionTest extends TestCase
         /** @var Product $product */
         $product = factory(Product::class)->create([Product::WORK_ORDER_ID => $workOrder->id]);
 
-        $options = AjaxSearchAction::findBy(Product::MODEL, substr($product->model, 0, 2));
+        $options = AjaxSearchAction::findBy(
+            AjaxSearchObject::fromRequest(
+                AjaxSearchRequest::SEARCH_MODEL,
+                ['q' => substr($product->model, 0, 2)]
+            )
+        );
         $this->assertStringContainsString($product->model, $options->toJson());
     }
 }
