@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Products\DataTransferObject\TypeStoreObject;
+use App\Types\Requests\TypeStoreRequest;
 use Domain\Products\Actions\TypeStoreAction;
 use Domain\Products\Models\Type;
 use Illuminate\Support\Str;
@@ -40,21 +41,22 @@ class TypesTest extends TestCase
      */
     public function canSaveNewType(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->make();
 
         $typeStoreObject = TypeStoreObject::fromRequest(
             [
-                Type::NAME => $type->name,
-                Type::FORM => $type->form,
+                TypeStoreRequest::FORM => $type->form,
+                TypeStoreRequest::NAME => $type->name,
             ]
         );
         TypeStoreAction::execute($typeStoreObject);
         $this->assertDatabaseHas(
             Type::TABLE,
             [
+                Type::FORM => $type->form,
                 Type::NAME => Str::title($type->name),
                 Type::SLUG => Str::slug($type->name),
-                Type::FORM => $type->form,
             ]
         );
     }
@@ -72,15 +74,15 @@ class TypesTest extends TestCase
         array_pop($form);
         $form = json_encode($form, JSON_THROW_ON_ERROR, 512);
         $typeStoreObject = TypeStoreObject::fromRequest(
-            [Type::NAME => $type->name, Type::FORM => $form]
+            [TypeStoreRequest::NAME => $type->name, TypeStoreRequest::FORM => $form]
         );
         $updatedType = TypeStoreAction::execute($typeStoreObject);
         $this->assertDatabaseHas(
             Type::TABLE,
             [
+                Type::FORM => $updatedType->form,
                 Type::NAME => Str::title($updatedType->name),
                 Type::SLUG => Str::slug($updatedType->name),
-                Type::FORM => $updatedType->form,
             ]
         );
     }
@@ -91,12 +93,13 @@ class TypesTest extends TestCase
      */
     public function canSoftDeleteType(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->make();
 
         $typeStoreObject = TypeStoreObject::fromRequest(
             [
-                Type::NAME => $type->name,
-                Type::FORM => $type->form,
+                TypeStoreRequest::FORM => $type->form,
+                TypeStoreRequest::NAME => $type->name,
             ]
         );
         TypeStoreAction::execute($typeStoreObject);

@@ -15,6 +15,7 @@ use App\WorkOrders\DataTransferObjects\PersonObject;
 use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
 use App\WorkOrders\Requests\WorkOrderStoreRequest;
 use App\WorkOrders\Requests\WorkOrderUpdateRequest;
+use App\WorkOrders\Resources\WorkOrderResource;
 use Domain\Products\Models\Type;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
@@ -122,15 +123,16 @@ class WorkOrdersController extends Controller
      * Update the specified resource in storage.
      *
      * @param WorkOrderUpdateRequest $request
-     * @param WorkOrder $workorder
-     * @return JsonResponse
+     * @param WorkOrder $workOrder
+     * @return WorkOrderResource
      */
-    public function update(WorkOrderUpdateRequest $request, WorkOrder $workorder): JsonResponse
+    public function update(WorkOrderUpdateRequest $request, WorkOrder $workOrder): WorkOrderResource
     {
         $workOrderObject = WorkOrderUpdateObject::fromRequest($request->validated());
-        $workOrderAction = WorkOrdersUpdateAction::execute($workorder, $workOrderObject);
+        $workOrderAction = WorkOrdersUpdateAction::execute($workOrder, $workOrderObject);
 
-        return response()->json($workOrderAction);
+        return new WorkOrderResource($workOrderAction);
+        // return response()->json($workOrderAction);
     }
 
     /**

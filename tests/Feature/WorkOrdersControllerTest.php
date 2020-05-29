@@ -11,6 +11,9 @@ namespace Tests\Feature;
 use App\Admin\Permissions\UserRoles;
 use App\User;
 use App\WorkOrders\Controllers\WorkOrdersController;
+use App\WorkOrders\Requests\WorkOrderStoreRequest;
+use App\WorkOrders\Requests\WorkOrderUpdateRequest;
+use App\WorkOrders\Resources\WorkOrderResource;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
@@ -81,16 +84,15 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function technicianCanStoreWorkOrderWithCompanyNameOnly(): void
     {
-        $luhn = Luhn::create(1);
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->post(
                 route(WorkOrdersController::STORE_NAME),
-                [Client::COMPANY_NAME => self::COMPANY_NAME]
+                [WorkOrderStoreRequest::CLIENT_COMPANY_NAME => self::COMPANY_NAME]
             )
             ->assertJson(['created' => true,])
             ->assertCreated()->assertHeader(
                 'Location',
-                url(route(WorkOrdersController::SHOW_NAME, ['workorder' => $luhn]))
+                url(route(WorkOrdersController::SHOW_NAME, ['workorder' => Luhn::create(1)]))
             );
 
         $this->assertDatabaseHas(
@@ -111,9 +113,9 @@ class WorkOrdersControllerTest extends TestCase
             ->post(
                 route(WorkOrdersController::STORE_NAME),
                 [
-                    Client::COMPANY_NAME => $company_name,
-                    Person::FIRST_NAME => $person->first_name,
-                    Person::LAST_NAME => $person->last_name,
+                    WorkOrderStoreRequest::CLIENT_COMPANY_NAME => $company_name,
+                    WorkOrderStoreRequest::CLIENT_FIRST_NAME => $person->first_name,
+                    WorkOrderStoreRequest::CLIENT_LAST_NAME => $person->last_name,
                 ]
             )
             ->assertCreated();
@@ -200,20 +202,20 @@ class WorkOrdersControllerTest extends TestCase
             ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, ['workorder' => $workOrder]),
-                [WorkOrder::IS_LOCKED => true]
+                [WorkOrderUpdateRequest::IS_LOCKED => true]
             )->assertJson(
                 [
-                    WorkOrder::ID => $workOrder->luhn,
-                    WorkOrder::IS_LOCKED => true,
+                    WorkOrderResource::ID => $workOrder->luhn,
+                    WorkOrderResource::IS_LOCKED => true,
                 ]
             )->assertJsonMissing(
                 [
-                    Client::COMPANY_NAME => '',
-                    Person::EMAIL => '',
-                    Person::FIRST_NAME => '',
-                    Person::LAST_NAME => '',
-                    Person::PHONE_NUMBER => '',
-                    WorkOrder::INTAKE => '',
+                    WorkOrderResource::CLIENT_COMPANY_NAME => '',
+                    WorkOrderResource::EMAIL => '',
+                    WorkOrderResource::FIRST_NAME => '',
+                    WorkOrderResource::LAST_NAME => '',
+                    WorkOrderResource::PHONE_NUMBER => '',
+                    WorkOrderResource::INTAKE => '',
                 ]
             )
             ->assertOk();
@@ -229,11 +231,11 @@ class WorkOrdersControllerTest extends TestCase
             ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, ['workorder' => $workOrder]),
-                [WorkOrder::IS_LOCKED => false]
+                [WorkOrderUpdateRequest::IS_LOCKED => false]
             )->assertJson(
                 [
-                    WorkOrder::ID => $workOrder->luhn,
-                    WorkOrder::IS_LOCKED => false,
+                    WorkOrderResource::ID => $workOrder->luhn,
+                    WorkOrderResource::IS_LOCKED => false,
                 ]
             )->assertOk();
         $this->assertDatabaseHas(
@@ -256,7 +258,7 @@ class WorkOrdersControllerTest extends TestCase
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
-                    Client::COMPANY_NAME => $newClient->company_name,
+                    WorkOrderResource::CLIENT_COMPANY_NAME => $newClient->company_name,
                 ]
             )->assertOk();
         $this->assertDatabaseHas(
@@ -278,16 +280,16 @@ class WorkOrdersControllerTest extends TestCase
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
-                    Client::COMPANY_NAME => $newClient->company_name,
+                    WorkOrderUpdateRequest::CLIENT_COMPANY_NAME => $newClient->company_name,
                 ]
             )
-            ->assertDontSee(Person::EMAIL)
-            ->assertDontSee(Person::FIRST_NAME)
-            ->assertDontSee(Person::LAST_NAME)
-            ->assertDontSee(Person::PHONE_NUMBER)
-            ->assertDontSee(WorkOrder::INTAKE)
+            ->assertDontSee(WorkOrderResource::EMAIL)
+            ->assertDontSee(WorkOrderResource::FIRST_NAME)
+            ->assertDontSee(WorkOrderResource::LAST_NAME)
+            ->assertDontSee(WorkOrderResource::PHONE_NUMBER)
+            ->assertDontSee(WorkOrderResource::INTAKE)
             ->assertOk()
-            ->assertSee(Client::COMPANY_NAME);
+            ->assertSee(WorkOrderResource::CLIENT_COMPANY_NAME);
     }
 
     /**
@@ -304,63 +306,63 @@ class WorkOrdersControllerTest extends TestCase
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
-                [Client::COMPANY_NAME => $newClient->company_name,]
+                [WorkOrderUpdateRequest::CLIENT_COMPANY_NAME => $newClient->company_name,]
             )
-            ->assertDontSee(Person::EMAIL)
-            ->assertDontSee(Person::FIRST_NAME)
-            ->assertDontSee(Person::LAST_NAME)
-            ->assertDontSee(Person::PHONE_NUMBER)
-            ->assertDontSee(WorkOrder::INTAKE)
+            ->assertDontSee( WorkOrderResource::EMAIL)
+            ->assertDontSee(WorkOrderResource::FIRST_NAME)
+            ->assertDontSee(WorkOrderResource::LAST_NAME)
+            ->assertDontSee(WorkOrderResource::PHONE_NUMBER)
+            ->assertDontSee(WorkOrderResource::INTAKE)
             ->assertOk()
-            ->assertSee(Client::COMPANY_NAME);
+            ->assertSee(WorkOrderResource::CLIENT_COMPANY_NAME);
 
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
-                    Client::COMPANY_NAME => $newClient->company_name,
-                    Person::FIRST_NAME => $newPerson->first_name,
+                    WorkOrderUpdateRequest::CLIENT_COMPANY_NAME => $newClient->company_name,
+                    WorkOrderUpdateRequest::FIRST_NAME => $newPerson->first_name,
                 ]
             )
-            ->assertDontSee(Person::EMAIL)
-            ->assertDontSee(Person::LAST_NAME)
-            ->assertDontSee(Person::PHONE_NUMBER)
-            ->assertDontSee(WorkOrder::INTAKE)
+            ->assertDontSee(WorkOrderResource::EMAIL)
+            ->assertDontSee(WorkOrderResource::LAST_NAME)
+            ->assertDontSee(WorkOrderResource::PHONE_NUMBER)
+            ->assertDontSee(WorkOrderResource::INTAKE)
             ->assertOk()
-            ->assertSee(Client::COMPANY_NAME)
-            ->assertSee(Person::FIRST_NAME);
+            ->assertSee(WorkOrderResource::CLIENT_COMPANY_NAME)
+            ->assertSee(WorkOrderResource::FIRST_NAME);
 
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
-                    Client::COMPANY_NAME => $newClient->company_name,
-                    Person::LAST_NAME => $newPerson->last_name,
+                    WorkOrderUpdateRequest::CLIENT_COMPANY_NAME => $newClient->company_name,
+                    WorkOrderUpdateRequest::LAST_NAME => $newPerson->last_name,
                 ]
             )
-            ->assertDontSee(Person::EMAIL)
-            ->assertDontSee(Person::FIRST_NAME)
-            ->assertDontSee(Person::PHONE_NUMBER)
-            ->assertDontSee(WorkOrder::INTAKE)
+            ->assertDontSee(WorkOrderResource::EMAIL)
+            ->assertDontSee(WorkOrderResource::FIRST_NAME)
+            ->assertDontSee(WorkOrderResource::PHONE_NUMBER)
+            ->assertDontSee(WorkOrderResource::INTAKE)
             ->assertOk()
-            ->assertSee(Client::COMPANY_NAME)
-            ->assertSee(Person::LAST_NAME);
+            ->assertSee(WorkOrderResource::CLIENT_COMPANY_NAME)
+            ->assertSee(WorkOrderResource::LAST_NAME);
 
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),
                 [
-                    Person::EMAIL => $newPerson->email,
-                    Person::PHONE_NUMBER => $newClient->company_name,
-                    WorkOrder::INTAKE => $faker->text(),
+                    WorkOrderUpdateRequest::EMAIL => $newPerson->email,
+                    WorkOrderUpdateRequest::PHONE_NUMBER => $newClient->company_name,
+                    WorkOrderUpdateRequest::INTAKE => $faker->text(),
                 ]
             )
-            ->assertDontSee(Client::COMPANY_NAME)
-            ->assertDontSee(Person::FIRST_NAME)
-            ->assertDontSee(Person::LAST_NAME)
+            ->assertDontSee(WorkOrderResource::CLIENT_COMPANY_NAME)
+            ->assertDontSee(WorkOrderResource::FIRST_NAME)
+            ->assertDontSee(WorkOrderResource::LAST_NAME)
             ->assertOk()
-            ->assertSee(Person::EMAIL)
-            ->assertSee(Person::PHONE_NUMBER)
-            ->assertSee(WorkOrder::INTAKE);
+            ->assertSee(WorkOrderResource::EMAIL)
+            ->assertSee(WorkOrderResource::PHONE_NUMBER)
+            ->assertSee(WorkOrderResource::INTAKE);
     }
 }

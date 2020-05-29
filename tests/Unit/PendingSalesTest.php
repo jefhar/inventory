@@ -10,13 +10,13 @@ namespace Tests\Unit;
 
 use App\Admin\Permissions\UserRoles;
 use App\Carts\DataTransferObjects\CartStoreObject;
+use App\Carts\Requests\CartStoreRequest;
 use Domain\Carts\Actions\CartStoreAction;
 use Domain\PendingSales\Actions\PendingSalesDestroyAction;
 use Domain\PendingSales\Actions\PendingSalesStoreAction;
 use Domain\PendingSales\Actions\PricePatchAction;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
-use Support\Requests\CartStore;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
@@ -56,11 +56,12 @@ class PendingSalesTest extends TestCase
      */
     public function cannotCreatePendingSaleIfProductIsNotAvailable(): void
     {
+        $this->expectException(HttpException::class);
+
         $cart = $this->makeFullCart();
         $cart->save();
         $product = $this->createFullProduct();
         PendingSalesStoreAction::execute($cart, $product);
-        $this->expectException(HttpException::class);
         PendingSalesStoreAction::execute($cart, $product);
     }
 
@@ -77,8 +78,8 @@ class PendingSalesTest extends TestCase
         CartStoreAction::execute(
             CartStoreObject::fromRequest(
                 [
-                    CartStore::PRODUCT_ID => $product->id,
-                    CartStore::COMPANY_NAME => $client->company_name,
+                    CartStoreRequest::PRODUCT_ID => $product->luhn,
+                    CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
                 ]
             )
         );
@@ -107,12 +108,12 @@ class PendingSalesTest extends TestCase
         CartStoreAction::execute(
             CartStoreObject::fromRequest(
                 [
-                    CartStore::PRODUCT_ID => $product->id,
-                    CartStore::COMPANY_NAME => $client->company_name,
+                    CartStoreRequest::PRODUCT_ID => $product->luhn,
+                    CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
                 ]
             )
         );
-        // $product->refresh();    // this `$product` is STATUS_AVAILABLE.
+        // this `$product` is STATUS_AVAILABLE. Do not refresh().
         PendingSalesDestroyAction::execute($product);
     }
 

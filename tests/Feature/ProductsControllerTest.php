@@ -60,7 +60,7 @@ class ProductsControllerTest extends TestCase
             ->assertCreated()
             ->assertSee($manufacturerName)
             ->assertSee(Product::ID)
-            ->assertSee(Product::TYPE_ID)
+            ->assertSee(Product::TYPE)
             ->assertSee(Product::WORK_ORDER_ID);
 
         $this->assertDatabaseHas(

@@ -14,6 +14,7 @@ use App\Carts\Requests\PendingSalesStoreRequest;
 use Domain\Carts\Models\Cart;
 use Domain\PendingSales\Actions\PendingSalesDestroyAction;
 use Domain\PendingSales\Actions\PendingSalesStoreAction;
+use Domain\PendingSales\DataTransferObjects\PendingSalesStoreObject;
 use Domain\Products\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,13 +38,14 @@ class PendingSalesController extends Controller
      */
     public function store(PendingSalesStoreRequest $request): JsonResponse
     {
-        $product = Product::where(Product::LUHN, $request->input(Product::ID))->first();
-        $cart = Cart::where(Cart::LUHN, $request->input(Product::CART_ID))->first();
-
+        $pendingSalesStoreObject = PendingSalesStoreObject::fromRequest($request->validated());
+        $product = Product::find($pendingSalesStoreObject->product_id);
+        $cart = Cart::find($pendingSalesStoreObject->cart_id);
         if ($product->cart_id !== null) {
             abort(Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        // Need to figure out how to put a status in a resource response class.
         return
             response()->json(
                 PendingSalesStoreAction::execute(

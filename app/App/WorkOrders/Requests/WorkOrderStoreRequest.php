@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace App\WorkOrders\Requests;
 
 use Domain\WorkOrders\Models\Client;
-use Domain\WorkOrders\Models\Person;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -21,12 +20,17 @@ use Illuminate\Foundation\Http\FormRequest;
 class WorkOrderStoreRequest extends FormRequest
 {
     private const RULES = [
-        Client::COMPANY_NAME => ['required', 'string'],
-        Person::FIRST_NAME => ['string', 'nullable'],
-        Person::LAST_NAME => ['string', 'nullable'],
-        Person::PHONE_NUMBER => ['string', 'nullable', 'min:10', 'max:16'],
-        Person::EMAIL => ['string', 'nullable'],
+        self::CLIENT_COMPANY_NAME => ['required', 'string'],
+        self::CLIENT_FIRST_NAME => ['string', 'nullable'],
+        self::CLIENT_LAST_NAME => ['string', 'nullable'],
+        self::PHONE_NUMBER => ['string', 'nullable', 'min:10', 'max:16'],
+        self::EMAIL => ['string', 'nullable'],
     ];
+    public const CLIENT_COMPANY_NAME = 'client_company_name';
+    public const CLIENT_FIRST_NAME = 'first_name';
+    public const CLIENT_LAST_NAME = 'last_name';
+    public const EMAIL = 'email';
+    public const PHONE_NUMBER = 'phone_number';
 
     /**
      * Determine if the user is authorized to make this request.

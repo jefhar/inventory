@@ -11,7 +11,10 @@ namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
 use App\Carts\DataTransferObjects\CartPatchObject;
+use App\Carts\Requests\CartPatchRequest;
 use App\Products\Controllers\InventoryController;
+use App\Products\Requests\InventoryProductUpdateRequest;
+use App\Products\Resources\ProductResource;
 use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
@@ -114,10 +117,16 @@ class InventoryControllerTest extends TestCase
         $workOrder->products()->save($product);
         /** @var Product $update */
         $update = factory(Product::class)->make();
-        $this->patch(route(InventoryController::UPDATE_NAME, $product), [Product::MODEL => $update->model,])
+        $this->patch(
+            route(InventoryController::UPDATE_NAME, $product),
+            [InventoryProductUpdateRequest::MODEL => $update->model,]
+        )
             ->assertRedirect();
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
-            ->patch(route(InventoryController::UPDATE_NAME, $product), [Product::MODEL => $update->model,])
+            ->patch(
+                route(InventoryController::UPDATE_NAME, $product),
+                [InventoryProductUpdateRequest::MODEL => $update->model,]
+            )
             ->assertForbidden();
     }
 
@@ -138,16 +147,16 @@ class InventoryControllerTest extends TestCase
             ->patch(
                 route(InventoryController::UPDATE_NAME, $product),
                 [
-                    Product::MANUFACTURER_NAME => $update->manufacturer->name,
-                    Product::MODEL => $update->model,
-                    Product::TYPE => $update->type->slug,
-                    Product::VALUES => [],
+                    InventoryProductUpdateRequest::MANUFACTURER_NAME => $update->manufacturer->name,
+                    InventoryProductUpdateRequest::MODEL => $update->model,
+                    InventoryProductUpdateRequest::TYPE => $update->type->slug,
+                    InventoryProductUpdateRequest::VALUES => [],
                 ]
             )
             ->assertOk()
             ->assertJson(
                 [
-                    Product::MODEL => $update->model,
+                    ProductResource::MODEL => $update->model,
                 ]
             );
         $this->assertDatabaseHas(
@@ -325,7 +334,7 @@ class InventoryControllerTest extends TestCase
             $carts[4],
             CartPatchObject::fromRequest(
                 [
-                    Cart::STATUS => Cart::STATUS_INVOICED,
+                    CartPatchRequest::STATUS => Cart::STATUS_INVOICED,
                 ]
             )
         );
@@ -395,7 +404,7 @@ class InventoryControllerTest extends TestCase
             $carts[4],
             CartPatchObject::fromRequest(
                 [
-                    Cart::STATUS => Cart::STATUS_VOID,
+                    CartPatchRequest::STATUS => Cart::STATUS_VOID,
                 ]
             )
         );

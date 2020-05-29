@@ -9,28 +9,46 @@ declare(strict_types=1);
 
 namespace App\Products\Resources;
 
-use Domain\Products\Models\Product;
+use Carbon\Carbon;
+use Domain\Products\Models\Manufacturer;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property Carbon $created_at
+ * @property int $luhn
+ * @property Manufacturer $manufacturer
+ * @property string $model
+ * @property string $serial
+ * @property string $type
+ * @property mixed $workorder
+ */
 class ProductResource extends JsonResource
 {
+
+    public const CREATED_AT = 'created_at';
+    public const ID = 'product_id';
+    public const MANUFACTURER_NAME = 'manufacturer_name';
+    public const MODEL = 'model';
+    public const SERIAL = 'serial';
+    public const TYPE = 'type';
+    public const WORK_ORDER_ID = 'work_order_id';
 
     public function toArray($request): array
     {
         return [
-            Product::CREATED_AT => $this->created_at->format('Y-m-d H:i:s'),
-            Product::ID => $this->luhn,
-            Product::MANUFACTURER_NAME => $this->manufacturer->name,
-            Product::MODEL => $this->model,
-            Product::SERIAL => $this->serial,
-            Product::TYPE => $this->type,
+            self::CREATED_AT => $this->created_at->format('Y-m-d H:i:s'),
+            self::ID => $this->luhn,
+            self::MANUFACTURER_NAME => $this->manufacturer->name,
+            self::MODEL => $this->model,
+            self::SERIAL => $this->serial,
+            self::TYPE => $this->type,
+            self::WORK_ORDER_ID => $this->workorder->luhn,
 
-            // Product::PRICE => $this->price,
-            // Product::STATUS => $this->status,
-            // Product::TYPE_ID => $this->type_id,
-            // Product::UPDATED_AT => $this->updated_at->format('Y-m-d H:i:s'),
-            // Product::VALUES => $this->values,
-            // Product::WORK_ORDER_ID => $this->workorder->luhn,
+            // self::PRICE => $this->price,
+            // self::STATUS => $this->status,
+            // self::TYPE_ID => $this->type_id,
+            // self::UPDATED_AT => $this->updated_at->format('Y-m-d H:i:s'),
+            // self::VALUES => $this->values,
         ];
     }
 }

@@ -14,6 +14,9 @@ class Luhn extends \Tdely\Luhn\Luhn
 
     public static function unLuhn(int $luhn)
     {
-        return intdiv($luhn, 10);
+        if (static::isValid($luhn)) {
+            return intdiv($luhn, 10);
+        }
+        return -1;
     }
 }

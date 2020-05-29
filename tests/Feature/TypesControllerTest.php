@@ -11,6 +11,7 @@ namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
 use App\Types\Controllers\TypesController;
+use App\Types\Requests\TypeStoreRequest;
 use Domain\Products\Models\Type;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +32,7 @@ class TypesControllerTest extends TestCase
      */
     public function unauthorizedTypesControllerIsRedirected(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->create();
         $this
             ->get(route(TypesController::SHOW_NAME, $type->slug))
@@ -85,6 +87,7 @@ class TypesControllerTest extends TestCase
      */
     public function typeIndexApiExistsAndIsAccessible(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->create();
         $this->get(route(TypesController::INDEX_NAME))
             ->assertRedirect();
@@ -104,13 +107,13 @@ class TypesControllerTest extends TestCase
         $type = factory(Type::class)->make();
         $this->post(
             route(TypesController::STORE_NAME),
-            [Type::FORM => $type->form, Type::NAME => $type->name,]
+            [TypeStoreRequest::FORM => $type->form, TypeStoreRequest::NAME => $type->name,]
         )
             ->assertRedirect();
         $this->actingAs($this->createEmployee())
             ->post(
                 route(TypesController::STORE_NAME),
-                [Type::FORM => $type->form, Type::NAME => $type->name,]
+                [TypeStoreRequest::FORM => $type->form, TypeStoreRequest::NAME => $type->name,]
             )->assertCreated();
         $this->assertDatabaseHas(
             Type::TABLE,
@@ -153,14 +156,18 @@ class TypesControllerTest extends TestCase
         $this->actingAs($this->createEmployee())
             ->post(
                 route(TypesController::STORE_NAME),
-                [Type::NAME => $type->name, Type::FORM => $type->form, 'force' => false,]
+                [
+                    TypeStoreRequest::FORCE => false,
+                    TypeStoreRequest::FORM => $type->form,
+                    TypeStoreRequest::NAME => $type->name,
+                ]
             )
             ->assertStatus(Response::HTTP_ACCEPTED);
 
         $this->actingAs($this->createEmployee())
             ->post(
                 route(TypesController::STORE_NAME),
-                [Type::NAME => $type->name, Type::FORM => $type->form,]
+                [TypeStoreRequest::NAME => $type->name, TypeStoreRequest::FORM => $type->form,]
             )
             ->assertStatus(Response::HTTP_ACCEPTED);
     }
@@ -175,7 +182,11 @@ class TypesControllerTest extends TestCase
         $this->actingAs($this->createEmployee())
             ->post(
                 route(TypesController::STORE_NAME),
-                [Type::NAME => $type->name, Type::FORM => $type->form, 'force' => true,]
+                [
+                    TypeStoreRequest::FORCE => true,
+                    TypeStoreRequest::FORM => $type->form,
+                    TypeStoreRequest::NAME => $type->name,
+                ]
             )
             ->assertOk();
     }
