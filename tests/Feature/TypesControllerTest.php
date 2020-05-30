@@ -16,7 +16,7 @@ use Domain\Products\Models\Type;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
-use Tests\Traits\FullUsers;
+use Tests\Traits\FullObjects;
 
 /**
  * Class TypesControllerTest
@@ -25,7 +25,7 @@ use Tests\Traits\FullUsers;
  */
 class TypesControllerTest extends TestCase
 {
-    use FullUsers;
+    use FullObjects;
 
     /**
      * @test

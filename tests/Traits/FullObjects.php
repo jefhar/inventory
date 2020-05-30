@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Tests\Traits;
 
+use App\Admin\Permissions\UserRoles;
+use App\User;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
@@ -24,6 +26,7 @@ use Faker\Factory;
  */
 trait FullObjects
 {
+
     /**
      * @return Product
      */
@@ -65,6 +68,46 @@ trait FullObjects
         $client = factory(Client::class)->create();
         $client->person()->save($person);
         $client->save();
+
         return $client;
+    }
+
+    private function createFullWorkOrder(): WorkOrder
+    {
+        $faker = Factory::create();
+        $User = $this->createEmployee();
+        $Client = $this->createFullClient();
+        $Product = $this->createFullProduct();
+
+        $WorkOrder = new WorkOrder();
+        $WorkOrder->intake = $faker->sentence;
+
+        $WorkOrder->client()->associate($Client);
+        $WorkOrder->user()->associate($User);
+        $WorkOrder->products()->save($Product);
+        $WorkOrder->save();
+
+        return $WorkOrder;
+    }
+
+    /**
+     * @param string $userRole
+     * @return User
+     */
+    private function createEmployee(string $userRole = UserRoles::EMPLOYEE): User
+    {
+        $user = $this->makeUser();
+        $user->assignRole($userRole);
+        $user->save();
+
+        return $user;
+    }
+
+    /**
+     * @return User
+     */
+    private function makeUser(): User
+    {
+        return factory(User::class)->make();
     }
 }

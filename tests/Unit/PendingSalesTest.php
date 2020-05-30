@@ -20,7 +20,6 @@ use Domain\WorkOrders\Models\Client;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
-use Tests\Traits\FullUsers;
 
 /**
  * Class PendingSalesTest
@@ -30,7 +29,6 @@ use Tests\Traits\FullUsers;
 class PendingSalesTest extends TestCase
 {
     use FullObjects;
-    use FullUsers;
 
     /**
      * @test

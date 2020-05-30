@@ -30,7 +30,6 @@ use Illuminate\Support\Facades\Mail;
 use Support\Requests\CartStore;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
-use Tests\Traits\FullUsers;
 
 /**
  * Class CartTest
@@ -40,7 +39,6 @@ use Tests\Traits\FullUsers;
 class CartTest extends TestCase
 {
     use FullObjects;
-    use FullUsers;
 
     /**
      * @test
@@ -361,7 +359,10 @@ class CartTest extends TestCase
             ]
         );
         $cart = CartStoreAction::execute($cartStoreObject);
-        CartPatchAction::execute($cart, CartPatchObject::fromRequest([CartPatchRequest::STATUS => Cart::STATUS_INVOICED]));
+        CartPatchAction::execute(
+            $cart,
+            CartPatchObject::fromRequest([CartPatchRequest::STATUS => Cart::STATUS_INVOICED])
+        );
         $product->refresh();
         $this->assertEquals(Product::STATUS_INVOICED, $product->status);
         $this->assertDatabaseHas(
@@ -414,7 +415,10 @@ class CartTest extends TestCase
         );
         $cart = CartStoreAction::execute($cartStoreObject);
 
-        CartPatchAction::execute($cart, CartPatchObject::fromRequest([CartPatchRequest::STATUS => Cart::STATUS_INVOICED]));
+        CartPatchAction::execute(
+            $cart,
+            CartPatchObject::fromRequest([CartPatchRequest::STATUS => Cart::STATUS_INVOICED])
+        );
         $cart->refresh();
 
         Mail::assertQueued(

@@ -23,7 +23,6 @@ use Exception;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
-use Tests\Traits\FullUsers;
 
 /**
  * Class InventoryControllerTest
@@ -32,7 +31,6 @@ use Tests\Traits\FullUsers;
  */
 class InventoryControllerTest extends TestCase
 {
-    use FullUsers;
     use FullObjects;
 
     /**

@@ -21,7 +21,6 @@ use Domain\WorkOrders\Models\Client;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
-use Tests\Traits\FullUsers;
 
 /**
  * Class PendingSalesControllerTest
@@ -31,7 +30,6 @@ use Tests\Traits\FullUsers;
 class PendingSalesControllerTest extends TestCase
 {
     use FullObjects;
-    use FullUsers;
 
     /**
      * @test

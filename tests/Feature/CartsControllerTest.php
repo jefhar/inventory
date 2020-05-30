@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
-use Tests\Traits\FullUsers;
 
 /**
  * Class CartControllerTest
@@ -33,7 +32,6 @@ use Tests\Traits\FullUsers;
 class CartsControllerTest extends TestCase
 {
     use FullObjects;
-    use FullUsers;
 
     /**
      * @test

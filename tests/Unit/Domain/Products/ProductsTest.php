@@ -16,8 +16,8 @@ use App\Products\DataTransferObject\InventoryProductUpdateObject;
 use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Models\Cart;
 use Domain\PendingSales\Actions\PricePatchAction;
-use Domain\Products\Actions\ProductShowAction;
 use Domain\Products\Actions\InventoryProductUpdateAction;
+use Domain\Products\Actions\ProductShowAction;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
@@ -25,7 +25,6 @@ use Faker\Factory;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
-use Tests\Traits\FullUsers;
 
 /**
  * Class ProductsTest
@@ -34,7 +33,6 @@ use Tests\Traits\FullUsers;
  */
 class ProductsTest extends TestCase
 {
-    use FullUsers;
     use FullObjects;
 
     /**

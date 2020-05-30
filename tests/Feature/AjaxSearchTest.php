@@ -21,7 +21,7 @@ use Faker\Factory;
 use Support\Requests\ProductStore;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
-use Tests\Traits\FullUsers;
+use Tests\Traits\FullObjects;
 
 /**
  * Class AjaxSearchTest
@@ -30,7 +30,7 @@ use Tests\Traits\FullUsers;
  */
 class AjaxSearchTest extends TestCase
 {
-    use FullUsers;
+    use FullObjects;
 
     /**
      * @test

@@ -21,7 +21,6 @@ use Support\Requests\ProductStore;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
-use Tests\Traits\FullUsers;
 
 /**
  * Class ProductsControllerTest
@@ -31,7 +30,6 @@ use Tests\Traits\FullUsers;
 class ProductsControllerTest extends TestCase
 {
     use FullObjects;
-    use FullUsers;
 
     /**
      * @test
