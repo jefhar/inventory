@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Tests\TestCase;
 
@@ -44,5 +45,19 @@ class PersonClassTest extends TestCase
         $this->assertEquals('(000) 000-0000', $phone);
         $phone = Person::unformatPhoneNumber($phone);
         $this->assertEquals('0000000000', $phone);
+
+        $client = new Client();
+        $client->save();
+
+        $person = new Person();
+
+        $person->phone_number = '000-000-0000';
+        $client->person()->save($person);
+        $this->assertDatabaseHas(
+            Person::TABLE,
+            [
+                Person::PHONE_NUMBER => '0000000000',
+            ]
+        );
     }
 }
