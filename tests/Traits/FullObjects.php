@@ -84,9 +84,9 @@ trait FullObjects
 
         $WorkOrder->client()->associate($Client);
         $WorkOrder->user()->associate($User);
-        $WorkOrder->products()->save($Product);
-        $WorkOrder->save();
 
+        $WorkOrder->save();
+        $Product->workOrder()->associate($WorkOrder);
         return $WorkOrder;
     }
 

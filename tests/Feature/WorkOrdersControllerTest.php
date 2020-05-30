@@ -15,14 +15,12 @@ use App\WorkOrders\Controllers\WorkOrdersController;
 use App\WorkOrders\Requests\WorkOrderStoreRequest;
 use App\WorkOrders\Requests\WorkOrderUpdateRequest;
 use App\WorkOrders\Resources\WorkOrderResource;
-use Domain\Products\Models\Manufacturer;
-use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
 use Tests\TestCase;
-use Tests\Traits\FullUsers;
+use Tests\Traits\FullObjects;
 
 /**
  * Class WorkOrdersControllerTest
@@ -31,7 +29,7 @@ use Tests\Traits\FullUsers;
  */
 class WorkOrdersControllerTest extends TestCase
 {
-    use FullUsers;
+    use FullObjects;
 
     private const COMPANY_NAME = 'George Q. Client';
 
@@ -84,20 +82,43 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function technicianCanStoreWorkOrderWithCompanyNameOnly(): void
     {
+        // Create first WorkOrder: id = 1
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->post(
                 route(WorkOrdersController::STORE_NAME),
                 [WorkOrderStoreRequest::CLIENT_COMPANY_NAME => self::COMPANY_NAME]
             )
             ->assertJson(['created' => true,])
-            ->assertCreated()->assertHeader(
+            ->assertCreated()
+            ->assertHeader(
                 'Location',
-                url(route(WorkOrdersController::SHOW_NAME, ['workorder' => Luhn::create(1)]))
+                url(
+                    route(
+                        WorkOrdersController::SHOW_NAME,
+                        [WorkOrdersController::WORKORDER => Luhn::create(1)]
+                    )
+                )
             );
 
         $this->assertDatabaseHas(
             Client::TABLE,
             [Client::COMPANY_NAME => self::COMPANY_NAME]
+        );
+        $client = Client::where(Client::COMPANY_NAME, self::COMPANY_NAME)->firstOrFail();
+        $this->assertDatabaseHas(
+            Person::TABLE,
+            [
+                Person::CLIENT_ID => $client->id,
+                Person::FIRST_NAME => Person::DEFAULT_FIRST_NAME,
+                Person::LAST_NAME => Person::DEFAULT_LAST_NAME,
+                Person::PHONE_NUMBER => Person::unformatPhoneNumber(Person::DEFAULT_PHONE_NUMBER),
+            ]
+        );
+        $this->assertDatabaseMissing(
+            Person::TABLE,
+            [
+                Person::EMAIL => Person::DEFAULT_EMAIL,
+            ]
         );
     }
 
@@ -110,12 +131,13 @@ class WorkOrdersControllerTest extends TestCase
         /** @var Person $person */
         $person = factory(Person::class)->make();
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
+            ->withoutExceptionHandling()
             ->post(
                 route(WorkOrdersController::STORE_NAME),
                 [
                     WorkOrderStoreRequest::CLIENT_COMPANY_NAME => $company_name,
-                    WorkOrderStoreRequest::CLIENT_FIRST_NAME => $person->first_name,
-                    WorkOrderStoreRequest::CLIENT_LAST_NAME => $person->last_name,
+                    WorkOrderStoreRequest::FIRST_NAME => $person->first_name,
+                    WorkOrderStoreRequest::LAST_NAME => $person->last_name,
                 ]
             )
             ->assertCreated();
@@ -161,20 +183,14 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function editPageExists(): void
     {
-        $manufacturer = factory(Manufacturer::class)->create();
-        /** @var Product $product */
-        $product = factory(Product::class)->make();
-        $product->manufacturer()->associate($manufacturer);
-
+        $product = $this->createFullProduct();
         /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
 
-        /** @var Client $client */
-        $client = factory(Client::class)->create();
-        $person = factory(Person::class)->make();
-        $client->person()->save($person);
+        $client = $this->createFullClient();
         $client->workOrders()->save($workOrder);
         $workOrder->products()->save($product);
+        $workOrder->save();
 
         $this->withoutMix()
             ->withoutExceptionHandling()
@@ -190,19 +206,17 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function canToggleLockedWorkOrder(): void
     {
-        /** @var WorkOrder $workOrder */
-        $workOrder = factory(WorkOrder::class)->make();
-        $person = factory(Person::class)->make();
-        $client = $workOrder->client;
-        $client->person()->save($person);
+        $workOrder = $this->createFullWorkOrder();
         $workOrder->is_locked = false;
         $workOrder->save();
-        $client->person()->save($person);
+
         $this
             ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
-                route(WorkOrdersController::UPDATE_NAME, ['workorder' => $workOrder]),
-                [WorkOrderUpdateRequest::IS_LOCKED => true]
+                route(WorkOrdersController::UPDATE_NAME, [WorkOrdersController::WORKORDER => $workOrder]),
+                [
+                    WorkOrderUpdateRequest::IS_LOCKED => true,
+                ]
             )->assertJson(
                 [
                     WorkOrderResource::ID => $workOrder->luhn,
@@ -230,7 +244,7 @@ class WorkOrdersControllerTest extends TestCase
         $this
             ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
-                route(WorkOrdersController::UPDATE_NAME, ['workorder' => $workOrder]),
+                route(WorkOrdersController::UPDATE_NAME, [WorkOrdersController::WORKORDER => $workOrder]),
                 [WorkOrderUpdateRequest::IS_LOCKED => false]
             )->assertJson(
                 [
@@ -252,13 +266,16 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function updateUpdatesCompanyName(): void
     {
+        /** @var Client $newClient */
         $newClient = factory(Client::class)->make();
-        $workOrder = factory(WorkOrder::class)->create();
+        $workOrder = $this->createFullWorkOrder();
+
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
+            ->withoutExceptionHandling()
             ->patch(
-                route(WorkOrdersController::UPDATE_NAME, $workOrder),
+                route(WorkOrdersController::UPDATE_NAME, [WorkOrdersController::WORKORDER => $workOrder]),
                 [
-                    WorkOrderResource::CLIENT_COMPANY_NAME => $newClient->company_name,
+                    WorkOrderUpdateRequest::CLIENT_COMPANY_NAME => $newClient->company_name,
                 ]
             )->assertOk();
         $this->assertDatabaseHas(
@@ -274,6 +291,7 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function updateCompanyNameOnlyReturnsCompanyName(): void
     {
+        /** @var Client $newClient */
         $newClient = factory(Client::class)->make();
         $workOrder = factory(WorkOrder::class)->create();
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
@@ -302,7 +320,7 @@ class WorkOrdersControllerTest extends TestCase
         $newClient = factory(Client::class)->make();
         /** @var Person $newPerson */
         $newPerson = factory(Person::class)->make();
-        $workOrder = factory(WorkOrder::class)->create();
+        $workOrder = $this->createFullWorkOrder();
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
                 route(WorkOrdersController::UPDATE_NAME, $workOrder),

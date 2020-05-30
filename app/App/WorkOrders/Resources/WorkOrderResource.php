@@ -22,9 +22,29 @@ class WorkOrderResource extends JsonResource
     public const IS_LOCKED = 'is_locked';
     public const LAST_NAME = 'last_name';
     public const PHONE_NUMBER = 'phone_number';
+    private const LUHN = 'luhn';
 
     public function toArray($request)
     {
-        return $this->resource;
+        $translation = [
+            self::CLIENT_COMPANY_NAME => self::CLIENT_COMPANY_NAME,
+            self::EMAIL => self::EMAIL,
+            self::FIRST_NAME => self::FIRST_NAME,
+            self::INTAKE => self::INTAKE,
+            self::IS_LOCKED => self::IS_LOCKED,
+            self::LUHN => self::ID,
+            self::PHONE_NUMBER => self::PHONE_NUMBER,
+            self::LAST_NAME => self::LAST_NAME,
+        ];
+
+        $json = collect();
+        foreach ($this->resource as $key => $value) {
+            if ($key === self::ID || $value === '') {
+                continue;
+            }
+            $json = $json->merge([$translation[$key] => $value]);
+        }
+
+        return $json->toArray();
     }
 }
