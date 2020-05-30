@@ -29,7 +29,7 @@ class ProductStoreAction
      */
     public static function execute(ProductStoreObject $productStoreObject): Product
     {
-        $workOrder = WorkOrder::where(WorkOrder::LUHN, $productStoreObject->workorder_id)->first();
+        $workOrder = WorkOrder::find($productStoreObject->workorder_id);
         $type = Type::where(Type::SLUG, $productStoreObject->type)->first();
         $manufacturer = Manufacturer::firstOrCreate([Manufacturer::NAME => $productStoreObject->manufacturer_name]);
 

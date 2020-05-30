@@ -133,8 +133,8 @@ class WorkOrderStoreActionTest extends TestCase
         $this->personObject = PersonObject::fromRequest(
             [
                 WorkOrderStoreRequest::EMAIL => $person->email,
-                WorkOrderStoreRequest::CLIENT_FIRST_NAME => $person->first_name,
-                WorkOrderStoreRequest::CLIENT_LAST_NAME => $person->last_name,
+                WorkOrderStoreRequest::FIRST_NAME => $person->first_name,
+                WorkOrderStoreRequest::LAST_NAME => $person->last_name,
                 WorkOrderStoreRequest::PHONE_NUMBER => $person->phone_number,
             ]
         );

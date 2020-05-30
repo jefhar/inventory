@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace App\Products\DataTransferObject;
 
+use App\Support\Luhn;
 use Spatie\DataTransferObject\DataTransferObject;
-use Support\Requests\ProductStore;
 
 /**
  * Class ProductStoreObject
@@ -20,6 +20,11 @@ use Support\Requests\ProductStore;
  */
 class ProductStoreObject extends DataTransferObject
 {
+    public const MANUFACTURER_NAME = 'manufacturer_name';
+    public const MODEL = 'model';
+    public const TYPE = 'type';
+    public const WORK_ORDER_ID = 'workorder_id';
+    public const VALUES = 'values';
     public array $values;
     public int $workorder_id;
     public string $manufacturer_name;
@@ -34,11 +39,11 @@ class ProductStoreObject extends DataTransferObject
     {
         return new self(
             [
-                ProductStore::WORK_ORDER_ID => (int)$validated[ProductStore::WORK_ORDER_ID],
-                ProductStore::MANUFACTURER_NAME => $validated[ProductStore::MANUFACTURER_NAME],
-                ProductStore::MODEL => $validated[ProductStore::MODEL],
-                ProductStore::VALUES => $validated[ProductStore::VALUES],
-                ProductStore::TYPE => $validated[ProductStore::TYPE],
+                self::WORK_ORDER_ID => Luhn::unLuhn((int)$validated[self::WORK_ORDER_ID]),
+                self::MANUFACTURER_NAME => $validated[self::MANUFACTURER_NAME],
+                self::MODEL => $validated[self::MODEL],
+                self::VALUES => $validated[self::VALUES],
+                self::TYPE => $validated[self::TYPE],
             ]
         );
     }
