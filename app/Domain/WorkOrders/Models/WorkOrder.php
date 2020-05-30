@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @package Domain\WorkOrders\Models
  *
  * @method static Collection paginate(int $int)
+ * @method static WorkOrder create(array $array)
  * @method static WorkOrder findOrFail($get)
  * @method static WorkOrder where(mixed $field, ?mixed $value = null, ?mixed $value = null)
  * @method static WorkOrder whereNotIn(string $field, array $searchArray)
@@ -30,9 +31,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $is_locked
  * @property Client $client
  * @property int $id
+ * @property int $luhn
  * @property int $user_id
  * @property string|null $intake
- * @property int $luhn
  */
 class WorkOrder extends Model
 {
