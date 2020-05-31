@@ -48,8 +48,8 @@
                       <span class="model">{{ $product->model }}</span>
                       Serial&nbsp;<a
                         class="serial"
-                        href="/carts/{{ $cart->luhn }}"
-                        title="View product #{{ $cart->luhn }}"
+                        href="/inventory/{{ $product->luhn }}"
+                        title="View product #{{ $product->luhn }}"
                       >{{ $product->serial }}</a>.
                     </li>
                   @endforeach

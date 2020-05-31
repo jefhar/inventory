@@ -1,4 +1,5 @@
 import * as React from 'react'
+import PropTypes from 'prop-types'
 import {
   Alert,
   Button,
@@ -8,93 +9,93 @@ import {
   FormGroup,
   Input,
   Label,
-  Row
+  Row,
 } from 'reactstrap'
 import CompanyName from '../CompanyName'
 
 class CompanyClientName extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
-    console.log('CCN constructor')
     this.state = {
-      company_name: '',
-      first_name: '',
-      invalid_company_name: false,
+      companyName: '',
+      firstName: '',
+      isCompanyNameInvalid: false,
       isLoading: false,
-      last_name: '',
-      login: true
+      lastName: '',
+      login: true,
     }
+    this.handleBlur = this.handleBlur.bind(this)
+    this.handleButtonClick = this.handleButtonClick.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+    this.handleNameChange = this.handleNameChange.bind(this)
+    this.handleSearch = this.handleSearch.bind(this)
   }
 
   /**
    * Handles when form field blurs.
    * @param event
    */
-  handleBlur = event => {
-    let company_name = this.state.company_name || ''
+  handleBlur(event) {
+    let companyName = this.state.companyName || ''
     if (event.target.name === 'company_name') {
-      company_name = event.target.defaultValue
+      companyName = event.target.defaultValue
       this.setState({
-        invalid_company_name: false
+        invalid_company_name: false,
       })
     }
-    this.setState({
-      company_name: company_name,
-      first_name: this.state.first_name,
-      last_name: this.state.last_name
-    })
+    this.setState({ companyName: companyName })
   }
 
-  handleButtonClick = () => {
-    console.info('handleButtonClick')
-    const { company_name, last_name, first_name } = this.state
+  handleButtonClick() {
+    const productId = document.getElementById('productId')
+    const { companyName, lastName, firstName } = this.state
     const data = {
-      company_name: company_name,
-      first_name: first_name,
-      last_name: last_name
+      client_company_name: companyName,
+      first_name: firstName,
+      last_name: lastName,
     }
-    if (document.getElementById('productId')) {
-      data.product_id = document.getElementById('productId').dataset.productId
+    if (productId) {
+      data.product_id = productId.dataset.productId
     }
-    axios.post(this.props.postPath, data).
-      then(response => this.props.handleResponse(response)).
-      then(response => function (response) {
+    axios
+      .post(this.props.postPath, data)
+      .then((response) => this.props.handleResponse(response))
+      .then(() => {
         this.setState({
-          company_name: '',
-          first_name: '',
-          last_name: ''
+          companyName: '',
+          firstName: '',
+          lastName: '',
         })
-      }).
-      catch(error => {
-        console.info('in catch(error =>')
-        console.debug('error:', error)
+      })
+      .catch((error) => {
+        console.info('error:', error)
         if (!error.data) {
           return
         }
         if (error.response) {
           if (error.response.status === 422) {
-            console.debug('error.response:', error.response)
-            console.log('error.response.data.errors:',
-              error.response.data.errors)
-            if (error.response.data.errors.company_name) {
+            console.info('error.response:', error.response)
+            console.info(
+              'error.response.data.errors:',
+              error.response.data.errors
+            )
+            if (error.response.data.errors.companyName) {
               this.setState({
-                invalid_company_name: true
+                isCompanyNameInvalid: true,
               })
             }
           }
           if (error.response.status === 401) {
             this.setState({ login: false })
           }
-        }
-        else if (error.request) {
-          console.log('error.request:', error.request)
-        }
-        else {
+        } else if (error.request) {
+          console.info('error.request:', error.request)
+        } else {
           // Something happened in setting up the request that triggered an
           // Error
-          console.log('error.message:', error.message)
+          console.info('error.message:', error.message)
         }
-        console.log('error.config:', error.config)
+        console.info('error.config:', error.config)
       })
   }
 
@@ -102,21 +103,21 @@ class CompanyClientName extends React.Component {
    * @param selected The array of item objects. selected[0] is the
    * chosen object.
    */
-  handleChange = selected => {
+  handleChange(selected) {
+    console.info('ccn handlechange')
     if (selected.length < 1) {
       this.setState({
-        company_name: '',
-        first_name: '',
-        invalid_company_name: false,
-        last_name: ''
+        companyName: '',
+        firstName: '',
+        isCompanyNameInvalid: false,
+        lastName: '',
       })
-    }
-    else {
+    } else {
       this.setState({
-        company_name: selected[0].company_name,
-        first_name: selected[0].first_name || this.state.first_name,
-        invalid_company_name: false,
-        last_name: selected[0].last_name || this.state.last_name
+        companyName: selected[0].company_name,
+        firstName: selected[0].client_first_name || this.state.firstName,
+        isCompanyNameInvalid: false,
+        lastName: selected[0].client_last_name || this.state.lastName,
       })
     }
   }
@@ -125,12 +126,13 @@ class CompanyClientName extends React.Component {
    * Handles changing of Name fields
    * @param event
    */
-  handleNameChange = event => {
+  handleNameChange(event) {
+    console.info('ccn handlenamechange')
     const target = event.target
     const value = target.type === 'checkbox' ? target.checked : target.value
     const name = target.name
     this.setState({
-      [name]: value
+      [name]: value,
     })
   }
 
@@ -138,49 +140,54 @@ class CompanyClientName extends React.Component {
    * Handles api search
    * @param query
    */
-  handleSearch = query => {
-    this.setState({ isLoading: true, company_name: query })
-    axios.get(`/ajaxsearch/company_name?q=${query}`).then(response => {
-      this.setState({
-        isLoading: false,
-        options: response.data,
-        company_name: query
+  handleSearch(query) {
+    console.info('ccn handlesearch')
+    this.setState({ isLoading: true, companyName: query })
+    axios
+      .get(`/ajaxsearch/company_name?q=${query}`)
+      .then((response) => {
+        console.info('response.data', response.data)
+        this.setState({
+          isLoading: false,
+          options: response.data,
+          companyName: query,
+        })
       })
-    }).catch(error => {
-      console.debug('error:', error)
-    })
+      .catch((error) => {
+        console.info('error:', error)
+      })
   }
 
-  render () {
+  render() {
     return (
       <Form>
         <Row form>
           <Col>
             <FormGroup>
-              <Label for="company_name">Client Company Name</Label>
+              <Label for="companyName">Client Company Name</Label>
               <CompanyName
                 className={
-                  (this.state.invalid_company_name
+                  (this.state.isCompanyNameInvalid
                     ? 'is-invalid'
                     : 'is-valid') + ' form-control form-control-sm'
                 }
-                id="company_name"
+                id="companyName"
                 isLoading={this.state.isLoading}
                 handleChange={this.handleChange}
-                labelKey="company_name"
-                name="company_name"
+                labelKey="client_company_name"
+                name="companyName"
                 newSelectionPrefix="New Client:"
                 onSearch={this.handleSearch}
                 onBlur={this.handleBlur}
                 options={this.state.options}
                 placeholder="Client's company name"
-                invalid={this.state.invalid_company_name}
+                invalid={this.state.isCompanyNameInvalid}
                 selectHintOnEnter={true}
               />
-              <FormFeedback valid={!this.state.invalid_company_name}>
+              <FormFeedback valid={!this.state.isCompanyNameInvalid}>
                 Company Name is required.
               </FormFeedback>
-              <Alert color="warning" isOpen={this.state.invalid_company_name}>
+              <Alert color="warning" isOpen={this.state.isCompanyNameInvalid}>
                 The Company Name field is required.
               </Alert>
             </FormGroup>
@@ -189,30 +196,30 @@ class CompanyClientName extends React.Component {
         <Row form>
           <Col xs={12} md={6}>
             <FormGroup>
-              <Label for="first_name">First Name</Label>
+              <Label for="firstName">First Name</Label>
               <Input
                 className="form-control form-control-sm"
-                id="first_name"
-                name="first_name"
+                id="firstName"
+                name="firstName"
                 onChange={this.handleNameChange}
                 placeholder="First Name"
                 type="text"
-                value={this.state.first_name}
+                value={this.state.firstName}
                 onBlur={this.handleBlur}
               />
             </FormGroup>
           </Col>
           <Col xs={12} md={6}>
             <FormGroup>
-              <Label for="last_name">Last Name</Label>
+              <Label for="lastName">Last Name</Label>
               <Input
                 className="form-control form-control-sm"
-                id="last_name"
-                name="last_name"
+                id="lastName"
+                name="lastName"
                 onChange={this.handleNameChange}
                 placeholder="Last Name"
                 type="text"
-                value={this.state.last_name}
+                value={this.state.lastName}
                 onBlur={this.handleBlur}
               />
             </FormGroup>
@@ -249,4 +256,9 @@ class CompanyClientName extends React.Component {
   }
 }
 
+CompanyClientName.propTypes = {
+  handleResponse: PropTypes.func.isRequired,
+  postPath: PropTypes.string.isRequired,
+  draft: PropTypes.string.isRequired,
+}
 export default CompanyClientName

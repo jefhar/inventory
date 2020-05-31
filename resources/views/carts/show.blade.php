@@ -16,7 +16,7 @@
       <div class="card-header">
         <h1
           id="cartId"
-          data-cart-luhn="{{ $cart->luhn }}">
+          data-cart-id="{{ $cart->luhn }}">
           Cart # {{ $cart->luhn }}: <span id="cartStatus" class="capitalize">{{ $cart->status }}</span>
         </h1>
         <p class="lead">{{ $cart->client->company_name }}</p>
@@ -33,7 +33,7 @@
           Mark Invoiced
         </button>
         <button
-          class="btn btn-outline-danger"
+          class="btn btn-outline-warning"
           id="destroyButton"
           type="button"
           {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}
@@ -56,6 +56,7 @@
             <th scope="col">Type</th>
             <th scope="col">Serial</th>
             <th scope="col">Price</th>
+            <th scope="col">Remove</th>
           </tr>
           </thead>
           <tbody id="cartTableBody">
@@ -71,17 +72,30 @@
               <td>{{$product->model}}</td>
               <td>{{$product->type->name}}</td>
               <td>{{$product->serial }}</td>
-              <td><span
-                  id="price{{ $product->luhn }}"
-                  class="price"
-                >${{ sprintf('%03.2F', $product->price) }}</span> <i
-                  class="far fa-edit text-light float-right"
-                  data-product-luhn="{{ $product->luhn }}"
+              <td>
+                <button
+                  class="btn btn-outline-info"
+                  data-product-id="{{ $product->luhn }}"
                   data-product-manufacturer="{{ $product->manufacturer->name }}"
                   data-product-model="{{ $product->model }}"
                   data-product-price=" {{ $product->price }}"
-                  title="Click to change product price"
-                ></i></td>
+                  type="button"
+                ><span
+                    id="price{{ $product->luhn }}"
+                    class="price"
+                  >${{ sprintf('%03.2F', $product->price) }}</span><i
+                    class="far fa-edit text-light float-right"
+
+                    title="Click to change product price"
+                  ></i></button>
+              </td>
+              <td>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
             </tr>
           @endforeach
           </tbody>
