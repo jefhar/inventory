@@ -21,11 +21,6 @@ class CartPatchRequest extends FormRequest
     public function rules(): array
     {
         return
-            [
-                self::STATUS => [
-                    'required',
-                    Rule::in(Cart::STATUSES),
-                ],
-            ];
+            [self::STATUS => ['required', Rule::in(Cart::STATUSES),],];
     }
 }

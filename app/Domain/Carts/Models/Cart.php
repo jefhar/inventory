@@ -41,8 +41,8 @@ class Cart extends Model
 {
     use SoftDeletes;
 
-    public const CLIENT_ID = 'client_id';
     public const CLIENT_COMPANY_NAME = 'client_name';
+    public const CLIENT_ID = 'client_id';
     public const ID = 'id';
     public const LUHN = 'luhn';
     public const STATUS = 'status';
@@ -51,8 +51,8 @@ class Cart extends Model
     public const STATUS_VOID = 'void';
     public const STATUSES = [
         self::STATUS_INVOICED,
-        self::STATUS_VOID,
         self::STATUS_OPEN,
+        self::STATUS_VOID,
     ];
     public const TABLE = 'carts';
     public const USER_ID = 'user_id';
