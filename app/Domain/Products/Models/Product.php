@@ -15,7 +15,6 @@ use Domain\Products\Events\ProductSaved;
 use Domain\WorkOrders\Models\WorkOrder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
@@ -25,11 +24,14 @@ use Illuminate\Support\Collection;
  *
  * @package Domain\Products\Models
  *
- * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
+ * @method Collection get(array|string $columns = ['*'])
+ * @method Product first(array|string $columns = ['*'])
  * @method static Builder whereIn(string $ID, Collection $product_ids)
+ * @method static Collection firstOrFail($columns = ['*'])
  * @method static LengthAwarePaginator paginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null)
- * @method static Model|EloquentCollection|static[]|static|null find(int $int)
- * @method static Product findOrFail($input)
+ * @method static Product|null find(int $int)
+ * @method static Product findOrFail(mixed $id, array $columns = ['*'])
+ * @method static Product where($column, $operator = null, $value = null, $boolean = 'and')
  * @property array $values
  * @property int $id
  * @property int $luhn
@@ -48,6 +50,7 @@ class Product extends Model
     public const ID = 'id';
     public const LUHN = 'luhn';
     public const MANUFACTURER_ID = 'manufacturer_id';
+    public const MANUFACTURER_NAME = 'manufacturer_name';
     public const MODEL = 'model';
     public const PRICE = 'price';
     public const SERIAL = 'serial';
@@ -56,6 +59,7 @@ class Product extends Model
     public const STATUS_IN_CART = 'In Cart';
     public const STATUS_INVOICED = 'Invoiced';
     public const TABLE = 'products';
+    public const TYPE = 'type';
     public const TYPE_ID = 'type_id';
     public const VALUES = 'values';
     public const WORK_ORDER_ID = 'work_order_id';

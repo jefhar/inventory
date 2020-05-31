@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace App\Types\Requests;
 
-use Domain\Products\Models\Type;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -20,10 +19,13 @@ use Illuminate\Foundation\Http\FormRequest;
 class TypeStoreRequest extends FormRequest
 {
     private const RULES = [
-        Type::NAME => ['required', 'string'],
-        Type::FORM => ['required', 'json'],
-        'force' => ['boolean', 'nullable'],
+        self::FORCE => ['boolean', 'nullable'],
+        self::FORM => ['required', 'json'],
+        self::NAME => ['required', 'string'],
     ];
+    public const FORCE = 'force';
+    public const FORM = 'form';
+    public const NAME = 'name';
 
     /**
      * @return array

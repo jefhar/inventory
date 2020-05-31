@@ -11,9 +11,11 @@ namespace App\Carts\Controllers;
 
 use App\Admin\Controllers\Controller;
 use App\Carts\Requests\PendingSalesStoreRequest;
+use App\Carts\Resources\ProductResource;
 use Domain\Carts\Models\Cart;
 use Domain\PendingSales\Actions\PendingSalesDestroyAction;
 use Domain\PendingSales\Actions\PendingSalesStoreAction;
+use Domain\PendingSales\DataTransferObjects\PendingSalesStoreObject;
 use Domain\Products\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,30 +35,30 @@ class PendingSalesController extends Controller
 
     /**
      * @param PendingSalesStoreRequest $request
+     * @noinspection NullPointerExceptionInspection
      * @return JsonResponse
      */
     public function store(PendingSalesStoreRequest $request): JsonResponse
     {
-        $product = Product::find($request->input(Product::ID));
-        $cart = Cart::find($request->input(Product::CART_ID));
+        $pendingSalesStoreObject = PendingSalesStoreObject::fromRequest($request->validated());
+        $product = Product::find($pendingSalesStoreObject->product_id);
+        $cart = Cart::find($pendingSalesStoreObject->cart_id);
+
         if ($product->cart_id !== null) {
             abort(Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        return response()->json(
-            PendingSalesStoreAction::execute(
-                $cart,
-                $product
-            )
-        )->setStatusCode(201);
+        return (new ProductResource(
+            PendingSalesStoreAction::execute($cart, $product)
+        ))->response()->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
      * @param Product $product
-     * @return JsonResponse
      */
-    public function destroy(Product $product): JsonResponse
+    public function destroy(Product $product)
     {
-        return response()->json(PendingSalesDestroyAction::execute($product));
+        // return response()->json(PendingSalesDestroyAction::execute($product));
+        return new ProductResource(PendingSalesDestroyAction::execute($product));
     }
 }

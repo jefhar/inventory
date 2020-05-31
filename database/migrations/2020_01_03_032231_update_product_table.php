@@ -2,13 +2,13 @@
 
 use App\Admin\Permissions\UserPermissions;
 use App\Admin\Permissions\UserRoles;
+use App\Support\Luhn;
 use Domain\Products\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Tdely\Luhn\Luhn;
 
 class UpdateProductTable extends Migration
 {

@@ -26,8 +26,11 @@ class WorkOrdersHaveProductsTest extends TestCase
      */
     public function workOrderHasManyProducts(): void
     {
+        /** @var Product $product1 */
         $product1 = factory(Product::class)->make();
+        /** @var Product $product2 */
         $product2 = factory(Product::class)->make();
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $workOrder->products()->save($product1);
         $product2->workOrder()->associate($workOrder);
@@ -53,9 +56,12 @@ class WorkOrdersHaveProductsTest extends TestCase
      */
     public function productsHaveAType(): void
     {
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
+        /** @var Product $product */
         $product = factory(Product::class)->make();
 
+        /** @var Type $type */
         $type = factory(Type::class)->create();
         $product->type()->associate($type);
         $workOrder->products()->save($product);

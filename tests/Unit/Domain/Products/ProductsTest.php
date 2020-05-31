@@ -12,12 +12,12 @@ namespace Tests\Unit\Domain\Products;
 use App\Admin\Exceptions\LockedProductException;
 use App\Admin\Permissions\UserRoles;
 use App\Carts\DataTransferObjects\CartPatchObject;
-use App\Products\DataTransferObject\RawProductUpdateObject;
+use App\Products\DataTransferObject\InventoryProductUpdateObject;
 use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Models\Cart;
 use Domain\PendingSales\Actions\PricePatchAction;
+use Domain\Products\Actions\InventoryProductUpdateAction;
 use Domain\Products\Actions\ProductShowAction;
-use Domain\Products\Actions\RawProductUpdateAction;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
@@ -25,7 +25,6 @@ use Faker\Factory;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
-use Tests\Traits\FullUsers;
 
 /**
  * Class ProductsTest
@@ -34,7 +33,6 @@ use Tests\Traits\FullUsers;
  */
 class ProductsTest extends TestCase
 {
-    use FullUsers;
     use FullObjects;
 
     /**
@@ -45,6 +43,7 @@ class ProductsTest extends TestCase
         $faker = Factory::create();
         $manufacturerName = $faker->company;
         $workOrder = factory(WorkOrder::class)->create();
+        /** @var Product $product */
         $product = factory(Product::class)->make();
         $manufacturer = Manufacturer::firstOrCreate([Manufacturer::NAME => $manufacturerName]);
         $product->manufacturer()->associate($manufacturer);
@@ -106,19 +105,19 @@ class ProductsTest extends TestCase
     {
         $product = $this->createFullProduct();
         $update = factory(Product::class)->make();
-        $productUpdateObject = RawProductUpdateObject::fromRequest(
+        $productUpdateObject = InventoryProductUpdateObject::fromRequest(
             [
-                'type' => $update->type->slug,
-                'manufacturer' => $update->manufacturer->name,
-                'model' => $update->model,
-                'values' => [
+                Product::TYPE => $update->type->slug,
+                Product::MANUFACTURER_NAME => $update->manufacturer->name,
+                Product::MODEL => $update->model,
+                Product::VALUES => [
                     'radio-group-1575689472139' => 'option-3',
                     'select-1575689474390' => 'option-2',
                     'textarea-1575689477555' => 'textarea text. Bwahahahahaaaa',
                 ],
             ]
         );
-        RawProductUpdateAction::execute($product, $productUpdateObject);
+        InventoryProductUpdateAction::execute($product, $productUpdateObject);
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -144,10 +143,11 @@ class ProductsTest extends TestCase
     {
         $faker = Factory::create();
         $serial = $faker->isbn13;
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $product = factory(Product::class)->make(
             [
-                'values' => [
+                Product::VALUES => [
                     'radio-group-1575689472139' => 'option-3',
                     'select-1575689474390' => 'option-2',
                     'text-1575689474910' => 'option-1',
@@ -164,12 +164,12 @@ class ProductsTest extends TestCase
             ]
         );
 
-        $productUpdateObject = RawProductUpdateObject::fromRequest(
+        $productUpdateObject = InventoryProductUpdateObject::fromRequest(
             [
-                'type' => $product->type->slug,
-                'manufacturer' => $product->manufacturer->name,
-                'model' => $product->model,
-                'values' => [
+                Product::TYPE => $product->type->slug,
+                Product::MANUFACTURER_NAME => $product->manufacturer->name,
+                Product::MODEL => $product->model,
+                Product::VALUES => [
                     'radio-group-1575689472139' => 'option-3',
                     'select-1575689474390' => 'option-2',
                     'text-1575689474910' => 'option-1',
@@ -177,7 +177,7 @@ class ProductsTest extends TestCase
                 ],
             ]
         );
-        RawProductUpdateAction::execute($product, $productUpdateObject);
+        InventoryProductUpdateAction::execute($product, $productUpdateObject);
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -211,10 +211,10 @@ class ProductsTest extends TestCase
         $this->actingAs($this->createEmployee(UserRoles::EMPLOYEE));
 
         $formData = json_decode($product->type->form, true, 512, JSON_THROW_ON_ERROR);
-        $this->assertArrayNotHasKey('manufacturer', $formData);
+        $this->assertArrayNotHasKey(Product::MANUFACTURER_NAME, $formData);
         $actionFormData = ProductShowAction::execute($product);
-        $this->assertEquals('manufacturer', $actionFormData[0]['name']);
-        $this->assertEquals('model', $actionFormData[1]['name']);
+        $this->assertEquals(Product::MANUFACTURER_NAME, $actionFormData[0]['name']);
+        $this->assertEquals(Product::MODEL, $actionFormData[1]['name']);
     }
 
     /**
@@ -240,6 +240,7 @@ class ProductsTest extends TestCase
 
     /**
      * @test
+     * @throws \Exception
      */
     public function productPriceCanNotBeNegative(): void
     {

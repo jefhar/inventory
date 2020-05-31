@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace App\Carts\DataTransferObjects;
+namespace Domain\Carts\Actions;
 
 use App\Admin\Gates;
 use Domain\Carts\CartInvoiced;
