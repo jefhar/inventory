@@ -27,16 +27,13 @@ class TypeStoreAction
      */
     public static function execute(TypeStoreObject $typeStoreObject): Type
     {
-        $type = Type::updateOrCreate(
+        return Type::updateOrCreate(
             [
                 Type::NAME => Str::title($typeStoreObject->name),
             ],
             [
-                Type::SLUG => Str::slug($typeStoreObject->name),
                 Type::FORM => $typeStoreObject->form,
             ]
         );
-
-        return $type;
     }
 }

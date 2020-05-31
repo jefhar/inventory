@@ -27,10 +27,12 @@ class TypesTest extends TestCase
      */
     public function typeCreatesItsOwnSlug(): void
     {
-        $type = factory(Type::class)->create();
-        $type->fresh();
-        $this->assertEquals(Str::slug($type->name), $type->slug);
-        $this->assertEquals(Str::title($type->name), $type->name);
+        $type = new Type();
+        $name = 'john jacob jingleheimer schmidt';
+        $type->name = $name;
+
+        $this->assertEquals(Str::slug($name), $type->slug);
+        $this->assertEquals(Str::title($name), $type->name);
     }
 
     /**
@@ -59,6 +61,7 @@ class TypesTest extends TestCase
 
     /**
      * @test
+     * @throws \JsonException
      */
     public function canUpdateType(): void
     {

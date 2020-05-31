@@ -19,16 +19,17 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class TypeStoreRequest extends FormRequest
 {
+    private const RULES = [
+        Type::NAME => ['required', 'string'],
+        Type::FORM => ['required', 'json'],
+        'force' => ['boolean', 'nullable'],
+    ];
 
     /**
      * @return array
      */
     public function rules(): array
     {
-        return [
-            Type::NAME => ['required', 'string'],
-            Type::FORM => ['required', 'json'],
-            'force' => ['boolean', 'nullable'],
-        ];
+        return self::RULES;
     }
 }

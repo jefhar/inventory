@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2018, 2019 Jeff Harris
+ * Copyright 2018, 2019, 2020 Jeff Harris
  * PHP Version 7.4
  */
 
@@ -9,15 +9,17 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Admin\Permissions\UserPermissions;
+use App\Admin\Permissions\UserRoles;
 use App\Products\Controllers\ProductsController;
-use App\User;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
+use Tests\Traits\FullUsers;
 
 /**
  * Class ProductsControllerTest
@@ -26,7 +28,8 @@ use Tests\TestCase;
  */
 class ProductsControllerTest extends TestCase
 {
-    private User $user;
+    use FullObjects;
+    use FullUsers;
 
     /**
      * @test
@@ -37,6 +40,7 @@ class ProductsControllerTest extends TestCase
         $manufacturer = $faker->company;
         $model = $faker->title;
         $type = factory(Type::class)->create();
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $formRequest = [
             'manufacturer' => $manufacturer,
@@ -45,11 +49,10 @@ class ProductsControllerTest extends TestCase
             'select-1575689474390' => 'option-2',
             'textarea-1575689477555' => 'textarea text. Bwahahahahaaaa',
             'type' => $type->slug,
-            'workOrderId' => $workOrder->luhn,
+            'workOrderId' => $workOrder->id,
         ];
 
-        $this->actingAs($this->user)
-            ->withoutExceptionHandling()
+        $this->actingAs($this->createEmployee())
             ->postJson(route(ProductsController::STORE_NAME), $formRequest)
             ->assertCreated()
             ->assertSee($manufacturer)
@@ -79,14 +82,49 @@ class ProductsControllerTest extends TestCase
         $this->assertContains('option-3', $theProduct->values);
     }
 
-    public function setUp(): void
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function salesRepCanAddPriceToProduct(): void
     {
-        parent::setUp();
+        $price = random_int(100, PHP_INT_MAX) / 100;
+        $product = $this->createFullProduct();
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
+            ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price])
+            ->assertJson(
+                [
+                    Product::ID => $product->id,
+                    Product::LUHN => $product->luhn,
+                    Product::PRICE => $price,
+                ]
+            )
+            ->assertOk();
+    }
 
-        /** @var User $user */
-        $user = factory(User::class)->make()
-            ->givePermissionTo(UserPermissions::IS_EMPLOYEE);
-        $user->save();
-        $this->user = $user;
+    /**
+     * @test
+     */
+    public function technicianCannotAddPriceToProduct(): void
+    {
+        $faker = Factory::create();
+        $price = $faker->randomNumber();
+        $product = $this->createFullProduct();
+        $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
+            ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price,])
+            ->assertForbidden();
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function negativePriceResultsInUnprocessableEntity(): void
+    {
+        $product = $this->createFullProduct();
+        $price = random_int(PHP_INT_MIN, 0) / 100;
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
+            ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price,])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

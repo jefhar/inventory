@@ -8,10 +8,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Admin\Permissions\UserRoles;
 use App\AjaxSearch\Controllers\AjaxSearchController;
 use App\Products\DataTransferObject\ProductStoreObject;
-use App\User;
 use Domain\Products\Actions\ProductStoreAction;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
@@ -20,6 +18,7 @@ use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
+use Tests\Traits\FullUsers;
 
 /**
  * Class AjaxSearchTest
@@ -28,41 +27,14 @@ use Tests\TestCase;
  */
 class AjaxSearchTest extends TestCase
 {
-    private User $guest;
-    private User $user;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $guest = factory(User::class)->make();
-        /** @var User $user */
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::EMPLOYEE);
-        $this->guest = $guest;
-        $this->user = $user;
-    }
+    use FullUsers;
 
     /**
      * @test
      */
-    public function anonymousIsUnauthorized(): void
+    public function anonymousOrUnauthorizedIsUnauthorized(): void
     {
-        $this->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))->assertRedirect('/login');
-    }
-
-    /**
-     * @test
-     */
-    public function unauthorizedIsUnauthorized(): void
-    {
-        $this->get(
-            route(
-                AjaxSearchController::SHOW_NAME,
-                [
-                    'field' => Client::COMPANY_NAME,
-                ]
-            )
-        )
+        $this->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))
             ->assertRedirect('/login');
     }
 
@@ -71,13 +43,9 @@ class AjaxSearchTest extends TestCase
      */
     public function authorizedIsOk(): void
     {
-        $this->actingAs($this->user)->withoutExceptionHandling();
-        $this->get(
-            route(
-                AjaxSearchController::SHOW_NAME,
-                ['field' => Client::COMPANY_NAME]
-            )
-        )->assertOk();
+        $this->actingAs($this->createEmployee())
+            ->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))
+            ->assertOk();
     }
 
     /**
@@ -85,15 +53,9 @@ class AjaxSearchTest extends TestCase
      */
     public function knownFieldIsOk(): void
     {
-        $this->actingAs($this->user);
-        $this->get(
-            route(
-                AjaxSearchController::SHOW_NAME,
-                [
-                    'field' => Client::COMPANY_NAME,
-                ]
-            )
-        )->assertOk();
+        $this->actingAs($this->createEmployee())
+            ->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))
+            ->assertOk();
     }
 
     /**
@@ -101,7 +63,7 @@ class AjaxSearchTest extends TestCase
      */
     public function unknownFieldIsBad(): void
     {
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->get(route(AjaxSearchController::SHOW_NAME, ['field' => 'flarp']))
             ->assertStatus(Response::HTTP_NOT_ACCEPTABLE);
     }
@@ -129,10 +91,9 @@ class AjaxSearchTest extends TestCase
         $red_herring_person = factory(Person::class)->make();
         $red_herring_client->person()->save($red_herring_person);
 
-        $this->actingAs($this->user)
-            ->get(
-                route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME, 'q' => 'J',])
-            )->assertJsonFragment(
+        $this->actingAs($this->createEmployee())
+            ->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME, 'q' => 'J']))
+            ->assertJsonFragment(
                 [
                     Client::COMPANY_NAME => $client->company_name,
                     Person::FIRST_NAME => $client->person->first_name,
@@ -147,7 +108,7 @@ class AjaxSearchTest extends TestCase
     public function indexReturnsSomething(): void
     {
         $client = factory(Client::class)->create();
-        $this->actingAs($this->user)->withoutExceptionHandling()
+        $this->actingAs($this->createEmployee())
             ->get(route(AjaxSearchController::INDEX_NAME, ['q' => $client->company_name]))
             ->assertOk()
             ->assertJsonFragment(['name' => $client->company_name]);
@@ -159,11 +120,13 @@ class AjaxSearchTest extends TestCase
     public function productSerialNumberSearchReturnsJson(): void
     {
         $faker = Factory::create();
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $product = '';
         $serial = '';   // Why? so phpstan doesn't complain.
         for ($i = 0; $i < 15; $i++) {
             $serial = $faker->isbn13;
+            /** @var Product $unsavedProduct */
             $unsavedProduct = factory(Product::class)->make();
             $formRequest = [
                 'values' => [
@@ -174,12 +137,12 @@ class AjaxSearchTest extends TestCase
                 'manufacturer' => $unsavedProduct->manufacturer->name,
                 'model' => $unsavedProduct->model,
                 'type' => $unsavedProduct->type->slug,
-                'workOrderId' => $workOrder->luhn,
+                'workOrderId' => $workOrder->id,
             ];
             $product = ProductStoreAction::execute(ProductStoreObject::fromRequest($formRequest));
         }
 
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->get(route(AjaxSearchController::INDEX_NAME, ['q' => $product->serial]))
             ->assertJsonFragment(
                 [
@@ -187,7 +150,7 @@ class AjaxSearchTest extends TestCase
                     'url' => '/inventory/' . $product->luhn,
                 ]
             );
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->get(route(AjaxSearchController::INDEX_NAME, ['q' => substr($product->serial, 1, 2)]))
             ->assertJsonFragment(
                 [

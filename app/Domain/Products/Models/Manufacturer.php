@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
 class Manufacturer extends Model
 {
     public const ID = 'id';
+    public const MANUFACTURER = 'manufacturer';
     public const NAME = 'name';
     public const TABLE = 'manufacturers';
 

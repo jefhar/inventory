@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Domain\Products\Models;
 
+use Domain\Carts\Models\Cart;
 use Domain\Products\Events\ProductCreated;
 use Domain\Products\Events\ProductSaved;
 use Domain\WorkOrders\Models\WorkOrder;
@@ -25,27 +26,35 @@ use Illuminate\Support\Collection;
  * @package Domain\Products\Models
  *
  * @method static Builder where($column, $operator = null, $value = null, $boolean = 'and')
+ * @method static Builder whereIn(string $ID, Collection $product_ids)
  * @method static LengthAwarePaginator paginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null)
  * @method static Model|EloquentCollection|static[]|static|null find(int $int)
- * @method static Builder whereIn(string $ID, Collection $product_ids)
+ * @method static Product findOrFail($input)
  * @property array $values
  * @property int $id
  * @property int $luhn
+ * @property int $price
+ * @property int|null $cart_id
  * @property Manufacturer $manufacturer;
  * @property string $model
  * @property string $serial
- * @property Type $type;
- * @property WorkOrder $workOrder;
+ * @property string $status
+ * @property Type $type
+ * @property WorkOrder $workOrder
  */
 class Product extends Model
 {
+    public const CART_ID = 'cart_id';
     public const ID = 'id';
     public const LUHN = 'luhn';
     public const MANUFACTURER_ID = 'manufacturer_id';
     public const MODEL = 'model';
+    public const PRICE = 'price';
     public const SERIAL = 'serial';
     public const STATUS = 'status';
     public const STATUS_AVAILABLE = 'Available';
+    public const STATUS_IN_CART = 'In Cart';
+    public const STATUS_INVOICED = 'Invoiced';
     public const TABLE = 'products';
     public const TYPE_ID = 'type_id';
     public const VALUES = 'values';
@@ -53,8 +62,10 @@ class Product extends Model
 
     protected $attributes = [
         self::STATUS => self::STATUS_AVAILABLE,
+        self::PRICE => 0,
     ];
     protected $casts = [
+        self::PRICE => 'decimal:2',
         self::VALUES => 'array',
     ];
     protected $fillable = [
@@ -71,6 +82,31 @@ class Product extends Model
         'created' => ProductCreated::class,
         'saving' => ProductSaved::class,
     ];
+
+    /**
+     * Accessor to retrieve product price as decimal value.
+     *
+     * @param int $price
+     * @return float
+     */
+    public function getPriceAttribute(int $price): float
+    {
+        return $price / 100;
+    }
+
+    /**
+     * Mutator to store product price as integer.
+     *
+     * @param float $price
+     */
+    public function setPriceAttribute(float $price): void
+    {
+        if ($price < 0.01) {
+            $price = 0.00;
+        }
+
+        $this->attributes[self::PRICE] = floor($price * 100);
+    }
 
     /**
      * @param string $searchString
@@ -116,5 +152,13 @@ class Product extends Model
     public function manufacturer(): BelongsTo
     {
         return $this->belongsTo(Manufacturer::class);
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function cart(): BelongsTo
+    {
+        return $this->belongsTo(Cart::class);
     }
 }

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Domain\WorkOrders\Models;
 
 use Carbon\Carbon;
+use Domain\Carts\Models\Cart;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -77,5 +78,13 @@ class Client extends Model
     public function workOrders(): HasMany
     {
         return $this->hasMany(WorkOrder::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function carts(): HasMany
+    {
+        return $this->hasMany(Cart::class);
     }
 }

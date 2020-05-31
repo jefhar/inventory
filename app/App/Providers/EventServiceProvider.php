@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use Domain\Carts\Events\CartCreated;
+use Domain\Carts\Listeners\AddLuhnToCart;
 use Domain\Products\Events\ProductCreated;
 use Domain\Products\Events\ProductSaved;
-use Domain\Products\Events\TypeCreated;
 use Domain\Products\Listeners\AddLuhnToProduct;
 use Domain\Products\Listeners\AddSerialToProduct;
-use Domain\Products\Listeners\AddSlugToType;
 use Domain\WorkOrders\Events\WorkOrderCreated;
 use Domain\WorkOrders\Listeners\AddLuhnToWorkOrder;
 use Illuminate\Auth\Events\Registered;
@@ -40,14 +40,14 @@ class EventServiceProvider extends ServiceProvider
         WorkOrderCreated::class => [
             AddLuhnToWorkOrder::class,
         ],
-        TypeCreated::class => [
-            AddSlugToType::class,
-        ],
         ProductCreated::class => [
             AddLuhnToProduct::class,
         ],
         ProductSaved::class => [
             AddSerialToProduct::class,
+        ],
+        CartCreated::class => [
+            AddLuhnToCart::class,
         ],
     ];
 

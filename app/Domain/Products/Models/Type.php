@@ -28,6 +28,7 @@ use Illuminate\Support\Str;
  * @method static Type where(mixed $field, ?mixed $value = null, ?mixed $value = null)
  * @method Type first()
  * @method Type get()
+ * @method static Type firstOrNew(array $attributes, array $values = [])
  * @property int $id
  * @property string $form
  * @property string $name
@@ -42,6 +43,7 @@ class Type extends Model
     public const NAME = 'name';
     public const SLUG = 'slug';
     public const TABLE = 'types';
+    public const TYPE = 'type';
 
     protected $table = self::TABLE;
 
@@ -61,7 +63,6 @@ class Type extends Model
     {
         $this->attributes[self::SLUG] = Str::slug($name);
         $this->attributes[self::NAME] = Str::title($name);
-        parent::select();
     }
 
     /**

@@ -2,19 +2,27 @@
 # For unit testing and deployment
 # Set the base image for subsequent instructions
 FROM phpdockerio/php74-fpm:latest
+ARG BUILD_DATE
+ARG VCS_REF
 
-ARG PHPREDIS=5.1.0
-ARG XDEBUG=2.8.1
+LABEL maintainer="Jeff Harris <jeff@jeffharris.us>" \
+  org.label-schema.build-date=$BUILD_DATE \
+  org.label-schema.description="Inventory system for a goods and services shop." \
+  org.label-schema.name="main.serviceandgoods" \
+  org.label-schema.schema-version="1.0" \
+  org.label-schema.url="https://inventory.jeffharris.us" \
+  org.label-schema.vcs-ref=$VCS_REF \
+  org.label-schema.vcs-url="https://gitlab.com/c11k/serviceandgoods" \
+  PHP="7.4"
 
-ADD auth.json /root/.composer/auth.json
-ADD https://github.com/phpredis/phpredis/archive/${PHPREDIS}.tar.gz /src/phpredis-${PHPREDIS}.tar.gz
-ADD http://xdebug.org/files/xdebug-${XDEBUG}.tgz /src/xdebug-${XDEBUG}.tgz
+# For local use:
+#   Sometimes github thinks you're spamming the site too much. Create an auth key
+#   and put it in the auth.json.example file and rename it to auth.json then uncomment.
+# ADD auth.json /root/.composer/auth.json
 
 # Update packages
 RUN apt-get update \
 	&& apt-get -y --no-install-recommends install \
-	    make \
-	    php7.4-dev \
 	    php7.4-dom \
 		php7.4-gd \
 		php7.4-json \
@@ -22,30 +30,18 @@ RUN apt-get update \
         php7.4-mysql \
         php7.4-opcache \
         php7.4-pdo \
-        php7.4-zip \
+        php7.4-redis \
         php7.4-sqlite3 \
+        php7.4-zip \
         sqlite \
         unzip \
     && apt-get install -y --only-upgrade php7.4-cli php7.4-common \
-    && tar -xf /src/xdebug-${XDEBUG}.tgz -C /src \
-    && cd /src/xdebug-${XDEBUG} \
-    && phpize && ./configure && make && make install \
-    && echo 'zend_extension = /usr/lib/php/20190902/xdebug.so' > /etc/php/7.4/mods-available/xdebug.ini \
-    && ln /etc/php/7.4/mods-available/xdebug.ini /etc/php/7.4/cli/conf.d/20-xdebug.ini \
-    && ln /etc/php/7.4/mods-available/xdebug.ini /etc/php/7.4/fpm/conf.d/20-xdebug.ini \
-    && tar -xf /src/phpredis-${PHPREDIS}.tar.gz -C /src \
-    && cd /src/phpredis-${PHPREDIS} \
-    && phpize && ./configure && make && make install \
-    && echo 'extension=redis.so' > /etc/php/7.4/mods-available/redis.ini \
-    && ln /etc/php/7.4/mods-available/redis.ini /etc/php/7.4/cli/conf.d/20-redis.ini \
-    && ln /etc/php/7.4/mods-available/redis.ini /etc/php/7.4/fpm/conf.d/20-redis.ini \
-    && cd / \
-    && rm -rf /src/ \
-    && apt-get purge php7.4-dev make -y\
     && apt-get autoremove -y \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
 # Install Laravel Envoy
 RUN  composer self-update \
-    && composer global require "laravel/envoy=~1.0" \
+    && composer global require "laravel/envoy=~2.0" \
     && composer clear-cache
+
+RUN mkdir /application && ln -s /application /opt/project

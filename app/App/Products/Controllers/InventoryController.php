@@ -10,11 +10,15 @@ declare(strict_types=1);
 namespace App\Products\Controllers;
 
 use App\Admin\Controllers\Controller;
-use App\Products\DataTransferObject\ProductUpdateObject;
+use App\Admin\Permissions\UserPermissions;
+use App\Products\DataTransferObject\RawProductUpdateObject;
 use App\Products\Requests\ProductUpdateRequest;
+use App\User;
+use Domain\Carts\Models\Cart;
 use Domain\Products\Actions\ProductShowAction;
-use Domain\Products\Actions\ProductUpdateAction;
+use Domain\Products\Actions\RawProductUpdateAction;
 use Domain\Products\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
@@ -26,6 +30,7 @@ class InventoryController extends Controller
 {
     public const INDEX_NAME = 'inventory.index';
     public const INDEX_PATH = '/inventory';
+    public const PAGINATE_PER_PAGE = 25;
     public const SHOW_NAME = 'inventory.show';
     public const SHOW_PATH = '/inventory/{product}';
     public const UPDATE_NAME = 'inventory.update';
@@ -36,7 +41,7 @@ class InventoryController extends Controller
      */
     public function index(): View
     {
-        $products = Product::paginate(25);
+        $products = Product::paginate(self::PAGINATE_PER_PAGE);
 
         return view('inventory.index', ['products' => $products]);
     }
@@ -44,10 +49,28 @@ class InventoryController extends Controller
     /**
      * @param Product $product
      * @return View
+     * @throws \JsonException
      */
     public function show(Product $product): View
     {
-        return view('inventory.show', ['product' => $product, 'formData' => ProductShowAction::execute($product)]);
+        /** @var User $user */
+        $user = Auth::user();
+        if ($user->can(UserPermissions::SEE_ALL_OPEN_CARTS)) {
+            $carts = Cart::where(Cart::STATUS, Cart::STATUS_OPEN)->get();
+        } else {
+            $carts = $user->carts()->where(Cart::STATUS, Cart::STATUS_OPEN)->get();
+        }
+        $product->load('cart');
+        $carts->load('client');
+
+        return view(
+            'inventory.show',
+            [
+                'product' => $product,
+                'formData' => ProductShowAction::execute($product),
+                'carts' => $carts,
+            ]
+        );
     }
 
     /**
@@ -57,9 +80,8 @@ class InventoryController extends Controller
      */
     public function update(Product $product, ProductUpdateRequest $request): Product
     {
-        $productUpdateObject = ProductUpdateObject::fromRequest($request->validated());
-        $product = ProductUpdateAction::execute($product, $productUpdateObject);
+        $productUpdateObject = RawProductUpdateObject::fromRequest($request->validated());
 
-        return $product;
+        return RawProductUpdateAction::execute($product, $productUpdateObject);
     }
 }

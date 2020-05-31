@@ -16,6 +16,7 @@ use Tests\DuskTestCase;
  * Class ExampleTest
  *
  * @package Tests\Browser
+ * @codeCoverageIgnore
  */
 class ExampleTest extends DuskTestCase
 {

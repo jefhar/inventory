@@ -9,16 +9,23 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Products;
 
+use App\Admin\Exceptions\LockedProductException;
 use App\Admin\Permissions\UserRoles;
-use App\Products\DataTransferObject\ProductUpdateObject;
-use App\User;
+use App\Carts\DataTransferObjects\CartPatchObject;
+use App\Products\DataTransferObject\RawProductUpdateObject;
+use Domain\Carts\Actions\CartPatchAction;
+use Domain\Carts\Models\Cart;
+use Domain\PendingSales\Actions\PricePatchAction;
 use Domain\Products\Actions\ProductShowAction;
-use Domain\Products\Actions\ProductUpdateAction;
+use Domain\Products\Actions\RawProductUpdateAction;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
+use Tests\Traits\FullUsers;
 
 /**
  * Class ProductsTest
@@ -27,6 +34,8 @@ use Tests\TestCase;
  */
 class ProductsTest extends TestCase
 {
+    use FullUsers;
+    use FullObjects;
 
     /**
      * @test
@@ -64,10 +73,7 @@ class ProductsTest extends TestCase
      */
     public function createdProductHasLuhn(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
-
+        $this->createFullProduct();
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -82,9 +88,7 @@ class ProductsTest extends TestCase
      */
     public function createdProductIsAvailableForSale(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
+        $this->createFullProduct();
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -96,14 +100,13 @@ class ProductsTest extends TestCase
 
     /**
      * @test
+     * @throws \JsonException
      */
     public function updateProductUpdatesProduct(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
+        $product = $this->createFullProduct();
         $update = factory(Product::class)->make();
-        $productUpdateObject = ProductUpdateObject::fromRequest(
+        $productUpdateObject = RawProductUpdateObject::fromRequest(
             [
                 'type' => $update->type->slug,
                 'manufacturer' => $update->manufacturer->name,
@@ -115,7 +118,7 @@ class ProductsTest extends TestCase
                 ],
             ]
         );
-        ProductUpdateAction::execute($product, $productUpdateObject);
+        RawProductUpdateAction::execute($product, $productUpdateObject);
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -161,7 +164,7 @@ class ProductsTest extends TestCase
             ]
         );
 
-        $productUpdateObject = ProductUpdateObject::fromRequest(
+        $productUpdateObject = RawProductUpdateObject::fromRequest(
             [
                 'type' => $product->type->slug,
                 'manufacturer' => $product->manufacturer->name,
@@ -174,7 +177,7 @@ class ProductsTest extends TestCase
                 ],
             ]
         );
-        ProductUpdateAction::execute($product, $productUpdateObject);
+        RawProductUpdateAction::execute($product, $productUpdateObject);
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -186,16 +189,12 @@ class ProductsTest extends TestCase
 
     /**
      * @test
+     * @throws \JsonException
      */
     public function renderingProductViewCombinesValuesAndType(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
-
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::EMPLOYEE);
-        $this->actingAs($user);
+        $product = $this->createFullProduct();
+        $this->actingAs($this->createEmployee(UserRoles::EMPLOYEE));
 
         $formData = ProductShowAction::execute($product);
         $this->assertArrayHasKey('userData', $formData[2]);
@@ -203,20 +202,75 @@ class ProductsTest extends TestCase
 
     /**
      * @test
+     * @throws \JsonException
      */
     public function renderingProductViewAddsManufacturerAndModelFirst(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::EMPLOYEE);
-        $this->actingAs($user);
+        $product = $this->createFullProduct();
+
+        $this->actingAs($this->createEmployee(UserRoles::EMPLOYEE));
 
         $formData = json_decode($product->type->form, true, 512, JSON_THROW_ON_ERROR);
         $this->assertArrayNotHasKey('manufacturer', $formData);
         $actionFormData = ProductShowAction::execute($product);
         $this->assertEquals('manufacturer', $actionFormData[0]['name']);
         $this->assertEquals('model', $actionFormData[1]['name']);
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function productPriceSavesAsPennies(): void
+    {
+        $product = $this->createFullProduct();
+        $price = random_int(100, mt_getrandmax()) / 100;
+        $product->price = $price;
+        $product->save();
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::ID => $product->id,
+                Product::PRICE => $price * 100,
+            ]
+        );
+        $product->refresh();
+        $this->assertEquals($price, $product->price);
+    }
+
+    /**
+     * @test
+     */
+    public function productPriceCanNotBeNegative(): void
+    {
+        $product = $this->createFullProduct();
+        $price = random_int(PHP_INT_MIN, 0);
+        $product->price = $price;
+        $product->save();
+        $product->refresh();
+        $this->assertEquals(0, $product->price);
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function invoicedProductCannotChangePrice(): void
+    {
+        Mail::fake();
+        // Setup
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $this->actingAs($salesRep);
+
+        $product = $this->createFullProduct();
+        $cart = $this->makeFullCart();
+        $salesRep->carts()->save($cart);
+        $cart->products()->save($product);
+        CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
+        $product->refresh();
+
+        // Test
+        $this->expectException(LockedProductException::class);
+        PricePatchAction::execute($product, random_int(0, PHP_INT_MAX) / 100);
     }
 }

@@ -21,6 +21,16 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class WorkOrderUpdateRequest extends FormRequest
 {
+    private const RULES = [
+        Client::COMPANY_NAME => ['string', 'nullable'],
+        Person::FIRST_NAME => ['string', 'nullable'],
+        Person::LAST_NAME => ['string', 'nullable'],
+        Person::PHONE_NUMBER => ['string', 'nullable'],
+        Person::EMAIL => ['string', 'nullable'],
+        WorkOrder::INTAKE => ['string', 'nullable'],
+        WorkOrder::IS_LOCKED => ['boolean','nullable'],
+    ];
+
     /**
      * Determine if the user is authorized to make this request.
      * Here's a quick tip: If there is no authorize() function, the parent
@@ -40,14 +50,6 @@ class WorkOrderUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            Client::COMPANY_NAME => 'string|nullable',
-            Person::FIRST_NAME => 'string|nullable',
-            Person::LAST_NAME => 'string|nullable',
-            Person::PHONE_NUMBER => 'string|nullable',
-            Person::EMAIL => 'string|nullable',
-            WorkOrder::INTAKE => 'string|nullable',
-            WorkOrder::IS_LOCKED => 'boolean|nullable',
-        ];
+        return self::RULES;
     }
 }

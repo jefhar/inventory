@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace App\Products\Requests;
 
+use Domain\Products\Models\Manufacturer;
+use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
 use Domain\WorkOrders\Models\WorkOrder;
 use Illuminate\Foundation\Http\FormRequest;
@@ -21,11 +23,11 @@ use Illuminate\Foundation\Http\FormRequest;
 class ProductStoreRequest extends FormRequest
 {
     public const RULES = [
-        'manufacturer' => ['required'],
-        'model' => ['required'],
-        'type' => ['required', 'exists:' . Type::TABLE . ',' . Type::SLUG],
-        'workOrderId' => ['required', 'exists:' . WorkOrder::TABLE . ',' . WorkOrder::LUHN],
-        'values' => ['array'],
+        'workOrderId' => ['required', 'exists:' . WorkOrder::TABLE . ',' . WorkOrder::ID],
+        Manufacturer::MANUFACTURER => ['required'],
+        Product::MODEL => ['required'],
+        Product::VALUES => ['array'],
+        Type::TYPE => ['required', 'exists:' . Type::TABLE . ',' . Type::SLUG],
     ];
 
     /**

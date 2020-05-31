@@ -4,6 +4,12 @@ namespace Tests\Browser\Pages;
 
 use Laravel\Dusk\Browser;
 
+/**
+ * Class HomePage
+ *
+ * @package Tests\Browser\Pages
+ * @codeCoverageIgnore
+ */
 class HomePage extends Page
 {
     /**

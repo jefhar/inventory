@@ -14,6 +14,11 @@ use Domain\AjaxSearch\Actions\AjaxSearchAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * Class AjaxSearchController
+ *
+ * @package App\AjaxSearch\Controllers
+ */
 class AjaxSearchController extends Controller
 {
     public const SHOW_NAME = 'ajaxsearch.show';
@@ -28,10 +33,7 @@ class AjaxSearchController extends Controller
      */
     public function show(Request $request, string $field): JsonResponse
     {
-        $searchString = $request->get('q', '');
-        $options = AjaxSearchAction::findBy($field, $searchString);
-
-        return response()->json($options);
+        return response()->json(AjaxSearchAction::findBy($field, $request->get('q', '')));
     }
 
     /**
@@ -40,8 +42,6 @@ class AjaxSearchController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $results = AjaxSearchAction::findAll($request->get('q'));
-
-        return response()->json($results);
+        return response()->json(AjaxSearchAction::findAll($request->get('q')));
     }
 }

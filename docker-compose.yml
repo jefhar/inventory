@@ -56,17 +56,6 @@ services:
     ports:
       - 13306:3306
 
-  selenium:
-    image: selenium/standalone-chrome
-    restart: unless-stopped
-    container_name: serviceandgoods-selenium
-    ports:
-      - 4444:4444
-    labels:
-      - traefik.enable=false
-    networks:
-      - internal
-
   webserver:
     image: nginx:alpine
     container_name: serviceandgoods-webserver
@@ -88,6 +77,7 @@ services:
       - traefik.frontend.rule=Host:serviceandgoods.c11k.com
       - traefik.docker.network=web
       - trafik.port=80
+      - traefik.enable=true
     ports:
       - 8080:80
 

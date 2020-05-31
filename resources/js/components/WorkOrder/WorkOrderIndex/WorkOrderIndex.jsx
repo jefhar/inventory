@@ -1,19 +1,20 @@
-import React, { Component } from "react";
-import ReactDOM from "react-dom";
-import { Container } from "reactstrap";
+//import React, { Component } from "react";
+import * as React from 'react'
+import ReactDOM from 'react-dom'
+import { Container } from 'reactstrap'
 
-class WorkOrderIndex extends Component {
+class WorkOrderIndex extends React.Component {
   render() {
-    return <Container>WorkOrderIndex in JSX. Bitchin!</Container>;
+    return <Container>WorkOrderIndex in JSX. Bitchin!</Container>
   }
 }
 
-export default WorkOrderIndex;
+export default WorkOrderIndex
 
-if (document.getElementById("workorders_index")) {
-  console.log("got workorders_index");
+if (document.getElementById('workorders_index')) {
+  console.log('got workorders_index')
   ReactDOM.render(
     <WorkOrderIndex />,
-    document.getElementById("workorders_index")
-  );
+    document.getElementById('workorders_index')
+  )
 }

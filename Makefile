@@ -26,20 +26,25 @@ checkcomposer:
 	docker run --rm -v "$(CURDIR):/app:delegated" c11k/serviceandgoods sh -c 'cd /app && vendor/bin/security-checker security:check composer.lock'
 
 ci:
-	docker login registry.gitlab.com
 	gitlab-runner exec docker test
 
 yarninstall:
-	docker run --rm -v "$(CURDIR):/app:delegated" node:12-slim sh -c 'cd /app && yarn install'
+	docker run --rm -v "$(CURDIR):/app:delegated" node:14-slim sh -c 'cd /app && yarn install'
+
+yarnaudit:
+	docker run --rm -v "$(CURDIR):/app:delegated" node:14-slim sh -c 'cd /app && yarn audit'
+
+yarnupgrade:
+	docker run --rm -v "$(CURDIR):/app:delegated" node:14-slim sh -c 'cd /app && yarn upgrade'
 
 npmdev:
-	docker run --rm -v "$(CURDIR):/app:delegated" node:12-slim sh -c 'cd /app && npm run development'
+	docker run --rm -v "$(CURDIR):/app:delegated" node:14-slim sh -c 'cd /app && npm run development'
 
 npmprod:
-	docker run --rm -v "$(CURDIR):/app:delegated" node:12-slim sh -c 'cd /app && npm run production'
+	docker run --rm -v "$(CURDIR):/app:delegated" node:14-slim sh -c 'cd /app && npm run production'
 
 npmwatch:
-	docker run --rm -v $(CURDIR):/app:delegated node:12-slim sh -c 'cd /app && npm run development -- --watch'
+	docker run --rm -v $(CURDIR):/app:delegated node:14-slim sh -c 'cd /app && npm run development -- --watch'
 
 swagger:
 	docker run --rm -p 8088:8080 swaggerapi/swagger-editor
@@ -55,16 +60,16 @@ pretest:
 	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods sh -c 'cd /app && composer pretest'
 
 test:
-	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods sh -c 'cd /app && composer pretest && composer test'
+	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods sh -c 'cd /app && composer test'
 
 testdusk:
-	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods:dusk sh -c 'cd /app && composer install --no-plugins --no-scripts --no-progress --no-suggest --prefer-dist  && cp .env.dusk.ci .env &&  composer dusk'
-
-builddusk:
-	docker build -t c11k/serviceandgoods:dusk phpdocker/dusk
+	gitlab-runner exec docker dusktest
 
 deploy:
+	docker network create web || echo "Docker network web already created."
 	docker-compose up -d php-fpm redis mysql webserver
 
 refresh:
 	php artisan db:wipe && php artisan migrate && php artisan db:seed --class UsersTableSeeder && php artisan db:seed --class DummyDataSeeder
+
+install: build deploy composerinstall yarninstall

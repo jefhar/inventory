@@ -1,27 +1,45 @@
-image: registry.gitlab.com/c11k/serviceandgoods:latest
+image: phpdockerio/php74-fpm:latest
 
 stages:
+  - build
   - test
   - stage
+
+refresh_cache:
+  stage: build
+  cache:
+    key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
+    paths:
+      - vendor
+      - node_modules
+      - .yarn
+  script:
+    - curl -sL https://deb.nodesource.com/setup_14.x | bash -
+    - apt-get install -y nodejs
+    - npm install -g yarn
+    - composer install --no-plugins --no-scripts
+    - yarn config set cache-folder .yarn
+    - yarn install --pure-lockfile
 
 test:
   stage: test
   script:
-    - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-    - echo "deb https://dl.yarnpkg.com/debian/ rc main" | tee /etc/apt/sources.list.d/yarn.list
-    - curl -sL https://deb.nodesource.com/setup_12.x | bash -
-    - apt-get install -y nodejs yarn
-    - yarn install
-    - npm run prod
+    - apt-get update
+    - apt-get -y --no-install-recommends install php7.4-dom php7.4-gd php7.4-json php7.4-mbstring php7.4-opcache php7.4-pcov php7.4-pdo php7.4-sqlite3 php7.4-zip sqlite unzip
+    - apt-get install -y --only-upgrade php7.4-cli php7.4-common
     - cp .env.testing .env
+    - touch database/database.sqlite
     - composer install --no-plugins --no-scripts
     - php artisan key:generate
     - composer pretest
     - composer test
   cache:
-    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_STAGE"
+    key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
+    policy: pull
     paths:
-    - vendor/
+      - vendor
+      - node_modules
+      - .yarn
   artifacts:
     paths:
     - tests/coverage
@@ -30,35 +48,48 @@ test:
   interruptible: true
 
 dusktest:
-  when: manual
-  allow_failure: true
-  image: registry.gitlab.com/c11k/serviceandgoods:dusk
+  variables:
+    MYSQL_ROOT_PASSWORD: 'rootpw'
+    MYSQL_DATABASE: 'serviceandgoods'
+    MYSQL_USER: 'serviceandgoods'
+    MYSQL_PASSWORD: 'serviceandgoods'
   services:
-    - selenium/standalone-chrome
+    - mysql:8.0
+  allow_failure: true
+  image: edbizarro/gitlab-ci-pipeline-php:7.4-chromium
   stage: test
   script:
-    - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-    - echo "deb https://dl.yarnpkg.com/debian/ rc main" | tee /etc/apt/sources.list.d/yarn.list
-    - curl -sL https://deb.nodesource.com/setup_12.x | bash -
-    - apt-get install -y nodejs yarn
-    - yarn install
-    - npm run prod
+    - yarn config set cache-folder .yarn
+    - yarn install --pure-lockfile
+    - yarn run prod
     - composer install --no-plugins --no-scripts --no-progress --no-suggest --prefer-dist --optimize-autoloader
+    - vendor/bin/dusk-updater detect --auto-update
     - cp .env.dusk.ci .env
     - php artisan key:generate
-    - php artisan dusk:chrome-driver
-    - ./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &
-    - php artisan serve > /dev/null 2>&1 &
-    - php artisan migrate
+    - php artisan migrate:refresh
     - php artisan db:seed --class UsersTableSeeder
+    - php artisan serve > /dev/null 2>&1 &
+    - ./vendor/laravel/dusk/bin/chromedriver-linux --verbose --port=9515 --whitelisted-ips= &
+    - echo "Waiting for chrome to settle..."
+    - sleep 5
     - php artisan dusk
   cache:
-    key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_STAGE"
+    key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
+    policy: pull
     paths:
-      - vendor/
+      - vendor
+      - node_modules
+      - .yarn
   except:
     - ci
   interruptible: true
+  artifacts:
+    paths:
+      - ./storage/logs  # for debugging
+      - ./tests/Browser/screenshots # for Dusk screenshots
+      - ./tests/Browser/console
+    expire_in: 7 days
+    when: always
 
 deploy_staging:
   stage: stage
@@ -68,6 +99,7 @@ deploy_staging:
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - composer global require "laravel/envoy=~1.0"
     - ~/.composer/vendor/bin/envoy run deploy --web_hook=$LOG_SLACK_WEBHOOK_URL --release_url=$CI_ENVIRONMENT_URL
   environment:
     name: staging
@@ -77,15 +109,16 @@ deploy_staging:
 
 build_images:
   image: docker:git
+  stage: build
   services:
   - docker:dind
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest .
-    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk phpdocker/dusk
     - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
+    - docker image tag registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest $CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
+    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk phpdocker/dusk
     - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk
-  when: manual
   only:
     changes:
       - Dockerfile

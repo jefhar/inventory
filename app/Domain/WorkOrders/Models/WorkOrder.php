@@ -52,11 +52,18 @@ class WorkOrder extends Model
     ];
     protected $casts = [
         self::IS_LOCKED => 'boolean',
-        self::LUHN => 'int',
+        self::LUHN => 'int'
     ];
     protected $dispatchesEvents = [
         'created' => WorkOrderCreated::class,
     ];
+
+    /**
+     * The number of models to return for pagination.
+     *
+     * @var int
+     */
+    protected $perPage = 15;
 
     /**
      * This allows for matching the model by the slug in the path

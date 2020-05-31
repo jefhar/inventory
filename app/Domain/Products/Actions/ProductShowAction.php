@@ -25,6 +25,7 @@ class ProductShowAction
     /**
      * @param Product $product
      * @return array
+     * @throws \JsonException
      */
     public static function execute(Product $product): array
     {
@@ -39,11 +40,11 @@ class ProductShowAction
             $readonly = 'readonly';
             $disabled = 'disabled';
         }
-        // Make $formData and $values both arrays:
+        // Convert both $formData and $values into arrays:
         $formData = json_decode($product->type->form, true, 512, JSON_THROW_ON_ERROR);
         $values = $product->values;
 
-        // Pass $field by reference so it can be modified.
+        // Pass $field by reference so it can be modified in place.
         foreach ($formData as &$field) {
             $attribute = $field['name'];
             $field['readonly'] = $readonly;
@@ -53,7 +54,6 @@ class ProductShowAction
                 $field['userData'] = [$values[$attribute]];
             }
         }
-        // Warning:[EA] This variable must be unset just after foreach to prevent possible side-effects.
         unset($field);
 
         // Add manufacturer and model to $formData
