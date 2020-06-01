@@ -13,6 +13,8 @@
 
 use App\Admin\Permissions\UserPermissions;
 use App\AjaxSearch\Controllers\AjaxSearchController;
+use App\Carts\Controllers\CartController;
+use App\Carts\Controllers\PendingSaleController;
 use App\Products\Controllers\InventoryController;
 use App\Products\Controllers\ProductController;
 use App\Types\Controllers\TypeController;
@@ -54,10 +56,9 @@ Route::group(
         Route::namespace('Admin\\Controllers')->group(
             function () {
                 Route::get('/home', 'HomeController@index')->name('home');
-                Route::resource('dashboard', 'DashboardController');
+                Route::resource('dashboard', 'DashboardController')->middleware('auth');
             }
         );
-
         Route::namespace('WorkOrders\\Controllers\\')->group(
             function () {
                 Route::resource('workorders', 'WorkOrderController')->only(
@@ -124,39 +125,39 @@ Route::group(
         );
         Route::namespace('Carts\\Controllers\\')->group(
             function () {
-                Route::get(\App\Carts\Controllers\CartController::INDEX_PATH, 'CartController@index')
-                    ->name(\App\Carts\Controllers\CartController::INDEX_NAME)->middleware(
+                Route::get(CartController::INDEX_PATH, 'CartController@index')
+                    ->name(CartController::INDEX_NAME)->middleware(
                         'auth',
                         'permission:' . UserPermissions::MUTATE_CART
                     );
-                Route::get(\App\Carts\Controllers\CartController::SHOW_PATH, 'CartController@show')
-                    ->name(\App\Carts\Controllers\CartController::SHOW_NAME)->middleware('auth');
-                Route::post(\App\Carts\Controllers\CartController::STORE_PATH, 'CartController@store')
-                    ->name(\App\Carts\Controllers\CartController::STORE_NAME)->middleware(
+                Route::get(CartController::SHOW_PATH, 'CartController@show')
+                    ->name(CartController::SHOW_NAME)->middleware('auth');
+                Route::post(CartController::STORE_PATH, 'CartController@store')
+                    ->name(CartController::STORE_NAME)->middleware(
                         'auth',
                         'permission:' . UserPermissions::MUTATE_CART
                     );
-                Route::delete(\App\Carts\Controllers\CartController::DESTROY_PATH, 'CartController@destroy')
-                    ->name(\App\Carts\Controllers\CartController::DESTROY_NAME)->middleware(
+                Route::delete(CartController::DESTROY_PATH, 'CartController@destroy')
+                    ->name(CartController::DESTROY_NAME)->middleware(
                         'auth',
                         'permission:' . UserPermissions::MUTATE_CART
                     );
-                Route::patch(\App\Carts\Controllers\CartController::UPDATE_PATH, 'CartController@update')
-                    ->name(\App\Carts\Controllers\CartController::UPDATE_NAME)->middleware('auth');
+                Route::patch(CartController::UPDATE_PATH, 'CartController@update')
+                    ->name(CartController::UPDATE_NAME)->middleware('auth');
             }
         );
         Route::namespace('Carts\\Controllers\\')->group(
             function () {
-                Route::post(\App\Carts\Controllers\PendingSaleController::STORE_PATH, 'PendingSaleController@store')
-                    ->name(\App\Carts\Controllers\PendingSaleController::STORE_NAME)->middleware(
+                Route::post(PendingSaleController::STORE_PATH, 'PendingSaleController@store')
+                    ->name(PendingSaleController::STORE_NAME)->middleware(
                         'auth',
                         'permission:' . UserPermissions::MUTATE_CART
                     );
                 Route::delete(
-                    \App\Carts\Controllers\PendingSaleController::DESTROY_PATH,
+                    PendingSaleController::DESTROY_PATH,
                     'PendingSaleController@destroy'
                 )
-                    ->name(\App\Carts\Controllers\PendingSaleController::DESTROY_NAME)->middleware(
+                    ->name(PendingSaleController::DESTROY_NAME)->middleware(
                         'auth',
                         'permission:' . UserPermissions::MUTATE_CART
                     );
