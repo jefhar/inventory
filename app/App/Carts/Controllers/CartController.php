@@ -27,7 +27,7 @@ use Illuminate\View\View;
  *
  * @package App\Carts\Controllers\
  */
-class CartsController extends Controller
+class CartController extends Controller
 {
     public const DESTROY_NAME = 'carts.destroy';
     public const DESTROY_PATH = '/carts/{cart}';

@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package App\Admin\Controllers
  */
-class WorkOrdersController extends Controller
+class WorkOrderController extends Controller
 {
     public const CREATE_NAME = 'workorders.create';
     public const CREATE_PATH = '/workorders/create';

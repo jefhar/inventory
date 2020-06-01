@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
-use App\Types\Controllers\TypesController;
+use App\Types\Controllers\TypeController;
 use Domain\Products\Models\Type;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,7 +33,7 @@ class TypesControllerTest extends TestCase
     {
         $type = factory(Type::class)->create();
         $this
-            ->get(route(TypesController::SHOW_NAME, $type->slug))
+            ->get(route(TypeController::SHOW_NAME, $type->slug))
             ->assertRedirect();
     }
 
@@ -45,7 +45,7 @@ class TypesControllerTest extends TestCase
         /** @var Type $type */
         $type = factory(Type::class)->create();
         $this->actingAs($this->createEmployee())
-            ->get(route(TypesController::SHOW_NAME, $type->slug))
+            ->get(route(TypeController::SHOW_NAME, $type->slug))
             ->assertOk()
             ->assertSeeText($type->form, false);
     }
@@ -71,11 +71,11 @@ class TypesControllerTest extends TestCase
     {
         $this->withoutMix();
         $type = factory(Type::class)->create();
-        $this->get(route(TypesController::CREATE_NAME))
+        $this->get(route(TypeController::CREATE_NAME))
             ->assertRedirect();
 
         $this->actingAs($this->createEmployee())
-            ->get(route(TypesController::CREATE_NAME))
+            ->get(route(TypeController::CREATE_NAME))
             ->assertOk()
             ->assertSeeText('Create New Product Type')
             ->assertSeeText($type->name)
@@ -89,11 +89,11 @@ class TypesControllerTest extends TestCase
     public function typeIndexApiExistsAndIsAccessible(): void
     {
         $type = factory(Type::class)->create();
-        $this->get(route(TypesController::INDEX_NAME))
+        $this->get(route(TypeController::INDEX_NAME))
             ->assertRedirect();
 
         $this->actingAs($this->createEmployee())
-            ->get(route(TypesController::INDEX_NAME))
+            ->get(route(TypeController::INDEX_NAME))
             ->assertOk()
             ->assertSeeText(json_encode($type->name, JSON_THROW_ON_ERROR), false);
     }
@@ -105,13 +105,13 @@ class TypesControllerTest extends TestCase
     {
         $type = factory(Type::class)->make();
         $this->post(
-            route(TypesController::STORE_NAME),
+            route(TypeController::STORE_NAME),
             [Type::FORM => $type->form, Type::NAME => $type->name,]
         )
             ->assertRedirect();
         $this->actingAs($this->createEmployee())
             ->post(
-                route(TypesController::STORE_NAME),
+                route(TypeController::STORE_NAME),
                 [Type::FORM => $type->form, Type::NAME => $type->name,]
             )->assertCreated();
         $this->assertDatabaseHas(
@@ -130,18 +130,18 @@ class TypesControllerTest extends TestCase
     {
         $type = factory(Type::class)->create();
         $this
-            ->delete(route(TypesController::DESTROY_NAME, $type))
+            ->delete(route(TypeController::DESTROY_NAME, $type))
             ->assertRedirect();
 
         // Destroyed Type returns OK
         $this
             ->actingAs($this->createEmployee())
-            ->delete(route(TypesController::DESTROY_NAME, $type))
+            ->delete(route(TypeController::DESTROY_NAME, $type))
             ->assertOk();
         $this->assertSoftDeleted($type);
         // Destroyed non-existing Type returns 404
         $this
-            ->delete(route(TypesController::DESTROY_NAME, $type))
+            ->delete(route(TypeController::DESTROY_NAME, $type))
             ->assertNotFound();
     }
 
@@ -153,14 +153,14 @@ class TypesControllerTest extends TestCase
         $type = factory(Type::class)->create();
         $this->actingAs($this->createEmployee())
             ->post(
-                route(TypesController::STORE_NAME),
+                route(TypeController::STORE_NAME),
                 [Type::NAME => $type->name, Type::FORM => $type->form, 'force' => false,]
             )
             ->assertStatus(Response::HTTP_ACCEPTED);
 
         $this->actingAs($this->createEmployee())
             ->post(
-                route(TypesController::STORE_NAME),
+                route(TypeController::STORE_NAME),
                 [Type::NAME => $type->name, Type::FORM => $type->form,]
             )
             ->assertStatus(Response::HTTP_ACCEPTED);
@@ -174,7 +174,7 @@ class TypesControllerTest extends TestCase
         $type = factory(Type::class)->create();
         $this->actingAs($this->createEmployee())
             ->post(
-                route(TypesController::STORE_NAME),
+                route(TypeController::STORE_NAME),
                 [Type::NAME => $type->name, Type::FORM => $type->form, 'force' => true,]
             )
             ->assertOk();

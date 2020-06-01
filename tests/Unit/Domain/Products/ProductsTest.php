@@ -144,7 +144,9 @@ class ProductsTest extends TestCase
     {
         $faker = Factory::create();
         $serial = $faker->isbn13;
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
+        /** @var Product $product */
         $product = factory(Product::class)->make(
             [
                 'values' => [
@@ -224,14 +226,14 @@ class ProductsTest extends TestCase
     public function productPriceSavesAsPennies(): void
     {
         $product = $this->createFullProduct();
-        $price = rand(100, mt_getrandmax()) / 100;
+        $price = rand(100, 999_999_99) / 100;
         $product->price = $price;
         $product->save();
         $this->assertDatabaseHas(
             Product::TABLE,
             [
                 Product::ID => $product->id,
-                Product::PRICE => $price * 100,
+                Product::PRICE => (int)($price * 100),
             ]
         );
         $product->refresh();

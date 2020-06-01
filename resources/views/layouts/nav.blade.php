@@ -43,7 +43,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="workOrderDropdownMenuLink">
               <a class="dropdown-item"
-                 href="{{ route(\App\WorkOrders\Controllers\WorkOrdersController::CREATE_NAME) }}">Create</a>
+                 href="{{ route(\App\WorkOrders\Controllers\WorkOrderController::CREATE_NAME) }}">Create</a>
               <div class="dropdown-divider"></div>
             </div>
           </li>
@@ -54,7 +54,7 @@
           </li>
           @can(\App\Admin\Permissions\UserPermissions::MUTATE_CART)
             <li class="nav-item">
-              <a class="nav-link" href="{{ route(\App\Carts\Controllers\CartsController::INDEX_NAME) }}">
+              <a class="nav-link" href="{{ route(\App\Carts\Controllers\CartController::INDEX_NAME) }}">
                 Your Carts
               </a>
             </li>

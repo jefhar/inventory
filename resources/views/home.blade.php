@@ -29,7 +29,7 @@
                       Work&shy;Order should keep track of one decommission project.
                     </p>
 
-                    <a href="{{ route(\App\WorkOrders\Controllers\WorkOrdersController::CREATE_NAME) }}"
+                    <a href="{{ route(\App\WorkOrders\Controllers\WorkOrderController::CREATE_NAME) }}"
                        class="btn btn-outline-primary">
                       Create new WorkOrder</a>
                   </div>
@@ -56,7 +56,7 @@
                       <p class="card-text">
                         Create or Edit a new Product Type using the formBuilder.
                       </p>
-                      <a href="{{ route(\App\Types\Controllers\TypesController::CREATE_NAME) }}"
+                      <a href="{{ route(\App\Types\Controllers\TypeController::CREATE_NAME) }}"
                          class="btn btn-outline-primary">Edit Product
                         Types</a>
                     </div>
