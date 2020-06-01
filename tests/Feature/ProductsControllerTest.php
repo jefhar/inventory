@@ -88,7 +88,7 @@ class ProductsControllerTest extends TestCase
      */
     public function salesRepCanAddPriceToProduct(): void
     {
-        $price = random_int(100, PHP_INT_MAX) / 100;
+        $price = rand(100, 999_999_99) / 100;
         $product = $this->createFullProduct();
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price])
@@ -122,7 +122,7 @@ class ProductsControllerTest extends TestCase
     public function negativePriceResultsInUnprocessableEntity(): void
     {
         $product = $this->createFullProduct();
-        $price = random_int(PHP_INT_MIN, 0) / 100;
+        $price = rand(-999_999_99, 0) / 100;
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
             ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price,])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);

@@ -224,7 +224,7 @@ class ProductsTest extends TestCase
     public function productPriceSavesAsPennies(): void
     {
         $product = $this->createFullProduct();
-        $price = random_int(100, mt_getrandmax()) / 100;
+        $price = rand(100, mt_getrandmax()) / 100;
         $product->price = $price;
         $product->save();
         $this->assertDatabaseHas(
@@ -244,7 +244,7 @@ class ProductsTest extends TestCase
     public function productPriceCanNotBeNegative(): void
     {
         $product = $this->createFullProduct();
-        $price = random_int(PHP_INT_MIN, 0);
+        $price = rand(-999_999_99, 0);
         $product->price = $price;
         $product->save();
         $product->refresh();
@@ -271,6 +271,6 @@ class ProductsTest extends TestCase
 
         // Test
         $this->expectException(LockedProductException::class);
-        PricePatchAction::execute($product, random_int(0, PHP_INT_MAX) / 100);
+        PricePatchAction::execute($product, rand(0, 999_999_99) / 100);
     }
 }
