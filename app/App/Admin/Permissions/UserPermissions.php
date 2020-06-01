@@ -16,6 +16,7 @@ namespace App\Admin\Permissions;
 final class UserPermissions
 {
     public const CREATE_OR_EDIT_PRODUCT_TYPE = 'product.type.create_or_edit';
+    public const CREATE_OR_EDIT_USERS = 'dashboard.use';
     public const EDIT_SAVED_PRODUCT = 'inventoryItem.view.edit';
     public const IS_EMPLOYEE = 'user.is.employee';
     public const MUTATE_CART = 'cart.mutate';
