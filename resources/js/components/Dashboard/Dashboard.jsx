@@ -13,7 +13,9 @@ class Dashboard extends React.Component {
     this.state = {
       allPermissions: '[{"id":"NONE","name":"NONE"}]',
       allRoles: '[{"id":"NONE","name":"NONE"}]',
+      isPermissionsLoaded: false,
       isPermissionsLoading: false,
+      isPermissionsLocked: true,
       isRolesLoaded: false,
       isRolesLocked: true,
       isUserLoaded: false,
@@ -36,8 +38,6 @@ class Dashboard extends React.Component {
       { id: 'TECHNICIAN', name: 'Technician' },
     ]
     allRoles = JSON.stringify(allRoles)
-    console.info('allRoles', allRoles)
-
     this.setState({
       allRoles: allRoles,
       isRolesLoaded: true,
@@ -62,7 +62,7 @@ class Dashboard extends React.Component {
     allPermissions = JSON.stringify(allPermissions)
     this.setState({
       allPermissions: allPermissions,
-      isPermissionsLoading: false,
+      isPermissionsLoaded: true,
     })
 
     // Call AJAX, get list of all users. Put it in this.state.allUsers
@@ -116,12 +116,13 @@ class Dashboard extends React.Component {
             <UserRoles
               className="py-1"
               isLoading={!this.state.isRolesLoaded}
-              roles={this.state.allRoles}
               isLocked={this.state.isRolesLocked}
+              roles={this.state.allRoles}
             />
             <UserPermissions
               className="py-1"
-              isLoaded={this.state.isPermissionsLoaded}
+              isLoading={!this.state.isPermissionsLoaded}
+              isLocked={this.state.isPermissionsLocked}
               permissions={this.state.allPermissions}
             />
           </CardBody>

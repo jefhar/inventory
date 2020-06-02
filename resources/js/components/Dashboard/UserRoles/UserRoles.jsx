@@ -16,7 +16,7 @@ class UserRoles extends React.Component {
   }
 
   render() {
-    console.log(this.props.roles)
+    console.info(this.props.roles)
     const roles = JSON.parse(this.props.roles)
 
     const roleItems = roles.map((role) => (
