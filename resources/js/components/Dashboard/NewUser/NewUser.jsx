@@ -1,23 +1,26 @@
 import * as React from 'react'
 import PropTypes from 'prop-types'
-import { Col, Form, FormGroup, Input, Label, Row } from 'reactstrap'
+import {
+  Col,
+  Form,
+  FormFeedback,
+  FormGroup,
+  Input,
+  Label,
+  Row,
+} from 'reactstrap'
 
 class NewUser extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      email: '',
-      isLocked: true,
-      name: '',
-    }
-    this.checkInputs = this.checkInputs.bind(this)
+    this.state = {}
   }
 
   render() {
     if (!this.props.show) {
       return null
     }
-    const className = `is-${this.state.isLocked ? 'in' : ''}valid`
+
     return (
       <>
         <p className="lead">Create a New User:</p>
@@ -27,14 +30,16 @@ class NewUser extends React.Component {
               <FormGroup>
                 <Label for="name">Name </Label>
                 <Input
-                  className={className}
                   id="name"
                   name="name"
-                  onChange={this.checkInputs}
+                  onChange={this.props.onChange}
                   placeholder="User's Name"
                   type="text"
-                  value={this.state.name}
+                  value={this.props.name}
+                  invalid={this.props.isLocked}
+                  valid={!this.props.isLocked}
                 />
+                <FormFeedback>Name and/or Email too short.</FormFeedback>
               </FormGroup>
             </Col>
 
@@ -42,40 +47,31 @@ class NewUser extends React.Component {
               <FormGroup>
                 <Label for="email">Email </Label>
                 <Input
-                  className={className}
                   id="email"
                   name="email"
-                  onChange={this.checkInputs}
+                  onChange={this.props.onChange}
                   placeholder="Email"
                   type="email"
-                  value={this.state.email}
+                  value={this.props.email}
+                  invalid={this.props.isLocked}
+                  valid={!this.props.isLocked}
                 />
+                <FormFeedback>Name and/or Email too short.</FormFeedback>
               </FormGroup>
             </Col>
           </Row>
         </Form>
-        <p>{JSON.stringify(this.state.isLocked)}</p>
+        <p>{JSON.stringify(this.props.isLocked)}</p>
       </>
     )
-  }
-
-  checkInputs(event) {
-    const target = event.target
-    const value = target.type === 'checkbox' ? target.checked : target.value
-    const name = target.name
-    this.setState({
-      [name]: value,
-    })
-    this.setState((state) => {
-      console.info('name length', state.name.length > 1)
-      console.info('email length', state.email.length > 1)
-      console.info('boolean', state.name.length < 3 || state.email.length < 3)
-      return { isLocked: state.name.length < 3 || state.email.length < 3 }
-    })
   }
 }
 
 NewUser.propTypes = {
+  email: PropTypes.string,
+  isLocked: PropTypes.bool,
+  name: PropTypes.string,
+  onChange: PropTypes.func,
   show: PropTypes.bool,
 }
 

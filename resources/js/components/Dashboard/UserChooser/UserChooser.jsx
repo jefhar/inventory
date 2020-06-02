@@ -64,14 +64,24 @@ class UserChooser extends React.Component {
             Edit existing user
           </Button>
         </Row>
-        <NewUser show={this.state.showNewUser} />
+        <NewUser
+          show={this.state.showNewUser}
+          onChange={this.props.onChange}
+          isLocked={this.props.isLocked}
+          name={this.props.name}
+          email={this.props.email}
+        />
       </>
     )
   }
 }
 
 UserChooser.propTypes = {
+  email: PropTypes.string,
   isLoaded: PropTypes.bool,
+  isLocked: PropTypes.bool,
+  name: PropTypes.string,
+  onChange: PropTypes.func,
 }
 
 export default UserChooser

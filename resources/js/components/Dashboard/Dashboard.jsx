@@ -13,13 +13,14 @@ class Dashboard extends React.Component {
     this.state = {
       allPermissions: '[{"id":"NONE","name":"NONE"}]',
       allRoles: '[{"id":"NONE","name":"NONE"}]',
+      email: '',
+      name: '',
+      isLocked: true,
       isPermissionsLoaded: false,
-      isPermissionsLoading: false,
-      isPermissionsLocked: true,
       isRolesLoaded: false,
-      isRolesLocked: true,
       isUserLoaded: false,
     }
+    this.onChange = this.onChange.bind(this)
   }
 
   async componentDidMount() {
@@ -41,6 +42,7 @@ class Dashboard extends React.Component {
     this.setState({
       allRoles: allRoles,
       isRolesLoaded: true,
+      isRolesLocked: false,
     })
 
     // Call AJAX, return a set of allPermissions. Put it in
@@ -63,6 +65,7 @@ class Dashboard extends React.Component {
     this.setState({
       allPermissions: allPermissions,
       isPermissionsLoaded: true,
+      isPermissionsLocked: false,
     })
 
     // Call AJAX, get list of all users. Put it in this.state.allUsers
@@ -83,9 +86,24 @@ class Dashboard extends React.Component {
     })
   }
 
+  onChange(event) {
+    const target = event.target
+    console.info('target', target)
+    const value = target.type === 'checkbox' ? target.checked : target.value
+    const name = target.name
+    console.info(name, '=', value)
+    // doesn't get current state.name and state.length. This just makes sure
+    // that there is something in the field besides a single character.
+    const isLocked = this.state.name.length < 2 || this.state.email.length < 3
+    this.setState({
+      [name]: value,
+      isLocked: isLocked,
+    })
+  }
+
   render() {
     console.info('d: rendering')
-    console.info('d: isRolesLoaded', this.state.isRolesLoaded)
+    console.info('d: state', this.state)
     return (
       <Container>
         <Card>
@@ -112,17 +130,21 @@ class Dashboard extends React.Component {
               className="py-1"
               isLoaded={this.state.isUserLoaded}
               users={this.state.allUsers}
+              isLocked={this.state.isLocked}
+              name={this.state.name}
+              value={this.state.value}
+              onChange={this.onChange}
             />
             <UserRoles
               className="py-1"
               isLoading={!this.state.isRolesLoaded}
-              isLocked={this.state.isRolesLocked}
+              isLocked={this.state.isLocked}
               roles={this.state.allRoles}
             />
             <UserPermissions
               className="py-1"
               isLoading={!this.state.isPermissionsLoaded}
-              isLocked={this.state.isPermissionsLocked}
+              isLocked={this.state.isLocked}
               permissions={this.state.allPermissions}
             />
           </CardBody>
