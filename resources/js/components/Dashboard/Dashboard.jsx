@@ -9,7 +9,6 @@ import { Card, CardBody, CardHeader, Container } from 'reactstrap'
 class Dashboard extends React.Component {
   constructor(props) {
     super(props)
-    console.log('constructing.')
     this.state = {
       allPermissions: '[{"id":"NONE","name":"NONE"}]',
       allRoles: '[{"id":"NONE","name":"NONE"}]',
@@ -19,9 +18,11 @@ class Dashboard extends React.Component {
       isRolesLoaded: false,
       isUserLoaded: false,
       name: '',
+      permissionsSelected: [],
       roleSelected: '',
     }
     this.onChange = this.onChange.bind(this)
+    this.setChecked = this.setChecked.bind(this)
     this.setSelected = this.setSelected.bind(this)
   }
 
@@ -88,16 +89,26 @@ class Dashboard extends React.Component {
     })
   }
 
+  setChecked(event) {
+    const permission = event.target.value
+    const permissionsSelected = this.state.permissionsSelected
+    const index = permissionsSelected.indexOf(permission)
+    if (index < 0) {
+      permissionsSelected.push(permission)
+    } else {
+      permissionsSelected.splice(index, 1)
+    }
+    this.setState({ permissionsSelected: permissionsSelected })
+  }
+
   setSelected(event) {
     this.setState({ roleSelected: event.target.value })
   }
 
   onChange(event) {
     const target = event.target
-    console.info('target', target)
     const value = target.type === 'checkbox' ? target.checked : target.value
     const name = target.name
-    console.info(name, '=', value)
     // doesn't get current state.name and state.length. This just makes sure
     // that there is something in the field besides a single character.
     const isLocked = this.state.name.length < 2 || this.state.email.length < 3
@@ -108,8 +119,6 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    console.info('d: rendering')
-    console.info('d: state', this.state)
     return (
       <Container>
         <Card>
@@ -154,6 +163,8 @@ class Dashboard extends React.Component {
               isLoading={!this.state.isPermissionsLoaded}
               isLocked={this.state.isLocked}
               permissions={this.state.allPermissions}
+              onChange={this.setChecked}
+              permissionsSelected={this.state.permissionsSelected}
             />
           </CardBody>
         </Card>
@@ -165,6 +176,6 @@ class Dashboard extends React.Component {
 export default WorkOrder
 
 if (document.getElementById('dashboard')) {
-  console.log('got dashboard')
+  console.info('got dashboard')
   ReactDOM.render(<Dashboard />, document.getElementById('dashboard'))
 }

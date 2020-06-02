@@ -9,13 +9,12 @@ class UserChooser extends React.Component {
     this.state = {
       showNewuser: false,
     }
+    this.setState = this.setState.bind(this)
   }
 
   toggleNewUser() {
-    let showNewUser = this.state.showNewUser
-    showNewUser = !showNewUser
-    this.setState({
-      showNewUser: showNewUser,
+    this.setState((state) => {
+      return { showNewUser: !state.showNewUser }
     })
   }
 
