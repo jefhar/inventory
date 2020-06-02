@@ -14,13 +14,15 @@ class Dashboard extends React.Component {
       allPermissions: '[{"id":"NONE","name":"NONE"}]',
       allRoles: '[{"id":"NONE","name":"NONE"}]',
       email: '',
-      name: '',
       isLocked: true,
       isPermissionsLoaded: false,
       isRolesLoaded: false,
       isUserLoaded: false,
+      name: '',
+      roleSelected: '',
     }
     this.onChange = this.onChange.bind(this)
+    this.setSelected = this.setSelected.bind(this)
   }
 
   async componentDidMount() {
@@ -86,6 +88,10 @@ class Dashboard extends React.Component {
     })
   }
 
+  setSelected(event) {
+    this.setState({ roleSelected: event.target.value })
+  }
+
   onChange(event) {
     const target = event.target
     console.info('target', target)
@@ -129,17 +135,19 @@ class Dashboard extends React.Component {
             <UserChooser
               className="py-1"
               isLoaded={this.state.isUserLoaded}
-              users={this.state.allUsers}
               isLocked={this.state.isLocked}
               name={this.state.name}
-              value={this.state.value}
               onChange={this.onChange}
+              users={this.state.allUsers}
+              value={this.state.value}
             />
             <UserRoles
               className="py-1"
               isLoading={!this.state.isRolesLoaded}
               isLocked={this.state.isLocked}
               roles={this.state.allRoles}
+              onClick={this.setSelected}
+              roleSelected={this.state.roleSelected}
             />
             <UserPermissions
               className="py-1"

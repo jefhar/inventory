@@ -21,11 +21,12 @@ class UserRoles extends React.Component {
 
     const roleItems = roles.map((role) => (
       <Button
-        active={this.state.roleSelected === `${role.id}`}
+        active={this.props.roleSelected === `${role.id}`}
         color="primary"
         disabled={this.props.isLocked}
         key={role.id}
-        onClick={() => this.setSelected(role.id)}
+        onClick={this.props.onClick}
+        value={role.id}
       >
         {role.name}
       </Button>
@@ -36,15 +37,19 @@ class UserRoles extends React.Component {
         <p className="lead">Select a Role:</p>
         <ButtonGroup>{roleItems}</ButtonGroup>
         {this.props.isLoading && <Spinner color="gray-300" type="grow" />}
+        <p>{this.props.roleSelected}</p>
+        <p>{JSON.stringify(this.props.isLocked)}</p>
       </div>
     )
   }
 }
 
 UserRoles.propTypes = {
-  isLocked: PropTypes.bool,
   isLoading: PropTypes.bool,
+  isLocked: PropTypes.bool,
+  onClick: PropTypes.func,
   roles: PropTypes.string,
+  roleSelected: PropTypes.string,
 }
 
 UserRoles.defaultProps = {}

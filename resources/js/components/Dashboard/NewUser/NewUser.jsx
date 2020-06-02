@@ -31,13 +31,13 @@ class NewUser extends React.Component {
                 <Label for="name">Name </Label>
                 <Input
                   id="name"
+                  invalid={this.props.isLocked}
                   name="name"
                   onChange={this.props.onChange}
                   placeholder="User's Name"
                   type="text"
-                  value={this.props.name}
-                  invalid={this.props.isLocked}
                   valid={!this.props.isLocked}
+                  value={this.props.name}
                 />
                 <FormFeedback>Name and/or Email too short.</FormFeedback>
               </FormGroup>
@@ -48,13 +48,13 @@ class NewUser extends React.Component {
                 <Label for="email">Email </Label>
                 <Input
                   id="email"
+                  invalid={this.props.isLocked}
                   name="email"
                   onChange={this.props.onChange}
                   placeholder="Email"
                   type="email"
-                  value={this.props.email}
-                  invalid={this.props.isLocked}
                   valid={!this.props.isLocked}
+                  value={this.props.email}
                 />
                 <FormFeedback>Name and/or Email too short.</FormFeedback>
               </FormGroup>
