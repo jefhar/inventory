@@ -11,10 +11,11 @@ class Dashboard extends React.Component {
     super(props)
     console.log('constructing.')
     this.state = {
-      allPermissions: '',
-      allRoles: '[{"id":"EMPLOYEE","name":"Employee"}]',
-      isPermissionsLoaded: false,
+      allPermissions: '[{"id":"NONE","name":"NONE"}]',
+      allRoles: '[{"id":"NONE","name":"NONE"}]',
+      isPermissionsLoading: false,
       isRolesLoaded: false,
+      isRolesLocked: true,
       isUserLoaded: false,
     }
   }
@@ -24,7 +25,7 @@ class Dashboard extends React.Component {
     const sleep = (ms) => {
       return new Promise((resolve) => setTimeout(resolve, ms))
     }
-    await sleep(1000)
+    await sleep(2000)
     console.info('done sleeping:')
 
     let allRoles = [
@@ -61,7 +62,7 @@ class Dashboard extends React.Component {
     allPermissions = JSON.stringify(allPermissions)
     this.setState({
       allPermissions: allPermissions,
-      isPermissionsLoaded: false,
+      isPermissionsLoading: false,
     })
 
     // Call AJAX, get list of all users. Put it in this.state.allUsers
@@ -114,8 +115,9 @@ class Dashboard extends React.Component {
             />
             <UserRoles
               className="py-1"
-              isLoaded={this.state.isRolesLoaded}
+              isLoading={!this.state.isRolesLoaded}
               roles={this.state.allRoles}
+              isLocked={this.state.isRolesLocked}
             />
             <UserPermissions
               className="py-1"

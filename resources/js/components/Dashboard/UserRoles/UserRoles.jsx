@@ -1,6 +1,6 @@
 import * as React from 'react'
 import PropTypes from 'prop-types'
-import { Button, ButtonGroup } from 'reactstrap'
+import { Button, ButtonGroup, Spinner } from 'reactstrap'
 
 class UserRoles extends React.Component {
   constructor(props) {
@@ -23,7 +23,7 @@ class UserRoles extends React.Component {
       <Button
         active={this.state.roleSelected === `${role.id}`}
         color="primary"
-        disabled={this.props.isLoaded}
+        disabled={this.props.isLocked}
         key={role.id}
         onClick={() => this.setSelected(role.id)}
       >
@@ -35,13 +35,15 @@ class UserRoles extends React.Component {
       <div className="border-top border-dark mt-4">
         <p className="lead">Select a Role:</p>
         <ButtonGroup>{roleItems}</ButtonGroup>
+        {this.props.isLoading && <Spinner color="gray-300" type="grow" />}
       </div>
     )
   }
 }
 
 UserRoles.propTypes = {
-  isLoaded: PropTypes.bool,
+  isLocked: PropTypes.bool,
+  isLoading: PropTypes.bool,
   roles: PropTypes.string,
 }
 
