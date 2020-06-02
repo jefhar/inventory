@@ -84,5 +84,11 @@
     "tabWidth": 2,
     "trailingComma": "es5",
     "useTabs": false
-  }
+  },
+  "browserslist": [
+    "> 5% in US",
+    "not IE 11",
+    "not IE_Mob 11",
+    "maintained node versions"
+  ]
 }
