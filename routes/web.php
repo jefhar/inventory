@@ -33,9 +33,8 @@ Route::get(
             $cart = Cart::find(1);
 
             return new CartInvoiced($cart);
-        } else {
-            abort(Response::HTTP_NOT_FOUND);
         }
+        abort(Response::HTTP_NOT_FOUND);
     }
 );
 Route::get(
@@ -56,7 +55,12 @@ Route::group(
         Route::namespace('Admin\\Controllers')->group(
             function () {
                 Route::get('/home', 'HomeController@index')->name('home');
-                Route::resource('dashboard', 'DashboardController')->middleware('auth');
+                Route::resource('dashboard', 'DashboardController')->middleware(
+                    [
+                        'auth',
+                        'can:' . UserPermissions::CREATE_OR_EDIT_USERS,
+                    ]
+                );
             }
         );
         Route::namespace('WorkOrders\\Controllers\\')->group(
@@ -158,8 +162,10 @@ Route::group(
                     'PendingSaleController@destroy'
                 )
                     ->name(PendingSaleController::DESTROY_NAME)->middleware(
-                        'auth',
-                        'permission:' . UserPermissions::MUTATE_CART
+                        [
+                            'auth',
+                            'permission:' . UserPermissions::MUTATE_CART,
+                        ]
                     );
             }
         );

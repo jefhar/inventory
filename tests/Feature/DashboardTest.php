@@ -1,0 +1,61 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Admin\Controllers\DashboardController;
+use App\Admin\Permissions\UserRoles;
+use App\User;
+use Tests\TestCase;
+
+class DashboardTest extends TestCase
+
+{
+    /**
+     * @test
+     */
+    public function dashboardCreateTest(): void
+    {
+        $this
+            ->get(route(DashboardController::CREATE_NAME))
+            ->assertRedirect();
+        /** @var User $employee */
+        $employee = factory(User::class)->create();
+        $employee->assignRole(UserRoles::EMPLOYEE);
+        $this
+            ->actingAs($employee)
+            ->get(route(DashboardController::CREATE_NAME))
+            ->assertForbidden();
+
+        /** @var User $salesRep */
+        $salesRep = factory(User::class)->create();
+        $salesRep->assignRole(UserRoles::SALES_REP);
+        $this
+            ->actingAs($salesRep)
+            ->get(route(DashboardController::CREATE_NAME))
+            ->assertForbidden();
+
+        /**  @var User $technician */
+        $technician = factory(User::class)->create();
+        $technician->assignRole(UserRoles::TECHNICIAN);
+        $this
+            ->actingAs($technician)
+            ->get(route(DashboardController::CREATE_NAME))
+            ->assertForbidden();
+
+        /** @var User $owner */
+        $owner = factory(User::class)->create();
+        $owner->assignRole(UserRoles::OWNER);
+        $this
+            ->actingAs($owner)
+            ->get(route(DashboardController::CREATE_NAME))
+            ->assertOk();
+
+        /** @var User $superAdmin */
+        $superAdmin = factory(User::class)->create();
+        $superAdmin->assignRole(UserRoles::SUPER_ADMIN);
+        $this
+            ->actingAs($superAdmin)
+            ->get(route(DashboardController::CREATE_NAME))
+            ->assertOk();
+    }
+}

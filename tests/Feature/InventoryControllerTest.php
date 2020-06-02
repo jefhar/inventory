@@ -223,6 +223,7 @@ class InventoryControllerTest extends TestCase
 
     /**
      * @test
+     * @todo: Make sure $client->company_name is unique from product->manufacturer->name
      */
     public function salesRepsSeeTheirExistingCartsOnInventoryPage(): void
     {
