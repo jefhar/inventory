@@ -11,6 +11,7 @@ namespace App\Admin\Controllers;
 
 use App\Admin\Permissions\UserRoles;
 use App\User;
+use Illuminate\Support\Str;
 
 class RoleController extends Controller
 {
@@ -25,11 +26,11 @@ class RoleController extends Controller
         if ($user->hasRole(UserRoles::SUPER_ADMIN)) {
             $ownerRole[] = [
                 'id' => UserRoles::OWNER,
-                'name' => UserRoles::ROLES[UserRoles::OWNER],
+                'name' => Str::title(UserRoles::ROLES[UserRoles::OWNER]),
             ];
         } else {
             foreach ([UserRoles::EMPLOYEE, UserRoles::SALES_REP, UserRoles::TECHNICIAN] as $role) {
-                $ownerRole[] = ['id' => $role, 'name' => UserRoles::ROLES[$role]];
+                $ownerRole[] = ['id' => $role, 'name' => Str::title(UserRoles::ROLES[$role])];
             }
         }
 

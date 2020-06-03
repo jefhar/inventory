@@ -13,6 +13,7 @@ use App\Admin\Controllers\RoleController;
 use App\Admin\Permissions\UserRoles;
 use App\User;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class RoleControllerTest extends TestCase
@@ -88,11 +89,11 @@ class RoleControllerTest extends TestCase
             ->assertOk()
             ->assertJson(
                 [
-                    ['id' => UserRoles::OWNER, 'name' => UserRoles::ROLES[UserRoles::OWNER],],
+                    ['id' => UserRoles::OWNER, 'name' => Str::title(UserRoles::ROLES[UserRoles::OWNER]),],
                 ],
             )->assertJsonMissing(
                 [
-                    ['id' => UserRoles::SUPER_ADMIN, 'name' => UserRoles::ROLES[UserRoles::SUPER_ADMIN],],
+                    ['id' => UserRoles::SUPER_ADMIN, 'name' => Str::title(UserRoles::ROLES[UserRoles::SUPER_ADMIN]),],
                 ]
             );
     }
@@ -120,7 +121,7 @@ class RoleControllerTest extends TestCase
             )
             ->assertJson(
                 [
-                    ['id' => UserRoles::EMPLOYEE, 'name' => UserRoles::ROLES[UserRoles::EMPLOYEE],],
+                    ['id' => UserRoles::EMPLOYEE, 'name' => Str::title(UserRoles::ROLES[UserRoles::EMPLOYEE]),],
                 ]
             );
     }
