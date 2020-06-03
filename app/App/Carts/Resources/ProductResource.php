@@ -25,7 +25,7 @@ class ProductResource extends JsonResource
 
     public const CART_ID = 'cart_id';
     public const CLIENT_COMPANY_NAME = 'company_client_name';
-    public const MANUFACTURER_NAMER = 'manufacturer_name';
+    public const MANUFACTURER_NAME = 'manufacturer_name';
     public const MODEL = 'model';
     public const PRODUCT_ID = 'product_id';
 
@@ -38,7 +38,7 @@ class ProductResource extends JsonResource
         return [
             self::CART_ID => $this->cart->luhn ?? null,
             self::CLIENT_COMPANY_NAME => $this->cart->client->company_name ?? null,
-            self::MANUFACTURER_NAMER => $this->manufacturer->name,
+            self::MANUFACTURER_NAME => $this->manufacturer->name,
             self::MODEL => $this->model,
             self::PRODUCT_ID => $this->luhn,
         ];
