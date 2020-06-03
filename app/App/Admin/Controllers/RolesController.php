@@ -9,13 +9,14 @@ declare(strict_types=1);
 
 namespace App\Admin\Controllers;
 
-class DashboardController extends Controller
+class RolesController extends Controller
 {
-    public const INDEX_NAME = 'dashboard.index';
-    public const INDEX_PATH = '/dashboard';
+
+    public const INDEX_NAME = 'roles.index';
+    public const INDEX_PATH = '/dashboard/roles';
 
     public function index()
     {
-        return view('dashboard.index');
+        return '["Roles: {}"]';
     }
 }

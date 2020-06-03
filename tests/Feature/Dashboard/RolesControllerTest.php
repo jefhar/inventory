@@ -1,29 +1,35 @@
 <?php
 
-namespace Tests\Feature;
+/**
+ * Copyright 2018, 2019, 2020 Jeff Harris
+ * PHP Version 7.4
+ */
 
-use App\Admin\Controllers\DashboardController;
+declare(strict_types=1);
+
+namespace Tests\Feature\Dashboard;
+
+use App\Admin\Controllers\RolesController as RolesController;
 use App\Admin\Permissions\UserRoles;
 use App\User;
 use Tests\TestCase;
 
-class DashboardTest extends TestCase
-
+class RolesControllerTest extends TestCase
 {
     /**
      * @test
      */
-    public function dashboardCreateTest(): void
+    public function rolesIndexOnlyVisibleToOwnerAndSuperAdmin(): void
     {
         $this
-            ->get(route(DashboardController::CREATE_NAME))
+            ->get(route(RolesController::INDEX_NAME))
             ->assertRedirect();
         /** @var User $employee */
         $employee = factory(User::class)->create();
         $employee->assignRole(UserRoles::EMPLOYEE);
         $this
             ->actingAs($employee)
-            ->get(route(DashboardController::CREATE_NAME))
+            ->get(route(RolesController::INDEX_NAME))
             ->assertForbidden();
 
         /** @var User $salesRep */
@@ -31,7 +37,7 @@ class DashboardTest extends TestCase
         $salesRep->assignRole(UserRoles::SALES_REP);
         $this
             ->actingAs($salesRep)
-            ->get(route(DashboardController::CREATE_NAME))
+            ->get(route(RolesController::INDEX_NAME))
             ->assertForbidden();
 
         /**  @var User $technician */
@@ -39,15 +45,16 @@ class DashboardTest extends TestCase
         $technician->assignRole(UserRoles::TECHNICIAN);
         $this
             ->actingAs($technician)
-            ->get(route(DashboardController::CREATE_NAME))
+            ->get(route(RolesController::INDEX_NAME))
             ->assertForbidden();
 
         /** @var User $owner */
         $owner = factory(User::class)->create();
         $owner->assignRole(UserRoles::OWNER);
         $this
+            ->withoutExceptionHandling()
             ->actingAs($owner)
-            ->get(route(DashboardController::CREATE_NAME))
+            ->get(route(RolesController::INDEX_NAME))
             ->assertOk();
 
         /** @var User $superAdmin */
@@ -55,7 +62,7 @@ class DashboardTest extends TestCase
         $superAdmin->assignRole(UserRoles::SUPER_ADMIN);
         $this
             ->actingAs($superAdmin)
-            ->get(route(DashboardController::CREATE_NAME))
+            ->get(route(RolesController::INDEX_NAME))
             ->assertOk();
     }
 }

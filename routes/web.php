@@ -11,6 +11,8 @@
 |
 */
 
+use App\Admin\Controllers\DashboardController;
+use App\Admin\Controllers\RolesController;
 use App\Admin\Permissions\UserPermissions;
 use App\AjaxSearch\Controllers\AjaxSearchController;
 use App\Carts\Controllers\CartController;
@@ -55,12 +57,22 @@ Route::group(
         Route::namespace('Admin\\Controllers')->group(
             function () {
                 Route::get('/home', 'HomeController@index')->name('home');
-                Route::resource('dashboard', 'DashboardController')->middleware(
-                    [
-                        'auth',
-                        'can:' . UserPermissions::CREATE_OR_EDIT_USERS,
-                    ]
-                );
+                Route::get(DashboardController::INDEX_PATH, 'DashboardController@index')
+                    ->name(DashboardController::INDEX_NAME)
+                    ->middleware(
+                        [
+                            'auth',
+                            'can:' . UserPermissions::CREATE_OR_EDIT_USERS,
+                        ]
+                    );
+                Route::get(RolesController::INDEX_PATH, 'RolesController@index')
+                    ->name(RolesController::INDEX_NAME)
+                    ->middleware(
+                        [
+                            'auth',
+                            'can:' . UserPermissions::CREATE_OR_EDIT_USERS,
+                        ]
+                    );
             }
         );
         Route::namespace('WorkOrders\\Controllers\\')->group(

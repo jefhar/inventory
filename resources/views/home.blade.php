@@ -14,8 +14,8 @@
               </div>
             @endif
 
-            You are logged in, {{ Auth::user()->name }}!
-          <!-- {{ Auth::user()->getRoleNames()->first() }} -->
+            You are logged in, {{ \Auth::user()->name }}!
+          <!-- {{ \Auth::user()->getRoleNames()->first() }} -->
             <br/>
             <br/>
             <div class="row hyphenation">
@@ -27,7 +27,7 @@
                       <p class="card-text">
                         Add and edit users.
                       </p>
-                      <a href="{{ route(\App\Admin\Controllers\DashboardController::CREATE_NAME) }}"
+                      <a href="{{ route(\App\Admin\Controllers\DashboardController::INDEX_NAME) }}"
                          class="btn btn-outline-primary">
                         User Dashboard</a>
                     </div>
