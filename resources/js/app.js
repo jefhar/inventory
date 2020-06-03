@@ -292,7 +292,7 @@ if (document.getElementById('WorkOrdersEdit')) {
       const spinner = document.getElementById('spinner')
 
       // Actions
-      const onGet = (response) => {
+      const onGetType = (response) => {
         // Definitions
         const formData = response.data
 
@@ -352,7 +352,7 @@ if (document.getElementById('WorkOrdersEdit')) {
       axios
         .get(`/types/${value}`, value)
         .then((response) => {
-          onGet(response)
+          onGetType(response)
         })
         .catch((error) => {
           getError(error)
@@ -402,6 +402,32 @@ if (document.getElementById('WorkOrdersEdit')) {
         removeChildren(productForm)
         productType.selectedIndex = 0
 
+        // Add Toast
+        const updateToast = document.createElement('div')
+        updateToast.innerHTML = ` 
+<div class="toast-header">
+  <i class="fas fa-check-square text-success"></i>&nbsp;
+  <strong class="mr-auto">Success</strong>
+  <button type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+          aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="toast-body">
+Product ${productId} ${manufacturerName} ${model} ${type} has been added to Work
+Order ${postData.workorder_id}.
+</div>`
+        updateToast.id = 'updateToast'
+        updateToast.classList.add('toast')
+        updateToast.style.position = 'absolute'
+        updateToast.style.top = '0'
+        updateToast.style.right = '0'
+        updateToast.dataset.delay = '8000'
+
+        document.getElementById('workOrderBody').appendChild(updateToast)
+        const $updateToast = $('#updateToast') // Grab jQuery handle element
+        $updateToast.toast()
+        $updateToast.toast('show')
         // close modal
         $('#addNewProductModal').modal('hide')
         $('.modal-backdrop').remove()
@@ -859,7 +885,6 @@ if (document.getElementById('typesCreate')) {
     })
   }
   const loadFormButtonClick = () => {
-    // FOO
     // Do Stuff
     if (!typesControlCheckAndClear($typesControlFormBuilder)) {
       return
@@ -1101,7 +1126,7 @@ if (document.getElementById('cartShow')) {
     const cartLuhn = document.getElementById('cartId').dataset.cartLuhn
 
     // Actions
-    const onPatch = (result) => {
+    const onPatch = () => {
       // Definitions
       const cardBorder = document.getElementById('card-border')
       const classes = cardBorder.classList
