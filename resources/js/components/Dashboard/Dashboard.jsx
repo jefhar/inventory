@@ -28,25 +28,22 @@ class Dashboard extends React.Component {
 
   async componentDidMount() {
     // Call AJAX, return a set of all Roles. Put it in this.state.allRoles
+    const roleUrl = '/dashboard/roles'
+
+    axios.get(roleUrl).then((result) => {
+      console.info(result.data)
+      this.setState({
+        allRoles: JSON.stringify(result.data),
+        isRolesLoaded: true,
+        isRolesLocked: false,
+      })
+    })
+
     const sleep = (ms) => {
       return new Promise((resolve) => setTimeout(resolve, ms))
     }
     await sleep(2000)
     console.info('done sleeping:')
-
-    let allRoles = [
-      { id: 'EMPLOYEE', name: 'Employee' },
-      { id: 'OWNER', name: 'Owner' },
-      { id: 'SALES_REP', name: 'Sales Representative' },
-      { id: 'SUPER_ADMIN', name: 'Super Admin' },
-      { id: 'TECHNICIAN', name: 'Technician' },
-    ]
-    allRoles = JSON.stringify(allRoles)
-    this.setState({
-      allRoles: allRoles,
-      isRolesLoaded: true,
-      isRolesLocked: false,
-    })
 
     // Call AJAX, return a set of allPermissions. Put it in
     // this.state.allPermissions

@@ -11,7 +11,6 @@ namespace App\Admin\Controllers;
 
 use App\Admin\Permissions\UserRoles;
 use App\User;
-use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
@@ -22,13 +21,16 @@ class RoleController extends Controller
     {
         /** @var User $user */
         $user = \Auth::user();
+        $ownerRole = [];
         if ($user->hasRole(UserRoles::SUPER_ADMIN)) {
-            $ownerRole = [
+            $ownerRole[] = [
                 'id' => UserRoles::OWNER,
                 'name' => UserRoles::ROLES[UserRoles::OWNER],
             ];
         } else {
-            $ownerRole = Role::all()->pluck('name')->except(0)->except(1);
+            foreach ([UserRoles::EMPLOYEE, UserRoles::SALES_REP, UserRoles::TECHNICIAN] as $role) {
+                $ownerRole[] = ['id' => $role, 'name' => UserRoles::ROLES[$role]];
+            }
         }
 
         return $ownerRole;
