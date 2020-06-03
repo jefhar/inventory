@@ -9,9 +9,8 @@ declare(strict_types=1);
 
 namespace App\Admin\Controllers;
 
-class RolesController extends Controller
+class RoleController extends Controller
 {
-
     public const INDEX_NAME = 'roles.index';
     public const INDEX_PATH = '/dashboard/roles';
 

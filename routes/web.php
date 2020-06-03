@@ -12,7 +12,8 @@
 */
 
 use App\Admin\Controllers\DashboardController;
-use App\Admin\Controllers\RolesController;
+use App\Admin\Controllers\PermissionController;
+use App\Admin\Controllers\RoleController;
 use App\Admin\Permissions\UserPermissions;
 use App\AjaxSearch\Controllers\AjaxSearchController;
 use App\Carts\Controllers\CartController;
@@ -57,21 +58,21 @@ Route::group(
         Route::namespace('Admin\\Controllers')->group(
             function () {
                 Route::get('/home', 'HomeController@index')->name('home');
-                Route::get(DashboardController::INDEX_PATH, 'DashboardController@index')
-                    ->name(DashboardController::INDEX_NAME)
-                    ->middleware(
-                        [
-                            'auth',
-                            'can:' . UserPermissions::CREATE_OR_EDIT_USERS,
-                        ]
-                    );
-                Route::get(RolesController::INDEX_PATH, 'RolesController@index')
-                    ->name(RolesController::INDEX_NAME)
-                    ->middleware(
-                        [
-                            'auth',
-                            'can:' . UserPermissions::CREATE_OR_EDIT_USERS,
-                        ]
+                Route::middleware(
+                    [
+                        'auth',
+                        'can:' . UserPermissions::CREATE_OR_EDIT_USERS,
+                    ]
+                )
+                    ->group(
+                        function () {
+                            Route::get(DashboardController::INDEX_PATH, 'DashboardController@index')
+                                ->name(DashboardController::INDEX_NAME);
+                            Route::get(RoleController::INDEX_PATH, 'RoleController@index')
+                                ->name(RoleController::INDEX_NAME);
+                            Route::get(PermissionController::INDEX_PATH, 'PermissionController@index')
+                                ->name(PermissionController::INDEX_NAME);
+                        }
                     );
             }
         );
