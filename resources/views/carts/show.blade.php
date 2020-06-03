@@ -74,18 +74,18 @@
               <td>{{$product->serial }}</td>
               <td>
                 <button
-                  class="btn btn-outline-info"
+                  id="productPriceButton{{ $product->luhn }}"
+                  class="btn btn-secondary price-button"
                   data-product-id="{{ $product->luhn }}"
                   data-product-manufacturer="{{ $product->manufacturer->name }}"
                   data-product-model="{{ $product->model }}"
-                  data-product-price=" {{ $product->price }}"
+                  data-product-price="{{ $product->price }}"
                   type="button"
                 ><span
                     id="price{{ $product->luhn }}"
                     class="price"
                   >${{ sprintf('%03.2F', $product->price) }}</span><i
                     class="far fa-edit text-light float-right"
-
                     title="Click to change product price"
                   ></i></button>
               </td>

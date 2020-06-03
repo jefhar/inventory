@@ -180,6 +180,9 @@ if (document.getElementById('WorkOrdersEdit')) {
       // Do Stuff
       if ('is_locked' in response.data) {
         workOrderBody.dataset.isLocked = response.data.is_locked
+        updateToast.style.bottom = '0'
+      } else {
+        updateToast.style.top = '0'
       }
 
       // At some point, give user a visual indication that
@@ -227,11 +230,10 @@ if (document.getElementById('WorkOrdersEdit')) {
       updateToast.id = 'updateToast'
       updateToast.classList.add('toast')
       updateToast.style.position = 'absolute'
-      updateToast.style.top = '0'
       updateToast.style.right = '0'
       updateToast.dataset.delay = '8000'
 
-      document.getElementById('workOrderBody').appendChild(updateToast)
+      document.getElementById('toastContainer').appendChild(updateToast)
       const $updateToast = $('#updateToast') // Grab jQuery handle element
       $updateToast.toast()
       $updateToast.toast('show')
@@ -261,7 +263,7 @@ if (document.getElementById('WorkOrdersEdit')) {
   }
   const commitChangesClick = () => {
     storeChanges({
-      company_name: document.getElementById('companyName').value,
+      client_company_name: document.getElementById('companyName').value,
       email: document.getElementById('email').value,
       first_name: document.getElementById('firstName').value,
       intake: document.getElementById('intake').value,
@@ -403,8 +405,8 @@ if (document.getElementById('WorkOrdersEdit')) {
         productType.selectedIndex = 0
 
         // Add Toast
-        const updateToast = document.createElement('div')
-        updateToast.innerHTML = ` 
+        const addedProductToast = document.createElement('div')
+        addedProductToast.innerHTML = ` 
 <div class="toast-header">
   <i class="fas fa-check-square text-success"></i>&nbsp;
   <strong class="mr-auto">Success</strong>
@@ -417,17 +419,19 @@ if (document.getElementById('WorkOrdersEdit')) {
 Product ${productId} ${manufacturerName} ${model} ${type} has been added to Work
 Order ${postData.workorder_id}.
 </div>`
-        updateToast.id = 'updateToast'
-        updateToast.classList.add('toast')
-        updateToast.style.position = 'absolute'
-        updateToast.style.top = '0'
-        updateToast.style.right = '0'
-        updateToast.dataset.delay = '8000'
+        addedProductToast.id = 'addedProductToast'
+        addedProductToast.classList.add('toast')
+        addedProductToast.style.position = 'absolute'
+        addedProductToast.style.top = '0'
+        addedProductToast.style.right = '0'
+        addedProductToast.style.width = '80em'
+        addedProductToast.dataset.delay = '8000'
 
-        document.getElementById('workOrderBody').appendChild(updateToast)
-        const $updateToast = $('#updateToast') // Grab jQuery handle element
-        $updateToast.toast()
-        $updateToast.toast('show')
+        document.getElementById('toastContainer').appendChild(addedProductToast)
+        const $addedProductToast = $('#addedProductToast') // Grab jQuery
+        // handle element
+        $addedProductToast.toast()
+        $addedProductToast.toast('show')
         // close modal
         $('#addNewProductModal').modal('hide')
         $('.modal-backdrop').remove()
@@ -1092,7 +1096,7 @@ if (document.getElementById('cartIndex')) {
       }
 
       // Do Stuff
-      // Send destroy to /carts/destroy with cart luhn in field.
+      // Send destroy to /carts/destroy with cart id in field.
       axios.delete(`/carts/${cart}`).then(() => {
         onDeleteCart()
       })
@@ -1116,14 +1120,14 @@ if (document.getElementById('cartIndex')) {
 if (document.getElementById('cartShow')) {
   // Definitions
   const $costModal = $('#productCostModal')
-  const editIcons = document.getElementsByClassName('fa-edit')
+  const addPriceButtons = document.getElementsByClassName('price-button')
   const invoiceButton = document.getElementById('invoiceButton')
   const destroyButton = document.getElementById('destroyButton')
 
   // Actions
   const changeInvoiceStatus = (status) => {
     // Definitions
-    const cartLuhn = document.getElementById('cartId').dataset.cartLuhn
+    const cartId = document.getElementById('cartId').dataset.cartId
 
     // Actions
     const onPatch = () => {
@@ -1138,7 +1142,7 @@ if (document.getElementById('cartShow')) {
     }
     // Do Stuff
     axios
-      .patch(`/carts/${cartLuhn}`, { status: status })
+      .patch(`/carts/${cartId}`, { status: status })
       .then((result) => {
         onPatch(result)
       })
@@ -1146,10 +1150,14 @@ if (document.getElementById('cartShow')) {
         console.info('error', error)
       })
   }
-  const removeEditIcons = () => {
+  const disablePriceButtons = () => {
     // Do Stuff
-    for (let i = 0, len = editIcons.length | 0; i < len; i = (i + 1) | 0) {
-      editIcons[i].remove()
+    for (
+      let i = 0, len = addPriceButtons.length | 0;
+      i < len;
+      i = (i + 1) | 0
+    ) {
+      addPriceButtons[i].disabled = true
     }
   }
   const updateTotalPrice = () => {
@@ -1158,10 +1166,17 @@ if (document.getElementById('cartShow')) {
     const cartTotalPrice = document.getElementById('cartTotalPrice')
 
     // Do Stuff
-    for (let i = 0, len = editIcons.length | 0; i < len; i = (i + 1) | 0) {
-      let price = editIcons[i].dataset.productPrice
+    for (
+      let i = 0, len = addPriceButtons.length | 0;
+      i < len;
+      i = (i + 1) | 0
+    ) {
+      let price = addPriceButtons[i].dataset.productPrice
+      console.info('ProductPrice', price)
       price = price.replace(/[^\d.-]/g, '')
+      console.info('replaced productPrice')
       totalPrice += parseFloat(price) * 100
+      console.info('running totalPrice:', totalPrice)
     }
     cartTotalPrice.innerText = new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -1169,24 +1184,28 @@ if (document.getElementById('cartShow')) {
     }).format(totalPrice / 100)
   }
   const productCostPopup = (dataset) => {
+    console.info(dataset)
     // Definitions
     const {
-      productLuhn: luhn,
+      productId,
       productManufacturer: manufacturer,
       productModel: model,
       productPrice: price,
     } = dataset
-    const modalProductLuhn = document.getElementById('modalProductLuhn')
+    const modalProductId = document.getElementById('modalProductId')
     const originalPrice = document.getElementById('originalPrice')
 
+    if (price === 0) {
+      console.info('here')
+    }
     // Do Stuff
     originalPrice.innerText = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(price)
 
-    modalProductLuhn.innerText = `${luhn} ${manufacturer} ${model}`
-    modalProductLuhn.dataset.productLuhn = luhn
+    modalProductId.innerText = `${productId} ${manufacturer} ${model}`
+    modalProductId.dataset.productId = productId
     $costModal.modal('show')
   }
   const invoiceButtonClick = () => {
@@ -1194,7 +1213,7 @@ if (document.getElementById('cartShow')) {
     invoiceButton.disabled = true
     destroyButton.disabled = true
     changeInvoiceStatus(CART_INVOICED)
-    removeEditIcons()
+    disablePriceButtons()
   }
   const destroyButtonClick = () => {
     // Do Stuff
@@ -1211,22 +1230,25 @@ if (document.getElementById('cartShow')) {
     // Actions
     const costSubmitButtonClick = () => {
       // Definitions
-      const luhn = document.getElementById('modalProductLuhn').dataset
-        .productLuhn
+      const productId = document.getElementById('modalProductId').dataset
+        .productId
       const price = document.getElementById('productPrice').value
       const patchData = { price: price }
 
       // Actions
       const onPatch = (response) => {
+        console.info(response)
         // Definitions
         const $toast = $('#productPriceToast')
-        const priceId = document.getElementById(`price${luhn}`)
-        const editElement = priceId.nextElementSibling
+        const priceId = document.getElementById(`price${productId}`)
+        const editElement = document.getElementById(
+          `productPriceButton${productId}`
+        )
 
         // Do Stuff
         $costModal.modal('hide')
         document.getElementById('toastBody').innerHTML =
-          `Product ${luhn} has been updated. ` +
+          `Product ${productId} has been updated. ` +
           `The price is now $${response.data.price}. ` +
           `This price will remain even if the product is removed from this cart.`
         priceId.innerText = new Intl.NumberFormat('en-US', {
@@ -1247,7 +1269,7 @@ if (document.getElementById('cartShow')) {
         // Do Stuff
         console.error(error)
         // display error toast
-        toastErrorBody.innerHTML = `There was an error updating the price of product ${luhn}.<br>${error}`
+        toastErrorBody.innerHTML = `There was an error updating the price of product ${productId}.<br>${error}`
         $toast.toast()
         $toast.toast('show')
       }
@@ -1257,7 +1279,7 @@ if (document.getElementById('cartShow')) {
         return false
       }
       axios
-        .patch(`/products/${luhn}`, patchData)
+        .patch(`/products/${productId}`, patchData)
         .then((response) => {
           onPatch(response)
         })
@@ -1285,9 +1307,9 @@ if (document.getElementById('cartShow')) {
   $costModal.on('shown.bs.modal', () => {
     costModalShown()
   })
-  for (let i = 0, len = editIcons.length | 0; i < len; i = (i + 1) | 0) {
-    editIcons[i].addEventListener('click', () => {
-      productCostPopup(editIcons[i].dataset)
+  for (let i = 0, len = addPriceButtons.length | 0; i < len; i = (i + 1) | 0) {
+    addPriceButtons[i].addEventListener('click', () => {
+      productCostPopup(addPriceButtons[i].dataset)
     })
   }
 
