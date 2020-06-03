@@ -89,12 +89,12 @@ class RoleControllerTest extends TestCase
             ->assertJson(
                 [
                     'id' => UserRoles::OWNER,
-                    'name' => UserRoles::RULES[UserRoles::OWNER],
+                    'name' => UserRoles::ROLES[UserRoles::OWNER],
                 ],
             )->assertJsonMissing(
                 [
                     'id' => UserRoles::SUPER_ADMIN,
-                    'name' => UserRoles::RULES[UserRoles::SUPER_ADMIN],
+                    'name' => UserRoles::ROLES[UserRoles::SUPER_ADMIN],
                 ]
             );
     }
@@ -113,19 +113,19 @@ class RoleControllerTest extends TestCase
             ->assertJsonMissing(
                 [
                     'id' => UserRoles::OWNER,
-                    'name' => UserRoles::RULES[UserRoles::OWNER],
+                    'name' => UserRoles::ROLES[UserRoles::OWNER],
                 ],
             )
             ->assertJsonMissing(
                 [
                     'id' => UserRoles::SUPER_ADMIN,
-                    'name' => UserRoles::RULES[UserRoles::SUPER_ADMIN],
+                    'name' => UserRoles::ROLES[UserRoles::SUPER_ADMIN],
                 ]
             )
             ->assertJson(
                 [
                     'id' => UserRoles::EMPLOYEE,
-                    'name' => UserRoles::RULES[UserRoles::EMPLOYEE],
+                    'name' => UserRoles::ROLES[UserRoles::EMPLOYEE],
                 ]
             );
     }

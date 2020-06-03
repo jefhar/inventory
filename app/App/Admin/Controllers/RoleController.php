@@ -25,7 +25,7 @@ class RoleController extends Controller
         if ($user->hasRole(UserRoles::SUPER_ADMIN)) {
             $ownerRole = [
                 'id' => UserRoles::OWNER,
-                'name' => UserRoles::RULES[UserRoles::OWNER],
+                'name' => UserRoles::ROLES[UserRoles::OWNER],
             ];
         } else {
             $ownerRole = Role::all()->pluck('name')->except(0)->except(1);

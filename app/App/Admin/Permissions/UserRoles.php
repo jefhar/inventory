@@ -21,7 +21,7 @@ final class UserRoles
     public const SUPER_ADMIN = 'super admin';
     public const TECHNICIAN = 'technician';
 
-    public const RULES = [
+    public const ROLES = [
         self::EMPLOYEE => self::EMPLOYEE,
         self::OWNER => self::OWNER,
         self::SALES_REP => self::SALES_REP,
