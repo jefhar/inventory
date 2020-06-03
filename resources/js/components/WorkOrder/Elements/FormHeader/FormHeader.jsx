@@ -2,6 +2,10 @@ import * as React from 'react'
 import PropTypes from 'prop-types'
 import { CardHeader, Col, Row } from 'reactstrap'
 
+const propTypes = {
+  workOrderId: PropTypes.string.isRequired,
+}
+
 const FormHeader = ({ workOrderId }) => {
   return (
     <CardHeader>
@@ -18,8 +22,6 @@ const FormHeader = ({ workOrderId }) => {
   )
 }
 
-FormHeader.propTypes = {
-  workOrderId: PropTypes.string.isRequired,
-}
+FormHeader.propTypes = propTypes
 
 export default FormHeader

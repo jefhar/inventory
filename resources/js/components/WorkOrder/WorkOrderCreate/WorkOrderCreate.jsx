@@ -5,6 +5,12 @@ import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import { Card, CardBody, Container, Row } from 'reactstrap'
 
+const propTypes = {
+  draft: PropTypes.string.isRequired,
+  handleResponse: PropTypes.func,
+  postPath: PropTypes.string.isRequired,
+}
+
 const handleResponse = (response) => {
   console.info('WOC handleResponse')
   // Create a post_post so workorders and carts can have their own post-post
@@ -49,11 +55,7 @@ class WorkOrderCreate extends React.Component {
   }
 }
 
-WorkOrderCreate.propTypes = {
-  draft: PropTypes.string.isRequired,
-  handleResponse: PropTypes.func,
-  postPath: PropTypes.string.isRequired,
-}
+WorkOrderCreate.propTypes = propTypes
 
 export default WorkOrderCreate
 

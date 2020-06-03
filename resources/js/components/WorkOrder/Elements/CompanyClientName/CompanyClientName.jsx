@@ -13,13 +13,19 @@ import {
 } from 'reactstrap'
 import CompanyName from '../CompanyName'
 
+const propTypes = {
+  handleResponse: PropTypes.func.isRequired,
+  postPath: PropTypes.string.isRequired,
+  draft: PropTypes.string.isRequired,
+}
+
 class CompanyClientName extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       companyName: '',
       firstName: '',
-      isCompanyNameInvalid: false,
+      isCompanyNameInvalid: true,
       isLoading: false,
       lastName: '',
       login: true,
@@ -69,9 +75,6 @@ class CompanyClientName extends React.Component {
       })
       .catch((error) => {
         console.info('error:', error)
-        if (!error.data) {
-          return
-        }
         if (error.response) {
           if (error.response.status === 422) {
             console.info('error.response:', error.response)
@@ -79,7 +82,7 @@ class CompanyClientName extends React.Component {
               'error.response.data.errors:',
               error.response.data.errors
             )
-            if (error.response.data.errors.companyName) {
+            if (error.response.data.errors.client_company_name) {
               this.setState({
                 isCompanyNameInvalid: true,
               })
@@ -159,6 +162,7 @@ class CompanyClientName extends React.Component {
   }
 
   render() {
+    console.info(`valid=${!this.state.isCompanyNameInvalid}`)
     return (
       <Form>
         <Row form>
@@ -181,11 +185,11 @@ class CompanyClientName extends React.Component {
                 onBlur={this.handleBlur}
                 options={this.state.options}
                 placeholder="Client's company name"
-                invalid={this.state.isCompanyNameInvalid}
+                valid={!this.state.isCompanyNameInvalid}
                 selectHintOnEnter={true}
               />
               <FormFeedback valid={!this.state.isCompanyNameInvalid}>
-                Company Name is required.
+                Company Name is reQuired.
               </FormFeedback>
               <Alert color="warning" isOpen={this.state.isCompanyNameInvalid}>
                 The Company Name field is required.
@@ -234,7 +238,8 @@ class CompanyClientName extends React.Component {
                 color="success"
                 onClick={this.handleButtonClick}
               >
-                Create New {this.props.draft}
+                <i className="fas fa-plus-circle"></i> Create New{' '}
+                {this.props.draft}
               </Button>
             </FormGroup>
           </Col>
@@ -256,9 +261,6 @@ class CompanyClientName extends React.Component {
   }
 }
 
-CompanyClientName.propTypes = {
-  handleResponse: PropTypes.func.isRequired,
-  postPath: PropTypes.string.isRequired,
-  draft: PropTypes.string.isRequired,
-}
+CompanyClientName.propTypes = propTypes
+
 export default CompanyClientName

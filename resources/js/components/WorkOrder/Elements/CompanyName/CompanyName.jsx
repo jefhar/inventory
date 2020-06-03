@@ -4,44 +4,8 @@ import { AsyncTypeahead } from 'react-bootstrap-typeahead'
 import 'react-bootstrap-typeahead/css/Typeahead.css'
 import 'react-bootstrap-typeahead/css/Typeahead-bs4.css'
 
-const CompanyName = ({
-  handleChange,
-  id,
-  isLoading,
-  labelKey,
-  newSelectionPrefix,
-  onBlur,
-  onSearch,
-  options,
-  placeholder,
-  selected,
-}) => {
-  return (
-    <AsyncTypeahead
-      allowNew={true}
-      autoFocus={true}
-      size="sm"
-      id={id}
-      inputProps={{
-        className: 'form-control form-control-sm',
-        name: 'company_name',
-        required: 'required',
-      }}
-      isLoading={isLoading}
-      labelKey={labelKey}
-      newSelectionPrefix={newSelectionPrefix}
-      onBlur={onBlur}
-      onChange={handleChange}
-      onSearch={onSearch}
-      options={options}
-      placeholder={placeholder}
-      selected={selected}
-      selectHintOnEnter={true}
-    />
-  )
-}
-
-CompanyName.propTypes = {
+const propTypes = {
+  className: PropTypes.string,
   handleChange: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
   isLoading: PropTypes.bool.isRequired,
@@ -52,6 +16,52 @@ CompanyName.propTypes = {
   options: PropTypes.array,
   placeholder: PropTypes.string.isRequired,
   selected: PropTypes.any,
+  valid: PropTypes.bool,
 }
+
+const CompanyName = ({
+  className,
+  handleChange,
+  id,
+  isLoading,
+  labelKey,
+  newSelectionPrefix,
+  onBlur,
+  onSearch,
+  options,
+  placeholder,
+  selected,
+  valid,
+}) => {
+  const isValid = valid
+  const isInvalid = !valid
+  return (
+    <AsyncTypeahead
+      allowNew={true}
+      autoFocus={true}
+      id={id}
+      inputProps={{
+        className: `${className}`,
+        name: 'company_name',
+        required: 'required',
+      }}
+      isInvalid={isInvalid}
+      isLoading={isLoading}
+      isValid={isValid}
+      labelKey={labelKey}
+      newSelectionPrefix={newSelectionPrefix}
+      onBlur={onBlur}
+      onChange={handleChange}
+      onSearch={onSearch}
+      options={options}
+      placeholder={placeholder}
+      selected={selected}
+      selectHintOnEnter={true}
+      size="sm"
+    />
+  )
+}
+
+CompanyName.propTypes = propTypes
 
 export default CompanyName
