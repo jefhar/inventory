@@ -37,7 +37,7 @@
                 data-toggle="dropdown"
                 id="addToCartButton"
                 type="button"
-              >Add To Cart &hellip;
+              ><i class="fas fa-cart-plus pr-1"></i>Add To Cart &hellip;
               </button>
               <div class="dropdown-menu" aria-labelledby="addToCartButton" id="cartsDropDownMenu">
                 @if (count($carts) > 0)
@@ -72,9 +72,8 @@
               Product is in Cart for <a
                 href="{{ route(\App\Carts\Controllers\CartsController::SHOW_NAME, $product->cart) }}">{{ $product->cart->client->company_name }}
                 .</a><br>
-              <button type="button" class="btn btn-outline-danger" id="productInCartButton"
-              <i class="fas fa-trash-alt"></i>
-              </span>Remove product from cart.
+              <button type="button" class="btn btn-outline-danger" id="productInCartButton">
+                <i class="fas fa-trash-alt"></i> Remove product from cart.
               </button>
             </div>
           </div>
@@ -94,8 +93,9 @@
         <div class="modal-body">
           <div id="carts_create"></div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-outline-primary">Save changes</button>
+            <button type="button" class="btn btn-outline-danger" data-dismiss="modal"><i
+                class="far fa-times-circle"></i>&nbsp;Close
+            </button>
           </div>
         </div>
       </div>

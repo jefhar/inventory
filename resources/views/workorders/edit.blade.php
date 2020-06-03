@@ -26,6 +26,7 @@
         id="workOrderBody"
         style="position: relative; min-height: 200px;"
       >
+        <div style="position: absolute; top: 0; right: 0; width: 100%" id="toastContainer"></div>
         <form class="container">
           <div class="form-row">
             <label
@@ -115,12 +116,12 @@
               class="btn btn-outline-primary col-4 offset-1"
               id="commitChangesButton"
               type="button">
-              <i class="fas fa-save"></i>&nbsp;Commit Changes
+              <i class="far fa-save pr-1"></i>Commit Changes
             </button>
             <button
               class="btn btn-outline-secondary col-4 offset-2"
               type="reset">
-              <i class="fas fa-undo-alt"></i>&nbsp;Revert Changes
+              <i class="fas fa-undo-alt pr-1"></i>Revert Changes
             </button>
           </div>
           <div id='alert_row' class="row">
@@ -237,7 +238,7 @@
                 data-dismiss="modal"
                 id="cancelNewProductButton"
                 type="button"
-              >Cancel
+              ><i class="far fa-times-circle pr-1"></i>Cancel
               </button>
               <button
                 class="btn btn-outline-primary"

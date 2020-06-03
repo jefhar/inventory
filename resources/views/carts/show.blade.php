@@ -108,7 +108,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5>Product <span id="modalProductLuhn"></span></h5>
+          <h5>Product <span id="modalProductId"></span></h5>
           <button type="button" class="close" data-dimiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -137,8 +137,12 @@
         <div class="modal-footer">
 
           <br>
-          <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-          <button id="costSubmitButton" type="submit" class="btn btn-outline-primary" value="Save">Save</button>
+          <button id="costSubmitButton" type="submit" class="btn btn-outline-primary" value="Save"><i
+              class="far fa-save pr-1"></i>Save
+          </button>
+          <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal"><i
+              class="far fa-times-circle pr-1"></i>Cancel
+          </button>
         </div>
       </div>
     </div>

@@ -116,7 +116,7 @@
             class="btn btn-outline-secondary"
             data-dismiss="modal"
             type="button"
-          >Close
+          ><i class="far fa-times-circle pr-1"></i>Close
           </button>
           <button
             id="destroyCartButton"

@@ -19,8 +19,9 @@
             </button>
             <button type="button" class="btn btn-outline-secondary" id="previewButton"
                     data-show-on-click="preview">Preview&emsp;&emsp;<i class="far fa-eye"></i></button>
-            <button type="button" class="btn btn-outline-primary" id="saveFormButton">Save Form&emsp;&emsp;<i
-                class="far fa-save"></i></button>
+            <button type="button" class="btn btn-outline-primary" id="saveFormButton"><i class="far fa-save pr-1"></i>Save
+              Form
+            </button>
             <button type="button" class="btn btn-outline-warning" id="clearButton">Clear&emsp;&emsp;<i
                 class="fas fa-eraser"></i></button>
           </div>
@@ -52,7 +53,9 @@
           </select>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"><i
+              class="far fa-times-circle pr-1"></i>Cancel
+          </button>
           <button id="loadTypeButton" type="button" class="btn btn-outline-primary">Load</button>
         </div>
       </div>
@@ -65,7 +68,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="saveNewTypeModalLabel">Save New Type</h5>
+          <h5 class="modal-title" id="saveNewTypeModalLabel"><i class="fab fa-wpforms pr-1"></i>Save New Type</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -84,8 +87,11 @@
         </div>
         <div class="modal-footer">
           <div>
-            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-            <button id="saveTypeButton" type="button" class="btn btn-outline-primary">Save</button>
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"><i
+                class="far fa-times-circle pr-1"></i>Cancel
+            </button>
+            <button id="saveTypeButton" type="button" class="btn btn-outline-primary"><i class="far fa-save pr-1"></i>Save
+            </button>
           </div>
           <div class="w-100"></div>
           <div id="saveNewTypeAlerts" class="alert alert-warning mx-auto d-none" role="alert">
