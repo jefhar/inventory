@@ -24,4 +24,16 @@ final class UserPermissions
     public const UPDATE_PRODUCT_PRICE = 'product.price.update';
     public const UPDATE_RAW_PRODUCTS = 'product.raw.update';
     public const WORK_ORDER_OPTIONAL_PERSON = 'workOrder.optional.person';
+    public const PERMISSIONS = [
+        self::CREATE_OR_EDIT_PRODUCT_TYPE => 'Add or Change Product Types',
+        self::CREATE_OR_EDIT_USERS => 'Create or Edit Users',
+        self::EDIT_SAVED_PRODUCT => 'Add Product to carts',
+        self::IS_EMPLOYEE => 'Minimum Employee Permission',
+        self::MUTATE_CART => 'Change Shopping Cart',
+        self::SEE_ALL_OPEN_CARTS => 'View All Open Shopping Carts',
+        self::UPDATE_PRODUCT_PRICE => 'Change Product Price',
+        self::UPDATE_RAW_PRODUCTS => 'Modify a Product.',
+        self::WORK_ORDER_OPTIONAL_PERSON => 'Short Create Work Order',
+
+    ];
 }

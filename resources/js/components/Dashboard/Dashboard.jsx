@@ -29,6 +29,7 @@ class Dashboard extends React.Component {
   async componentDidMount() {
     // Call AJAX, return a set of all Roles. Put it in this.state.allRoles
     const roleUrl = '/dashboard/roles'
+    const permissionsUrl = '/dashboard/permissions'
 
     axios.get(roleUrl).then((result) => {
       console.info(result.data)
@@ -36,6 +37,14 @@ class Dashboard extends React.Component {
         allRoles: JSON.stringify(result.data),
         isRolesLoaded: true,
         isRolesLocked: false,
+      })
+    })
+    axios.get(permissionsUrl).then((result) => {
+      console.info(result.data)
+      this.setState({
+        allPermissions: JSON.stringify(result.data),
+        isPermissionsLoaded: true,
+        isPermissionsLocked: false,
       })
     })
 
@@ -47,26 +56,6 @@ class Dashboard extends React.Component {
 
     // Call AJAX, return a set of allPermissions. Put it in
     // this.state.allPermissions
-    let allPermissions = [
-      {
-        id: 'CREATE_OR_EDIT_PRODUCT_TYPE',
-        name: 'product.type.create_or_edit',
-      },
-      { id: 'CREATE_OR_EDIT_USERS', name: 'dashboard.use' },
-      { id: 'EDIT_SAVED_PRODUCT', name: 'inventoryItem.view.edit' },
-      { id: 'IS_EMPLOYEE', name: 'user.is.employee' },
-      { id: 'MUTATE_CART', name: 'cart.mutate' },
-      { id: 'SEE_ALL_OPEN_CARTS', name: 'carts.view.all_open' },
-      { id: 'UPDATE_PRODUCT_PRICE', name: 'product.price.update' },
-      { id: 'UPDATE_RAW_PRODUCTS', name: 'product.raw.update' },
-      { id: 'WORK_ORDER_OPTIONAL_PERSON', name: 'workOrder.optional.person' },
-    ]
-    allPermissions = JSON.stringify(allPermissions)
-    this.setState({
-      allPermissions: allPermissions,
-      isPermissionsLoaded: true,
-      isPermissionsLocked: false,
-    })
 
     // Call AJAX, get list of all users. Put it in this.state.allUsers
     let allUsers = [

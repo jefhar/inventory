@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace App\Admin\Controllers;
 
+use App\Admin\Permissions\UserPermissions;
+use Illuminate\Support\Str;
+
 class PermissionController extends Controller
 {
     public const INDEX_PATH = '/dashboard/permissions';
@@ -16,6 +19,23 @@ class PermissionController extends Controller
 
     public function index()
     {
-        return '["Permissions: {}"]';
+        $permissions = [];
+
+        foreach (
+            [
+                UserPermissions::CREATE_OR_EDIT_PRODUCT_TYPE,
+                UserPermissions::EDIT_SAVED_PRODUCT,
+                UserPermissions::IS_EMPLOYEE,
+                UserPermissions::MUTATE_CART,
+                UserPermissions::SEE_ALL_OPEN_CARTS,
+                UserPermissions::UPDATE_PRODUCT_PRICE,
+                UserPermissions::UPDATE_RAW_PRODUCTS,
+                UserPermissions::WORK_ORDER_OPTIONAL_PERSON,
+            ] as $permission
+        ) {
+            $permissions[] = ['id' => $permission, 'name' => Str::title(UserPermissions::PERMISSIONS[$permission])];
+        }
+
+        return $permissions;
     }
 }

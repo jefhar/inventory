@@ -10,8 +10,10 @@ declare(strict_types=1);
 namespace Tests\Feature\Dashboard;
 
 use App\Admin\Controllers\PermissionController;
+use App\Admin\Permissions\UserPermissions;
 use App\Admin\Permissions\UserRoles;
 use App\User;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PermissionControllerTest extends TestCase
@@ -63,5 +65,34 @@ class PermissionControllerTest extends TestCase
             ->actingAs($superAdmin)
             ->get(route(PermissionController::INDEX_NAME))
             ->assertOk();
+    }
+
+    /**
+     * @test
+     */
+    public function authorizedUserGetsAllPermissions(): void
+    {
+        /** @var User $owner */
+        $owner = factory(User::class)->create();
+        $owner->assignRole(UserRoles::OWNER);
+        $this
+            ->actingAs($owner)
+            ->get(route(PermissionController::INDEX_NAME))
+            ->assertJsonFragment(
+                [
+                    [
+                        'id' => UserPermissions::IS_EMPLOYEE,
+                        'name' => Str::title(UserPermissions::PERMISSIONS[UserPermissions::IS_EMPLOYEE]),
+                    ],
+                ]
+            )
+            ->assertJsonMissing(
+                [
+                    [
+                        'id' => UserPermissions::CREATE_OR_EDIT_USERS,
+                        'name' => Str::title(UserPermissions::PERMISSIONS[UserPermissions::CREATE_OR_EDIT_USERS]),
+                    ],
+                ]
+            );
     }
 }
