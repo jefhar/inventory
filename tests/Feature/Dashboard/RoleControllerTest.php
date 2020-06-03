@@ -74,4 +74,59 @@ class RoleControllerTest extends TestCase
             ->get(route(RoleController::INDEX_NAME))
             ->assertOk();
     }
+
+    /**
+     * @test
+     */
+    public function superAdminReceivesOnlyOwnerRole(): void
+    {
+        /** @var User $user */
+        $user = factory(User::class)->create();
+        $user->assignRole(UserRoles::SUPER_ADMIN);
+        $this->actingAs($user)
+            ->get(route(RoleController::INDEX_NAME))
+            ->assertOk()
+            ->assertJson(
+                [
+                    'id' => UserRoles::OWNER,
+                    'name' => UserRoles::RULES[UserRoles::OWNER],
+                ],
+            )->assertJsonMissing(
+                [
+                    'id' => UserRoles::SUPER_ADMIN,
+                    'name' => UserRoles::RULES[UserRoles::SUPER_ADMIN],
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function ownerReceivesNonAdministrativeRoles(): void
+    {
+        /** @var User $user */
+        $user = factory(User::class)->create();
+        $user->assignRole(UserRoles::OWNER);
+        $this->actingAs($user)
+            ->get(route(RoleController::INDEX_NAME))
+            ->assertOk()
+            ->assertJsonMissing(
+                [
+                    'id' => UserRoles::OWNER,
+                    'name' => UserRoles::RULES[UserRoles::OWNER],
+                ],
+            )
+            ->assertJsonMissing(
+                [
+                    'id' => UserRoles::SUPER_ADMIN,
+                    'name' => UserRoles::RULES[UserRoles::SUPER_ADMIN],
+                ]
+            )
+            ->assertJson(
+                [
+                    'id' => UserRoles::EMPLOYEE,
+                    'name' => UserRoles::RULES[UserRoles::EMPLOYEE],
+                ]
+            );
+    }
 }

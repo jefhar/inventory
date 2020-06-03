@@ -9,6 +9,10 @@ declare(strict_types=1);
 
 namespace App\Admin\Controllers;
 
+use App\Admin\Permissions\UserRoles;
+use App\User;
+use Spatie\Permission\Models\Role;
+
 class RoleController extends Controller
 {
     public const INDEX_NAME = 'roles.index';
@@ -16,6 +20,17 @@ class RoleController extends Controller
 
     public function index()
     {
-        return '["Roles: {}"]';
+        /** @var User $user */
+        $user = \Auth::user();
+        if ($user->hasRole(UserRoles::SUPER_ADMIN)) {
+            $ownerRole = [
+                'id' => UserRoles::OWNER,
+                'name' => UserRoles::RULES[UserRoles::OWNER],
+            ];
+        } else {
+            $ownerRole = Role::all()->pluck('name')->except(0)->except(1);
+        }
+
+        return $ownerRole;
     }
 }
