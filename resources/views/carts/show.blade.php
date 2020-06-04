@@ -34,7 +34,7 @@
         </button>
         <button
           class="btn btn-outline-warning"
-          id="destroyButton"
+          id="destroyCartButton"
           type="button"
           {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}
         >Destroy Cart
@@ -61,7 +61,7 @@
           </thead>
           <tbody id="cartTableBody">
           @foreach ($cart->products as $product)
-            <tr>
+            <tr id="productRow{{ $product->luhn }}">
               <th scope="row">
                 <a class="btn btn-info"
                    href="/inventory/{{ $product->luhn }}">
@@ -92,7 +92,8 @@
               <td>
                 <button
                   type="button"
-                  class="btn btn-outline-danger">
+                  data-product-id="{{ $product->luhn }}"
+                  class="btn btn-outline-danger buttonDropProduct">
                   <i class="fas fa-trash-alt"></i>
                 </button>
               </td>

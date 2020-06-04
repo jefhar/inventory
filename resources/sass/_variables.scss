@@ -53,3 +53,21 @@ $warning:#ff9933;
 $light:#eef0f2;
 $dark:#000633;
 */
+
+// Status Colors
+$available: $primary;
+$in_cart: $yellow;
+$invoiced: $green;
+$theme-colors: (
+  'primary': $primary,
+  'secondary': $secondary,
+  'success': $success,
+  'info': $info,
+  'warning': $warning,
+  'danger': $danger,
+  'light': $light,
+  'dark': $dark,
+  'available': $available,
+  'in_cart': $in_cart,
+  'invoiced': $invoiced,
+);

@@ -25,8 +25,9 @@
           @foreach ($products as $product)
             <tr>
               <th scope="row">
-                <a class="btn btn-info"
-                   href="/inventory/{{ $product->luhn }}">
+                <a class="btn btn-{{ \Illuminate\Support\Str::snake($product->status) }}"
+                   href="/inventory/{{ $product->luhn }}"
+                   title="Product is {{ $product->status }}">
                   {{ str_pad($product->luhn, config('app.padding.products'), '0', STR_PAD_LEFT) }}
                 </a>
               </th>

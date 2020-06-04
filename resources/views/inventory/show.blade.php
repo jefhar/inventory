@@ -20,8 +20,9 @@
         <h1 id="productId"
             data-product-id="{{ $product->luhn }}"
         >Product #{{ $product->luhn }}</h1>
-        <p class="lead">{{ $product->type->name }} <span
-            class="badge badge-pill badge-primary">{{ $product->status }}</span></p>
+        <p class="lead">{{ $product->type->name }}<span
+            class="ml-2 badge badge-pill badge-{{ \Illuminate\Support\Str::snake($product->status) }}">{{ $product->status }}</span>
+        </p>
       </div>
       <div class="card-body">
         <div id="productView"></div>
