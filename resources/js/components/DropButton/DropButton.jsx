@@ -2,6 +2,8 @@ import * as React from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import { Button } from 'reactstrap'
+import ConfirmationModal from './ConfirmationModal'
+import capitalize from 'lodash/capitalize'
 
 const propTypes = {
   data: PropTypes.object,
@@ -19,12 +21,15 @@ const defaultProps = {
 class DropButton extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = { isOpen: false }
     this.handleClick = this.handleClick.bind(this)
   }
 
   handleClick() {
     console.info('Hello from handleClick', this.props.data)
+    this.setState((state) => {
+      return { isOpen: !state.isOpen }
+    })
   }
 
   render() {
@@ -55,6 +60,11 @@ class DropButton extends React.Component {
           </svg>
           {this.props.data.text}
         </Button>
+        <ConfirmationModal
+          isOpen={this.state.isOpen}
+          labelledBy={`Destroy ${capitalize(this.props.data.type)}`}
+          toggle={this.handleClick}
+        ></ConfirmationModal>
       </>
     )
   }
