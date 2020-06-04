@@ -948,23 +948,24 @@ if (document.getElementById('inventoryShow')) {
   const createProductAddedToCartAlert = (cartId, companyName) => {
     // Definitions
     const alert = document.createElement('div')
-    const removeFromCartButton = document.createElement('button')
-
-    // Attachments
-    removeFromCartButton.addEventListener('click', () => {
-      removeFromCart(productId)
-    })
-
     // Do Stuff
     alert.id = 'productAddedAlert'
     alert.classList.add('alert', 'alert-primary')
     alert.innerHTML = `
 Product added to cart for <a href="/carts/${cartId}">${companyName}</a>.<br>`
+    return alert
+  }
+  const createRemoveFromCartButton = () => {
+    const removeFromCartButton = document.createElement('button')
     removeFromCartButton.classList.add('btn', 'btn-outline-danger')
     removeFromCartButton.setAttribute('type', 'button')
+    removeFromCartButton.dataset.productId = productId
     removeFromCartButton.innerHTML = `<i class="fas fa-trash-alt"></i> Remove Product From Cart`
-    alert.appendChild(removeFromCartButton)
-    return alert
+    // Attachments
+    removeFromCartButton.addEventListener('click', () => {
+      removeFromCart(productId)
+    })
+    return removeFromCartButton
   }
   const handlePostResponse = (response) => {
     // Definitions
@@ -975,7 +976,8 @@ Product added to cart for <a href="/carts/${cartId}">${companyName}</a>.<br>`
       data: response.data,
     })
     const alert = createProductAddedToCartAlert(cartId, companyName)
-
+    const removeFromCartButton = createRemoveFromCartButton()
+    alert.appendChild(removeFromCartButton)
     addToCartButton.remove()
     cardFooter.appendChild(alert)
   }
@@ -1122,7 +1124,10 @@ if (document.getElementById('cartShow')) {
   const $costModal = $('#productCostModal')
   const addPriceButtons = document.getElementsByClassName('price-button')
   const invoiceButton = document.getElementById('invoiceButton')
-  const destroyButton = document.getElementById('destroyButton')
+  const destroyCartButton = document.getElementById('destroyCartButton')
+  const removeProductFromCartButtons = document.getElementsByClassName(
+    'buttonDropProduct'
+  )
 
   // Actions
   const changeInvoiceStatus = (status) => {
@@ -1211,14 +1216,14 @@ if (document.getElementById('cartShow')) {
   const invoiceButtonClick = () => {
     // Do Stuff
     invoiceButton.disabled = true
-    destroyButton.disabled = true
+    destroyCartButton.disabled = true
     changeInvoiceStatus(CART_INVOICED)
     disablePriceButtons()
   }
-  const destroyButtonClick = () => {
+  const destroyCartButtonClick = () => {
     // Do Stuff
     invoiceButton.disabled = true
-    destroyButton.disabled = true
+    destroyCartButton.disabled = true
     changeInvoiceStatus(CART_VOID)
     document.getElementById('cartTableBody').remove()
     document.getElementById('cartTotalPrice').innerText = '$0.00'
@@ -1302,6 +1307,13 @@ if (document.getElementById('cartShow')) {
     // Do Stuff
     $('#productPrice').trigger('focus')
   }
+  const dropProductFromCart = (dataset) => {
+    console.info('dataset', dataset)
+    axios.delete(`/pendingSales/${dataset.productId}`).then((response) => {
+      document.getElementById(`productRow${response.data.product_id}`).remove()
+      updateTotalPrice()
+    })
+  }
 
   // Attachments
   $costModal.on('shown.bs.modal', () => {
@@ -1313,12 +1325,21 @@ if (document.getElementById('cartShow')) {
     })
   }
 
+  for (
+    let i = 0, len = removeProductFromCartButtons.length | 0;
+    i < len;
+    i = (i + 1) | 0
+  ) {
+    removeProductFromCartButtons[i].addEventListener('click', () => {
+      dropProductFromCart(removeProductFromCartButtons[i].dataset)
+    })
+  }
   invoiceButton.addEventListener('click', function () {
     invoiceButtonClick()
   })
 
-  destroyButton.addEventListener('click', function () {
-    destroyButtonClick()
+  destroyCartButton.addEventListener('click', function () {
+    destroyCartButtonClick()
   })
 
   // Do Stuff
