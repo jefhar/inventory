@@ -582,7 +582,7 @@ if (document.getElementById('typesCreate')) {
       })
       .finally(() => {
         loadFormButton.disabled = false
-        loadFormButton.innerHTML = `Load Existing&emsp;&emsp;<i class="fas fa-file-download"></i>`
+        loadFormButton.innerHTML = `<i class="fas fa-file-download mr-1"></i>Load Existing`
       })
   }
   const typesControlToggleEdit = () => {
@@ -595,7 +595,8 @@ if (document.getElementById('typesCreate')) {
 
     // Do Stuff
     if (editing === 'preview') {
-      previewButton.innerHTML = 'Edit&emsp;&emsp;<i class="far fa-edit"></i>'
+      previewButton.innerHTML =
+        'Edit&emsp;&emsp;<i class="far fa-edit pr-1"></i>'
       previewButton.dataset.showOnClick = 'edit'
 
       classes.remove('btn-outline-secondary')
@@ -1180,13 +1181,11 @@ if (document.getElementById('cartShow')) {
       console.info('ProductPrice', price)
       price = price.replace(/[^\d.-]/g, '')
       console.info('replaced productPrice')
-      totalPrice += parseFloat(price) * 100
+      totalPrice += parseFloat(price) * 100 // Because I was getting rounding
+      // errors at under $100
       console.info('running totalPrice:', totalPrice)
     }
-    cartTotalPrice.innerText = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(totalPrice / 100)
+    cartTotalPrice.innerText = (totalPrice / 100).toFixed(2)
   }
   const productCostPopup = (dataset) => {
     console.info(dataset)
@@ -1197,21 +1196,16 @@ if (document.getElementById('cartShow')) {
       productModel: model,
       productPrice: price,
     } = dataset
-    const modalProductId = document.getElementById('modalProductId')
+    const productModalHeader = document.getElementById('productModalHeader')
     const originalPrice = document.getElementById('originalPrice')
+    const productPrice = document.getElementById('productPrice')
 
-    if (price === 0) {
-      console.info('here')
-    }
     // Do Stuff
-    originalPrice.innerText = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(price)
-
-    modalProductId.innerText = `${productId} ${manufacturer} ${model}`
-    modalProductId.dataset.productId = productId
+    originalPrice.innerText = parseFloat(price).toFixed(2)
+    productModalHeader.innerText = `${productId} ${manufacturer} ${model}`
+    productModalHeader.dataset.productId = productId
     $costModal.modal('show')
+    productPrice.value = parseFloat(price).toFixed(2)
   }
   const invoiceButtonClick = () => {
     // Do Stuff
@@ -1245,21 +1239,20 @@ if (document.getElementById('cartShow')) {
         console.info(response)
         // Definitions
         const $toast = $('#productPriceToast')
-        const priceId = document.getElementById(`price${productId}`)
         const editElement = document.getElementById(
           `productPriceButton${productId}`
         )
+        const newPrice = response.data.price
+        const priceId = document.getElementById(`price${productId}`)
 
         // Do Stuff
         $costModal.modal('hide')
+
         document.getElementById('toastBody').innerHTML =
           `Product ${productId} has been updated. ` +
-          `The price is now $${response.data.price}. ` +
+          `The price is now $${newPrice}. ` +
           `This price will remain even if the product is removed from this cart.`
-        priceId.innerText = new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-        }).format(response.data.price)
+        priceId.innerText = parseFloat(newPrice).toFixed(2)
 
         editElement.dataset.productPrice = response.data.price
 

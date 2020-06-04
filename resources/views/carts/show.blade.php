@@ -112,7 +112,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5>Product <span id="modalProductId"></span></h5>
+          <h5>Product <span id="productModalHeader"></span></h5>
           <button type="button" class="close" data-dimiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -129,7 +129,7 @@
                 pattern="[\d+]\.?[\d\d]?"
                 placeholder="0.00"
                 required
-                step=0.01
+                step="0.01"
                 type="number"
               >
             </div>
