@@ -31,7 +31,7 @@ class ProductShowAction
     {
         /** @var User $user */
         $user = Auth::user();
-        if ($user->can(UserPermissions::EDIT_SAVED_PRODUCT)) {
+        if ($user->can(UserPermissions::MUTATE_PRODUCT_VALUES)) {
             $className = 'form-control';
             $readonly = 'false';
             $disabled = 'false';
