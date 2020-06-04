@@ -1123,6 +1123,7 @@ if (document.getElementById('cartIndex')) {
 if (document.getElementById('cartShow')) {
   // Definitions
   const $costModal = $('#productCostModal')
+  let activeProduct = {}
   const addPriceButtons = document.getElementsByClassName('price-button')
   const invoiceButton = document.getElementById('invoiceButton')
   const destroyCartButton = document.getElementById('destroyCartButton')
@@ -1190,22 +1191,23 @@ if (document.getElementById('cartShow')) {
   const productCostPopup = (dataset) => {
     console.info(dataset)
     // Definitions
+    activeProduct = dataset
     const {
       productId,
-      productManufacturer: manufacturer,
-      productModel: model,
-      productPrice: price,
-    } = dataset
-    const productModalHeader = document.getElementById('productModalHeader')
+      productModel,
+      productPrice,
+      productManufacturer,
+    } = activeProduct
     const originalPrice = document.getElementById('originalPrice')
-    const productPrice = document.getElementById('productPrice')
+    const priceToShow = parseFloat(productPrice).toFixed(2)
+    const productModalHeader = document.getElementById('productModalHeader')
+    const productPriceInput = document.getElementById('productPriceInput')
 
     // Do Stuff
-    originalPrice.innerText = parseFloat(price).toFixed(2)
-    productModalHeader.innerText = `${productId} ${manufacturer} ${model}`
-    productModalHeader.dataset.productId = productId
+    originalPrice.innerText = priceToShow
+    productModalHeader.innerText = `${productId} ${productManufacturer} ${productModel}`
     $costModal.modal('show')
-    productPrice.value = parseFloat(price).toFixed(2)
+    productPriceInput.value = priceToShow
   }
   const invoiceButtonClick = () => {
     // Do Stuff
@@ -1229,32 +1231,27 @@ if (document.getElementById('cartShow')) {
     // Actions
     const costSubmitButtonClick = () => {
       // Definitions
-      const productId = document.getElementById('modalProductId').dataset
-        .productId
-      const price = document.getElementById('productPrice').value
-      const patchData = { price: price }
+      const productId = activeProduct.productId
+      const newPrice = document.getElementById('productPriceInput').value
+      const patchData = { price: newPrice }
 
       // Actions
       const onPatch = (response) => {
         console.info(response)
         // Definitions
+        activeProduct.productPrice = response.data.price
         const $toast = $('#productPriceToast')
-        const editElement = document.getElementById(
-          `productPriceButton${productId}`
+        const priceText = document.getElementById(
+          `productPriceButtonText_${productId}`
         )
-        const newPrice = response.data.price
-        const priceId = document.getElementById(`price${productId}`)
 
         // Do Stuff
         $costModal.modal('hide')
 
         document.getElementById('toastBody').innerHTML =
-          `Product ${productId} has been updated. ` +
-          `The price is now $${newPrice}. ` +
-          `This price will remain even if the product is removed from this cart.`
-        priceId.innerText = parseFloat(newPrice).toFixed(2)
-
-        editElement.dataset.productPrice = response.data.price
+          `Product ${activeProduct.productId} has been updated. ` +
+          `The price is now $${activeProduct.productPrice}.`
+        priceText.innerText = parseFloat(activeProduct.productPrice).toFixed(2)
 
         $toast.toast()
         $toast.toast('show')
@@ -1267,17 +1264,17 @@ if (document.getElementById('cartShow')) {
         // Do Stuff
         console.error(error)
         // display error toast
-        toastErrorBody.innerHTML = `There was an error updating the price of product ${productId}.<br>${error}`
+        toastErrorBody.innerHTML = `There was an error updating the price of product ${activeProduct.productId}.<br>${error}`
         $toast.toast()
         $toast.toast('show')
       }
 
       // Do stuff
-      if (price < 0) {
+      if (newPrice < 0) {
         return false
       }
       axios
-        .patch(`/products/${productId}`, patchData)
+        .patch(`/products/${activeProduct.productId}`, patchData)
         .then((response) => {
           onPatch(response)
         })
@@ -1300,12 +1297,16 @@ if (document.getElementById('cartShow')) {
     // Do Stuff
     $('#productPrice').trigger('focus')
   }
-  const dropProductFromCart = (dataset) => {
-    console.info('dataset', dataset)
-    axios.delete(`/pendingSales/${dataset.productId}`).then((response) => {
-      document.getElementById(`productRow${response.data.product_id}`).remove()
-      updateTotalPrice()
-    })
+  const dropProductFromCart = (deletedProduct) => {
+    console.info('deletedProduct', deletedProduct)
+    axios
+      .delete(`/pendingSales/${deletedProduct.productId}`)
+      .then((response) => {
+        document
+          .getElementById(`productRow_${response.data.product_id}`)
+          .remove()
+        updateTotalPrice()
+      })
   }
 
   // Attachments

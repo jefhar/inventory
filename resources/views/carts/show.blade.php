@@ -66,7 +66,7 @@
           </thead>
           <tbody id="cartTableBody">
           @foreach ($cart->products as $product)
-            <tr id="productRow{{ $product->luhn }}">
+            <tr id="productRow_{{ $product->luhn }}">
               <th scope="row">
                 <a class="btn btn-info"
                    href="/inventory/{{ $product->luhn }}">
@@ -79,7 +79,7 @@
               <td>{{$product->serial }}</td>
               <td>
                 <button
-                  id="productPriceButton{{ $product->luhn }}"
+                  id="productPriceButton_{{ $product->luhn }}"
                   class="btn btn-outline-secondary price-button"
                   data-product-id="{{ $product->luhn }}"
                   data-product-manufacturer="{{ $product->manufacturer->name }}"
@@ -88,7 +88,7 @@
                   type="button"
                   title="Click to change product price"
                 ><i class="fas fa-dollar-sign mr-1"></i><span
-                    id="price{{ $product->luhn }}"
+                    id="productPriceButtonText_{{ $product->luhn }}"
                     class="price text-light"
                   >{{ sprintf('%03.2F', $product->price) }}</span></button>
               </td>
@@ -120,11 +120,11 @@
         <div class="modal-body">
           <form class="form-inline" id="form">
             <div class="form-group">
-              <label class="mr-2" for="productPrice">Unit price:</label> $
+              <label class="mr-2" for="productPriceInput">Unit price:</label> $
               <input
                 aria-describedby="originalPriceHelp"
                 class="form-control ml-1"
-                id="productPrice"
+                id="productPriceInput"
                 min="0"
                 pattern="[\d+]\.?[\d\d]?"
                 placeholder="0.00"
