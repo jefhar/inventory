@@ -30,20 +30,24 @@
           <br>Created at {{ $cart->created_at->format('j M Y H:i') }}</p>
       </div>
       <div class="card-body">
-        <button
-          class="btn btn-outline-primary mr-sm-4"
-          id="invoiceButton"
-          type="button"
-          {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}>
-          <i class="far fa-check-circle mr-1"></i>Mark Invoiced
-        </button>
-        <button
-          class="btn btn-danger drop-button"
-          id="destroyCartButton"
-          type="button"
-          {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}
-        ><i class="far fa-trash-alt mr-1"></i>Destroy Cart
-        </button>
+        <div class="row">
+          <button
+            class="btn btn-outline-primary mr-sm-4"
+            id="invoiceButton"
+            type="button"
+            {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}>
+            <i class="far fa-check-circle mr-1"></i>Mark Invoiced
+          </button>
+          <div
+            id="dropCart_{{ $cart->luhn }}"
+            class="drop-button"
+            data-cart-id="{{ $cart->luhn }}"
+            data-type="cart"
+            data-text="Destroy Cart"
+            data-disabled={{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'true' : 'false'}}
+          >
+          </div>
+        </div>
         <span id="totalPrice" class="float-right">Cart Total:&nbsp;
         <span id="cartTotalPrice" class="float-right"></span>
       </span>
@@ -93,12 +97,13 @@
                   >{{ sprintf('%03.2F', $product->price) }}</span></button>
               </td>
               <td>
-                <button
-                  type="button"
+                <div
+                  id="removeProduct_{{ $product->luhn }}"
+                  class="drop-button"
                   data-product-id="{{ $product->luhn }}"
-                  class="btn btn-danger drop-product-button">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
+                  data-type="product"
+                >
+                </div>
               </td>
             </tr>
           @endforeach

@@ -62,17 +62,17 @@
                 </ul>
                 <br>
                 <a
-                  class="btn btn-outline-primary card-link"
+                  class="btn btn-outline-primary"
                   role="button"
                   href="/carts/{{ $cart->luhn }}"
                 ><i class="far fa-edit mr-1"></i> Edit cart.</a>
-                <button
-                  class="btn btn-danger card-link drop-button"
-                  data-toggle="modal"
-                  data-target="#destroyCartModal"
-                  data-cart="{{ $cart->luhn }}"
-                ><i class="far fa-trash-alt mr-1"></i>Destroy Cart.
-                </button>
+                <div
+                  class="drop-button1"
+                  data-cart-id="{{ $cart->luhn }}"
+                  data-text="Destroy Cart."
+                  data-type="cart"
+                >
+                </div>
               </div>
             </div>
           </div>

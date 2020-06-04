@@ -15,6 +15,7 @@ require('formBuilder')
 require('formBuilder/dist/form-render.min')
 require('./components/WorkOrder/WorkOrderIndex')
 require('./components/WorkOrder/WorkOrderCreate')
+require('./components/DropButton')
 const HTTP_OK = 200
 const HTTP_CREATED = 201
 const HTTP_ACCEPTED = 202
@@ -1073,48 +1074,6 @@ Product added to cart for <a href="/carts/${cartId}">${companyName}</a>.<br>`
 
 if (document.getElementById('cartIndex')) {
   // Actions
-  const destroyCartModalShow = (event) => {
-    // Definitions
-    const sourceTarget = $(event.relatedTarget)
-    const cart = sourceTarget.data('cart')
-    const destroyCartButton = document.getElementById('destroyCartButton')
-
-    // Actions
-    const destroyCartButtonClick = () => {
-      // Definitions
-      const toastBody = document.getElementById('toastBody')
-      const $destroyedToast = $('#destroyedToast')
-
-      // Actions
-      const onDeleteCart = () => {
-        // Do Stuff
-        $('#destroyCartModal').modal('hide')
-        document.getElementById(`cart${cart}`).remove()
-
-        // Add toast
-        toastBody.innerText = `Cart ${cart} has been destroyed. All items have been returned to inventory.`
-
-        $destroyedToast.toast()
-        $destroyedToast.toast('show')
-      }
-
-      // Do Stuff
-      // Send destroy to /carts/destroy with cart id in field.
-      axios.delete(`/carts/${cart}`).then(() => {
-        onDeleteCart()
-      })
-    }
-
-    // Attachments
-    destroyCartButton.addEventListener('click', () => {
-      destroyCartButtonClick()
-    })
-  }
-
-  // Attachments
-  $('#destroyCartModal').on('show.bs.modal', (event) => {
-    destroyCartModalShow(event)
-  })
 
   // Do Stuff
   $('.collapse').collapse({ toggle: false })
@@ -1127,9 +1086,6 @@ if (document.getElementById('cartShow')) {
   const addPriceButtons = document.getElementsByClassName('price-button')
   const invoiceButton = document.getElementById('invoiceButton')
   const destroyCartButton = document.getElementById('destroyCartButton')
-  const removeProductFromCartButtons = document.getElementsByClassName(
-    'buttonDropProduct'
-  )
 
   // Actions
   const changeInvoiceStatus = (status) => {
@@ -1216,14 +1172,6 @@ if (document.getElementById('cartShow')) {
     changeInvoiceStatus(CART_INVOICED)
     disablePriceButtons()
   }
-  const destroyCartButtonClick = () => {
-    // Do Stuff
-    invoiceButton.disabled = true
-    destroyCartButton.disabled = true
-    changeInvoiceStatus(CART_VOID)
-    document.getElementById('cartTableBody').remove()
-    document.getElementById('cartTotalPrice').innerText = '$0.00'
-  }
   const costModalShown = () => {
     // Definitions
     const costSubmitButton = document.getElementById('costSubmitButton')
@@ -1297,17 +1245,6 @@ if (document.getElementById('cartShow')) {
     // Do Stuff
     $('#productPrice').trigger('focus')
   }
-  const dropProductFromCart = (deletedProduct) => {
-    console.info('deletedProduct', deletedProduct)
-    axios
-      .delete(`/pendingSales/${deletedProduct.productId}`)
-      .then((response) => {
-        document
-          .getElementById(`productRow_${response.data.product_id}`)
-          .remove()
-        updateTotalPrice()
-      })
-  }
 
   // Attachments
   $costModal.on('shown.bs.modal', () => {
@@ -1319,21 +1256,8 @@ if (document.getElementById('cartShow')) {
     })
   }
 
-  for (
-    let i = 0, len = removeProductFromCartButtons.length | 0;
-    i < len;
-    i = (i + 1) | 0
-  ) {
-    removeProductFromCartButtons[i].addEventListener('click', () => {
-      dropProductFromCart(removeProductFromCartButtons[i].dataset)
-    })
-  }
   invoiceButton.addEventListener('click', function () {
     invoiceButtonClick()
-  })
-
-  destroyCartButton.addEventListener('click', function () {
-    destroyCartButtonClick()
   })
 
   // Do Stuff
