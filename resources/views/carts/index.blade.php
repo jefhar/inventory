@@ -19,7 +19,7 @@
         @foreach($carts as $cart)
           <div
             class="card"
-            id="cart{{ $cart->luhn }}"
+            id="cart_{{ $cart->luhn }}"
           >
             <div
               class="card-header"
@@ -67,7 +67,7 @@
                   href="/carts/{{ $cart->luhn }}"
                 ><i class="far fa-edit mr-1"></i> Edit cart.</a>
                 <button
-                  class="btn btn-outline-warning card-link"
+                  class="btn btn-danger card-link drop-button"
                   data-toggle="modal"
                   data-target="#destroyCartModal"
                   data-cart="{{ $cart->luhn }}"

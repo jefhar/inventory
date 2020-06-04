@@ -38,7 +38,7 @@
           <i class="far fa-check-circle mr-1"></i>Mark Invoiced
         </button>
         <button
-          class="btn btn-outline-warning"
+          class="btn btn-danger drop-button"
           id="destroyCartButton"
           type="button"
           {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}
@@ -96,7 +96,7 @@
                 <button
                   type="button"
                   data-product-id="{{ $product->luhn }}"
-                  class="btn btn-danger buttonDropProduct">
+                  class="btn btn-danger drop-product-button">
                   <i class="fas fa-trash-alt"></i>
                 </button>
               </td>
@@ -146,6 +146,59 @@
           </button>
           <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal"><i
               class="far fa-times-circle mr-1"></i>Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div
+    aria-hidden="true"
+    aria-labelledby="destroyTitle"
+    class="modal fade"
+    id="destroyModal"
+    role="dialog"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5
+            class="modal-title"
+            id="destroyModalTitle"
+          >
+            <span class="text-danger"><i class="fas fa-exclamation-triangle mr-1"></i></span
+            >Destroy <span class="delete-type"></span>?
+          </h5>
+          <button
+            aria-label="Close"
+            class="close"
+            data-dimiss="modal"
+            type="button"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="left-danger-border">
+            <p class="cart-visible">This will permanently destroy the cart and return all items to available inventory.
+              Are you sure sure you want to do this?</p>
+            <p class="product-visible">This will remove the product from the cart. Are you sure sure you want to do
+              this?</p>
+            <p><em>This cannot be undone.</em></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-outline-secondary"
+            data-dismiss="modal"
+            type="button"
+          ><i class="far fa-times-circle mr-1"></i>Close
+          </button>
+          <button
+            id="destroyModalButton"
+            class="btn btn-danger"><i class="fas fa-trash mr-1"></i>
+            Destroy <span class="delete-type"></span>
           </button>
         </div>
       </div>
