@@ -17,6 +17,11 @@
         <h1
           id="cartId"
           data-cart-id="{{ $cart->luhn }}">
+          <svg class="bi bi-cart3 mr-1" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+               xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+                  d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+          </svg>
           Cart # {{ $cart->luhn }}: <span id="cartStatus" class="capitalize">{{ $cart->status }}</span>
         </h1>
         <p class="lead">{{ $cart->client->company_name }}</p>
@@ -30,14 +35,14 @@
           id="invoiceButton"
           type="button"
           {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}>
-          Mark Invoiced
+          <i class="far fa-check-circle mr-1"></i>Mark Invoiced
         </button>
         <button
           class="btn btn-outline-warning"
           id="destroyCartButton"
           type="button"
           {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}
-        >Destroy Cart
+        ><i class="far fa-trash-alt mr-1"></i>Destroy Cart
         </button>
         <span id="totalPrice" class="float-right">Cart Total:&nbsp;
         <span id="cartTotalPrice" class="float-right"></span>
@@ -75,25 +80,23 @@
               <td>
                 <button
                   id="productPriceButton{{ $product->luhn }}"
-                  class="btn btn-secondary price-button"
+                  class="btn btn-outline-secondary price-button"
                   data-product-id="{{ $product->luhn }}"
                   data-product-manufacturer="{{ $product->manufacturer->name }}"
                   data-product-model="{{ $product->model }}"
                   data-product-price="{{ $product->price }}"
                   type="button"
-                ><span
+                  title="Click to change product price"
+                ><i class="fas fa-dollar-sign mr-1"></i><span
                     id="price{{ $product->luhn }}"
-                    class="price"
-                  >${{ sprintf('%03.2F', $product->price) }}</span><i
-                    class="far fa-edit text-light float-right"
-                    title="Click to change product price"
-                  ></i></button>
+                    class="price text-light"
+                  >{{ sprintf('%03.2F', $product->price) }}</span></button>
               </td>
               <td>
                 <button
                   type="button"
                   data-product-id="{{ $product->luhn }}"
-                  class="btn btn-outline-danger buttonDropProduct">
+                  class="btn btn-danger buttonDropProduct">
                   <i class="fas fa-trash-alt"></i>
                 </button>
               </td>
@@ -139,10 +142,10 @@
 
           <br>
           <button id="costSubmitButton" type="submit" class="btn btn-outline-primary" value="Save"><i
-              class="far fa-save pr-1"></i>Save
+              class="far fa-save mr-1"></i>Save
           </button>
           <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal"><i
-              class="far fa-times-circle pr-1"></i>Cancel
+              class="far fa-times-circle mr-1"></i>Cancel
           </button>
         </div>
       </div>

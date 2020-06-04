@@ -9,7 +9,15 @@
          id="outline">
       <div class="card-header row">
         <div class="col">
-          <h1 class="text-center"><span id="lockedHeader">The</span> Work Order
+          <h1 class="text-center">
+            <svg class="bi bi-receipt-cutoff mr-1" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd"
+                    d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v13h-1V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0l-.509-.51L2 2.118V15H1V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27zM0 15.5a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5z"/>
+              <path fill-rule="evenodd"
+                    d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm8-8a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5z"/>
+            </svg>
+            <span id="lockedHeader">The</span> Work Order
             #{{ str_pad($workOrder->luhn, config('app.padding.workorders'), '0', STR_PAD_LEFT) }}</h1>
           <p class="text-center">
             <span class="h3">{{ $workOrder->client->company_name }}</span>
@@ -116,12 +124,12 @@
               class="btn btn-outline-primary col-4 offset-1"
               id="commitChangesButton"
               type="button">
-              <i class="far fa-save pr-1"></i>Commit Changes
+              <i class="far fa-save mr-1"></i>Commit Changes
             </button>
             <button
               class="btn btn-outline-secondary col-4 offset-2"
               type="reset">
-              <i class="fas fa-undo-alt pr-1"></i>Revert Changes
+              <i class="fas fa-undo-alt mr-1"></i>Revert Changes
             </button>
           </div>
           <div id='alert_row' class="row">
@@ -238,7 +246,7 @@
                 data-dismiss="modal"
                 id="cancelNewProductButton"
                 type="button"
-              ><i class="far fa-times-circle pr-1"></i>Cancel
+              ><i class="far fa-times-circle mr-1"></i>Cancel
               </button>
               <button
                 class="btn btn-outline-primary"

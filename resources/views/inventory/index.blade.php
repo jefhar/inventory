@@ -4,7 +4,7 @@
 
 @section('content')
   <div class="container">
-    <h1 class="text-center">Complete Inventory</h1>
+    <h1 class="text-center"><i class="fas fa-table mr-1"></i>Complete Inventory</h1>
     <p class="text-muted text-center">Generated at {{ date('j F, Y g:i:s a e') }}</p>
     <div class="row">
       @if ($products->isEmpty())
