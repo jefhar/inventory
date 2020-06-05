@@ -10,8 +10,19 @@
       \Domain\Carts\Models\Cart::STATUS_VOID => 'danger',
     ];
   @endphp
-  <div id="cartShow"
-       class="container">
+  <div id="CartShow"
+       data-cart-id="{{ $cart->luhn }}"
+       data-cart-status="{{ $cart->status }}"
+       data-cart-created-at="{{ $cart->created_at->format('j M Y H:i') }}"
+       data-client-company-name="{{ $cart->client->company_name }}"
+       data-client-first-name="{{ $cart->client->person->first_name }}"
+       data-client-last-name="{{ $cart->client->person->last_name }}"
+       data-client-phone-number="{{ $cart->client->person->phone_number }}"
+       class="mb-5"
+  >
+  </div>
+
+  <div class="container">
     <div id="card-border" class="card border-{{ $border[$cart->status] }}">
       <div class="card-header">
         <h1

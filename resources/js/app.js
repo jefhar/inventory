@@ -8,6 +8,7 @@ import ReactDOM from 'react-dom'
 import * as React from 'react'
 import CompanyClientName from './components/WorkOrder/Elements/CompanyClientName'
 import AutoComplete from 'autocomplete-js'
+// import DropButton from './components/DropButton'
 
 require('./bootstrap')
 require('jquery-ui-sortable')
@@ -15,13 +16,10 @@ require('formBuilder')
 require('formBuilder/dist/form-render.min')
 require('./components/WorkOrder/WorkOrderIndex')
 require('./components/WorkOrder/WorkOrderCreate')
-require('./components/DropButton')
+require('./components/CartShow')
 const HTTP_OK = 200
 const HTTP_CREATED = 201
 const HTTP_ACCEPTED = 202
-
-const CART_INVOICED = 'invoiced'
-const CART_VOID = 'void'
 
 AutoComplete()
 
@@ -190,7 +188,7 @@ if (document.getElementById('WorkOrdersEdit')) {
       // fields have been updated. Even better, add onChange
       // to the fields, and if they're dirty, give visual
       // indication when changed.
-      updateToast.innerHTML = ` 
+      updateToast.innerHTML = `
 <div class="toast-header">
   <i class="fas fa-check-square text-success"></i>&nbsp;
   <strong class="mr-auto">Success</strong>
@@ -211,7 +209,7 @@ if (document.getElementById('WorkOrdersEdit')) {
   style="position: absolute; top: 0; right: 0;"
   class="toast"
   role="alert"
-  aria-live="assertive" 
+  aria-live="assertive"
   aria-atomic="true">
   <div class="toast-header">
     <i class="fas fa-exclamation-circle text-warning"></i>&nbsp;
@@ -407,7 +405,7 @@ if (document.getElementById('WorkOrdersEdit')) {
 
         // Add Toast
         const addedProductToast = document.createElement('div')
-        addedProductToast.innerHTML = ` 
+        addedProductToast.innerHTML = `
 <div class="toast-header">
   <i class="fas fa-check-square text-success"></i>&nbsp;
   <strong class="mr-auto">Success</strong>
@@ -1100,7 +1098,9 @@ if (document.getElementById('cartShow')) {
 
       // Do Stuff
       classes.remove('border-secondary')
-      classes.add(`border-${status === CART_INVOICED ? 'success' : 'danger'}`)
+      classes.add(
+        `border-${status === DropButton.CART_INVOICED ? 'success' : 'danger'}`
+      )
       document.getElementById('cartStatus').innerHTML = status
     }
     // Do Stuff
@@ -1169,7 +1169,7 @@ if (document.getElementById('cartShow')) {
     // Do Stuff
     invoiceButton.disabled = true
     destroyCartButton.disabled = true
-    changeInvoiceStatus(CART_INVOICED)
+    changeInvoiceStatus(window.DTO.CART_INVOICED)
     disablePriceButtons()
   }
   const costModalShown = () => {

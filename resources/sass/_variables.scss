@@ -55,9 +55,14 @@ $dark:#000633;
 */
 
 // Status Colors
+$cart_invoiced: $success;
+$cart_open: $primary;
+$cart_void: $danger;
+
 $available: $primary;
 $in_cart: $yellow;
 $invoiced: $green;
+
 $theme-colors: (
   'primary': $primary,
   'secondary': $secondary,
@@ -70,4 +75,7 @@ $theme-colors: (
   'available': $available,
   'in_cart': $in_cart,
   'invoiced': $invoiced,
+  'cart_invoiced': $cart_invoiced,
+  'cart_open': $cart_open,
+  'cart_void': $danger,
 );
