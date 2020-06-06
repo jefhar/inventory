@@ -226,9 +226,9 @@ class WorkOrdersControllerTest extends TestCase
                 [
                     WorkOrderResource::CLIENT_COMPANY_NAME => '',
                     WorkOrderResource::EMAIL => '',
-                    WorkOrderResource::FIRST_NAME => '',
-                    WorkOrderResource::LAST_NAME => '',
-                    WorkOrderResource::PHONE_NUMBER => '',
+                    WorkOrderResource::CLIENT_FIRST_NAME => '',
+                    WorkOrderResource::CLIENT_LAST_NAME => '',
+                    WorkOrderResource::CLIENT_PHONE_NUMBER => '',
                     WorkOrderResource::INTAKE => '',
                 ]
             )
@@ -302,9 +302,9 @@ class WorkOrdersControllerTest extends TestCase
                 ]
             )
             ->assertDontSee(WorkOrderResource::EMAIL)
-            ->assertDontSee(WorkOrderResource::FIRST_NAME)
-            ->assertDontSee(WorkOrderResource::LAST_NAME)
-            ->assertDontSee(WorkOrderResource::PHONE_NUMBER)
+            ->assertDontSee(WorkOrderResource::CLIENT_FIRST_NAME)
+            ->assertDontSee(WorkOrderResource::CLIENT_LAST_NAME)
+            ->assertDontSee(WorkOrderResource::CLIENT_PHONE_NUMBER)
             ->assertDontSee(WorkOrderResource::INTAKE)
             ->assertOk()
             ->assertSee(WorkOrderResource::CLIENT_COMPANY_NAME);
@@ -327,9 +327,9 @@ class WorkOrdersControllerTest extends TestCase
                 [WorkOrderUpdateRequest::CLIENT_COMPANY_NAME => $newClient->company_name,]
             )
             ->assertDontSee(WorkOrderResource::EMAIL)
-            ->assertDontSee(WorkOrderResource::FIRST_NAME)
-            ->assertDontSee(WorkOrderResource::LAST_NAME)
-            ->assertDontSee(WorkOrderResource::PHONE_NUMBER)
+            ->assertDontSee(WorkOrderResource::CLIENT_FIRST_NAME)
+            ->assertDontSee(WorkOrderResource::CLIENT_LAST_NAME)
+            ->assertDontSee(WorkOrderResource::CLIENT_PHONE_NUMBER)
             ->assertDontSee(WorkOrderResource::INTAKE)
             ->assertOk()
             ->assertSee(WorkOrderResource::CLIENT_COMPANY_NAME);
@@ -343,12 +343,12 @@ class WorkOrdersControllerTest extends TestCase
                 ]
             )
             ->assertDontSee(WorkOrderResource::EMAIL)
-            ->assertDontSee(WorkOrderResource::LAST_NAME)
-            ->assertDontSee(WorkOrderResource::PHONE_NUMBER)
+            ->assertDontSee(WorkOrderResource::CLIENT_LAST_NAME)
+            ->assertDontSee(WorkOrderResource::CLIENT_PHONE_NUMBER)
             ->assertDontSee(WorkOrderResource::INTAKE)
             ->assertOk()
             ->assertSee(WorkOrderResource::CLIENT_COMPANY_NAME)
-            ->assertSee(WorkOrderResource::FIRST_NAME);
+            ->assertSee(WorkOrderResource::CLIENT_FIRST_NAME);
 
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
@@ -359,12 +359,12 @@ class WorkOrdersControllerTest extends TestCase
                 ]
             )
             ->assertDontSee(WorkOrderResource::EMAIL)
-            ->assertDontSee(WorkOrderResource::FIRST_NAME)
-            ->assertDontSee(WorkOrderResource::PHONE_NUMBER)
+            ->assertDontSee(WorkOrderResource::CLIENT_FIRST_NAME)
+            ->assertDontSee(WorkOrderResource::CLIENT_PHONE_NUMBER)
             ->assertDontSee(WorkOrderResource::INTAKE)
             ->assertOk()
             ->assertSee(WorkOrderResource::CLIENT_COMPANY_NAME)
-            ->assertSee(WorkOrderResource::LAST_NAME);
+            ->assertSee(WorkOrderResource::CLIENT_LAST_NAME);
 
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
@@ -376,11 +376,11 @@ class WorkOrdersControllerTest extends TestCase
                 ]
             )
             ->assertDontSee(WorkOrderResource::CLIENT_COMPANY_NAME)
-            ->assertDontSee(WorkOrderResource::FIRST_NAME)
-            ->assertDontSee(WorkOrderResource::LAST_NAME)
+            ->assertDontSee(WorkOrderResource::CLIENT_FIRST_NAME)
+            ->assertDontSee(WorkOrderResource::CLIENT_LAST_NAME)
             ->assertOk()
             ->assertSee(WorkOrderResource::EMAIL)
-            ->assertSee(WorkOrderResource::PHONE_NUMBER)
+            ->assertSee(WorkOrderResource::CLIENT_PHONE_NUMBER)
             ->assertSee(WorkOrderResource::INTAKE);
     }
 }
