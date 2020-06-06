@@ -78,7 +78,8 @@ class CartsController extends Controller
      */
     public function show(Cart $cart): View
     {
-        return view('carts.show')->with(['cart' => $cart]);
+        // TODO: return a JsonResource that translates id to luhn and removes unneeded attributes.
+        return view('carts.show')->with(['cart' => $cart->load('products.type')]);
     }
 
     /**
