@@ -142,7 +142,6 @@ class WorkOrdersController extends Controller
         );
 
         return new WorkOrderResource($workOrderAction);
-        // return response()->json($workOrderAction);
     }
 
     /**
