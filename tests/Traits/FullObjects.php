@@ -87,7 +87,6 @@ trait FullObjects
 
         $WorkOrder->save();
         $Product->workOrder()->associate($WorkOrder);
-
         return $WorkOrder;
     }
 
