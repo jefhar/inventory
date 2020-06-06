@@ -12,9 +12,10 @@ namespace App\WorkOrders\Controllers;
 use App\Admin\Controllers\Controller;
 use App\WorkOrders\DataTransferObjects\ClientObject;
 use App\WorkOrders\DataTransferObjects\PersonObject;
-use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
+use App\WorkOrders\DataTransferObjects\WorkOrderObject;
 use App\WorkOrders\Requests\WorkOrderStoreRequest;
 use App\WorkOrders\Requests\WorkOrderUpdateRequest;
+use App\WorkOrders\Resources\WorkOrderResource;
 use Domain\Products\Models\Type;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
@@ -35,10 +36,11 @@ class WorkOrdersController extends Controller
     public const CREATE_PATH = '/workorders/create';
     public const EDIT_NAME = 'workorders.edit';
     public const INDEX_NAME = 'workorders.index';
+    public const PAGINATE_PER_PAGE = 15;
     public const SHOW_NAME = 'workorders.show';
     public const STORE_NAME = 'workorders.store';
     public const UPDATE_NAME = 'workorders.update';
-    public const PAGINATE_PER_PAGE = 15;
+    public const WORKORDER = 'workorder';
 
     /**
      * Display a listing of the resource.
@@ -80,10 +82,12 @@ class WorkOrdersController extends Controller
      */
     public function store(WorkOrderStoreRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-        $personObject = PersonObject::fromRequest($request->validated());
-        $workOrder = WorkOrdersStoreAction::execute(ClientObject::fromRequest($validated), $personObject);
+        $workOrder = WorkOrdersStoreAction::execute(
+            ClientObject::fromRequest($request->validated()),
+            PersonObject::fromRequest($request->validated())
+        );
 
+        // Why does this send a response, a status, and a location?
         return response()
             ->json(['workorder_id' => $workOrder->luhn, 'created' => true], Response::HTTP_CREATED)
             ->header(
@@ -123,14 +127,22 @@ class WorkOrdersController extends Controller
      *
      * @param WorkOrderUpdateRequest $request
      * @param WorkOrder $workorder
-     * @return JsonResponse
+     * @return WorkOrderResource
      */
-    public function update(WorkOrderUpdateRequest $request, WorkOrder $workorder): JsonResponse
+    public function update(WorkOrderUpdateRequest $request, WorkOrder $workorder): WorkOrderResource
     {
-        $workOrderObject = WorkOrderUpdateObject::fromRequest($request->validated());
-        $workOrderAction = WorkOrdersUpdateAction::execute($workorder, $workOrderObject);
+        $personObject = PersonObject::fromRequest($request->validated());
+        $clientObject = ClientObject::fromRequest($request->validated());
+        $workOrderObject = WorkOrderObject::fromRequest($request->validated());
+        $workOrderAction = WorkOrdersUpdateAction::execute(
+            $workorder,
+            $workOrderObject,
+            $clientObject,
+            $personObject
+        );
 
-        return response()->json($workOrderAction);
+        return new WorkOrderResource($workOrderAction);
+        // return response()->json($workOrderAction);
     }
 
     /**

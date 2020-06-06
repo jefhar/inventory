@@ -13,7 +13,6 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Support\Facades\App;
 use Laravel\Dusk\TestCase as BaseTestCase;
 
 /**
@@ -62,23 +61,9 @@ abstract class DuskTestCase extends BaseTestCase
             ]
         );
 
-        switch (config('dusk.driver')) {
-            case 'container':
-                return RemoteWebDriver::create(
-                    'http://selenium:4444/wd/hub',
-                    DesiredCapabilities::chrome()->setCapability(
-                        ChromeOptions::CAPABILITY,
-                        $options
-                    )
-                );
-            default: // local
-                return RemoteWebDriver::create(
-                    'http://localhost:9515',
-                    DesiredCapabilities::chrome()->setCapability(
-                        ChromeOptions::CAPABILITY,
-                        $options
-                    )
-                );
-        }
+        return RemoteWebDriver::create(
+            'http://localhost:9515',
+            DesiredCapabilities::chrome()->setCapability(ChromeOptions::CAPABILITY, $options)
+        );
     }
 }

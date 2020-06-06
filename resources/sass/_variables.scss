@@ -3,7 +3,8 @@
 $body-bg: #f8fafc;
 
 // Typography
-$font-family-sans-serif: "Lato", sans-serif;
+$web-font-path: 'https://fonts.googleapis.com/css2?family=Lato&display=swap' !default;
+$font-family-sans-serif: 'Lato', sans-serif;
 $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 

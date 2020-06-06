@@ -13,7 +13,7 @@ use App\WorkOrders\Controllers\ClientsController;
 use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Tests\TestCase;
-use Tests\Traits\FullUsers;
+use Tests\Traits\FullObjects;
 
 /**
  * Class ClientsControllerTest
@@ -22,7 +22,7 @@ use Tests\Traits\FullUsers;
  */
 class ClientsControllerTest extends TestCase
 {
-    use FullUsers;
+    use FullObjects;
 
     /**
      * @test

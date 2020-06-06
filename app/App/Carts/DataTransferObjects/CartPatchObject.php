@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace App\Carts\DataTransferObjects;
 
-use Domain\Carts\Models\Cart;
 use Spatie\DataTransferObject\DataTransferObject;
 
 /**
@@ -20,6 +19,7 @@ use Spatie\DataTransferObject\DataTransferObject;
 class CartPatchObject extends DataTransferObject
 {
     public string $status;
+    public const STATUS = 'status';
 
     /**
      * @param array $validated
@@ -27,6 +27,6 @@ class CartPatchObject extends DataTransferObject
      */
     public static function fromRequest(array $validated): CartPatchObject
     {
-        return new self([Cart::STATUS => $validated[Cart::STATUS]]);
+        return new self([self::STATUS => $validated[self::STATUS]]);
     }
 }

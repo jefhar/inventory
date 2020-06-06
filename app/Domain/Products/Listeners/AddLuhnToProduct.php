@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Domain\Products\Listeners;
 
 use Domain\Products\Events\ProductCreated;
-use Tdely\Luhn\Luhn;
+use App\Support\Luhn;
 
 /**
  * Class AddLuhnToProduct

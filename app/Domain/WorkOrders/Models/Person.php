@@ -22,6 +22,8 @@ use Illuminate\Support\Collection;
  * @method Person get()
  * @method static EloquentCollection pluck(string $column, ?string $key = null)
  * @method static Person findOrFail(array $array)
+ * @method static Person firstOrCreate(array $array)
+ * @method static Person firstOrNew(array $array)
  * @method static Person orWhere(string $LAST_NAME, string $string, string $string1)
  * @method static Person where(string $column, ?string $string = null, ?string $string1 = null)
  * @method static Person whereIn(string $ID, $people_ids)
@@ -37,7 +39,7 @@ use Illuminate\Support\Collection;
 class Person extends Model
 {
     public const CLIENT_ID = 'client_id';
-    public const DEFAULT_EMAIL = '';
+    public const DEFAULT_EMAIL = 'none@example.com';
     public const DEFAULT_FIRST_NAME = 'first';
     public const DEFAULT_LAST_NAME = 'last';
     public const DEFAULT_PHONE_NUMBER = '000-000-0000';

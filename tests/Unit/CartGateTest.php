@@ -13,11 +13,9 @@ use App\Admin\Permissions\UserRoles;
 use Domain\Carts\Models\Cart;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
-use Tests\Traits\FullUsers;
 
 class CartGateTest extends TestCase
 {
-    use FullUsers;
     use FullObjects;
 
     /**

@@ -47,11 +47,28 @@
               <div class="dropdown-divider"></div>
             </div>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ route(\App\Products\Controllers\InventoryController::INDEX_NAME) }}">
-              Inventory
-            </a>
-          </li>
+          @can(\App\Admin\Permissions\UserPermissions::CREATE_OR_EDIT_PRODUCT_TYPE)
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="inventoryDropdownMenuLink" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Inventory
+              </a>
+              <div class="dropdown-menu" aria-labelledby="inventoryDropdownMenuLink">
+                <a class="dropdown-item"
+                   href="{{ route(\App\Products\Controllers\InventoryController::INDEX_NAME) }}">List Inventory</a>
+                <a class="dropdown-item"
+                   href="{{ route(\App\Types\Controllers\TypesController::CREATE_NAME) }}">Create and Edit Product Types</a>
+              </div>
+            </li>
+          @endcan
+          @cannot(\App\Admin\Permissions\UserPermissions::CREATE_OR_EDIT_PRODUCT_TYPE)
+            <li class="nav-item">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route(\App\Products\Controllers\InventoryController::INDEX_NAME) }}">
+                Inventory
+              </a>
+            </li>
+          @endcannot
           @can(\App\Admin\Permissions\UserPermissions::MUTATE_CART)
             <li class="nav-item">
               <a class="nav-link" href="{{ route(\App\Carts\Controllers\CartsController::INDEX_NAME) }}">

@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace App\WorkOrders\DataTransferObjects;
 
-use Domain\WorkOrders\Models\Client;
 use Spatie\DataTransferObject\DataTransferObject;
 
 /**
@@ -18,6 +17,8 @@ use Spatie\DataTransferObject\DataTransferObject;
  */
 class ClientObject extends DataTransferObject
 {
+    public const CLIENT_COMPANY_NAME = 'client_company_name';
+    private const COMPANY_NAME = 'company_name';
     public string $company_name;
 
     /**
@@ -28,7 +29,7 @@ class ClientObject extends DataTransferObject
     {
         return new self(
             [
-                Client::COMPANY_NAME => $validated[Client::COMPANY_NAME],
+                self::COMPANY_NAME => $validated[self::CLIENT_COMPANY_NAME] ?? '',
             ]
         );
     }

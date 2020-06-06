@@ -63,7 +63,7 @@ dusktest:
     - yarn install --pure-lockfile
     - yarn run prod
     - composer install --no-plugins --no-scripts --no-progress --no-suggest --prefer-dist --optimize-autoloader
-    - vendor/bin/dusk-updater detect --auto-update
+    - php artisan dusk:chrome-driver
     - cp .env.dusk.ci .env
     - php artisan key:generate
     - php artisan migrate:refresh
