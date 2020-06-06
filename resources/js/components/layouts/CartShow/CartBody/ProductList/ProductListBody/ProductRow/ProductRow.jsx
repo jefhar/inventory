@@ -1,5 +1,5 @@
 import * as React from 'react'
-import DropButton from '../../../../../DropButton'
+import DropButton from '../../../../../../Buttons/DropButton'
 import PriceButton from './PriceButton'
 import PropTypes from 'prop-types'
 

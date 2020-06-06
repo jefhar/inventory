@@ -6,7 +6,7 @@
 
 import ReactDOM from 'react-dom'
 import * as React from 'react'
-import CompanyClientName from './components/WorkOrder/Elements/CompanyClientName'
+import CompanyClientName from './components/layouts/WorkOrder/Elements/CompanyClientName'
 import AutoComplete from 'autocomplete-js'
 // import DropButton from './components/DropButton'
 
@@ -14,9 +14,9 @@ require('./bootstrap')
 require('jquery-ui-sortable')
 require('formBuilder')
 require('formBuilder/dist/form-render.min')
-require('./components/WorkOrder/WorkOrderIndex')
-require('./components/WorkOrder/WorkOrderCreate')
-require('./components/CartShow')
+require('./components/layouts/WorkOrder/WorkOrderIndex')
+require('./components/layouts/WorkOrder/WorkOrderCreate')
+require('./components/layouts/CartShow')
 const HTTP_OK = 200
 const HTTP_CREATED = 201
 const HTTP_ACCEPTED = 202

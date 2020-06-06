@@ -1,6 +1,6 @@
 import * as React from 'react'
-import DropButton from '../../../DropButton'
-import InvoiceButton from '../../../InvoiceButton'
+import DropButton from '../../../../Buttons/DropButton'
+import InvoiceButton from '../../../../Buttons/InvoiceButton'
 import PropTypes from 'prop-types'
 import { Row } from 'reactstrap'
 
