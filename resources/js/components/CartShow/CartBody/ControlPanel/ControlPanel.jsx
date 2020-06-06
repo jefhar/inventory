@@ -1,16 +1,16 @@
 import * as React from 'react'
-import PropTypes from 'prop-types'
-import { Row } from 'reactstrap'
 import DropButton from '../../../DropButton'
 import InvoiceButton from '../../../InvoiceButton'
+import PropTypes from 'prop-types'
+import { Row } from 'reactstrap'
 
 const propTypes = {
   cartId: PropTypes.number,
   cartStatus: PropTypes.string,
   changeStatusRequest: PropTypes.func,
+  className: PropTypes.string,
   disabled: PropTypes.bool,
   totalCost: PropTypes.number,
-  className: PropTypes.string,
 }
 const defaultProps = {
   cartId: 0,
@@ -21,11 +21,11 @@ const defaultProps = {
 const ControlPanel = (props) => {
   const {
     cartId,
-    className,
     cartStatus,
+    changeStatusRequest,
+    className,
     disabled,
     totalCost,
-    changeStatusRequest,
     ...other
   } = props
 
@@ -35,28 +35,29 @@ const ControlPanel = (props) => {
       <Row className={rowClass}>
         <InvoiceButton
           className="mx-5"
-          onClick={changeStatusRequest.bind(this, 'invoice')}
           disabled={disabled}
+          onClick={changeStatusRequest.bind(this, 'invoice')}
           {...other}
         >
           Mark Invoiced
         </InvoiceButton>
         <DropButton
           className="mx-5"
-          onClick={changeStatusRequest.bind(this, 'void')}
           disabled={disabled}
+          onClick={changeStatusRequest.bind(this, 'void')}
           {...other}
         >
           Destroy Cart
         </DropButton>
       </Row>
       <Row className="justify-content-end">
-        <span>Cart Total: ${totalCost.toFixed(2)}</span>
+        <span className="h5">Cart Total: ${totalCost.toFixed(2)}</span>
       </Row>
     </>
   )
 }
 
-ControlPanel.propTypes = propTypes
 ControlPanel.defaultProps = defaultProps
+ControlPanel.propTypes = propTypes
+
 export default ControlPanel

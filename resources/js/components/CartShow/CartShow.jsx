@@ -1,13 +1,13 @@
 import * as React from 'react'
+import CartBody from './CartBody/CartBody'
+import CartHead from './CartHead'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import { Card, Container } from 'reactstrap'
-import CartHead from './CartHead'
-import CartBody from './CartBody/CartBody'
 
+const STATUS_INVOICED = 'invoiced'
 const STATUS_OPEN = 'open'
 const STATUS_VOID = 'void'
-const STATUS_INVOICED = 'invoiced'
 
 const propTypes = {
   cartCreatedAt: PropTypes.string,
@@ -17,6 +17,8 @@ const propTypes = {
   clientFirstName: PropTypes.string,
   clientLastName: PropTypes.string,
   clientPhoneNumber: PropTypes.string,
+  productPadding: PropTypes.number,
+  products: PropTypes.string,
 }
 const defaultProps = {
   cartStatus: STATUS_VOID, // {'invoiced', 'open', 'void'}
@@ -25,12 +27,15 @@ const defaultProps = {
 class CartShow extends React.Component {
   constructor(props) {
     super(props)
+    console.info('CartShow props', props)
     this.state = { currentCartStatus: props.cartStatus }
     this.changeStatus = this.changeStatus.bind(this)
   }
 
-  changeStatus(e) {
-    console.info('newStatus', e)
+  changeStatus(newStatus) {
+    console.info(
+      `User requests to change status of ${this.props.cartId} to '${newStatus}'`
+    )
   }
 
   render() {
@@ -50,6 +55,8 @@ class CartShow extends React.Component {
             cartId={parseInt(this.props.cartId, 10)}
             cartStatus={this.state.currentCartStatus}
             changeStatusRequest={this.changeStatus}
+            padding={parseInt(this.props.productPadding, 10)}
+            startingProducts={this.props.products}
           ></CartBody>
         </Card>
       </Container>
@@ -57,11 +64,11 @@ class CartShow extends React.Component {
   }
 }
 
-CartShow.propTypes = propTypes
 CartShow.defaultProps = defaultProps
+CartShow.propTypes = propTypes
+CartShow.STATUS_INVOICED = STATUS_INVOICED
 CartShow.STATUS_OPEN = STATUS_OPEN
 CartShow.STATUS_VOID = STATUS_VOID
-CartShow.STATUS_INVOICED = STATUS_INVOICED
 
 export default CartShow
 

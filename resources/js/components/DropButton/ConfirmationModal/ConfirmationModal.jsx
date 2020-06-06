@@ -1,14 +1,14 @@
 import * as React from 'react'
+import capitalize from 'lodash/capitalize'
 import PropTypes from 'prop-types'
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
-import capitalize from 'lodash/capitalize'
 
 const propTypes = {
   className: PropTypes.string,
   isOpen: PropTypes.bool,
+  onDestroy: PropTypes.func,
   toggle: PropTypes.func,
   type: PropTypes.string,
-  onDestroy: PropTypes.func,
 }
 const defaultProps = {
   isOpen: false,
@@ -24,7 +24,7 @@ class ConfirmationModal extends React.Component {
     const title = `Destroy ${capitalize(this.props.type)}?`
 
     return (
-      <Modal isOpen={this.props.isOpen} className={this.props.className}>
+      <Modal className={this.props.className} isOpen={this.props.isOpen}>
         <ModalHeader toggle={this.props.toggle}>
           <span className="text-danger">
             <i className="fas fa-exclamation-triangle mr-1"></i>
@@ -59,7 +59,7 @@ class ConfirmationModal extends React.Component {
   }
 }
 
-ConfirmationModal.propTypes = propTypes
 ConfirmationModal.defaultProps = defaultProps
+ConfirmationModal.propTypes = propTypes
 
 export default ConfirmationModal

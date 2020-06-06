@@ -1,49 +1,46 @@
 import React from 'react'
+import ProductListBody from './ProductListBody'
+import ProductListHeader from './ProductListHeader'
 import PropTypes from 'prop-types'
-import { Spinner } from 'reactstrap'
+import { Table } from 'reactstrap'
 
 const propTypes = {
   cartId: PropTypes.number,
   cartStatus: PropTypes.string,
   disabled: PropTypes.bool,
+  handleDropClick: PropTypes.func.isRequired,
+  handlePriceClick: PropTypes.func.isRequired,
+  padding: PropTypes.number,
   products: PropTypes.array,
-  isLoading: PropTypes.bool,
 }
 const defaultProps = {
   cartId: 0,
   disabled: true,
   products: [],
-  isLoading: true,
 }
 
 class ProductList extends React.Component {
   constructor(props) {
     super(props)
     this.state = {}
-    this.deleteRow = this.deleteRow.bind(this)
-  }
-
-  deleteRow() {
-    console.info('Hello from deleteRow')
   }
 
   render() {
-    if (this.props.isLoading) {
-      return <Spinner color="gray-300 type=grow" />
-    }
-    const productId = 1
     return (
-      <>
-        <p>Product List</p>
-        <button onClick={this.deleteRow.bind(this, productId)}>
-          Delete Row
-        </button>
-      </>
+      <Table dark={true} hover={true} responsive={true}>
+        <ProductListHeader />
+        <ProductListBody
+          handleDropClick={this.props.handleDropClick}
+          handlePriceClick={this.props.handlePriceClick}
+          padding={this.props.padding}
+          products={this.props.products}
+        />
+      </Table>
     )
   }
 }
 
-ProductList.propTypes = propTypes
 ProductList.defaultProps = defaultProps
+ProductList.propTypes = propTypes
 
 export default ProductList

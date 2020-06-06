@@ -1,25 +1,25 @@
 import * as React from 'react'
+import CartIcon from '../../CartIcon'
 import PropTypes from 'prop-types'
 import { CardHeader } from 'reactstrap'
-import CartIcon from '../../CartIcon'
 
 const propTypes = {
   cartId: PropTypes.number,
-  status: PropTypes.string,
   companyName: PropTypes.string,
+  createdAt: PropTypes.string,
   firstName: PropTypes.string,
   lastName: PropTypes.string,
   phoneNumber: PropTypes.string,
-  createdAt: PropTypes.string,
+  status: PropTypes.string,
 }
 const defaultProps = {
   cartId: 1,
-  status: 'secondary',
   companyName: '########## ########### ###',
+  createdAt: 'Thu Jan 01 00:00:00 1970 UTC',
   firstName: '########',
   lastName: '######',
   phoneNumber: '(###) ###-####x##',
-  createdAt: 'Thu Jan 01 00:00:00 1970 UTC',
+  status: 'secondary',
 }
 
 const CartHead = (props) => {
@@ -44,6 +44,7 @@ const CartHead = (props) => {
   )
 }
 
-CartHead.propTypes = propTypes
 CartHead.defaultProps = defaultProps
+CartHead.propTypes = propTypes
+
 export default CartHead

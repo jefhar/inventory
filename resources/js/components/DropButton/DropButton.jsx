@@ -1,9 +1,8 @@
 import * as React from 'react'
 import PropTypes from 'prop-types'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
 import { Button } from 'reactstrap'
 import { faTrash } from '@fortawesome/free-solid-svg-icons/faTrash'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const propTypes = {
   children: PropTypes.string,
@@ -13,7 +12,6 @@ const propTypes = {
 }
 
 const DropButton = (props) => {
-  console.info(props.children)
   const { children, disabled, onClick, ...other } = props
 
   let iconPadding = ''
@@ -25,10 +23,10 @@ const DropButton = (props) => {
     <Button
       color="danger"
       disabled={disabled}
+      name="dropCart"
       onClick={onClick}
       outline={false}
       type="button"
-      name="dropCart"
       {...other}
     >
       <FontAwesomeIcon icon={faTrash} />
@@ -38,4 +36,5 @@ const DropButton = (props) => {
 }
 
 DropButton.propTypes = propTypes
+
 export default DropButton

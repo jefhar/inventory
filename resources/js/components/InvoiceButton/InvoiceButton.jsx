@@ -2,8 +2,8 @@ import * as React from 'react'
 import PropTypes from 'prop-types'
 
 import { Button } from 'reactstrap'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons/faCheckCircle'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const propTypes = {
   children: PropTypes.string,
@@ -18,10 +18,10 @@ const InvoiceButton = (props) => {
       className="pr-1"
       color="primary"
       disabled={disabled}
+      name="InvoiceCart"
       onClick={onClick}
       outline={true}
       type="button"
-      name="InvoiceCart"
       {...other}
     >
       <>
@@ -33,4 +33,5 @@ const InvoiceButton = (props) => {
 }
 
 InvoiceButton.propTypes = propTypes
+
 export default InvoiceButton
