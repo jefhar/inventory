@@ -55,6 +55,7 @@ class DashboardControllerTest extends TestCase
         $this
             ->withoutExceptionHandling()
             ->actingAs($owner)
+            ->withoutExceptionHandling()
             ->get(route(DashboardController::INDEX_NAME))
             ->assertOk();
 

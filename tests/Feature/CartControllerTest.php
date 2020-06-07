@@ -29,7 +29,7 @@ use Tests\Traits\FullObjects;
  *
  * @package Tests\Feature
  */
-class CartsControllerTest extends TestCase
+class CartControllerTest extends TestCase
 {
     use FullObjects;
 

@@ -16,11 +16,11 @@ use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
 /**
- * Class ClientsControllerTest
+ * Class ClientControllerTest
  *
  * @package Tests\Feature
  */
-class ClientsControllerTest extends TestCase
+class ClientControllerTest extends TestCase
 {
     use FullObjects;
 

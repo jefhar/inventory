@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
-use App\Products\Requests\ProductStoreRequest;
 use App\Products\Controllers\ProductController;
+use App\Products\Requests\ProductStoreRequest;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
@@ -23,11 +23,11 @@ use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
 /**
- * Class ProductsControllerTest
+ * Class ProductControllerTest
  *
  * @package Tests\Feature
  */
-class ProductsControllerTest extends TestCase
+class ProductControllerTest extends TestCase
 {
     use FullObjects;
 

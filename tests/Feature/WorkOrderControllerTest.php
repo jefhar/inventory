@@ -23,11 +23,11 @@ use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
 /**
- * Class WorkOrdersControllerTest
+ * Class WorkOrderControllerTest
  *
  * @package Tests\Feature
  */
-class WorkOrdersControllerTest extends TestCase
+class WorkOrderControllerTest extends TestCase
 {
     use FullObjects;
 
@@ -62,9 +62,7 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function techUserCreateIsOk(): void
     {
-        $this
-            ->withoutExceptionHandling()
-            ->withoutMix()
+        $this->withoutMix()
             ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(WorkOrderController::CREATE_NAME))
             ->assertOk();
@@ -173,9 +171,7 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function technicianIndexIsOk(): void
     {
-        $this
-            ->withoutExceptionHandling()
-            ->withoutMix()
+        $this->withoutMix()
             ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(WorkOrderController::INDEX_NAME))
             ->assertOk()
@@ -277,7 +273,7 @@ class WorkOrdersControllerTest extends TestCase
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->withoutExceptionHandling()
             ->patch(
-                route(WorkOrderController::UPDATE_NAME, [WorkOrderController::WORKORDER => $workOrder]),
+                route(WorkOrderController::UPDATE_NAME, $workOrder),
                 [
                     WorkOrderUpdateRequest::CLIENT_COMPANY_NAME => $newClient->company_name,
                 ]

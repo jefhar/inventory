@@ -22,7 +22,7 @@ class PricePatchAction
 
     /**
      * @param Product $product
-     * @param float $price
+     * @param float|int $price
      * @return Product
      */
     public static function execute(Product $product, float $price): Product
@@ -30,6 +30,7 @@ class PricePatchAction
         if ($product->status === Product::STATUS_INVOICED) {
             throw new LockedProductException("Product is already invoiced.");
         }
+        $price = floor($price * 100) / 100;
         $product->price = $price;
         $product->save();
 
