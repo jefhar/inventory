@@ -1,7 +1,5 @@
-build:
-	docker build -t c11k/serviceandgoods .
-
 docker:
+	docker network create web || echo "Network web already created."
 	docker-compose up -d --build
 
 down:
@@ -60,7 +58,7 @@ pretest:
 	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods sh -c 'cd /app && composer pretest'
 
 test:
-	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods sh -c 'apt-get update && apt-get install -y php7.4-pcov && cd /app && composer test'
+	docker run --rm -v"$(CURDIR):/app:delegated" c11k/serviceandgoods:pcov sh -c 'cd /app && composer test'
 
 testdusk:
 	gitlab-runner exec docker dusktest
