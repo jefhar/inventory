@@ -80,8 +80,8 @@ dusktest:
       - node_modules
       - public
       - vendor
-  except:
-    - ci
+  when:
+    - manual
   interruptible: true
   artifacts:
     paths:

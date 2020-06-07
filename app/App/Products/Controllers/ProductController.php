@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package App\Products\Controllers
  */
-class ProductsController extends Controller
+class ProductController extends Controller
 {
     public const STORE_NAME = 'products.store';
     public const STORE_PATH = '/products';

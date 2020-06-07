@@ -9,18 +9,18 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\WorkOrders\Controllers\ClientsController;
+use App\WorkOrders\Controllers\ClientController;
 use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
 /**
- * Class ClientsControllerTest
+ * Class ClientControllerTest
  *
  * @package Tests\Feature
  */
-class ClientsControllerTest extends TestCase
+class ClientControllerTest extends TestCase
 {
     use FullObjects;
 
@@ -37,7 +37,7 @@ class ClientsControllerTest extends TestCase
         $client->person()->save($person);
         $this->withoutMix()
             ->actingAs($this->createEmployee())
-            ->get(route(ClientsController::SHOW_NAME, $client))
+            ->get(route(ClientController::SHOW_NAME, $client))
             ->assertSeeText($client->company_name);
     }
 }

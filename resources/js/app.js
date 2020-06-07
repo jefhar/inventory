@@ -13,8 +13,9 @@ require('./bootstrap')
 require('jquery-ui-sortable')
 require('formBuilder')
 require('formBuilder/dist/form-render.min')
-require('./components/WorkOrder/WorkOrderIndex')
+require('./components/Dashboard')
 require('./components/WorkOrder/WorkOrderCreate')
+require('./components/WorkOrder/WorkOrderIndex')
 const HTTP_OK = 200
 const HTTP_CREATED = 201
 const HTTP_ACCEPTED = 202

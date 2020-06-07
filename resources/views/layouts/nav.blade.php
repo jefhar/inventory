@@ -43,7 +43,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="workOrderDropdownMenuLink">
               <a class="dropdown-item"
-                 href="{{ route(\App\WorkOrders\Controllers\WorkOrdersController::CREATE_NAME) }}">Create</a>
+                 href="{{ route(\App\WorkOrders\Controllers\WorkOrderController::CREATE_NAME) }}">Create</a>
               <div class="dropdown-divider"></div>
             </div>
           </li>
@@ -57,7 +57,7 @@
                 <a class="dropdown-item"
                    href="{{ route(\App\Products\Controllers\InventoryController::INDEX_NAME) }}">List Inventory</a>
                 <a class="dropdown-item"
-                   href="{{ route(\App\Types\Controllers\TypesController::CREATE_NAME) }}">Create and Edit Product Types</a>
+                   href="{{ route(\App\Types\Controllers\TypeController::CREATE_NAME) }}">Create and Edit Product Types</a>
               </div>
             </li>
           @endcan
@@ -71,7 +71,7 @@
           @endcannot
           @can(\App\Admin\Permissions\UserPermissions::MUTATE_CART)
             <li class="nav-item">
-              <a class="nav-link" href="{{ route(\App\Carts\Controllers\CartsController::INDEX_NAME) }}">
+              <a class="nav-link" href="{{ route(\App\Carts\Controllers\CartController::INDEX_NAME) }}">
                 Your Carts
               </a>
             </li>

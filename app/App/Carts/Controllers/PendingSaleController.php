@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package App\Carts\Controllers
  */
-class PendingSalesController extends Controller
+class PendingSaleController extends Controller
 {
 
     public const STORE_NAME = 'pendingSales.store';

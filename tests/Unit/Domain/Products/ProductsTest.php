@@ -145,6 +145,7 @@ class ProductsTest extends TestCase
         $serial = $faker->isbn13;
         /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
+        /** @var Product $product */
         $product = factory(Product::class)->make(
             [
                 Product::VALUES => [
@@ -231,7 +232,7 @@ class ProductsTest extends TestCase
             Product::TABLE,
             [
                 Product::ID => $product->id,
-                Product::PRICE => $price * 100,
+                Product::PRICE => (int)($price * 100),
             ]
         );
         $product->refresh();

@@ -79,7 +79,7 @@
           <div class="card-footer">
             <div id="productAddedAlert" class="alert alert-secondary" role="alert">
               Product is in Cart for <a
-                href="{{ route(\App\Carts\Controllers\CartsController::SHOW_NAME, $product->cart) }}">{{ $product->cart->client->company_name }}
+                href="{{ route(\App\Carts\Controllers\CartController::SHOW_NAME, $product->cart) }}">{{ $product->cart->client->company_name }}
                 .</a>
               <br><br>
               <span class="text-danger"><a class="text-danger cursor-trashcan"
