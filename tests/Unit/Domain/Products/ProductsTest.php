@@ -224,7 +224,7 @@ class ProductsTest extends TestCase
     public function productPriceSavesAsPennies(): void
     {
         $product = $this->createFullProduct();
-        $price = rand(100, mt_getrandmax()) / 100;
+        $price = rand(100, 999_999_99) / 100;
         $product->price = $price;
         $product->save();
         $this->assertDatabaseHas(
