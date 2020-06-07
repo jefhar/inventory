@@ -1,3 +1,3 @@
-import CompanyClientName from "./CompanyClientName";
+import CompanyClientName from './CompanyClientName'
 
-export default CompanyClientName;
+export default CompanyClientName
