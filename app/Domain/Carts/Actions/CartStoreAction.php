@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Domain\Carts\Actions;
 
 use App\Carts\DataTransferObjects\CartStoreObject;
+use App\User;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
@@ -30,6 +31,7 @@ class CartStoreAction
      */
     public static function execute(CartStoreObject $cartStoreObject): Cart
     {
+        /** @var User $user */
         $user = Auth::user();
         $cart = new Cart();
         $product = Product::findOrFail($cartStoreObject->product_id);

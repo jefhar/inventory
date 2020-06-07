@@ -9,15 +9,14 @@ declare(strict_types=1);
 
 namespace Domain\AjaxSearch\Actions;
 
+use App\AjaxSearch\DataTransferObjects\AjaxSearchObject;
+use App\AjaxSearch\Requests\AjaxSearchRequest;
 use Domain\AjaxSearch\Actions\SearchResults\ClientsByCompanyName;
 use Domain\AjaxSearch\Actions\SearchResults\ClientsWithPersonByCompanyName;
 use Domain\AjaxSearch\Actions\SearchResults\ManufacturersByManufacturerName;
 use Domain\AjaxSearch\Actions\SearchResults\PeopleByName;
 use Domain\AjaxSearch\Actions\SearchResults\ProductsByModel;
 use Domain\AjaxSearch\Actions\SearchResults\ProductsBySerial;
-use Domain\AjaxSearch\Actions\SearchResults\SearchActionInterface;
-use Domain\Products\Models\Product;
-use Domain\WorkOrders\Models\Client;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -28,24 +27,23 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class AjaxSearchAction
 {
-    private const MANUFACTURER = 'manufacturer';
-
     /**
-     * @param string $field ENUM {Client::COMPANY_NAME|manufacturer}
-     * @param string $searchString
+     * @param AjaxSearchObject $ajaxSearchObject
      * @return Collection
      */
-    public static function findBy(string $field, string $searchString): Collection
+    public static function findBy(AjaxSearchObject $ajaxSearchObject): Collection
     {
+        $field = $ajaxSearchObject->field;
+        $searchString = $ajaxSearchObject->q;
         $searchResults = null;
         switch ($field) {
-            case Client::COMPANY_NAME:
+            case AjaxSearchRequest::SEARCH_COMPANY_NAME:
                 $searchResults = ClientsWithPersonByCompanyName::getInstance();
                 break;
-            case self::MANUFACTURER:
+            case AjaxSearchRequest::SEARCH_MANUFACTURER:
                 $searchResults = ManufacturersByManufacturerName::getInstance();
                 break;
-            case Product::MODEL:
+            case AjaxSearchRequest::SEARCH_MODEL:
                 $searchResults = ProductsByModel::getInstance();
                 break;
             default:

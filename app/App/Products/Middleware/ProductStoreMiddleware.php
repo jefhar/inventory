@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Products\Middleware;
 
+use App\Products\Requests\ProductStoreRequest;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -33,7 +34,14 @@ class ProductStoreMiddleware
     {
         return $next(
             $request->merge(
-                ['values' => $request->except('manufacturer', 'model', 'type', 'workorderId')]
+                [
+                    ProductStoreRequest::VALUES => $request->except(
+                        ProductStoreRequest::MANUFACTURER_NAME,
+                        ProductStoreRequest::MODEL,
+                        ProductStoreRequest::TYPE,
+                        ProductStoreRequest::WORK_ORDER_ID
+                    ),
+                ]
             )
         );
     }

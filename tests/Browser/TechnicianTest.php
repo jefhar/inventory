@@ -14,12 +14,12 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\TypesCreate;
 use Tests\DuskTestCase;
-use Tests\Traits\FullUsers;
+use Tests\Traits\FullObjects;
 
 class TechnicianTest extends DuskTestCase
 {
     use DatabaseMigrations;
-    use FullUsers;
+    use FullObjects;
 
     /**
      * @throws \Throwable

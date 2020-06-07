@@ -11,12 +11,12 @@ namespace App\Products\Controllers;
 
 use App\Admin\Controllers\Controller;
 use App\Admin\Permissions\UserPermissions;
-use App\Products\DataTransferObject\RawProductUpdateObject;
-use App\Products\Requests\ProductUpdateRequest;
+use App\Products\DataTransferObject\InventoryProductUpdateObject;
+use App\Products\Requests\InventoryProductUpdateRequest;
 use App\User;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Actions\ProductShowAction;
-use Domain\Products\Actions\RawProductUpdateAction;
+use Domain\Products\Actions\InventoryProductUpdateAction;
 use Domain\Products\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -25,6 +25,7 @@ use Illuminate\View\View;
  * Class InventoryController
  *
  * @package App\Products\Controllers
+ * @TODO: combine this with ProductsController. Update will need to be joined. Loop over known array, check if there & update.
  */
 class InventoryController extends Controller
 {
@@ -75,13 +76,13 @@ class InventoryController extends Controller
 
     /**
      * @param Product $product
-     * @param ProductUpdateRequest $request
+     * @param InventoryProductUpdateRequest $request
      * @return Product
      */
-    public function update(Product $product, ProductUpdateRequest $request): Product
+    public function update(Product $product, InventoryProductUpdateRequest $request): Product
     {
-        $productUpdateObject = RawProductUpdateObject::fromRequest($request->validated());
+        $inventoryProductUpdateObject = InventoryProductUpdateObject::fromRequest($request->validated());
 
-        return RawProductUpdateAction::execute($product, $productUpdateObject);
+        return InventoryProductUpdateAction::execute($product, $inventoryProductUpdateObject);
     }
 }

@@ -10,12 +10,15 @@ namespace Tests\Unit\Domain\WorkOrders\Actions;
 
 use App\Admin\Permissions\UserPermissions;
 use App\User;
-use App\WorkOrders\DataTransferObjects\WorkOrderUpdateObject;
+use App\WorkOrders\DataTransferObjects\ClientObject;
+use App\WorkOrders\DataTransferObjects\PersonObject;
+use App\WorkOrders\DataTransferObjects\WorkOrderObject;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
 use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 
 /**
  * Class WorkOrderUpdateActionTest
@@ -24,6 +27,8 @@ use Tests\TestCase;
  */
 class WorkOrderUpdateActionTest extends TestCase
 {
+    use FullObjects;
+
     private User $user;
 
     /**
@@ -31,7 +36,7 @@ class WorkOrderUpdateActionTest extends TestCase
      */
     public function togglesIsLocked(): void
     {
-        $workOrder = factory(WorkOrder::class)->make();
+        $workOrder = $this->createFullWorkOrder();
         $workOrder->is_locked = false;
         $workOrder->save();
         $this->assertDatabaseHas(
@@ -41,18 +46,20 @@ class WorkOrderUpdateActionTest extends TestCase
                 WorkOrder::IS_LOCKED => false,
             ]
         );
-        $workOrderUpdateObjectLocked = WorkOrderUpdateObject::fromRequest(
+        $workOrderObjectLocked = WorkOrderObject::fromRequest(
             [
                 WorkOrder::IS_LOCKED => true,
             ]
         );
-        $workOrderUpdateObjectUnLocked = WorkOrderUpdateObject::fromRequest(
+        $workOrderObjectUnlocked = WorkOrderObject::fromRequest(
             [
                 WorkOrder::IS_LOCKED => false,
             ]
         );
+        $clientObject = ClientObject::fromRequest([]);
+        $personObject = PersonObject::fromRequest([]);
 
-        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObjectLocked);
+        WorkOrdersUpdateAction::execute($workOrder, $workOrderObjectLocked, $clientObject, $personObject);
         $this->assertDatabaseHas(
             WorkOrder::TABLE,
             [
@@ -60,7 +67,7 @@ class WorkOrderUpdateActionTest extends TestCase
                 WorkOrder::IS_LOCKED => true,
             ]
         );
-        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObjectUnLocked);
+        WorkOrdersUpdateAction::execute($workOrder, $workOrderObjectUnlocked, $clientObject, $personObject);
         $this->assertDatabaseHas(
             WorkOrder::TABLE,
             [
@@ -75,205 +82,106 @@ class WorkOrderUpdateActionTest extends TestCase
      */
     public function updateUpdatesCompanyName(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
+        $workOrder = $this->createFullWorkOrder();
+        /** @var Client $newClient */
         $newClient = factory(Client::class)->make();
-        $workOrderUpdateObject = WorkOrderUpdateObject::fromRequest(
+        $workOrderObject = WorkOrderObject::fromRequest([]);
+        $clientObject = ClientObject::fromRequest(
+            [
+                ClientObject::CLIENT_COMPANY_NAME => $newClient->company_name,
+            ]
+        );
+        $personObject = PersonObject::fromRequest([]);
+
+        WorkOrdersUpdateAction::execute($workOrder, $workOrderObject, $clientObject, $personObject);
+        $this->assertDatabaseHas(
+            Client::TABLE,
             [
                 Client::COMPANY_NAME => $newClient->company_name,
             ]
         );
-        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObject);
-        $this->assertDatabaseHas(
-            Client::TABLE,
-            [
-                Client::COMPANY_NAME => $workOrderUpdateObject->company_name,
-            ]
-        );
     }
 
     /**
      * @test
      */
-    public function updateUpdatesNewPersonFirstName(): void
+    public function updateUpdatesPersonFirstName(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
+        $workOrder = $this->createFullWorkOrder();
+        /** @var Person $person */
         $person = factory(Person::class)->make();
-        $workOrderUpdateObject = WorkOrderUpdateObject::fromRequest(
+        $workOrderObject = WorkOrderObject::fromRequest([]);
+        $clientObject = ClientObject::fromRequest([]);
+        $personObject = PersonObject::fromRequest(
             [
-                Person::FIRST_NAME => $person->first_name,
+                PersonObject::FIRST_NAME => $person->first_name,
             ]
         );
-        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObject);
-        $this->assertDatabaseHas(Person::TABLE, [Person::FIRST_NAME => $workOrderUpdateObject->first_name]);
+        WorkOrdersUpdateAction::execute($workOrder, $workOrderObject, $clientObject, $personObject);
+        $this->assertDatabaseHas(Person::TABLE, [Person::FIRST_NAME => $person->first_name]);
     }
 
     /**
      * @test
      */
-    public function updateUpdatesExistingPersonFirstName(): void
+    public function updateUpdatesPersonLastName(): void
     {
-        $client = factory(Client::class)->create();
+        $workOrder = $this->createFullWorkOrder();
+        /** @var Person $person */
         $person = factory(Person::class)->make();
-        $workOrder = factory(WorkOrder::class)->make();
-        $client->person()->save($person);
-        $workOrder->client()->associate($client);
-        $client->push();
+        $workOrderObject = WorkOrderObject::fromRequest([]);
+        $clientObject = ClientObject::fromRequest([]);
+        $personObject = PersonObject::fromRequest(
+            [
+                PersonObject::LAST_NAME => $person->last_name,
+            ]
+        );
+        WorkOrdersUpdateAction::execute($workOrder, $workOrderObject, $clientObject, $personObject);
+        $this->assertDatabaseHas(Person::TABLE, [Person::LAST_NAME => $person->last_name]);
+    }
+
+    /**
+     * @test
+     */
+    public function updateUpdatesPersonEmail(): void
+    {
+        $workOrder = $this->createFullWorkOrder();
+        /** @var Person $person */
+        $person = factory(Person::class)->make();
+        $workOrderObject = WorkOrderObject::fromRequest([]);
+        $clientObject = ClientObject::fromRequest([]);
+        $personObject = PersonObject::fromRequest(
+            [
+                PersonObject::EMAIL => $person->email,
+            ]
+        );
+        WorkOrdersUpdateAction::execute($workOrder, $workOrderObject, $clientObject, $personObject);
+        $this->assertDatabaseHas(Person::TABLE, [Person::EMAIL => $person->email]);
+    }
+
+    /**
+     * @test
+     */
+    public function updateUpdatesPersonPhoneNumber(): void
+    {
+        $workOrder = $this->createFullWorkOrder();
+        /** @var Person $newPerson */
         $newPerson = factory(Person::class)->make();
-        $workOrderUpdateObject = WorkOrderUpdateObject::fromRequest(
+        $workOrderObject = WorkOrderObject::fromRequest([]);
+        $clientObject = ClientObject::fromRequest([]);
+        $personObject = PersonObject::fromRequest(
             [
-                Person::FIRST_NAME => $newPerson->first_name,
+                PersonObject::PHONE_NUMBER => $newPerson->phone_number,
             ]
         );
-        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObject);
-        $this->assertDatabaseHas(Person::TABLE, [Person::FIRST_NAME => $workOrderUpdateObject->first_name]);
-    }
-
-    /**
-     * @test
-     */
-    public function updateUpdatesNewPersonLastName(): void
-    {
-        $workOrder = factory(WorkOrder::class)->create();
-        $person = factory(Person::class)->make();
-        $workOrderUpdateObject = WorkOrderUpdateObject::fromRequest(
-            [
-                Person::LAST_NAME => $person->last_name,
-            ]
-        );
-        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObject);
-        $this->assertDatabaseHas(Person::TABLE, [Person::LAST_NAME => $workOrderUpdateObject->last_name]);
-    }
-
-    /**
-     * @test
-     */
-    public function updateUpdatesExistingPersonLastName(): void
-    {
-        $client = factory(Client::class)->create();
-        $person = factory(Person::class)->make();
-        $workOrder = factory(WorkOrder::class)->make();
-        $client->person()->save($person);
-        $workOrder->client()->associate($client);
-        $client->push();
-        $newPerson = factory(Person::class)->make();
-        $workOrderUpdateObject = WorkOrderUpdateObject::fromRequest(
-            [
-                Person::LAST_NAME => $newPerson->last_name,
-            ]
-        );
-        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObject);
-        $this->assertDatabaseHas(Person::TABLE, [Person::LAST_NAME => $workOrderUpdateObject->last_name]);
-    }
-
-    /**
-     * @test
-     */
-    public function updateUpdatesNewPersonEmail(): void
-    {
-        $workOrder = factory(WorkOrder::class)->create();
-        $person = factory(Person::class)->make();
-        $workOrderUpdateObject = WorkOrderUpdateObject::fromRequest(
-            [
-                Person::EMAIL => $person->email,
-            ]
-        );
-        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObject);
-        $this->assertDatabaseHas(Person::TABLE, [Person::EMAIL => $workOrderUpdateObject->email]);
-    }
-
-    /**
-     * @test
-     */
-    public function updateUpdatesExistingPersonEmail(): void
-    {
-        $client = factory(Client::class)->create();
-        $person = factory(Person::class)->make();
-        $workOrder = factory(WorkOrder::class)->make();
-        $client->person()->save($person);
-        $workOrder->client()->associate($client);
-        $client->push();
-        $newPerson = factory(Person::class)->make();
-        $workOrderUpdateObject = WorkOrderUpdateObject::fromRequest(
-            [
-                Person::EMAIL => $newPerson->email,
-            ]
-        );
-        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObject);
-        $this->assertDatabaseHas(Person::TABLE, [Person::EMAIL => $workOrderUpdateObject->email]);
-    }
-
-    /**
-     * @test
-     */
-    public function updateUpdatesNewPersonPhoneNumber(): void
-    {
-        $workOrder = factory(WorkOrder::class)->create();
-        $person = factory(Person::class)->make();
-        $workOrderUpdateObject = WorkOrderUpdateObject::fromRequest(
-            [
-                Person::PHONE_NUMBER => $person->phone_number,
-            ]
-        );
-        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObject);
+        WorkOrdersUpdateAction::execute($workOrder, $workOrderObject, $clientObject, $personObject);
         $this->assertDatabaseHas(
             Person::TABLE,
             [
-                Person::PHONE_NUMBER => Person::unformatPhoneNumber($workOrderUpdateObject->phone_number),
-            ]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function updateUpdatesExistingPersonPhoneNumber(): void
-    {
-        $client = factory(Client::class)->create();
-        $person = factory(Person::class)->make();
-        $workOrder = factory(WorkOrder::class)->make();
-        $client->person()->save($person);
-        $workOrder->client()->associate($client);
-        $client->push();
-        $newPerson = factory(Person::class)->make();
-        $workOrderUpdateObject = WorkOrderUpdateObject::fromRequest(
-            [
-                Person::PHONE_NUMBER => $newPerson->phone_number,
-            ]
-        );
-        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObject);
-        $this->assertDatabaseHas(
-            Person::TABLE,
-            [
-                Person::PHONE_NUMBER => Person::unformatPhoneNumber($workOrderUpdateObject->phone_number),
-            ]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function updateDoesNotUpdateBlankFields(): void
-    {
-        $client = factory(Client::class)->create();
-        $person = factory(Person::class)->make();
-        $workOrder = factory(WorkOrder::class)->make();
-        $client->person()->save($person);
-        $workOrder->client()->associate($client);
-        $client->push();
-        $newPerson = factory(Person::class)->make();
-        $workOrderUpdateObject = WorkOrderUpdateObject::fromRequest(
-            [
-                Person::PHONE_NUMBER => $newPerson->phone_number,
-            ]
-        );
-        WorkOrdersUpdateAction::execute($workOrder, $workOrderUpdateObject);
-        $this->assertDatabaseHas(
-            Person::TABLE,
-            [
-                Person::PHONE_NUMBER => Person::unformatPhoneNumber($workOrderUpdateObject->phone_number),
-                Person::FIRST_NAME => $person->first_name,
-                Person::LAST_NAME => $person->last_name,
-                Person::EMAIL => $person->email,
+                Person::PHONE_NUMBER => Person::unformatPhoneNumber($newPerson->phone_number),
+                Person::FIRST_NAME => $workOrder->client->person->first_name,
+                Person::LAST_NAME => $workOrder->client->person->last_name,
+                Person::EMAIL => $workOrder->client->person->email,
             ]
         );
     }
@@ -281,6 +189,7 @@ class WorkOrderUpdateActionTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        /** @var User $user */
         $user = factory(User::class)->create();
         $user->givePermissionTo(UserPermissions::IS_EMPLOYEE);
         $this->user = $user;

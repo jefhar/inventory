@@ -11,24 +11,27 @@ namespace App\Products\Requests;
 
 use App\Admin\Permissions\UserPermissions;
 use App\User;
-use Domain\Products\Models\Manufacturer;
-use Domain\Products\Models\Product;
 use Domain\Products\Models\Type;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Class ProductUpdateRequest
+ * Class InventoryProductUpdateRequest
  *
  * @package App\Products\Requests
  */
-class ProductUpdateRequest extends FormRequest
+class InventoryProductUpdateRequest extends FormRequest
 {
+    public const MANUFACTURER_NAME = 'manufacturer_name';
+    public const TYPE = 'type';
+    public const VALUES = 'values';
+    public const MODEL = 'model';
+
     public const RULES = [
-        Manufacturer::MANUFACTURER => ['required'],
-        Product::MODEL => ['required'],
-        Type::TYPE => ['required', 'exists:' . Type::TABLE . ',' . Type::SLUG],
-        Product::VALUES => ['array'],
+        self::MANUFACTURER_NAME => ['required'],
+        self::MODEL => ['required'],
+        self::TYPE => ['required', 'exists:' . Type::TABLE . ',' . Type::SLUG],
+        self::VALUES => ['array'],
     ];
 
     /**

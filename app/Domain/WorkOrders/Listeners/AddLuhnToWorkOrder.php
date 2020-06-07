@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Domain\WorkOrders\Listeners;
 
 use Domain\WorkOrders\Events\WorkOrderCreated;
-use Tdely\Luhn\Luhn;
+use App\Support\Luhn;
 
 /**
  * Class AddLuhnToWorkOrder

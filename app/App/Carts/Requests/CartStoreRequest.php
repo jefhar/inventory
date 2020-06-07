@@ -9,8 +9,9 @@ declare(strict_types=1);
 
 namespace App\Carts\Requests;
 
+use App\Carts\DataTransferObjects\CartStoreObject;
+use App\WorkOrders\DataTransferObjects\PersonObject;
 use Domain\Products\Models\Product;
-use Domain\WorkOrders\Models\Client;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -21,9 +22,13 @@ use Illuminate\Foundation\Http\FormRequest;
 class CartStoreRequest extends FormRequest
 {
     private const RULES = [
-        'product_id' => ['required', 'exists:' . Product::TABLE . ',' . Product::ID],
-        Client::COMPANY_NAME => ['required'],
+        self::PRODUCT_ID => ['required', 'exists:' . Product::TABLE . ',' . Product::LUHN],
+        self::CLIENT_COMPANY_NAME => ['required'],
     ];
+
+    public const CLIENT_COMPANY_NAME = CartStoreObject::CLIENT_COMPANY_NAME;
+    public const FIRST_NAME = PersonObject::FIRST_NAME;
+    public const PRODUCT_ID = CartStoreObject::PRODUCT_ID;
 
     /**
      * @return array

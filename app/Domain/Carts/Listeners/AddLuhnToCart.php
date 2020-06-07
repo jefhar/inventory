@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Domain\Carts\Listeners;
 
 use Domain\Carts\Events\CartCreated;
-use Tdely\Luhn\Luhn;
+use App\Support\Luhn;
 
 /**
  * Class AddLuhnToCart

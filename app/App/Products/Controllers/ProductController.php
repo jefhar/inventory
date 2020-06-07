@@ -12,6 +12,7 @@ namespace App\Products\Controllers;
 use App\Admin\Controllers\Controller;
 use App\Products\DataTransferObject\ProductStoreObject;
 use App\Products\Requests\ProductStoreRequest;
+use App\Products\Resources\ProductResource;
 use Domain\PendingSales\Actions\PricePatchAction;
 use Domain\Products\Actions\ProductStoreAction;
 use Domain\Products\Models\Product;
@@ -32,13 +33,15 @@ class ProductController extends Controller
 
     /**
      * @param ProductStoreRequest $request
-     * @return Product
+     * @return ProductResource
      */
-    public function store(ProductStoreRequest $request): Product
+    public function store(ProductStoreRequest $request): ProductResource
     {
         $productStoreObject = ProductStoreObject::fromRequest($request->validated());
 
-        return ProductStoreAction::execute($productStoreObject);
+        return new ProductResource(
+            ProductStoreAction::execute($productStoreObject)
+        );
     }
 
     /**

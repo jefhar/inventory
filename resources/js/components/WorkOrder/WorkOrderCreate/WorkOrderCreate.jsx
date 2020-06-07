@@ -1,8 +1,9 @@
 import * as React from 'react'
+import CompanyClientName from '../Elements/CompanyClientName'
+import FormHeader from '../Elements/FormHeader'
+import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import { Card, CardBody, Container, Row } from 'reactstrap'
-import FormHeader from '../Elements/FormHeader'
-import CompanyClientName from '../Elements/CompanyClientName'
 
 const handleResponse = (response) => {
   console.info('WOC handleResponse')
@@ -12,6 +13,7 @@ const handleResponse = (response) => {
     window.location = '/workorders/' + response.data.workorder_id + '/edit'
   }
 }
+
 class WorkOrderCreate extends React.Component {
   constructor(props) {
     super(props)
@@ -35,9 +37,9 @@ class WorkOrderCreate extends React.Component {
             <FormHeader workOrderId="-----" />
             <CardBody>
               <CompanyClientName
+                draft={this.props.draft}
                 handleResponse={this.props.handleResponse}
                 postPath={this.props.postPath}
-                draft={this.props.draft}
               />
             </CardBody>
           </Card>
@@ -47,16 +49,22 @@ class WorkOrderCreate extends React.Component {
   }
 }
 
+WorkOrderCreate.propTypes = {
+  draft: PropTypes.string.isRequired,
+  handleResponse: PropTypes.func,
+  postPath: PropTypes.string.isRequired,
+}
+
 export default WorkOrderCreate
 
-if (document.getElementById('workorders_create')) {
-  console.log('got workorders_create')
+if (document.getElementById('workorder_create')) {
+  console.log('got workorder_create')
   ReactDOM.render(
     <WorkOrderCreate
+      draft="Work Order"
       handleResponse={handleResponse}
       postPath="/workorders/"
-      draft="Work Order"
     />,
-    document.getElementById('workorders_create')
+    document.getElementById('workorder_create')
   )
 }

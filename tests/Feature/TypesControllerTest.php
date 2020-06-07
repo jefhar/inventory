@@ -11,11 +11,12 @@ namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
 use App\Types\Controllers\TypeController;
+use App\Types\Requests\TypeStoreRequest;
 use Domain\Products\Models\Type;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
-use Tests\Traits\FullUsers;
+use Tests\Traits\FullObjects;
 
 /**
  * Class TypesControllerTest
@@ -24,13 +25,14 @@ use Tests\Traits\FullUsers;
  */
 class TypesControllerTest extends TestCase
 {
-    use FullUsers;
+    use FullObjects;
 
     /**
      * @test
      */
     public function unauthorizedTypesControllerIsRedirected(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->create();
         $this
             ->get(route(TypeController::SHOW_NAME, $type->slug))
@@ -77,9 +79,7 @@ class TypesControllerTest extends TestCase
         $this->actingAs($this->createEmployee())
             ->get(route(TypeController::CREATE_NAME))
             ->assertOk()
-            ->assertSeeText('Create New Product Type')
-            ->assertSeeText($type->name)
-            ->assertSee($type->slug);
+            ->assertSeeText('Create New Product Type');
     }
 
     /**
@@ -88,6 +88,7 @@ class TypesControllerTest extends TestCase
      */
     public function typeIndexApiExistsAndIsAccessible(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->create();
         $this->get(route(TypeController::INDEX_NAME))
             ->assertRedirect();
@@ -103,16 +104,17 @@ class TypesControllerTest extends TestCase
      */
     public function typeStoreExistsAndStoresForAuthorizedPerson(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->make();
         $this->post(
             route(TypeController::STORE_NAME),
-            [Type::FORM => $type->form, Type::NAME => $type->name,]
+            [TypeStoreRequest::FORM => $type->form, TypeStoreRequest::NAME => $type->name,]
         )
             ->assertRedirect();
         $this->actingAs($this->createEmployee())
             ->post(
                 route(TypeController::STORE_NAME),
-                [Type::FORM => $type->form, Type::NAME => $type->name,]
+                [TypeStoreRequest::FORM => $type->form, TypeStoreRequest::NAME => $type->name,]
             )->assertCreated();
         $this->assertDatabaseHas(
             Type::TABLE,
@@ -150,18 +152,23 @@ class TypesControllerTest extends TestCase
      */
     public function savingExistingFormWithoutForceReturnsAccepted(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->create();
         $this->actingAs($this->createEmployee())
             ->post(
                 route(TypeController::STORE_NAME),
-                [Type::NAME => $type->name, Type::FORM => $type->form, 'force' => false,]
+                [
+                    TypeStoreRequest::FORCE => false,
+                    TypeStoreRequest::FORM => $type->form,
+                    TypeStoreRequest::NAME => $type->name,
+                ]
             )
             ->assertStatus(Response::HTTP_ACCEPTED);
 
         $this->actingAs($this->createEmployee())
             ->post(
                 route(TypeController::STORE_NAME),
-                [Type::NAME => $type->name, Type::FORM => $type->form,]
+                [TypeStoreRequest::NAME => $type->name, TypeStoreRequest::FORM => $type->form,]
             )
             ->assertStatus(Response::HTTP_ACCEPTED);
     }
@@ -171,11 +178,16 @@ class TypesControllerTest extends TestCase
      */
     public function savingExistingFormCanBeForced(): void
     {
+        /** @var Type $type */
         $type = factory(Type::class)->create();
         $this->actingAs($this->createEmployee())
             ->post(
                 route(TypeController::STORE_NAME),
-                [Type::NAME => $type->name, Type::FORM => $type->form, 'force' => true,]
+                [
+                    TypeStoreRequest::FORCE => true,
+                    TypeStoreRequest::FORM => $type->form,
+                    TypeStoreRequest::NAME => $type->name,
+                ]
             )
             ->assertOk();
     }

@@ -17,7 +17,7 @@
       <table class="table table-dark table-hover col-12">
         <thead class="thead-light">
         <tr class="d-flex">
-          <th scope="col" class="col-1">ID</th>
+          <th scope="col" class="col-1">WorkOrder ID</th>
 
           <th scope="col" class="col-2">Created At</th>
           <th scope="col" class="col-2">Updated At</th>
