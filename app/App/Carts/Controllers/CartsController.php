@@ -16,6 +16,7 @@ use App\Carts\DataTransferObjects\CartStoreObject;
 use App\Carts\Requests\CartPatchRequest;
 use App\Carts\Requests\CartStoreRequest;
 use App\Carts\Resources\CartResource;
+use App\Products\Resources\ProductResource;
 use App\User;
 use Domain\Carts\Actions\CartDestroyAction;
 use Domain\Carts\Actions\CartPatchAction;
@@ -79,7 +80,11 @@ class CartsController extends Controller
     public function show(Cart $cart): View
     {
         // TODO: return a JsonResource that translates id to luhn and removes unneeded attributes.
-        return view('carts.show')->with(['cart' => $cart->load('products.type')]);
+        $products = $cart->products;
+        $products->load('type');
+        $resource = new ProductResource($products);
+
+        return view('carts.show')->with(['cart' => $cart, 'products' => $resource::collection($products)]);
     }
 
     /**

@@ -17,7 +17,7 @@ const propTypes = {
   clientFirstName: PropTypes.string,
   clientLastName: PropTypes.string,
   clientPhoneNumber: PropTypes.string,
-  productPadding: PropTypes.number,
+  productPadding: PropTypes.string,
   products: PropTypes.string,
 }
 const defaultProps = {

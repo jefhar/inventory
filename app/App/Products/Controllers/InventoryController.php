@@ -17,7 +17,6 @@ use App\User;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Actions\InventoryProductUpdateAction;
 use Domain\Products\Actions\ProductShowAction;
-use Domain\Products\Actions\InventoryProductUpdateAction;
 use Domain\Products\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -26,7 +25,8 @@ use Illuminate\View\View;
  * Class InventoryController
  *
  * @package App\Products\Controllers
- * @TODO: combine this with ProductsController. Update will need to be joined. Loop over known array, check if there & update.
+ * @TODO: combine this with ProductsController. Update will need to be joined. Loop over known array, check if there &
+ *     update.
  */
 class InventoryController extends Controller
 {

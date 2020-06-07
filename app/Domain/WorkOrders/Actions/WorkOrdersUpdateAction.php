@@ -12,7 +12,8 @@ namespace Domain\WorkOrders\Actions;
 use App\WorkOrders\DataTransferObjects\ClientObject;
 use App\WorkOrders\DataTransferObjects\PersonObject;
 use App\WorkOrders\DataTransferObjects\WorkOrderObject;
-use App\WorkOrders\Resources\WorkOrderResource;
+use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
 use Domain\WorkOrders\Models\WorkOrder;
 
 /**

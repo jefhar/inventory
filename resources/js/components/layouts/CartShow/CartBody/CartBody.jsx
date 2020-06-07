@@ -9,6 +9,8 @@ const propTypes = {
   cartId: PropTypes.number,
   cartStatus: PropTypes.string,
   changeStatusRequest: PropTypes.func,
+  currentProducts: PropTypes.array,
+  isOpen: PropTypes.bool,
   padding: PropTypes.number,
   startingProducts: PropTypes.string,
 }
@@ -55,7 +57,14 @@ class CartBody extends React.Component {
 
   render() {
     let product = {}
-    const { isOpen, currentProducts } = this.state.priceModal
+    const {
+      cartId,
+      cartStatus,
+      changeStatusRequest,
+      isOpen,
+      padding,
+    } = this.props
+    const { currentProducts } = this.state
     if (isOpen) {
       for (let i = 0; i < currentProducts.length; ++i) {
         if (currentProducts[i].product_id === this.state.productId) {
@@ -69,19 +78,19 @@ class CartBody extends React.Component {
     return (
       <CardBody>
         <ControlPanel
-          cartId={this.props.cartId}
-          cartStatus={this.props.cartStatus}
-          changeStatusRequest={this.props.changeStatusRequest}
+          cartId={cartId}
+          cartStatus={cartStatus}
+          changeStatusRequest={changeStatusRequest}
           disabled={this.state.disabled}
           totalCost={totalCost}
         />
         <ProductList
-          cartId={this.props.cartId}
-          cartStatus={this.props.cartStatus}
+          cartId={cartId}
+          cartStatus={cartStatus}
           disabled={this.state.disabled}
           handleDropClick={this.handleDropClick}
           handlePriceClick={this.toggleModal}
-          padding={this.props.padding}
+          padding={padding}
           products={this.state.currentProducts}
         />
         <PriceModal

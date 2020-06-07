@@ -18,7 +18,7 @@
        data-client-first-name="{{ $cart->client->person->first_name }}"
        data-client-last-name="{{ $cart->client->person->last_name }}"
        data-client-phone-number="{{ $cart->client->person->phone_number }}"
-       data-products='{!! $cart->products !!}'
+       data-products='{!! $products->toJson() !!}'
        data-product-padding="{{ config('app.padding.products') }}"
        class="mb-5"
   >

@@ -26,7 +26,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $serial
  * @property string $status
  * @property Type $type
- * @property Carbon created_at
+ * @property Carbon $created_at
  */
 class ProductResource extends JsonResource
 {
@@ -36,7 +36,7 @@ class ProductResource extends JsonResource
     public const MANUFACTURER_NAME = 'manufacturer_name';
     public const MODEL = 'model';
     public const PRICE = 'price';
-    public const PRODUCT_ID = 'product_id';
+    public const PRODUCT_ID = 'id';
     public const SERIAL = 'serial';
     public const STATUS = 'status';
     public const TYPE_NAME = 'type_name';
@@ -48,7 +48,9 @@ class ProductResource extends JsonResource
      */
     public function toArray($request): array
     {
-        $translation = [
+        // Place model_id first
+        return [
+            self::PRODUCT_ID => $this->luhn,
             self::CART_ID => $this->cart->luhn ?? null,
             self::CLIENT_COMPANY_NAME => $this->cart->client->company_name ?? null,
             self::CREATED_AT => $this->created_at->format('j M Y H:i'),
@@ -60,9 +62,5 @@ class ProductResource extends JsonResource
             self::TYPE_NAME => $this->type->name,
             self::WORK_ORDER_ID => $this->work_order_id,
         ];
-        // Place model_id first
-        array_unshift($translation, [self::PRODUCT_ID => $this->luhn]);
-
-        return $translation;
     }
 }

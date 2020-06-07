@@ -20,9 +20,9 @@ const ProductRow = (props) => {
         </a>
       </th>
 
-      <td>{props.product.manufacturer.name}</td>
+      <td>{props.product.manufacturer_name}</td>
       <td>{props.product.model}</td>
-      <td>{props.product.type.name}</td>
+      <td>{props.product.type_name}</td>
       <td>{props.product.serial}</td>
       <td>
         <PriceButton
