@@ -85,7 +85,9 @@ class CartsControllerTest extends TestCase
      */
     public function ownerCanAccessCart(): void
     {
-        $this->actingAs($this->createEmployee(UserRoles::OWNER))
+        $this
+            ->withoutExceptionHandling()
+            ->actingAs($this->createEmployee(UserRoles::OWNER))
             ->withoutMix()
             ->get(route(CartController::INDEX_NAME))
             ->assertOk();
@@ -214,7 +216,7 @@ class CartsControllerTest extends TestCase
 
         $response = $this->patch(
             route(CartController::UPDATE_NAME, $invoicingCart),
-           [CartPatchRequest::STATUS => Cart::STATUS_INVOICED]
+            [CartPatchRequest::STATUS => Cart::STATUS_INVOICED]
         );
 
         $response->assertOk()

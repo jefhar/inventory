@@ -62,7 +62,9 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function techUserCreateIsOk(): void
     {
-        $this->withoutMix()
+        $this
+            ->withoutExceptionHandling()
+            ->withoutMix()
             ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(WorkOrderController::CREATE_NAME))
             ->assertOk();
@@ -171,7 +173,9 @@ class WorkOrdersControllerTest extends TestCase
      */
     public function technicianIndexIsOk(): void
     {
-        $this->withoutMix()
+        $this
+            ->withoutExceptionHandling()
+            ->withoutMix()
             ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->get(route(WorkOrderController::INDEX_NAME))
             ->assertOk()
@@ -273,7 +277,7 @@ class WorkOrdersControllerTest extends TestCase
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->withoutExceptionHandling()
             ->patch(
-                route(WorkOrderController::UPDATE_NAME, [WorkOrdersController::WORKORDER => $workOrder]),
+                route(WorkOrderController::UPDATE_NAME, [WorkOrderController::WORKORDER => $workOrder]),
                 [
                     WorkOrderUpdateRequest::CLIENT_COMPANY_NAME => $newClient->company_name,
                 ]

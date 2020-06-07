@@ -53,6 +53,7 @@ class DashboardControllerTest extends TestCase
         $owner = factory(User::class)->create();
         $owner->assignRole(UserRoles::OWNER);
         $this
+            ->withoutExceptionHandling()
             ->actingAs($owner)
             ->get(route(DashboardController::INDEX_NAME))
             ->assertOk();
