@@ -119,12 +119,36 @@
       <path value="$PROJECT_DIR$/vendor/theseer/tokenizer" />
       <path value="$PROJECT_DIR$/vendor/fideloper/proxy" />
       <path value="$PROJECT_DIR$/vendor/laravel/ui" />
+      <path value="$PROJECT_DIR$/vendor/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/vendor/jakub-onderka/php-console-color" />
+      <path value="$PROJECT_DIR$/vendor/jakub-onderka/php-console-highlighter" />
+      <path value="$PROJECT_DIR$/vendor/facebook/webdriver" />
+      <path value="$PROJECT_DIR$/vendor/ocramius/package-versions" />
+      <path value="$PROJECT_DIR$/vendor/nette/utils" />
+      <path value="$PROJECT_DIR$/vendor/nette/finder" />
+      <path value="$PROJECT_DIR$/vendor/nette/php-generator" />
+      <path value="$PROJECT_DIR$/vendor/phpstan/phpdoc-parser" />
+      <path value="$PROJECT_DIR$/vendor/nette/schema" />
+      <path value="$PROJECT_DIR$/vendor/nette/robot-loader" />
+      <path value="$PROJECT_DIR$/vendor/nette/neon" />
+      <path value="$PROJECT_DIR$/vendor/nette/bootstrap" />
+      <path value="$PROJECT_DIR$/vendor/nette/di" />
+      <path value="$PROJECT_DIR$/vendor/jean85/pretty-package-versions" />
+      <path value="$PROJECT_DIR$/vendor/symfony/http-client_compare" />
+      <path value="$PROJECT_DIR$/vendor/league/commonmark-ext-table" />
+      <path value="$PROJECT_DIR$/vendor/erusev/parsedown" />
     </include_path>
   </component>
   <component name="PhpInterpreters">
     <interpreters>
-      <interpreter id="c7781858-2680-4e9d-911f-e7ba1cfaab95" name="serviceandgoods" home="docker://DATA" debugger_id="php.debugger.XDebug">
-        <remote_data INTERPRETER_PATH="/usr/bin/php" HELPERS_PATH="/opt/.phpstorm_helpers" INITIALIZED="false" VALID="true" RUN_AS_ROOT_VIA_SUDO="false" DOCKER_ACCOUNT_NAME="Docker" DOCKER_IMAGE_NAME="serviceandgoods_php-fpm:latest" DOCKER_REMOTE_PROJECT_PATH="/opt/project" />
+      <interpreter id="c7781858-2680-4e9d-911f-e7ba1cfaab95" name="serviceandgoods:pcov" home="docker://DATA" debugger_id="php.debugger.XDebug">
+        <remote_data INTERPRETER_PATH="/usr/bin/php" HELPERS_PATH="/opt/.phpstorm_helpers" INITIALIZED="false" VALID="true" RUN_AS_ROOT_VIA_SUDO="false" DOCKER_ACCOUNT_NAME="Docker" DOCKER_IMAGE_NAME="c11k/serviceandgoods:pcov" DOCKER_REMOTE_PROJECT_PATH="/opt/project" />
+      </interpreter>
+      <interpreter id="25f9a867-2279-48c6-8ba1-2f778be74a97" name="c11k/serviceandgoods:latest" home="docker://DATA" debugger_id="php.debugger.XDebug">
+        <remote_data INTERPRETER_PATH="php" HELPERS_PATH="/opt/.phpstorm_helpers" INITIALIZED="false" VALID="true" RUN_AS_ROOT_VIA_SUDO="false" DOCKER_ACCOUNT_NAME="Docker" DOCKER_IMAGE_NAME="c11k/serviceandgoods:latest" DOCKER_REMOTE_PROJECT_PATH="/opt/project" />
+      </interpreter>
+      <interpreter id="72ea8053-08cd-47c9-b4e3-56c850594bd1" name="c11k/serviceandgoods:xdebug" home="docker://DATA" debugger_id="php.debugger.XDebug">
+        <remote_data INTERPRETER_PATH="php" HELPERS_PATH="/opt/.phpstorm_helpers" INITIALIZED="false" VALID="true" RUN_AS_ROOT_VIA_SUDO="false" DOCKER_ACCOUNT_NAME="Docker" DOCKER_IMAGE_NAME="c11k/serviceandgoods:xdebug" DOCKER_REMOTE_PROJECT_PATH="/opt/project" />
       </interpreter>
     </interpreters>
   </component>
