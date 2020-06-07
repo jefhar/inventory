@@ -121,7 +121,7 @@ class PendingSalesTest extends TestCase
      */
     public function canPatchProductPendingSaleToAddPrice(): void
     {
-        $price = random_int(0, PHP_INT_MAX) / 100;
+        $price = rand(0, 999_999_99) / 100;
         $product = $this->createFullProduct();
 
         PricePatchAction::execute($product, $price);

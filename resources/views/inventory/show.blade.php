@@ -35,7 +35,7 @@
       <div class="card-body">
         <div id="productView"></div>
       </div>
-      @can(\App\Admin\Permissions\UserPermissions::EDIT_SAVED_PRODUCT)
+      @can(\App\Admin\Permissions\UserPermissions::MUTATE_PRODUCT_VALUES)
         @if($product->status === \Domain\Products\Models\Product::STATUS_AVAILABLE)
           <div class="card-footer" id="cardFooter">
             <div class="dropdown">
