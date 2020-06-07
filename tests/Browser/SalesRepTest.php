@@ -10,17 +10,16 @@ declare(strict_types=1);
 namespace Tests\Browser;
 
 use App\Admin\Permissions\UserRoles;
-use App\User;
 use Faker\Factory;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
-use Tests\Traits\FullUsers;
+use Tests\Traits\FullObjects;
 
 class SalesRepTest extends DuskTestCase
 {
     use DatabaseMigrations;
-    use FullUsers;
+    use FullObjects;
 
     /**
      * @throws \Throwable

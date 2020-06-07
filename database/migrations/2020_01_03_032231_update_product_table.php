@@ -8,7 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Tdely\Luhn\Luhn;
+use App\Support\Luhn;
 
 class UpdateProductTable extends Migration
 {
@@ -41,7 +41,7 @@ class UpdateProductTable extends Migration
             $product->save();
         }
 
-        $editSavedProduct = Permission::create(['name' => UserPermissions::EDIT_SAVED_PRODUCT]);
+        $editSavedProduct = Permission::create(['name' => UserPermissions::MUTATE_PRODUCT_VALUES]);
 
         $owner = Role::findByName(UserRoles::OWNER);
         $superAdmin = Role::findByName(UserRoles::SUPER_ADMIN);

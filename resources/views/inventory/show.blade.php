@@ -6,8 +6,8 @@
 
 @section('content')
   <script>
-    const removeFromCart = productLuhn => {
-      axios.delete(`/pendingSales/${productLuhn}`).then(() => {
+    const removeFromCart = (productId) => {
+      axios.delete(`/pendingSales/${productId}`).then(() => {
         // Remove alert
         const productAddedAlert = document.getElementById('productAddedAlert')
         productAddedAlert.classList.replace('alert-primary', 'alert-warning')
@@ -22,19 +22,20 @@
     ) !!}', dataType: 'json',
     }
   </script>
+
   <div class="container" id="inventoryShow">
     <div class="card">
       <div class="card-header">
         <h1 id="productId"
-            data-product-id="{{ $product->id }}"
-            data-product-luhn="{{ $product->luhn }}"
+            data-product-id="{{ $product->luhn }}"
         >Product #{{ $product->luhn }}</h1>
-        <p class="lead">{{ $product->type->name }}</p>
+        <p class="lead">{{ $product->type->name }} <span
+            class="badge badge-pill badge-primary">{{ $product->status }}</span></p>
       </div>
       <div class="card-body">
-        <div id="product_show"></div>
+        <div id="productView"></div>
       </div>
-      @can(\App\Admin\Permissions\UserPermissions::EDIT_SAVED_PRODUCT)
+      @can(\App\Admin\Permissions\UserPermissions::MUTATE_PRODUCT_VALUES)
         @if($product->status === \Domain\Products\Models\Product::STATUS_AVAILABLE)
           <div class="card-footer" id="cardFooter">
             <div class="dropdown">
@@ -53,9 +54,9 @@
 
                     <button
                       class="dropdown-item"
-                      id="cart_{{ $cart->id }}"
+                      id="cart_{{ $cart->luhn }}"
                       type="button"
-                      data-cart-id="{{ $cart->id }}"
+                      data-cart-id="{{ $cart->luhn }}"
                     >{{$cart->client->company_name}}
                       - created
                       {{\Carbon\Carbon::createFromFormat("Y-m-d H:i:s", $cart->created_at)
@@ -69,7 +70,6 @@
                   class="dropdown-item"
                   id="newCartButton"
                   type="button"
-                  onclick="createNewCart()"
                 >New Cart
                 </button>
               </div>
@@ -82,7 +82,7 @@
                 href="{{ route(\App\Carts\Controllers\CartController::SHOW_NAME, $product->cart) }}">{{ $product->cart->client->company_name }}
                 .</a>
               <br><br>
-              <span class="text-danger"><a class="text-danger"
+              <span class="text-danger"><a class="text-danger cursor-trashcan"
                                            onclick="removeFromCart({{ $product->luhn }});"><i
                     id="removeProduct" class="fas fa-unlink">&#8203;</i> Remove product from cart.</a>
                                 Not available for sale.</span>

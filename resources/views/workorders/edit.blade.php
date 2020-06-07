@@ -5,22 +5,16 @@
 @section('content')
   <div id="WorkOrdersEdit"></div>
   <div class="container">
-    <div class="border border-{{ $workOrder->is_locked ? 'warning' : 'primary' }} card col-md rounded-sm row shadow"
+    <div class="border card col-md rounded-sm row shadow"
          id="outline">
       <div class="card-header row">
         <div class="col">
-          <h1 class="text-center"><span id="lockedHeader">The</span> Work Order</h1>
-        </div>
-        <div class="col-sm-3 col-md-2 shadow-sm">
-          <div class="row justify-content-center">
-            Work Order #
-          </div>
-          <div class="row justify-content-center workorder-id">
-            {{ str_pad($workOrder->luhn, config('app.padding.workorders'), '0', STR_PAD_LEFT) }}
-          </div>
-          <div class="row justify-content-center">
-            {{ $workOrder->created_at->format('j M Y') }}
-          </div>
+          <h1 class="text-center"><span id="lockedHeader">The</span> Work Order
+            #{{ str_pad($workOrder->luhn, config('app.padding.workorders'), '0', STR_PAD_LEFT) }}</h1>
+          <p class="text-center">
+            <span class="h3">{{ $workOrder->client->company_name }}</span>
+            <br>
+            <span class="h6">Created {{ $workOrder->created_at->format('j M Y') }}</span>
         </div>
       </div>
       <div
@@ -36,11 +30,11 @@
           <div class="form-row">
             <label
               class="col-form-label-sm"
-              for="company_name"
+              for="companyName"
             >Client Company Name:</label>
             <input
               class="form-control form-control-sm"
-              id="company_name"
+              id="companyName"
               name="company_name"
               placeholder="Company Name"
               required
@@ -52,11 +46,11 @@
             <div class="col">
               <label
                 class="col-form-label-sm"
-                for="first_name"
+                for="firstName"
               >First Name</label>
               <input
                 class="form-control form-control-sm"
-                id="first_name"
+                id="firstName"
                 name="first_name"
                 placeholder="First Name"
                 value="{{ $workOrder->client->person->first_name }}"
@@ -65,11 +59,11 @@
             <div class="col">
               <label
                 class="col-form-label-sm"
-                for="last_name"
+                for="lastName"
               >Last Name</label>
               <input
                 class="form-control form-control-sm"
-                id="last_name"
+                id="lastName"
                 name="last_name"
                 placeholder="Last Name"
                 value="{{ $workOrder->client->person->last_name }}"
@@ -80,11 +74,11 @@
             <div class="col-12 col-sm-6">
               <label
                 class="col-form-label-sm"
-                for="phone_number"
+                for="phoneNumber"
               >Phone</label>
               <input
                 class="form-control form-control-sm"
-                id="phone_number"
+                id="phoneNumber"
                 name="phone_number"
                 placeholder="Phone Number"
                 value="{{ $workOrder->client->person->phone_number }}"
@@ -119,8 +113,8 @@
           <div class="row">
             <button
               class="btn btn-outline-primary col-4 offset-1"
-              id="updateButton"
-              type="submit">
+              id="commitChangesButton"
+              type="button">
               Commit Changes
             </button>
             <button
@@ -137,7 +131,7 @@
         <table class="table table-dark">
           <thead>
           <tr>
-            <th scope="col">ID</th>
+            <th scope="col">Product ID</th>
             <th scope="col">Make</th>
             <th scope="col">Model</th>
             <th scope="col">Type</th>
@@ -145,7 +139,7 @@
             <th scope="col">Created At</th>
           </tr>
           </thead>
-          <tbody id="products_table">
+          <tbody id="productsTable">
 
           @foreach ($workOrder->products as $product)
             <tr>
@@ -162,16 +156,15 @@
               <td>{{$product->created_at}}</td>
             </tr>
           @endforeach
-
           </tbody>
         </table>
         @can(\App\Admin\Permissions\UserPermissions::WORK_ORDER_OPTIONAL_PERSON)
           <div class="row">
             <button
               class="btn btn-outline-primary col-6 offset-1"
-              data-target="#productModal"
+              data-target="#addNewProductModal"
               data-toggle="modal"
-              id="addInventoryButton"
+              id="addInventoryItemButton"
               type="button"
             >Add Inventory Item
             </button>
@@ -191,7 +184,7 @@
     </div>
     <div
       class="modal"
-      id="productModal"
+      id="addNewProductModal"
       role="dialog"
       tabindex="-1">
       <div
@@ -232,27 +225,28 @@
                   data-work-order-id="{{ $workOrder->luhn }}"
                   id="productForm"
                 >
-
                 </form>
               </div>
             </div>
           </div>
           <div class="modal-footer" id="modalFooter">
-            <div class="spinner-border text-info mr-auto invisible" id="spinner"></div>
-            <button
-              class="btn btn-outline-secondary"
-              data-dismiss="modal"
-              id="cancelButton"
-              type="button"
-            >Cancel
-            </button>
-            <button
-              class="btn btn-outline-primary"
-              id="productSubmit"
-              type="button"
-            >Add Product
-            </button>
-
+            <div class="row">
+              <div class="spinner-border text-info mr-auto invisible" id="spinner"></div>
+              <button
+                class="btn btn-outline-secondary mr-4"
+                data-dismiss="modal"
+                id="cancelNewProductButton"
+                type="button"
+              >Cancel
+              </button>
+              <button
+                class="btn btn-outline-primary"
+                id="productSubmit"
+                type="button"
+                disabled
+              >Add Product
+              </button>
+            </div>
             <div class="row" id="productError"></div>
           </div>
         </div>

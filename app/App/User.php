@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use Domain\Carts\Models\Cart;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,6 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
  * Class User
  *
  * @method bool hasPermissionTo($permission, $guardName = null)
+ * @method static Builder inRandomOrder()
  * @method static User create(array $array)
  * @method User assignRole(...$roles)
  * @method User givePermissionTo(...$permissions)

@@ -15,6 +15,8 @@ use App\Carts\DataTransferObjects\CartPatchObject;
 use App\Carts\DataTransferObjects\CartStoreObject;
 use App\Carts\Requests\CartPatchRequest;
 use App\Carts\Requests\CartStoreRequest;
+use App\Carts\Resources\CartResource;
+use App\User;
 use Domain\Carts\Actions\CartDestroyAction;
 use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Actions\CartStoreAction;
@@ -52,11 +54,13 @@ class CartController extends Controller
      */
     public function index()
     {
+        /** @var User $user */
+        $user = Auth::user();
         // Same code in InventoryController::show
-        if (Auth::user()->can(UserPermissions::SEE_ALL_OPEN_CARTS)) {
+        if ($user->can(UserPermissions::SEE_ALL_OPEN_CARTS)) {
             $carts = Cart::where(Cart::STATUS, Cart::STATUS_OPEN)->orderBy(Cart::CREATED_AT)->get();
         } else {
-            $carts = Auth::user()->carts()->get();
+            $carts = $user->carts()->get();
         }
 
         return view('carts.index')
@@ -79,26 +83,25 @@ class CartController extends Controller
 
     /**
      * @param CartStoreRequest $request
-     * @return Cart
      */
-    public function store(CartStoreRequest $request): Cart
+    public function store(CartStoreRequest $request): CartResource
     {
         // New Cart is sent with a productId;
         $cartStoreObject = CartStoreObject::fromRequest($request->validated());
 
-        return CartStoreAction::execute($cartStoreObject);
+        return new CartResource(CartStoreAction::execute($cartStoreObject));
     }
 
     /**
      * @param Cart $cart
      * @param CartPatchRequest $request
-     * @return Cart
+     * @return CartResource
      * @throws \Exception
      */
-    public function update(Cart $cart, CartPatchRequest $request): Cart
+    public function update(Cart $cart, CartPatchRequest $request): CartResource
     {
         $cartPatchObject = CartPatchObject::fromRequest($request->validated());
 
-        return CartPatchAction::execute($cart, $cartPatchObject);
+        return new CartResource(CartPatchAction::execute($cart, $cartPatchObject));
     }
 }

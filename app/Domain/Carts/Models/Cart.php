@@ -18,14 +18,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 /**
  * Class Cart
  *
- * @package Domain\Carts\Models
- * @method static Builder where(string|array $column, mixed $operator = null, mixed $value = null, string $bool = 'and')
- * @method static Cart findOrFail($input)
+ * @method Cart first(array|string $columns = ['*'])
+ * @method Collection get(array|string $columns = ['*'])
+ * @method Collection orderBy($column, $direction = 'asc')
+ * @method static Cart findOrFail(mixed $id, array $columns = ['*'])
+ * @method static Cart where(string|array $column, mixed $operator = null, mixed $value = null, string $bool = 'and')
  * @method static Cart|null find($input)
+ * @method static Collection firstOrFail($columns = ['*'])
+ * @package Domain\Carts\Models
  * @property Client $client
  * @property int $id
  * @property int $luhn
@@ -36,18 +41,19 @@ class Cart extends Model
 {
     use SoftDeletes;
 
+    public const CLIENT_COMPANY_NAME = 'client_name';
     public const CLIENT_ID = 'client_id';
     public const ID = 'id';
     public const LUHN = 'luhn';
     public const STATUS = 'status';
-    public const STATUSES = [
-        self::STATUS_INVOICED,
-        self::STATUS_VOID,
-        self::STATUS_OPEN,
-    ];
     public const STATUS_INVOICED = 'invoiced';
     public const STATUS_OPEN = 'open';
     public const STATUS_VOID = 'void';
+    public const STATUSES = [
+        self::STATUS_INVOICED,
+        self::STATUS_OPEN,
+        self::STATUS_VOID,
+    ];
     public const TABLE = 'carts';
     public const USER_ID = 'user_id';
 

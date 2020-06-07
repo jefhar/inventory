@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-  <div id="workorders_create"></div>
+  <div id="workorder_create"></div>
 @endsection
 
-@section('future_workorder_content')
+@section('future_workorder_content_example')
   <form class="container">
     <div class="row">
       <div class="card">

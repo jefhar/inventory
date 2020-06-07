@@ -14,11 +14,12 @@
                 class="font-weight-bolder">Label</span> attribute</p>
           </div>
           <div class="d-flex justify-content-between mb-3">
-            <button type="button" class="btn btn-outline-info" id="loadButton">Load Existing&emsp;&emsp;<i
-                class="fas fa-file-download"></i></button>
+            <button type="button" class="btn btn-outline-info" id="loadButton" disabled>
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </button>
             <button type="button" class="btn btn-outline-secondary" id="previewButton"
                     data-show-on-click="preview">Preview&emsp;&emsp;<i class="far fa-eye"></i></button>
-            <button type="button" class="btn btn-outline-primary" id="saveButton">Save Form&emsp;&emsp;<i
+            <button type="button" class="btn btn-outline-primary" id="saveFormButton">Save Form&emsp;&emsp;<i
                 class="far fa-save"></i></button>
             <button type="button" class="btn btn-outline-warning" id="clearButton">Clear&emsp;&emsp;<i
                 class="fas fa-eraser"></i></button>
@@ -46,11 +47,8 @@
           </button>
         </div>
         <div class="modal-body" id="loadpane">
-          <label for="typesList">Select an existing product type:</label>
+          <label for="typesList">Select an existing product type:</label><br>
           <select id="typesList" name="list_of_types" size="8">
-            @foreach($types as $type)
-              <option value="{{ $type->slug }}">{{ $type->name }}</option>
-            @endforeach
           </select>
         </div>
         <div class="modal-footer">
@@ -62,12 +60,12 @@
   </div>
   <!-- /LoadModal -->
   <!-- Save Modal -->
-  <div id="saveProductModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="saveModalLabel"
+  <div id="saveNewTypeModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="saveNewTypeModalLabel"
        aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="saveModalLabel">Save New Type</h5>
+          <h5 class="modal-title" id="saveNewTypeModalLabel">Save New Type</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -85,8 +83,14 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-          <button id="saveTypeButton" type="button" class="btn btn-outline-primary">Save</button>
+          <div>
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+            <button id="saveTypeButton" type="button" class="btn btn-outline-primary">Save</button>
+          </div>
+          <div class="w-100"></div>
+          <div id="saveNewTypeAlerts" class="alert alert-warning mx-auto d-none" role="alert">
+            The Product Type must not be empty.
+          </div>
         </div>
       </div>
     </div>

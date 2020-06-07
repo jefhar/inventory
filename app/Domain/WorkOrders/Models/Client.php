@@ -22,6 +22,7 @@ use Illuminate\Support\Collection;
  *
  * @package Domain\WorkOrders\Models
  *
+ * @method Client firstOrFail()
  * @method Client get()
  * @method Collection pluck(string $column, string|null $key = null)
  * @method static Builder inRandomOrder()
@@ -48,9 +49,13 @@ class Client extends Model
     public const ID = 'id';
     public const TABLE = 'clients';
 
+    protected $attributes = [
+        self::COMPANY_NAME => '[Missing Company Name]',
+    ];
     public $fillable = [
         self::COMPANY_NAME,
     ];
+    protected $with = ['person'];
     public $table = self::TABLE;
 
     /**
@@ -69,7 +74,14 @@ class Client extends Model
      */
     public function person(): HasOne
     {
-        return $this->hasOne(Person::class);
+        return $this->hasOne(Person::class)->withDefault(
+            [
+                Person::FIRST_NAME => Person::DEFAULT_FIRST_NAME,
+                Person::LAST_NAME => Person::DEFAULT_LAST_NAME,
+                Person::PHONE_NUMBER => Person::DEFAULT_PHONE_NUMBER,
+                Person::EMAIL => Person::DEFAULT_EMAIL,
+            ]
+        );
     }
 
     /**

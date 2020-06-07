@@ -85,19 +85,36 @@ $(() => {
     '#site-search'
   )
 })
+const formKeyPress = (event, element = 'buttonElem') => {
+  // Do Stuff
+  console.log('boom')
+  if (event.keyCode === 13) {
+    element.click()
+    return false
+  }
+}
 
 if (document.getElementById('WorkOrdersEdit')) {
   // Definitions
-  console.info('WorkOrdersEdit')
+  const commitChangesButton = document.getElementById('commitChangesButton')
   const lockButton = document.getElementById('lockButton')
-  const updateButton = document.getElementById('updateButton')
   const workOrderBody = document.getElementById('workOrderBody')
 
   // Actions
   const WorkOrderEditUpdateUI = () => {
     // Definitions
     console.log('WorkOrderEditUpdateUI function')
-    const inventoryButton = document.getElementById('addInventoryButton')
+    const formFields = [
+      document.getElementById('firstName'),
+      document.getElementById('lastName'),
+      document.getElementById('companyName'),
+      document.getElementById('email'),
+      document.getElementById('intake'),
+      document.getElementById('phoneNumber'),
+    ]
+    const addInventoryItemButton = document.getElementById(
+      'addInventoryItemButton'
+    )
     const isLockedButton = document.getElementById('lockButton')
     const lockIcon = document.getElementById('lockIcon')
     const outline = document.getElementById('outline')
@@ -108,80 +125,64 @@ if (document.getElementById('WorkOrdersEdit')) {
       isLockedButton: 'btn-outline-danger',
       lockHeader: 'Locked',
       lockIcon: 'fa-unlock-alt',
-      outline: 'border-primary',
+      outline: 'border-danger',
     }
     const unlocked = {
       clickTo: 'Click to Lock work order.',
       isLockedButton: 'btn-outline-success',
       lockHeader: 'Unlocked',
       lockIcon: 'fa-lock',
-      outline: 'border-warning',
+      outline: 'border-success',
     }
 
     // Actions
-    const updateUI = (add, remove) => {
+    const updateLockButtonView = (add, remove) => {
       // Do Stuff
       if (isLockedButton) {
         isLockedButton.classList.add(add.isLockedButton)
-        lockIcon.classList.add(add.lockIcon)
-      }
-      outline.classList.add(add.outline)
-
-      if (isLockedButton) {
         isLockedButton.classList.remove(remove.isLockedButton)
+        lockIcon.classList.add(add.lockIcon)
         lockIcon.classList.remove(remove.lockIcon)
       }
+      outline.classList.add(add.outline)
       outline.classList.remove(remove.outline)
 
       $('[data-toggle="tooltip"]').attr('data-original-title', add.clickTo)
     }
-
+    const ableForm = (locked) => {
+      const boolLocked = locked === 'true' || locked === true
+      formFields.forEach((element) => {
+        element.disabled = boolLocked
+      })
+    }
     // Do Stuff
     if (workOrderBody.dataset.isLocked === 'true') {
-      updateUI(locked, unlocked)
+      updateLockButtonView(locked, unlocked)
       lockHeader.innerText = locked.lockHeader
     } else {
-      updateUI(unlocked, locked)
+      updateLockButtonView(unlocked, locked)
       lockHeader.innerText = unlocked.lockHeader
     }
-    if (inventoryButton) {
-      inventoryButton.disabled = workOrderBody.dataset.isLocked === 'true'
+    if (addInventoryItemButton) {
+      addInventoryItemButton.disabled =
+        workOrderBody.dataset.isLocked === 'true'
     }
+    ableForm(workOrderBody.dataset.isLocked)
+    commitChangesButton.disabled = workOrderBody.dataset.isLocked === 'true'
   }
-  const lockButtonClick = () => {
-    // Definitions
-    const wantOrderToBeLocked = !(workOrderBody.dataset.isLocked === 'true')
-    const data = { is_locked: wantOrderToBeLocked }
-    const url = `/workorders/${workOrderBody.dataset.workOrderId}`
-
-    // Do Stuff
-    axios
-      .patch(url, data)
-      .then((response) => {
-        workOrderBody.dataset.isLocked = response.data.is_locked
-        WorkOrderEditUpdateUI()
-      })
-      .catch((error) => {
-        console.info('error.response.data:', error.response.data)
-      })
-  }
-  const updateButtonClick = (event) => {
+  const storeChanges = (data) => {
     // Definitions
     const cardBody = document.getElementById('workOrderBody')
     const updateToast = document.createElement('div')
     const url = `/workorders/${cardBody.dataset.workOrderId}`
-    const data = {
-      company_name: document.getElementById('company_name').value,
-      email: document.getElementById('email').value,
-      first_name: document.getElementById('first_name').value,
-      intake: document.getElementById('intake').value,
-      last_name: document.getElementById('last_name').value,
-      phone_number: document.getElementById('phone_number').value,
-    }
 
     // Actions
-    const onPatch = () => {
+    const onPatch = (response) => {
+      console.info('response', response)
       // Do Stuff
+      if ('is_locked' in response.data) {
+        workOrderBody.dataset.isLocked = response.data.is_locked
+      }
 
       // At some point, give user a visual indication that
       // fields have been updated. Even better, add onChange
@@ -225,41 +226,67 @@ if (document.getElementById('WorkOrdersEdit')) {
     }
     const afterPatch = () => {
       // Do Stuff
+      updateToast.id = 'updateToast'
+      updateToast.classList.add('toast')
+      updateToast.style.position = 'absolute'
+      updateToast.style.top = '0'
+      updateToast.style.right = '0'
+      updateToast.dataset.delay = '8000'
+
       document.getElementById('workOrderBody').appendChild(updateToast)
       const $updateToast = $('#updateToast') // Grab jQuery handle element
       $updateToast.toast()
       $updateToast.toast('show')
     }
+
     // Do Stuff
-    updateToast.id = 'updateToast'
-    updateToast.classList.add('toast')
-    updateToast.style.position = 'absolute'
-    updateToast.style.top = '0'
-    updateToast.style.right = '0'
-    updateToast.dataset.delay = '8000'
 
     // send PATCH via axios
     axios
       .patch(url, data)
-      .then(() => {
-        onPatch()
+      .then((response) => {
+        onPatch(response)
       })
       .catch((error) => {
         onPatchError(error)
       })
       .finally(() => {
         afterPatch()
+        WorkOrderEditUpdateUI()
       })
-
-    event.preventDefault()
   }
-  const productModalShown = () => {
+  const lockButtonClick = () => {
+    console.info('lockButtonClick')
+    // Definitions
+    const wantOrderToBeLocked = !(workOrderBody.dataset.isLocked === 'true')
+    const data = { is_locked: wantOrderToBeLocked }
+    storeChanges(data)
+  }
+  const commitChangesClick = () => {
+    storeChanges({
+      company_name: document.getElementById('companyName').value,
+      email: document.getElementById('email').value,
+      first_name: document.getElementById('firstName').value,
+      intake: document.getElementById('intake').value,
+      last_name: document.getElementById('lastName').value,
+      phone_number: document.getElementById('phoneNumber').value,
+    })
+  }
+  const addNewProductModalShown = () => {
+    // TODO: Incorporate fetchTypesList() here so typeslist is always refreshed.
     // Definitions
     const productType = document.getElementById('productType')
     const productSubmit = document.getElementById('productSubmit')
-    const cancelButton = document.getElementById('cancelButton')
+    const cancelNewProductButton = document.getElementById(
+      'cancelNewProductButton'
+    )
 
     // Actions
+    const removeChildren = (element) => {
+      while (element.hasChildNodes()) {
+        element.removeChild(element.lastChild)
+      }
+    }
     const productTypeChange = (event) => {
       // Definitions
       const { value } = event.target
@@ -284,7 +311,7 @@ if (document.getElementById('WorkOrdersEdit')) {
             className: 'form-control',
             dataAutocomplete: '/ajaxsearch/manufacturer',
             label: 'Manufacturer',
-            name: 'manufacturer',
+            name: 'manufacturer_name',
             required: 'true',
             subtype: 'text',
             type: 'text',
@@ -336,6 +363,7 @@ if (document.getElementById('WorkOrdersEdit')) {
         .finally(() => {
           spinner.classList.remove('visible')
           spinner.classList.add('invisible')
+          productSubmit.disabled = false
         })
     }
     const productSubmitClick = () => {
@@ -343,7 +371,7 @@ if (document.getElementById('WorkOrdersEdit')) {
       const formData = document.getElementById('productForm')
       const postData = {
         type: document.getElementById('productType').value,
-        workOrderId: document.getElementById('workOrderBody').dataset
+        workorder_id: document.getElementById('workOrderBody').dataset
           .workOrderId,
       }
       const url = '/products'
@@ -351,28 +379,34 @@ if (document.getElementById('WorkOrdersEdit')) {
       // Actions
       const onPost = (response) => {
         // Definitions
-        const { model, createdAt, serial } = response.data
-        const { name: manufacturer } = response.data.manufacturer
+        const {
+          created_at: createdAt,
+          manufacturer_name: manufacturerName,
+          model,
+          serial,
+        } = response.data
         const { name: type } = response.data.type
-        const luhn = _.padStart(response.data.luhn, 6, '0')
+        const id = _.padStart(response.data.id, 6, '0')
         const productForm = document.getElementById('productForm')
+        const productsTable = document.getElementById('productsTable')
+        const productType = document.getElementById('productType')
         const tr = document.createElement('tr')
-
         // Do stuff
         tr.innerHTML = `<th scope="row" class="col-1">
-<a class="btn btn-info" href="/inventory/${luhn}">${luhn}</a></th>
-<td>${manufacturer}</td>
+<a class="btn btn-info" href="/inventory/${id}">${id}</a></th>
+<td>${manufacturerName}</td>
 <td>${model}</td>
 <td>${type}</td>
 <td>${serial}</td>
 <td>${createdAt}</td>`
-        document.getElementById('products_table').appendChild(tr)
-        while (productForm.hasChildNodes()) {
-          productForm.removeChild(productForm.lastChild)
-        }
-        document.getElementById('productType').selectedIndex = 0
+        productsTable.appendChild(tr)
+
+        // reset modal form:
+        removeChildren(productForm)
+        productType.selectedIndex = 0
+
         // close modal
-        $('#productModal').modal('hide')
+        $('#addNewProductModal').modal('hide')
         $('.modal-backdrop').remove()
       }
       const postError = (error) => {
@@ -416,9 +450,8 @@ if (document.getElementById('WorkOrdersEdit')) {
       const productType = document.getElementById('productType')
 
       // Do Stuff
-      while (productForm.hasChildNodes()) {
-        productForm.removeChild(productForm.lastChild)
-      }
+      // reset modal form:
+      removeChildren(productForm)
       productType.selectedIndex = 0
     }
 
@@ -429,23 +462,26 @@ if (document.getElementById('WorkOrdersEdit')) {
     productSubmit.addEventListener('click', (event) => {
       productSubmitClick(event)
     })
-    cancelButton.addEventListener('click', (event) => {
+    cancelNewProductButton.addEventListener('click', (event) => {
       cancelButtonClick(event)
     })
+
+    // Do Stuff
+    productSubmit.disabled = true
   }
 
   // Attachments
-  $('#productModal').on('shown.bs.modal', (event) => {
-    productModalShown(event)
+  $('#addNewProductModal').on('shown.bs.modal', (event) => {
+    addNewProductModalShown(event)
   })
   if (lockButton) {
     lockButton.addEventListener('click', () => {
       lockButtonClick()
     })
   }
-  if (updateButton) {
-    updateButton.addEventListener('click', () => {
-      updateButtonClick()
+  if (commitChangesButton) {
+    commitChangesButton.addEventListener('click', () => {
+      commitChangesClick()
     })
   }
 
@@ -488,38 +524,80 @@ if (document.getElementById('typesCreate')) {
     },
     showActionButtons: false,
   }
-  const typesControlFormBuilder = $('#fb-editor').formBuilder(formOptions)
+
+  const clearButton = document.getElementById('clearButton')
+  const loadFormButton = document.getElementById('loadButton')
+  const previewButton = document.getElementById('previewButton')
+  const productType = document.getElementById('productType')
+  const saveFormButton = document.getElementById('saveFormButton')
+  const $typesControlFormBuilder = $('#fb-editor').formBuilder(formOptions)
+  const typesList = document.getElementById('typesList')
 
   // Actions
+  const onTypesGet = (response) => {
+    response.data.forEach((item) => {
+      const option = document.createElement('option')
+      const { slug, name } = item
+      option.value = slug
+      option.innerText = name
+      typesList.append(option)
+    })
+  }
+  const fetchTypesList = () => {
+    loadFormButton.disabled = true
+    loadFormButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+    while (typesList.hasChildNodes()) {
+      typesList.removeChild(typesList.lastChild)
+    }
+    console.info('removed exiting typesList')
+    axios
+      .get('/types')
+      .then((response) => {
+        onTypesGet(response)
+      })
+      .finally(() => {
+        loadFormButton.disabled = false
+        loadFormButton.innerHTML = `Load Existing&emsp;&emsp;<i class="fas fa-file-download"></i>`
+      })
+  }
   const typesControlToggleEdit = () => {
     // Definitions
     const formBuilder = document.getElementById('formbuilder')
     const previewButton = document.getElementById('previewButton')
-    let renderPreview
     const editing = previewButton.dataset.showOnClick
+    const classes = previewButton.classList
+    let renderPreview
 
     // Do Stuff
     if (editing === 'preview') {
       previewButton.innerHTML = 'Edit&emsp;&emsp;<i class="far fa-edit"></i>'
       previewButton.dataset.showOnClick = 'edit'
+
+      classes.remove('btn-outline-secondary')
+      classes.add('btn-secondary')
       renderPreview = false
     } else {
       previewButton.innerHTML = 'Preview&emsp;&emsp;<i class="far fa-eye"></i>'
       previewButton.dataset.showOnClick = 'preview'
+      classes.add('btn-outline-secondary')
+      classes.remove('btn-secondary')
       renderPreview = true
     }
     formBuilder.classList.toggle('form-rendered', !renderPreview)
   }
-  const typesControlCheckAndClear = (formBuilder) => {
+  const typesControlCheckAndClear = ($formBuilder) => {
     // Definitions
-    const formData = formBuilder.actions.getData('json', true)
+    const formData = $formBuilder.actions.getData('json', true)
 
     // Do Stuff
     if (formData !== '[]') {
       // Form exists
       if (window.confirm('Are you sure you want to clear all fields?')) {
-        formBuilder.actions.clearFields()
-        $('#fb-render').formRender({ formData })
+        // $('#fb-render').formRender({ formData })
+        previewButton.dataset.showOnClick = 'edit'
+        previewButtonClick()
+        $formBuilder.actions.clearFields()
+        productType.innerText = ''
         return true
       }
       return false
@@ -529,12 +607,13 @@ if (document.getElementById('typesCreate')) {
   const previewButtonClick = () => {
     // Do Stuff
     typesControlToggleEdit()
-    const formData = typesControlFormBuilder.actions.getData('json', true)
+    const formData = $typesControlFormBuilder.actions.getData('json', true)
     $('#fb-render').formRender({ formData })
   }
-  const saveButtonClick = () => {
+  const saveFormButtonClick = () => {
+    console.info('pressed saveFormButton')
     // Definitions
-    const formData = typesControlFormBuilder.actions.getData('json', true)
+    const formData = $typesControlFormBuilder.actions.getData('json', true)
 
     // Do Stuff
     if (formData === '[]') {
@@ -542,47 +621,101 @@ if (document.getElementById('typesCreate')) {
       alert('Nothing to save!')
       return
     }
-    $('#saveProductModal').modal('show')
+    $('#saveNewTypeModal').modal('show')
   }
-  const saveProductModalShown = () => {
+  const saveNewTypeShown = () => {
     // Definitions
     const saveTypeButton = document.getElementById('saveTypeButton')
+    const saveType = document.getElementById('saveType')
+    const saveNewTypeAlerts = document.getElementById('saveNewTypeAlerts')
 
     // Actions
+    const displaySaveNewTypeAlerts = () => {
+      const classList = saveNewTypeAlerts.classList
+      classList.add('d-block')
+      classList.remove('d-none')
+      saveTypeButton.disabled = true
+    }
+    const hideSaveNewTypeAlerts = () => {
+      const classList = saveNewTypeAlerts.classList
+      classList.remove('d-block')
+      classList.add('d-none')
+      saveTypeButton.disabled = false
+    }
     const saveTypeButtonClick = () => {
       // Definitions
       console.info('Save button clicked.')
-      const typeName = document.getElementById('saveType').value
-      const formData = typesControlFormBuilder.actions.getData('json', true)
+      const typeName = saveType.value
+      const formData = $typesControlFormBuilder.actions.getData('json', true)
       const typesData = {
         form: formData,
         name: typeName,
       }
+      const resaveTypesData = {
+        force: true,
+        ...typesData,
+      }
 
       // Actions
-      const onTypesPost = (response) => {
-        // Definitions
-        const resaveTypesData = {
-          force: true,
-          form: formData,
-          name: typeName,
-        }
+      const afterTypesPost = () => {
+        // Do Stuff
+        $('#saveNewTypeModal').modal('hide')
 
-        // Actions
-        const onResavePost = (response) => {
-          if (response.status === HTTP_OK) {
-            console.info('forced created.')
-            document.getElementById('alert').innerHTML = `
-<div role="alert" class="alert alert-info alert-dismissible fade show">
-  <h5>Product Type Updated.</h5>$
-  {response.data.name} has been updated. Existing products of this type have not been updated.
+        fetchTypesList()
+        console.info('setting timeout?')
+        window.setTimeout(() => {
+          if (document.getElementById('alert')) {
+            $('.alert').alert('close')
+          }
+        }, 8000)
+      }
+      const displaySuccessfulTypeSaveAlert = (response) => {
+        console.info('created.')
+        document.getElementById('alert').innerHTML = `
+<div role="alert" class="alert alert-success alert-dismissible fade show">
+  <h5>Product Type Saved.</h5>
+  You may now use ${response.data.name} as a product type.
   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>`
-          } else {
-            console.info('unable to force create.')
-            document.getElementById('alert').innerHTML = `
+      }
+      const displaySuccessfulTypeUpdateAlert = (response) => {
+        console.info('forced created.')
+        document.getElementById('alert').innerHTML = `
+<div role="alert" class="alert alert-info alert-dismissible fade show">
+  <h5>Product Type Updated.</h5>
+  ${response.data.name} has been updated. Existing products of this type have not been updated.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>`
+      }
+      const displayTypeSaveError = (statusCode) => {
+        console.info('error', statusCode)
+        document.getElementById('alert').innerHTML = `
+<div role="alert" class="alert alert-warning alert-dismissible fade show">
+  <h5>Error Condition.</h5>
+  ${typeName} has not been saved. An error code ${statusCode} was reported.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>`
+      }
+      const displayTypeUpdateCancelledAlert = () => {
+        console.info('not force updating.')
+        document.getElementById('alert').innerHTML = `
+<div role="alert" class="alert alert-warning alert-dismissible fade show">
+  <h5>Saving canceled.</h5>
+  ${typeName} has not been saved. Please choose a different name for the product type.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>`
+      }
+      const displayUnableToUpdateTypeAlert = () => {
+        console.info('unable to force create.')
+        document.getElementById('alert').innerHTML = `
 <div role="alert" class="alert alert-warning alert-dismissible fade show">
   <h5>Saving failed.</h5>
   ${typeName} has not been updated. Existing products of this type have not been
@@ -592,93 +725,86 @@ if (document.getElementById('typesCreate')) {
     <span aria-hidden="true">&times;</span>
   </button>
 </div>`
-          }
-        }
-
-        // Do Stuff
-        if (response.status === HTTP_CREATED) {
-          console.info('created.')
-          document.getElementById('alert').innerHTML = `
-<div role="alert" class="alert alert-success alert-dismissible fade show">
-  <h5>Product Type Saved.</h5>
-  You may now use ${response.data.name} as a product type.
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>`
-        } else if (response.status === HTTP_ACCEPTED) {
-          console.info('accepted.')
-          const resave = window.confirm(
-            'Type already exists. Press OK to update, CANCEL to rename'
-          )
-          if (resave) {
-            axios.post('/types', resaveTypesData).then((response) => {
-              onResavePost(response)
-            })
-          } else {
-            console.info('not force updating.')
-            document.getElementById('alert').innerHTML = `
-<div role="alert" class="alert alert-warning alert-dismissible fade show">
-  <h5>Saving canceled.</h5>$
-  {typeName} has not been saved. Please choose a different name for the product type.
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>`
-          }
-        } else {
-          console.info(response)
-          console.info('Hmm.')
-        }
-      }
-      const afterTypesPost = () => {
-        // Definitions
-        const typesList = document.getElementById('typesList')
-
-        // Actions
-        const onTypesGet = (response) => {
-          response.data.forEach((item) => {
-            const option = document.createElement('option')
-            option.value = item.slug
-            option.innerText = item.name
-            typesList.append(option)
-          })
-        }
-
-        // Do Stuff
-        $('#saveProductModal').modal('hide')
-
-        // Refresh typesList from server
-        while (typesList.hasChildNodes()) {
-          typesList.removeChild(typesList.lastChild)
-        }
-        axios.get('/types').then((response) => {
-          onTypesGet(response)
-        })
-
-        console.info('setting timeout?')
-        window.setTimeout(() => {
-          if (document.getElementById('alert')) {
-            $('.alert').alert('close')
-          }
-        }, 8000)
       }
 
       // Do Stuff
+      if (typeName === '') {
+        displaySaveNewTypeAlerts()
+        return
+      }
+      console.info('typeName', typeName)
+      // This is the axios post that is getting cleaned up:
       axios
         .post('/types', typesData)
         .then((response) => {
-          onTypesPost(response)
+          // onTypesPost
+          if (response.status === HTTP_CREATED) {
+            // New Type successfully Saved
+            displaySuccessfulTypeSaveAlert(response)
+          }
+          return response
+        })
+        .then((response) => {
+          if (response.status === HTTP_ACCEPTED) {
+            // Existing Type. Ask User to force.
+            console.info('accepted.')
+            const forceOverwrite = window.confirm(
+              'Type already exists. Press OK to update, CANCEL to rename'
+            )
+            if (forceOverwrite) {
+              // Client wishes to force overwrite of existing type
+              axios.post('/types', resaveTypesData).then((response) => {
+                console.info('response', response)
+                // onResavePost(response)
+                if (response.status === HTTP_OK) {
+                  // Successfully overwritten type
+                  displaySuccessfulTypeUpdateAlert(response)
+                } else {
+                  // Server didn't say OK to overwrite
+                  displayUnableToUpdateTypeAlert()
+                  return response
+                }
+              })
+            } else {
+              // Client cancelled overwrite of existing type
+              displayTypeUpdateCancelledAlert()
+            }
+          }
+          return response
+        })
+        .then((response) => {
+          if (
+            response.status !== HTTP_OK &&
+            response.status !== HTTP_ACCEPTED &&
+            response.status !== HTTP_CREATED
+          ) {
+            displayTypeSaveError(response.status)
+          }
         })
         .finally((response) => {
           afterTypesPost(response)
         })
+    }
+    const saveTypeChange = () => {
+      if (saveType.value === '') {
+        displaySaveNewTypeAlerts()
+      } else {
+        hideSaveNewTypeAlerts()
+      }
     }
 
     // Attachments
     saveTypeButton.addEventListener('click', () => {
       saveTypeButtonClick()
     })
+    saveType.addEventListener('change', () => {
+      saveTypeChange()
+    })
+    saveType.addEventListener('keypress', (event) => {
+      formKeyPress(event, saveTypeButton)
+    })
+    // Do Stuff
+    hideSaveNewTypeAlerts()
   }
   const loadProductModalShown = () => {
     // Definitions
@@ -707,12 +833,11 @@ if (document.getElementById('typesCreate')) {
       const onTypeValueGet = (response) => {
         // Definitions
         const formData = response.data
-        const productType = document.getElementById('productType')
 
         // Do Stuff
         typesControlToggleEdit()
         $('#fb-render').formRender({ formData })
-        typesControlFormBuilder.actions.setData(formData)
+        $typesControlFormBuilder.actions.setData(formData)
         productType.innerHTML = `<h5>${typesList[index].label}</h5>`
       }
       const onTypeValueError = (error) => {
@@ -750,9 +875,9 @@ if (document.getElementById('typesCreate')) {
       loadTypeButtonClick(event)
     })
   }
-  const loadButtonClick = () => {
+  const loadFormButtonClick = () => {
     // Do Stuff
-    if (!typesControlCheckAndClear(typesControlFormBuilder)) {
+    if (!typesControlCheckAndClear($typesControlFormBuilder)) {
       return
     }
 
@@ -761,20 +886,20 @@ if (document.getElementById('typesCreate')) {
   }
 
   // Attachments
-  document.getElementById('previewButton').onclick = () => {
+  previewButton.onclick = () => {
     previewButtonClick()
   }
-  document.getElementById('clearButton').onclick = () => {
-    typesControlCheckAndClear(typesControlFormBuilder)
+  clearButton.onclick = () => {
+    typesControlCheckAndClear($typesControlFormBuilder)
   }
-  document.getElementById('loadButton').onclick = () => {
-    loadButtonClick()
+  loadFormButton.onclick = () => {
+    loadFormButtonClick()
   }
-  document.getElementById('saveButton').onclick = () => {
-    saveButtonClick()
+  saveFormButton.onclick = () => {
+    saveFormButtonClick()
   }
-  $('#saveProductModal').on('shown.bs.modal', () => {
-    saveProductModalShown()
+  $('#saveNewTypeModal').on('shown.bs.modal', () => {
+    saveNewTypeShown()
   })
   $('#loadProductModal').on('shown.bs.modal', () => {
     loadProductModalShown()
@@ -782,25 +907,29 @@ if (document.getElementById('typesCreate')) {
 
   // Do Stuff
   $('#fb-render').formRender()
+  fetchTypesList()
 }
 
 if (document.getElementById('inventoryShow')) {
-  console.info('inventory page.')
+  // @TODO: post updated product to InventoryController::UPDATE_NAME, $product
+
+  console.info('inventoryShow page.')
   // Definitions
   const dataCartMap = document.querySelectorAll('[data-cart-id]')
   const $newCartModal = $('#newCartModal')
-  const wrapper = $('#product_show')
+  const $productView = $('#productView')
   const newCartButton = document.getElementById('newCartButton')
   const productId = document.getElementById('productId').dataset.productId
-  // let productLuhn = document.getElementById('productId').dataset.productLuhn
+  // let productLuhn =
+  // document.getElementById('productId').dataset.productLuhn
 
   // Actions
-  const addToExistingCart = (cartId, productId) => {
-    console.info(`inside const addToCart(${cartId}, ${productId})`)
+  const addToExistingCart = (cartLuhn, productLuhn) => {
+    console.info(`inside const addToCart(${cartLuhn}, ${productLuhn})`)
     // Definitions
     const postData = {
-      cart_id: cartId,
-      id: productId,
+      cart_id: cartLuhn,
+      id: productLuhn,
     }
 
     // Actions
@@ -891,7 +1020,7 @@ Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
         <CompanyClientName
           handleResponse={handleResponse}
           postPath="/carts"
-          draft="Cart"
+          draft="Cart and Add Product"
         />,
         document.getElementById('carts_create')
       )
@@ -908,13 +1037,14 @@ Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
   }
 
   // Attachments
-  dataCartMap.forEach(function (currentValue, currentIndex, listObj) {
+  dataCartMap.forEach((currentValue) => {
     currentValue.addEventListener(
       'click',
-      addToExistingCart.bind(this, currentValue.dataset.cartId, productId)
+      addToExistingCart.bind(this, currentValue.dataset.cartLuhn, productId)
     )
   })
 
+  // Only shown if user has UserPermissions::EDIT_SAVED_PRODUCT
   if (newCartButton) {
     newCartButton.onclick = () => {
       newCartButtonClick()
@@ -922,7 +1052,7 @@ Product added to cart for <a href="/carts/${cartLuhn}">${companyName}</a>.
   }
 
   // Do Stuff
-  wrapper.formRender(window.formRenderOptions)
+  $productView.formRender(window.formRenderOptions)
   console.info(window.formRenderOptions)
 }
 
@@ -1022,6 +1152,7 @@ if (document.getElementById('cartShow')) {
   const updateTotalPrice = () => {
     // Definitions
     let totalPrice = 0
+    const cartTotalPrice = document.getElementById('cartTotalPrice')
 
     // Do Stuff
     for (let i = 0, len = editIcons.length | 0; i < len; i = (i + 1) | 0) {
@@ -1029,13 +1160,10 @@ if (document.getElementById('cartShow')) {
       price = price.replace(/[^\d.-]/g, '')
       totalPrice += parseFloat(price) * 100
     }
-    document.getElementById('cartTotalPrice').innerText = new Intl.NumberFormat(
-      'en-US',
-      {
-        style: 'currency',
-        currency: 'USD',
-      }
-    ).format(totalPrice / 100)
+    cartTotalPrice.innerText = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(totalPrice / 100)
   }
   const productCostPopup = (dataset) => {
     // Definitions
@@ -1139,20 +1267,13 @@ if (document.getElementById('cartShow')) {
           updateTotalPrice()
         })
     }
-    const formKeyPress = (event) => {
-      // Do Stuff
-      if (event.keyCode === 13) {
-        document.getElementById('costSubmitButton').click()
-        return false
-      }
-    }
 
     // Attachments
     costSubmitButton.addEventListener('click', () => {
       costSubmitButtonClick()
     })
     $('#form').bind('keypress', (event) => {
-      formKeyPress(event)
+      formKeyPress(event, costSubmitButton)
     })
 
     // Do Stuff
