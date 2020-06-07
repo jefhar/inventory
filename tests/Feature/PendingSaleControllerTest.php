@@ -23,11 +23,11 @@ use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
 /**
- * Class PendingSalesControllerTest
+ * Class PendingSaleControllerTest
  *
  * @package Tests\Feature
  */
-class PendingSalesControllerTest extends TestCase
+class PendingSaleControllerTest extends TestCase
 {
     use FullObjects;
 

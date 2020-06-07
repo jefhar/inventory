@@ -12,8 +12,6 @@ use App\Admin\Permissions\UserRoles;
 use App\Support\Luhn;
 use App\User;
 use App\WorkOrders\Controllers\WorkOrderController;
-use Domain\Products\Models\Manufacturer;
-use Domain\Products\Models\Product;
 use App\WorkOrders\Requests\WorkOrderStoreRequest;
 use App\WorkOrders\Requests\WorkOrderUpdateRequest;
 use App\WorkOrders\Resources\WorkOrderResource;
@@ -25,11 +23,11 @@ use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
 /**
- * Class WorkOrdersControllerTest
+ * Class WorkOrderControllerTest
  *
  * @package Tests\Feature
  */
-class WorkOrdersControllerTest extends TestCase
+class WorkOrderControllerTest extends TestCase
 {
     use FullObjects;
 
@@ -97,7 +95,7 @@ class WorkOrdersControllerTest extends TestCase
                 url(
                     route(
                         WorkOrderController::SHOW_NAME,
-                        [WorkOrdersController::WORKORDER => Luhn::create(1)]
+                        [WorkOrderController::WORKORDER => Luhn::create(1)]
                     )
                 )
             );

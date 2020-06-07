@@ -24,7 +24,7 @@ class PermissionController extends Controller
         foreach (
             [
                 UserPermissions::CREATE_OR_EDIT_PRODUCT_TYPE,
-                UserPermissions::EDIT_SAVED_PRODUCT,
+                UserPermissions::MUTATE_PRODUCT_VALUES,
                 UserPermissions::IS_EMPLOYEE,
                 UserPermissions::MUTATE_CART,
                 UserPermissions::SEE_ALL_OPEN_CARTS,

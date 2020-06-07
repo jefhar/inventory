@@ -19,11 +19,11 @@ use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
 /**
- * Class TypesControllerTest
+ * Class TypeControllerTest
  *
  * @package Tests\Feature
  */
-class TypesControllerTest extends TestCase
+class TypeControllerTest extends TestCase
 {
     use FullObjects;
 
@@ -72,7 +72,6 @@ class TypesControllerTest extends TestCase
     public function typeCreatePageExistsAndIsAccessible(): void
     {
         $this->withoutMix();
-        $type = factory(Type::class)->create();
         $this->get(route(TypeController::CREATE_NAME))
             ->assertRedirect();
 

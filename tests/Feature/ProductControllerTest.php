@@ -23,11 +23,11 @@ use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
 /**
- * Class ProductsControllerTest
+ * Class ProductControllerTest
  *
  * @package Tests\Feature
  */
-class ProductsControllerTest extends TestCase
+class ProductControllerTest extends TestCase
 {
     use FullObjects;
 
@@ -55,7 +55,7 @@ class ProductsControllerTest extends TestCase
         ];
 
         $this->actingAs($this->createEmployee())
-            ->postJson(route(ProductsController::STORE_NAME), $formRequest)
+            ->postJson(route(ProductController::STORE_NAME), $formRequest)
             ->assertCreated()
             ->assertSee($manufacturerName)
             ->assertSee(Product::ID)

@@ -54,6 +54,7 @@ class DashboardControllerTest extends TestCase
         $owner->assignRole(UserRoles::OWNER);
         $this
             ->actingAs($owner)
+            ->withoutExceptionHandling()
             ->get(route(DashboardController::INDEX_NAME))
             ->assertOk();
 
