@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Tests\Browser\Pages;
 
-use App\WorkOrders\Controllers\WorkOrdersController;
+use App\WorkOrders\Controllers\WorkOrderController;
 use Laravel\Dusk\Browser;
 
 /**
@@ -38,7 +38,7 @@ class WorkOrderCreate extends Page
      */
     public function url()
     {
-        return WorkOrdersController::CREATE_PATH;
+        return WorkOrderController::CREATE_PATH;
     }
 
     /**

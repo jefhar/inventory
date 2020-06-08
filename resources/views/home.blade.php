@@ -14,11 +14,26 @@
               </div>
             @endif
 
-            You are logged in, {{ Auth::user()->name }}!
-          <!-- {{ Auth::user()->getRoleNames()->first() }} -->
+            You are logged in, {{ \Auth::user()->name }}!
+          <!-- {{ \Auth::user()->getRoleNames()->first() }} -->
             <br/>
             <br/>
             <div class="row hyphenation">
+              @can(\App\Admin\Permissions\UserPermissions::CREATE_OR_EDIT_USERS)
+                <div class="col-6">
+                  <div class="card mb-4">
+                    <div class="card-body">
+                      <h3 class="card-title">Dashboard</h3>
+                      <p class="card-text">
+                        Add and edit users.
+                      </p>
+                      <a href="{{ route(\App\Admin\Controllers\DashboardController::INDEX_NAME) }}"
+                         class="btn btn-outline-primary">
+                        User Dashboard</a>
+                    </div>
+                  </div>
+                </div>
+              @endcan
               <div class="col-6">
                 <div class="card mb-4">
                   <div class="card-body">
@@ -37,13 +52,13 @@
                       Each
                       Work&shy;Order should keep track of one decommission project.
                     </p>
-
-                    <a href="{{ route(\App\WorkOrders\Controllers\WorkOrdersController::CREATE_NAME) }}"
+                    <a href="{{ route(\App\WorkOrders\Controllers\WorkOrderController::CREATE_NAME) }}"
                        class="btn btn-outline-primary">
                       <i class="fas fa-file-invoice-dollar mr-1"></i>Create new WorkOrder</a>
                   </div>
                 </div>
               </div>
+
               <div class="col-6">
                 <div class="card mb-4">
                   <div class="card-body">
@@ -65,7 +80,7 @@
                       <p class="card-text">
                         Create or Edit a new Product Type using the formBuilder.
                       </p>
-                      <a href="{{ route(\App\Types\Controllers\TypesController::CREATE_NAME) }}"
+                      <a href="{{ route(\App\Types\Controllers\TypeController::CREATE_NAME) }}"
                          class="btn btn-outline-primary">Edit Product
                         Types</a>
                     </div>

@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
-use App\Products\Controllers\ProductsController;
+use App\Products\Controllers\ProductController;
 use App\Products\Requests\ProductStoreRequest;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
@@ -55,8 +55,7 @@ class ProductsControllerTest extends TestCase
         ];
 
         $this->actingAs($this->createEmployee())
-            ->withoutExceptionHandling()
-            ->postJson(route(ProductsController::STORE_NAME), $formRequest)
+            ->postJson(route(ProductController::STORE_NAME), $formRequest)
             ->assertCreated()
             ->assertSee($manufacturerName)
             ->assertSee(Product::ID)
@@ -101,7 +100,7 @@ class ProductsControllerTest extends TestCase
         $price = rand(100, 999_999_99) / 100;
         $product = $this->createFullProduct();
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
-            ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price])
+            ->patch(route(ProductController::UPDATE_NAME, $product), [Product::PRICE => $price])
             ->assertJson(
                 [
                     Product::ID => $product->id,
@@ -121,7 +120,7 @@ class ProductsControllerTest extends TestCase
         $price = $faker->randomNumber();
         $product = $this->createFullProduct();
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
-            ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price,])
+            ->patch(route(ProductController::UPDATE_NAME, $product), [Product::PRICE => $price,])
             ->assertForbidden();
     }
 
@@ -134,7 +133,7 @@ class ProductsControllerTest extends TestCase
         $product = $this->createFullProduct();
         $price = rand(-999_999_99, 0) / 100;
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
-            ->patch(route(ProductsController::UPDATE_NAME, $product), [Product::PRICE => $price,])
+            ->patch(route(ProductController::UPDATE_NAME, $product), [Product::PRICE => $price,])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

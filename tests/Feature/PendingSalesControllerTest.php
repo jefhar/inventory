@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Admin\Permissions\UserRoles;
-use App\Carts\Controllers\PendingSalesController;
+use App\Carts\Controllers\PendingSaleController;
 use App\Carts\DataTransferObjects\CartStoreObject;
 use App\Carts\Requests\CartStoreRequest;
 use App\Carts\Requests\PendingSalesStoreRequest;
@@ -44,7 +44,7 @@ class PendingSalesControllerTest extends TestCase
 
         $this->actingAs($salesRep)
             ->post(
-                route(PendingSalesController::STORE_NAME),
+                route(PendingSaleController::STORE_NAME),
                 [
                     PendingSalesStoreRequest::CART_ID => $cart->luhn,
                     PendingSalesStoreRequest::PRODUCT_ID => $product->luhn,
@@ -71,7 +71,7 @@ class PendingSalesControllerTest extends TestCase
 
         $this->actingAs($technician)
             ->post(
-                route(PendingSalesController::STORE_NAME),
+                route(PendingSaleController::STORE_NAME),
                 [
                     PendingSalesStoreRequest::CART_ID => $cart->luhn,
                     PendingSalesStoreRequest::PRODUCT_ID => $product->luhn,
@@ -107,7 +107,7 @@ class PendingSalesControllerTest extends TestCase
         );
 
         $this
-            ->delete(route(PendingSalesController::DESTROY_NAME, $product))
+            ->delete(route(PendingSaleController::DESTROY_NAME, $product))
             ->assertOk();
         $this->assertDatabaseHas(
             Product::TABLE,
@@ -131,7 +131,7 @@ class PendingSalesControllerTest extends TestCase
         $cart->products()->save($product);
 
         $this->actingAs($technician)
-            ->delete(route(PendingSalesController::DESTROY_NAME, $product))
+            ->delete(route(PendingSaleController::DESTROY_NAME, $product))
             ->assertForbidden();
     }
 
@@ -148,7 +148,7 @@ class PendingSalesControllerTest extends TestCase
 
         $this->actingAs($salesRep)
             ->post(
-                route(PendingSalesController::STORE_NAME),
+                route(PendingSaleController::STORE_NAME),
                 [
                     PendingSalesStoreRequest::CART_ID => $cart->luhn,
                     PendingSalesStoreRequest::PRODUCT_ID => $product->luhn,
@@ -167,7 +167,7 @@ class PendingSalesControllerTest extends TestCase
         $salesRep->carts()->save($secondCart);
 
         $this->post(
-            route(PendingSalesController::STORE_NAME),
+            route(PendingSaleController::STORE_NAME),
             [
                 PendingSalesStoreRequest::CART_ID => $cart->luhn,
                 PendingSalesStoreRequest::PRODUCT_ID => $product->luhn,
@@ -195,7 +195,7 @@ class PendingSalesControllerTest extends TestCase
         );
         $secondProduct = $this->createFullProduct();
         $this->post(
-            route(PendingSalesController::STORE_NAME),
+            route(PendingSaleController::STORE_NAME),
             [
                 PendingSalesStoreRequest::CART_ID => $cart->luhn,
                 PendingSalesStoreRequest::PRODUCT_ID => $secondProduct->luhn,

@@ -43,7 +43,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="workOrderDropdownMenuLink">
               <a class="dropdown-item"
-                 href="{{ route(\App\WorkOrders\Controllers\WorkOrdersController::CREATE_NAME) }}">
+                 href="{{ route(\App\WorkOrders\Controllers\WorkOrderController::CREATE_NAME) }}">Create</a>
                 <svg class="bi bi-receipt-cutoff mr-1" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
                      xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd"
@@ -81,7 +81,7 @@
           @endcannot
           @can(\App\Admin\Permissions\UserPermissions::MUTATE_CART)
             <li class="nav-item">
-              <a class="nav-link" href="{{ route(\App\Carts\Controllers\CartsController::INDEX_NAME) }}">
+              <a class="nav-link" href="{{ route(\App\Carts\Controllers\CartController::INDEX_NAME) }}">
                 Your Carts
               </a>
             </li>
