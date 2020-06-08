@@ -19,7 +19,6 @@ use Illuminate\Support\Collection;
  */
 class AjaxSearchCollectionResource extends ResourceCollection
 {
-
     public const CLIENT_COMPANY_NAME = 'client_company_name';
     public const CLIENT_FIRST_NAME = 'client_first_name';
     public const CLIENT_ID = 'client_id';
