@@ -167,7 +167,7 @@ class TypeControllerTest extends TestCase
         $this->actingAs($this->createEmployee())
             ->post(
                 route(TypeController::STORE_NAME),
-               [TypeStoreRequest::NAME => $type->name, TypeStoreRequest::FORM => $type->form,]
+                [TypeStoreRequest::NAME => $type->name, TypeStoreRequest::FORM => $type->form,]
             )
             ->assertStatus(Response::HTTP_ACCEPTED);
     }

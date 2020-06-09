@@ -15,7 +15,6 @@ use App\User;
 use Tests\TestCase;
 
 class DashboardControllerTest extends TestCase
-
 {
     /**
      * @test

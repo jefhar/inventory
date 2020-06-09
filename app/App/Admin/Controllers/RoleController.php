@@ -42,7 +42,7 @@ class RoleController extends Controller
     }
 
     /**
-     * @param $role
+     * @param string $role
      * @return array|null
      */
     public function show($role): ?array
@@ -50,14 +50,15 @@ class RoleController extends Controller
         switch ($role) {
             case UserRoles::EMPLOYEE:
                 return UserPermissions::EMPLOYEE_DEFAULT_PERMISSIONS;
-
             case UserRoles::SALES_REP:
                 return UserPermissions::SALES_REP_DEFAULT_PERMISSIONS;
-
             case UserRoles::TECHNICIAN:
                 return UserPermissions::TECHNICIAN_DEFAULT_PERMISSIONS;
+            default:
+                abort(Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        abort(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        // Not strictly needed, because the switch will abort as default.
+        return null;
     }
 }
-
