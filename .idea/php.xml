@@ -136,6 +136,7 @@
       <path value="$PROJECT_DIR$/vendor/symfony/http-client_compare" />
       <path value="$PROJECT_DIR$/vendor/league/commonmark-ext-table" />
       <path value="$PROJECT_DIR$/vendor/erusev/parsedown" />
+      <path value="$PROJECT_DIR$/vendor/orchestra/dusk-updater" />
     </include_path>
   </component>
   <component name="PhpInterpreters">

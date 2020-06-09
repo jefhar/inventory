@@ -30,8 +30,7 @@ class PricePatchAction
         if ($product->status === Product::STATUS_INVOICED) {
             throw new LockedProductException("Product is already invoiced.");
         }
-        $priceInPennies = floor($price * 100) / 100;
-        $product->price = $priceInPennies;
+        $product->price = round($price, 2);
         $product->save();
 
         return $product;
