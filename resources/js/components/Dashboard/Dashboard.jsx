@@ -1,7 +1,6 @@
 import * as React from 'react'
 import ReactDOM from 'react-dom'
 import UserRoles from './UserRoles'
-import WorkOrder from '../WorkOrder'
 import UserPermissions from './UserPermissions'
 import UserChooser from './UserChooser'
 import { Card, CardBody, CardHeader, Container } from 'reactstrap'
@@ -89,6 +88,15 @@ class Dashboard extends React.Component {
 
   setSelected(event) {
     this.setState({ roleSelected: event.target.value })
+    const roleUrl = `/dashboard/roles/${event.target.value}`
+    axios.get(roleUrl).then((result) => {
+      const permissionsSelected = []
+      result.data.forEach((permission) => {
+        console.info('permission', permission[0])
+        permissionsSelected.push(permission[0])
+      })
+      this.setState({ permissionsSelected: permissionsSelected })
+    })
   }
 
   onChange(event) {
@@ -159,7 +167,7 @@ class Dashboard extends React.Component {
   }
 }
 
-export default WorkOrder
+export default Dashboard
 
 if (document.getElementById('dashboard')) {
   console.info('got dashboard')

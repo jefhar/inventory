@@ -70,6 +70,8 @@ Route::group(
                                 ->name(DashboardController::INDEX_NAME);
                             Route::get(RoleController::INDEX_PATH, 'RoleController@index')
                                 ->name(RoleController::INDEX_NAME);
+                            Route::get(RoleController::SHOW_PATH, 'RoleController@show')
+                                ->name(RoleController::SHOW_NAME);
                             Route::get(PermissionController::INDEX_PATH, 'PermissionController@index')
                                 ->name(PermissionController::INDEX_NAME);
                         }
