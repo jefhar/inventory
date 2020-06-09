@@ -4,6 +4,7 @@ import UserRoles from './UserRoles'
 import UserPermissions from './UserPermissions'
 import UserChooser from './UserChooser'
 import { Card, CardBody, CardHeader, Container } from 'reactstrap'
+import SaveButton from '../SaveButton'
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -101,14 +102,28 @@ class Dashboard extends React.Component {
 
   onChange(event) {
     const target = event.target
-    const value = target.type === 'checkbox' ? target.checked : target.value
     const name = target.name
-    // doesn't get current state.name and state.length. This just makes sure
-    // that there is something in the field besides a single character.
-    const isLocked = this.state.name.length < 2 || this.state.email.length < 3
+    const value = target.type === 'checkbox' ? target.checked : target.value
+    console.info('inside onChange. `name`: ', name, ' `value`: ', value)
+
+    // if name === 'email', check that value matches regex for email. (from
+    // https://emailregex.com)
+    if (name === 'email') {
+      const simpleEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      const validEmail = simpleEmailRegex.test(value)
+      console.info(name, value, validEmail)
+      this.setState({
+        isValidEmail: validEmail,
+      })
+    }
+
     this.setState({
       [name]: value,
-      isLocked: isLocked,
+    })
+    this.setState((state) => {
+      return {
+        isLocked: !(state.isValidEmail && state.name.length >= 3),
+      }
     })
   }
 
@@ -137,8 +152,9 @@ class Dashboard extends React.Component {
           <CardBody>
             <UserChooser
               className="py-1"
+              email={this.state.email}
               isLoaded={this.state.isUserLoaded}
-              isLocked={this.state.isLocked}
+              isValidEmail={this.state.isValidEmail}
               name={this.state.name}
               onChange={this.onChange}
               users={this.state.allUsers}
@@ -148,18 +164,19 @@ class Dashboard extends React.Component {
               className="py-1"
               isLoading={!this.state.isRolesLoaded}
               isLocked={this.state.isLocked}
-              roles={this.state.allRoles}
               onClick={this.setSelected}
+              roles={this.state.allRoles}
               roleSelected={this.state.roleSelected}
             />
             <UserPermissions
               className="py-1"
               isLoading={!this.state.isPermissionsLoaded}
               isLocked={this.state.isLocked}
-              permissions={this.state.allPermissions}
               onChange={this.setChecked}
+              permissions={this.state.allPermissions}
               permissionsSelected={this.state.permissionsSelected}
             />
+            <SaveButton isLocked={this.state.isLocked}>Save User</SaveButton>
           </CardBody>
         </Card>
       </Container>

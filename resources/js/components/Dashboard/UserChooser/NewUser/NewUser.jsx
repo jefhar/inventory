@@ -10,7 +10,17 @@ import {
   Row,
 } from 'reactstrap'
 
+const propTypes = {
+  email: PropTypes.string,
+  invalidName: PropTypes.bool,
+  isValidEmail: PropTypes.bool,
+  name: PropTypes.string,
+  onChange: PropTypes.func,
+  show: PropTypes.bool,
+}
+
 function NewUser(props) {
+  console.info('NewUser Props:', props)
   if (!props.show) {
     return null
   }
@@ -25,15 +35,15 @@ function NewUser(props) {
               <Label for="name">Name </Label>
               <Input
                 id="name"
-                invalid={props.isLocked}
+                invalid={props.name.length < 3}
                 name="name"
                 onChange={props.onChange}
                 placeholder="User's Name"
                 type="text"
-                valid={!props.isLocked}
+                valid={props.name.length >= 3}
                 value={props.name}
               />
-              <FormFeedback>Name and/or Email too short.</FormFeedback>
+              <FormFeedback>Name is too short.</FormFeedback>
             </FormGroup>
           </Col>
 
@@ -42,30 +52,24 @@ function NewUser(props) {
               <Label for="email">Email </Label>
               <Input
                 id="email"
-                invalid={props.isLocked}
+                invalid={!props.isValidEmail}
                 name="email"
                 onChange={props.onChange}
                 placeholder="Email"
                 type="email"
-                valid={!props.isLocked}
+                valid={props.isValidEmail}
                 value={props.email}
               />
-              <FormFeedback>Name and/or Email too short.</FormFeedback>
+              <FormFeedback>Not a valid formed email.</FormFeedback>
             </FormGroup>
           </Col>
         </Row>
       </Form>
-      <p>{JSON.stringify(props.isLocked)}</p>
+      <p>{JSON.stringify(props)}</p>
     </>
   )
 }
 
-NewUser.propTypes = {
-  email: PropTypes.string,
-  isLocked: PropTypes.bool,
-  name: PropTypes.string,
-  onChange: PropTypes.func,
-  show: PropTypes.bool,
-}
+NewUser.propTypes = propTypes
 
 export default NewUser
