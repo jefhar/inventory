@@ -2,6 +2,14 @@ import * as React from 'react'
 import PropTypes from 'prop-types'
 import { Button, ButtonGroup, Spinner } from 'reactstrap'
 
+const propTypes = {
+  isLoading: PropTypes.bool,
+  isLocked: PropTypes.bool,
+  onClick: PropTypes.func,
+  roles: PropTypes.string,
+  roleSelected: PropTypes.string,
+}
+
 function UserRoles(props) {
   const roles = JSON.parse(props.roles)
   const roleItems = roles.map((role) => (
@@ -28,13 +36,7 @@ function UserRoles(props) {
   )
 }
 
-UserRoles.propTypes = {
-  isLoading: PropTypes.bool,
-  isLocked: PropTypes.bool,
-  onClick: PropTypes.func,
-  roles: PropTypes.string,
-  roleSelected: PropTypes.string,
-}
+UserRoles.propTypes = propTypes
 
 UserRoles.defaultProps = {}
 

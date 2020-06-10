@@ -88,6 +88,15 @@ class Dashboard extends React.Component {
 
   setSelected(event) {
     this.setState({ roleSelected: event.target.value })
+    const roleUrl = `/dashboard/roles/${event.target.value}`
+    axios.get(roleUrl).then((result) => {
+      const permissionsSelected = []
+      result.data.forEach((permission) => {
+        console.info('permission', permission[0])
+        permissionsSelected.push(permission[0])
+      })
+      this.setState({ permissionsSelected: permissionsSelected })
+    })
   }
 
   onChange(event) {

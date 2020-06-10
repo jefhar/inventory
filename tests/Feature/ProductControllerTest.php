@@ -23,7 +23,7 @@ use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
 /**
- * Class ProductsControllerTest
+ * Class ProductControllerTest
  *
  * @package Tests\Feature
  */

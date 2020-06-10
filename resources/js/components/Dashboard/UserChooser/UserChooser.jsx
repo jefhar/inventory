@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { Button, Row } from 'reactstrap'
-import NewUser from '../NewUser'
+import NewUser from './NewUser'
 
 function UserChooser(props) {
   const [showNewUser, toggleNewUser] = useState(false)
