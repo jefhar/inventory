@@ -13,7 +13,7 @@ use App\Carts\Controllers\PendingSaleController;
 use App\Carts\DataTransferObjects\CartStoreObject;
 use App\Carts\Requests\CartStoreRequest;
 use App\Carts\Requests\PendingSalesStoreRequest;
-use App\Carts\Resources\ProductResource;
+use App\Products\Resources\ProductResource;
 use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;

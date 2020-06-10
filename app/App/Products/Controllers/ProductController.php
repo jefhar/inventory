@@ -47,9 +47,9 @@ class ProductController extends Controller
     /**
      * @param Product $product
      * @param Request $request
-     * @return Product
+     * @return ProductResource
      */
-    public function update(Product $product, Request $request): Product
+    public function update(Product $product, Request $request): ProductResource
     {
         $price = $request->input(Product::PRICE);
         if ($price < 0) {
@@ -57,6 +57,6 @@ class ProductController extends Controller
         }
         $price = (floor($price * 100)) / 100;
 
-        return PricePatchAction::execute($product, $price);
+        return new ProductResource(PricePatchAction::execute($product, $price));
     }
 }

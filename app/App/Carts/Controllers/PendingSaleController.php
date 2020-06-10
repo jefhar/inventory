@@ -11,7 +11,7 @@ namespace App\Carts\Controllers;
 
 use App\Admin\Controllers\Controller;
 use App\Carts\Requests\PendingSalesStoreRequest;
-use App\Carts\Resources\ProductResource;
+use App\Products\Resources\ProductResource;
 use Domain\Carts\Models\Cart;
 use Domain\PendingSales\Actions\PendingSalesDestroyAction;
 use Domain\PendingSales\Actions\PendingSalesStoreAction;

@@ -299,8 +299,8 @@ class CartControllerTest extends TestCase
             ->withoutMix()
             ->get(route(CartController::SHOW_NAME, $cart));
         for ($i = 0; $i < 20; ++$i) {
-            $response->assertSeeText($products[$i]->manufacturer->name);
-            $response->assertSeeText($products[$i]->model);
+            $response->assertSee($products[$i]->manufacturer->name);
+            $response->assertSee($products[$i]->model);
         }
     }
 
@@ -341,8 +341,8 @@ class CartControllerTest extends TestCase
                     Product::STATUS => Product::STATUS_INVOICED,
                 ]
             );
-            $response->assertSeeText($products[$i]->manufacturer->name);
-            $response->assertSeeText($products[$i]->model);
+            $response->assertSee($products[$i]->manufacturer->name);
+            $response->assertSee($products[$i]->model);
         }
     }
 

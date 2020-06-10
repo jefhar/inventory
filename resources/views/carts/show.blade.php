@@ -10,13 +10,31 @@
       \Domain\Carts\Models\Cart::STATUS_VOID => 'danger',
     ];
   @endphp
-  <div id="cartShow"
-       class="container">
+  <div id="CartShow"
+       data-cart-id="{{ $cart->luhn }}"
+       data-cart-status="{{ $cart->status }}"
+       data-cart-created-at="{{ $cart->created_at->format('j M Y H:i') }}"
+       data-client-company-name="{{ $cart->client->company_name }}"
+       data-client-first-name="{{ $cart->client->person->first_name }}"
+       data-client-last-name="{{ $cart->client->person->last_name }}"
+       data-client-phone-number="{{ $cart->client->person->phone_number }}"
+       data-products='{!! $products->toJson() !!}'
+       data-product-padding="{{ config('app.padding.products') }}"
+       class="mb-5"
+  >
+  </div>
+
+  <div class="container">
     <div id="card-border" class="card border-{{ $border[$cart->status] }}">
       <div class="card-header">
         <h1
           id="cartId"
-          data-cart-luhn="{{ $cart->luhn }}">
+          data-cart-id="{{ $cart->luhn }}">
+          <svg class="bi bi-cart3 mr-1" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+               xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+                  d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+          </svg>
           Cart # {{ $cart->luhn }}: <span id="cartStatus" class="capitalize">{{ $cart->status }}</span>
         </h1>
         <p class="lead">{{ $cart->client->company_name }}</p>
@@ -25,20 +43,24 @@
           <br>Created at {{ $cart->created_at->format('j M Y H:i') }}</p>
       </div>
       <div class="card-body">
-        <button
-          class="btn btn-outline-primary mr-sm-4"
-          id="invoiceButton"
-          type="button"
-          {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}>
-          Mark Invoiced
-        </button>
-        <button
-          class="btn btn-outline-danger"
-          id="destroyButton"
-          type="button"
-          {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}
-        >Destroy Cart
-        </button>
+        <div class="row">
+          <button
+            class="btn btn-outline-primary mr-sm-4"
+            id="invoiceButton"
+            type="button"
+            {{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'disabled' : '' }}>
+            <i class="far fa-check-circle mr-1"></i>Mark Invoiced
+          </button>
+          <div
+            id="dropCart_{{ $cart->luhn }}"
+            class="drop-button"
+            data-cart-id="{{ $cart->luhn }}"
+            data-type="cart"
+            data-text="Destroy Cart"
+            data-disabled={{ $cart->status !== \Domain\Carts\Models\Cart::STATUS_OPEN ? 'true' : 'false'}}
+          >
+          </div>
+        </div>
         <span id="totalPrice" class="float-right">Cart Total:&nbsp;
         <span id="cartTotalPrice" class="float-right"></span>
       </span>
@@ -56,11 +78,12 @@
             <th scope="col">Type</th>
             <th scope="col">Serial</th>
             <th scope="col">Price</th>
+            <th scope="col">Remove</th>
           </tr>
           </thead>
           <tbody id="cartTableBody">
           @foreach ($cart->products as $product)
-            <tr>
+            <tr id="productRow_{{ $product->luhn }}">
               <th scope="row">
                 <a class="btn btn-info"
                    href="/inventory/{{ $product->luhn }}">
@@ -71,17 +94,30 @@
               <td>{{$product->model}}</td>
               <td>{{$product->type->name}}</td>
               <td>{{$product->serial }}</td>
-              <td><span
-                  id="price{{ $product->luhn }}"
-                  class="price"
-                >${{ sprintf('%03.2F', $product->price) }}</span> <i
-                  class="far fa-edit text-light float-right"
-                  data-product-luhn="{{ $product->luhn }}"
+              <td>
+                <button
+                  id="productPriceButton_{{ $product->luhn }}"
+                  class="btn btn-outline-secondary price-button"
+                  data-product-id="{{ $product->luhn }}"
                   data-product-manufacturer="{{ $product->manufacturer->name }}"
                   data-product-model="{{ $product->model }}"
-                  data-product-price=" {{ $product->price }}"
+                  data-product-price="{{ $product->price }}"
+                  type="button"
                   title="Click to change product price"
-                ></i></td>
+                ><i class="fas fa-dollar-sign mr-1"></i><span
+                    id="productPriceButtonText_{{ $product->luhn }}"
+                    class="price text-light"
+                  >{{ sprintf('%03.2F', $product->price) }}</span></button>
+              </td>
+              <td>
+                <div
+                  id="removeProduct_{{ $product->luhn }}"
+                  class="drop-button"
+                  data-product-id="{{ $product->luhn }}"
+                  data-type="product"
+                >
+                </div>
+              </td>
             </tr>
           @endforeach
           </tbody>
@@ -94,7 +130,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5>Product <span id="modalProductLuhn"></span></h5>
+          <h5>Product <span id="productModalHeader"></span></h5>
           <button type="button" class="close" data-dimiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -102,16 +138,16 @@
         <div class="modal-body">
           <form class="form-inline" id="form">
             <div class="form-group">
-              <label class="mr-2" for="productPrice">Unit price:</label> $
+              <label class="mr-2" for="productPriceInput">Unit price:</label> $
               <input
                 aria-describedby="originalPriceHelp"
                 class="form-control ml-1"
-                id="productPrice"
+                id="productPriceInput"
                 min="0"
                 pattern="[\d+]\.?[\d\d]?"
                 placeholder="0.00"
                 required
-                step=0.01
+                step="0.01"
                 type="number"
               >
             </div>
@@ -123,8 +159,65 @@
         <div class="modal-footer">
 
           <br>
-          <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-          <button id="costSubmitButton" type="submit" class="btn btn-outline-primary" value="Save">Save</button>
+          <button id="costSubmitButton" type="submit" class="btn btn-outline-primary" value="Save"><i
+              class="far fa-save mr-1"></i>Save
+          </button>
+          <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal"><i
+              class="far fa-times-circle mr-1"></i>Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div
+    aria-hidden="true"
+    aria-labelledby="destroyTitle"
+    class="modal fade"
+    id="destroyModal"
+    role="dialog"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5
+            class="modal-title"
+            id="destroyModalTitle"
+          >
+            <span class="text-danger"><i class="fas fa-exclamation-triangle mr-1"></i></span
+            >Destroy <span class="delete-type"></span>?
+          </h5>
+          <button
+            aria-label="Close"
+            class="close"
+            data-dimiss="modal"
+            type="button"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="left-danger-border">
+            <p class="cart-visible">This will permanently destroy the cart and return all items to available inventory.
+              Are you sure sure you want to do this?</p>
+            <p class="product-visible">This will remove the product from the cart. Are you sure sure you want to do
+              this?</p>
+            <p><em>This cannot be undone.</em></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-outline-secondary"
+            data-dismiss="modal"
+            type="button"
+          ><i class="far fa-times-circle mr-1"></i>Close
+          </button>
+          <button
+            id="destroyModalButton"
+            class="btn btn-danger"><i class="fas fa-trash mr-1"></i>
+            Destroy <span class="delete-type"></span>
+          </button>
         </div>
       </div>
     </div>

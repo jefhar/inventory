@@ -62,11 +62,13 @@ trait DatabaseSetup
             $database->connection($name)->beginTransaction();
         }
 
-        $this->beforeApplicationDestroyed(function () use ($database) {
-            foreach ($this->connectionsToTransact() as $name) {
-                $database->connection($name)->rollBack();
+        $this->beforeApplicationDestroyed(
+            function () use ($database) {
+                foreach ($this->connectionsToTransact() as $name) {
+                    $database->connection($name)->rollBack();
+                }
             }
-        });
+        );
     }
 
     protected function connectionsToTransact(): array

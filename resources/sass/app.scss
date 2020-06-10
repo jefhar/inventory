@@ -90,8 +90,9 @@ body {
   padding-left: 12px;
 }
 
-.price::after {
-  content: attr(data-productLuhn);
+.left-danger-border {
+  border-left: $danger 6px solid;
+  padding-left: 12px;
 }
 
 .capitalize {

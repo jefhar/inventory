@@ -71,3 +71,4 @@ refresh:
 	php artisan db:wipe && php artisan migrate && php artisan db:seed --class UsersTableSeeder && php artisan db:seed --class DummyDataSeeder
 
 install: deploy composerinstall yarninstall
+	docker-compose exec php-fpm sh -c 'php artisan db:wipe && php artisan migrate && php artisan db:seed --class UsersTableSeeder && php artisan db:seed --class DummyDataSeeder'

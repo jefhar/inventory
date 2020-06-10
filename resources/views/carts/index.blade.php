@@ -4,7 +4,13 @@
 
 @section('content')
   <div class="container">
-    <h2>All Carts for {{ \Illuminate\Support\Facades\Auth::user()->name }}</h2>
+    <h2>
+      <svg class="bi bi-cart3 mr-1" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+           xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd"
+              d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+      </svg>
+      All Carts for {{ \Illuminate\Support\Facades\Auth::user()->name }}</h2>
     @if(count($carts) > 0)
       <div
         class="accordion"
@@ -13,7 +19,7 @@
         @foreach($carts as $cart)
           <div
             class="card"
-            id="cart{{ $cart->luhn }}"
+            id="cart_{{ $cart->luhn }}"
           >
             <div
               class="card-header"
@@ -48,25 +54,25 @@
                       <span class="model">{{ $product->model }}</span>
                       Serial&nbsp;<a
                         class="serial"
-                        href="/carts/{{ $cart->luhn }}"
-                        title="View product #{{ $cart->luhn }}"
+                        href="/inventory/{{ $product->luhn }}"
+                        title="View product #{{ $product->luhn }}"
                       >{{ $product->serial }}</a>.
                     </li>
                   @endforeach
                 </ul>
                 <br>
                 <a
-                  class="btn btn-outline-primary card-link"
+                  class="btn btn-outline-primary"
                   role="button"
                   href="/carts/{{ $cart->luhn }}"
-                ><i class="far fa-edit"></i> Edit cart.</a>
-                <button
-                  class="btn btn-outline-warning card-link"
-                  data-toggle="modal"
-                  data-target="#destroyCartModal"
-                  data-cart="{{ $cart->luhn }}"
-                ><i class="far fa-trash-alt"></i>&emsp;Destroy Cart.
-                </button>
+                ><i class="far fa-edit mr-1"></i> Edit cart.</a>
+                <div
+                  class="drop-button1"
+                  data-cart-id="{{ $cart->luhn }}"
+                  data-text="Destroy Cart."
+                  data-type="cart"
+                >
+                </div>
               </div>
             </div>
           </div>
@@ -92,8 +98,8 @@
             class="modal-title"
             id="destroyCartTitle"
           >
-            <span class="text-warning"><i class="fas fa-exclamation-triangle"></i></span
-            >&emsp;Destroy Cart?
+            <span class="text-danger"><i class="fas fa-exclamation-triangle mr-1"></i></span
+            >Destroy Cart?
           </h5>
           <button
             aria-label="Close"
@@ -105,7 +111,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="left-warning-border">
+          <div class="left-danger-border">
             <p>This will permanently destroy the cart and return all items to available inventory. Are you sure sure you
               want to do this?</p>
             <p><em>This cannot be undone.</em></p>
@@ -116,11 +122,12 @@
             class="btn btn-outline-secondary"
             data-dismiss="modal"
             type="button"
-          >Close
+          ><i class="far fa-times-circle mr-1"></i>Close
           </button>
           <button
             id="destroyCartButton"
-            class="btn btn-outline-warning"><i class="far fa-trash-alt"></i>&emsp;Destroy Cart
+            class="btn btn-danger"><i class="fas fa-trash mr-1"></i>
+            Destroy Cart
           </button>
         </div>
       </div>

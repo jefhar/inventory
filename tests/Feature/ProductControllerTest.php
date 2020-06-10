@@ -103,8 +103,7 @@ class ProductControllerTest extends TestCase
             ->patch(route(ProductController::UPDATE_NAME, $product), [Product::PRICE => $price])
             ->assertJson(
                 [
-                    Product::ID => $product->id,
-                    Product::LUHN => $product->luhn,
+                    Product::ID => $product->luhn,
                     Product::PRICE => $price,
                 ]
             )
