@@ -4,7 +4,7 @@
   <div id="typesCreate" class="container">
     <div class="row">
       <div class="card col-12">
-        <h2 class="card-header"><i class="fab fa-wpforms mr-1"></i>Create New Product Type</h2>
+        <h2 class="card-header"><i class="fab fa-wpforms pr-1"></i>Create New Product Type</h2>
         <div class="card-body">
           <div class="row">
             <p>Manufacturer and model fields will automatically be added to the form. Please do

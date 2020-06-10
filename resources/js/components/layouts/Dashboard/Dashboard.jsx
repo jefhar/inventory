@@ -4,7 +4,7 @@ import UserRoles from './UserRoles'
 import UserPermissions from './UserPermissions'
 import UserChooser from './UserChooser'
 import { Card, CardBody, CardHeader, Container } from 'reactstrap'
-import SaveButton from '../SaveButton'
+import SaveButton from '../../Buttons/SaveButton'
 
 class Dashboard extends React.Component {
   constructor(props) {

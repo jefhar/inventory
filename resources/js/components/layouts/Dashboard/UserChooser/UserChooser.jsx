@@ -26,9 +26,9 @@ function UserChooser(props) {
           <svg
             className="bi bi-person-plus pr-2"
             fill="currentColor"
-            height="1em"
+            height="1.5em"
             viewBox="0 0 16 16"
-            width="2em"
+            width="1.5em"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
@@ -46,9 +46,9 @@ function UserChooser(props) {
           <svg
             className="bi bi-person-check pr-2"
             fill="currentColor"
-            height="1em"
+            height="1.5em"
             viewBox="0 0 16 16"
-            width="2em"
+            width="1.5em"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path

@@ -30,6 +30,7 @@ class DashboardCreateUserAction
         $user->assignRole($dashboardUserObject->role);
         $user->givePermissionTo($dashboardUserObject->permissions);
         $user->save();
+        // TODO: send email to new user telling them an account has been created and they need to change the password.
 
         return $user;
     }
