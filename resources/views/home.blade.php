@@ -102,7 +102,7 @@
                       <p class="card-text">
                         View or edit your saved carts.
                       </p>
-                      <a href="{{ route(\App\Carts\Controllers\CartsController::INDEX_NAME) }}"
+                      <a href="{{ route(\App\Carts\Controllers\CartController::INDEX_NAME) }}"
                          class="btn btn-outline-primary">
                         <svg class="bi bi-cart3 mr-1" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
                              xmlns="http://www.w3.org/2000/svg">
