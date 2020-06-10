@@ -26,7 +26,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $serial
  * @property string $status
  * @property Type $type
- * @property Carbon created_at
+ * @property Carbon $created_at
  */
 class ProductResource extends JsonResource
 {

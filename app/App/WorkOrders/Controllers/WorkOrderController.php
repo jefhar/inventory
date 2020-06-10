@@ -15,7 +15,7 @@ use App\WorkOrders\DataTransferObjects\PersonObject;
 use App\WorkOrders\DataTransferObjects\WorkOrderObject;
 use App\WorkOrders\Requests\WorkOrderStoreRequest;
 use App\WorkOrders\Requests\WorkOrderUpdateRequest;
-use App\WorkOrders\Resources\WorkOrderResource;
+use App\WorkOrders\Resources\WorkOrderUpdateResource;
 use Domain\Products\Models\Type;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Actions\WorkOrdersUpdateAction;
@@ -127,21 +127,24 @@ class WorkOrderController extends Controller
      *
      * @param WorkOrderUpdateRequest $request
      * @param WorkOrder $workorder
-     * @return WorkOrderResource
+     * @return array
      */
-    public function update(WorkOrderUpdateRequest $request, WorkOrder $workorder): WorkOrderResource
+    public function update(WorkOrderUpdateRequest $request, WorkOrder $workorder)
     {
         $personObject = PersonObject::fromRequest($request->validated());
         $clientObject = ClientObject::fromRequest($request->validated());
         $workOrderObject = WorkOrderObject::fromRequest($request->validated());
-        $workOrderAction = WorkOrdersUpdateAction::execute(
-            $workorder,
-            $workOrderObject,
-            $clientObject,
-            $personObject
-        );
 
-        return new WorkOrderResource($workOrderAction);
+        $workOrderResource = new WorkOrderUpdateResource();
+
+        return $workOrderResource->toArray(
+            WorkOrdersUpdateAction::execute(
+                $workorder,
+                $workOrderObject,
+                $clientObject,
+                $personObject
+            )
+        );
     }
 
     /**

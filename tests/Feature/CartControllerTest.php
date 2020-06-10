@@ -339,8 +339,8 @@ class CartControllerTest extends TestCase
                     Product::STATUS => Product::STATUS_INVOICED,
                 ]
             );
-            $response->assertSeeText($products[$i]->manufacturer->name);
-            $response->assertSeeText($products[$i]->model);
+            $response->assertSee($products[$i]->manufacturer->name);
+            $response->assertSee($products[$i]->model);
         }
     }
 
