@@ -13,9 +13,12 @@ use App\Admin\Controllers\DashboardController;
 use App\Admin\Permissions\UserRoles;
 use App\User;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 
 class DashboardControllerTest extends TestCase
 {
+    use FullObjects;
+
     /**
      * @test
      */
@@ -66,4 +69,30 @@ class DashboardControllerTest extends TestCase
             ->get(route(DashboardController::INDEX_NAME))
             ->assertOk();
     }
+
+    /**
+     * @test
+     * @throws \JsonException
+     */
+    public function dashboardCanSaveNewUser(): void
+    {
+        $postData = '{"permissions":["user.is.employee","product.price.update","cart.mutate","inventoryItem.view.edit","carts.view.all_open","product.raw.update"],"role":"sales representative","user":{"email":"bob@svbamm.com","name":"bob"}}';
+        $postDataArray = json_decode($postData, true, 512, JSON_THROW_ON_ERROR);
+        $this
+            ->withoutExceptionHandling()
+            ->actingAs($this->createEmployee(UserRoles::OWNER))
+            ->post(route(DashboardController::STORE_NAME), $postDataArray);
+        $this->assertDatabaseHas(
+            User::TABLE,
+            [
+                User::NAME => $postDataArray['user']['name'],
+                User::EMAIL => $postDataArray['user']['email'],
+            ]
+        );
+
+        $user = User::where(User::EMAIL, $postDataArray['user']['email'])->first();
+        $this->assertTrue($user->hasAllPermissions($postDataArray['permissions']));
+    }
+
+
 }

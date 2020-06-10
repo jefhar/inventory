@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 const propTypes = {
   children: PropTypes.string,
   isLocked: PropTypes.bool,
+  onClick: PropTypes.func,
 }
 
 function SaveButton(props) {
@@ -17,7 +18,7 @@ function SaveButton(props) {
 
   return (
     <>
-      <Button color="success" outline={true}>
+      <Button color="success" onClick={props.onClick} outline={true}>
         <>
           <FontAwesomeIcon className="pr-1" icon={faSave} />
           {props.children}

@@ -68,6 +68,8 @@ Route::group(
                         function () {
                             Route::get(DashboardController::INDEX_PATH, 'DashboardController@index')
                                 ->name(DashboardController::INDEX_NAME);
+                            Route::post(DashboardController::STORE_PATH, 'DashboardController@store')
+                                ->name(DashboardController::STORE_NAME);
                             Route::get(RoleController::INDEX_PATH, 'RoleController@index')
                                 ->name(RoleController::INDEX_NAME);
                             Route::get(RoleController::SHOW_PATH, 'RoleController@show')

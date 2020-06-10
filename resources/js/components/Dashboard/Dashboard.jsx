@@ -21,9 +21,10 @@ class Dashboard extends React.Component {
       permissionsSelected: [],
       roleSelected: '',
     }
-    this.onChange = this.onChange.bind(this)
+    this.onInputChange = this.onInputChange.bind(this)
     this.setChecked = this.setChecked.bind(this)
     this.setSelected = this.setSelected.bind(this)
+    this.saveUser = this.saveUser.bind(this)
   }
 
   async componentDidMount() {
@@ -100,7 +101,7 @@ class Dashboard extends React.Component {
     })
   }
 
-  onChange(event) {
+  onInputChange(event) {
     const target = event.target
     const name = target.name
     const value = target.type === 'checkbox' ? target.checked : target.value
@@ -124,6 +125,24 @@ class Dashboard extends React.Component {
       return {
         isLocked: !(state.isValidEmail && state.name.length >= 3),
       }
+    })
+  }
+
+  saveUser() {
+    const user = {
+      email: this.state.email,
+      name: this.state.name,
+    }
+    const role = this.state.roleSelected
+    const permissions = this.state.permissionsSelected
+    const data = {
+      permissions: permissions,
+      role: role,
+      user: user,
+    }
+    console.info('data:', data)
+    axios.post('/dashboard', data).then((response) => {
+      console.info(response)
     })
   }
 
@@ -156,7 +175,7 @@ class Dashboard extends React.Component {
               isLoaded={this.state.isUserLoaded}
               isValidEmail={this.state.isValidEmail}
               name={this.state.name}
-              onChange={this.onChange}
+              onChange={this.onInputChange}
               users={this.state.allUsers}
               value={this.state.value}
             />
@@ -176,7 +195,12 @@ class Dashboard extends React.Component {
               permissions={this.state.allPermissions}
               permissionsSelected={this.state.permissionsSelected}
             />
-            <SaveButton isLocked={this.state.isLocked}>Save User</SaveButton>
+            <SaveButton
+              isLocked={this.state.isSavedLocked}
+              onClick={this.saveUser}
+            >
+              Save User
+            </SaveButton>
           </CardBody>
         </Card>
       </Container>
