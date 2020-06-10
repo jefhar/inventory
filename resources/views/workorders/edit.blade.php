@@ -9,7 +9,15 @@
          id="outline">
       <div class="card-header row">
         <div class="col">
-          <h1 class="text-center"><span id="lockedHeader">The</span> Work Order
+          <h1 class="text-center">
+            <svg class="bi bi-receipt-cutoff mr-1" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd"
+                    d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v13h-1V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0l-.509-.51L2 2.118V15H1V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27zM0 15.5a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5z"/>
+              <path fill-rule="evenodd"
+                    d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm8-8a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5z"/>
+            </svg>
+            <span id="lockedHeader">The</span> Work Order
             #{{ str_pad($workOrder->luhn, config('app.padding.workorders'), '0', STR_PAD_LEFT) }}</h1>
           <p class="text-center">
             <span class="h3">{{ $workOrder->client->company_name }}</span>
@@ -26,6 +34,7 @@
         id="workOrderBody"
         style="position: relative; min-height: 200px;"
       >
+        <div style="position: absolute; top: 0; right: 0; width: 100%" id="toastContainer"></div>
         <form class="container">
           <div class="form-row">
             <label
@@ -115,12 +124,12 @@
               class="btn btn-outline-primary col-4 offset-1"
               id="commitChangesButton"
               type="button">
-              Commit Changes
+              <i class="far fa-save mr-1"></i>Commit Changes
             </button>
             <button
               class="btn btn-outline-secondary col-4 offset-2"
               type="reset">
-              Revert Changes
+              <i class="fas fa-undo-alt mr-1"></i>Revert Changes
             </button>
           </div>
           <div id='alert_row' class="row">
@@ -166,7 +175,7 @@
               data-toggle="modal"
               id="addInventoryItemButton"
               type="button"
-            >Add Inventory Item
+            ><i class="fas fa-pallet"></i>&nbsp;Add Inventory Item
             </button>
             <button
               class="btn btn-sm col-1 offset-4"
@@ -237,14 +246,23 @@
                 data-dismiss="modal"
                 id="cancelNewProductButton"
                 type="button"
-              >Cancel
+              ><i class="far fa-times-circle mr-1"></i>Cancel
               </button>
               <button
                 class="btn btn-outline-primary"
                 id="productSubmit"
                 type="button"
                 disabled
-              >Add Product
+              >
+                <svg class="bi bi-bag-plus" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+                     xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd"
+                        d="M14 5H2v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5zM1 4v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4H1z"/>
+                  <path d="M8 1.5A2.5 2.5 0 0 0 5.5 4h-1a3.5 3.5 0 1 1 7 0h-1A2.5 2.5 0 0 0 8 1.5z"/>
+                  <path fill-rule="evenodd"
+                        d="M8 7.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z"/>
+                  <path fill-rule="evenodd" d="M7.5 10a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-2z"/>
+                </svg>&nbsp;Add Product
               </button>
             </div>
             <div class="row" id="productError"></div>

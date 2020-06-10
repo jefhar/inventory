@@ -4,7 +4,7 @@
   <div id="typesCreate" class="container">
     <div class="row">
       <div class="card col-12">
-        <h2 class="card-header">Create New Product Type</h2>
+        <h2 class="card-header"><i class="fab fa-wpforms mr-1"></i>Create New Product Type</h2>
         <div class="card-body">
           <div class="row">
             <p>Manufacturer and model fields will automatically be added to the form. Please do
@@ -18,11 +18,14 @@
               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             </button>
             <button type="button" class="btn btn-outline-secondary" id="previewButton"
-                    data-show-on-click="preview">Preview&emsp;&emsp;<i class="far fa-eye"></i></button>
-            <button type="button" class="btn btn-outline-primary" id="saveFormButton">Save Form&emsp;&emsp;<i
-                class="far fa-save"></i></button>
-            <button type="button" class="btn btn-outline-warning" id="clearButton">Clear&emsp;&emsp;<i
-                class="fas fa-eraser"></i></button>
+                    data-show-on-click="preview"><i class="far fa-eye mr-1"></i>Preview
+            </button>
+            <button type="button" class="btn btn-outline-primary" id="saveFormButton"><i class="far fa-save mr-1"></i>Save
+              Form
+            </button>
+            <button type="button" class="btn btn-outline-warning" id="clearButton"><i
+                class="fas fa-eraser mr-1"></i>Clear
+            </button>
           </div>
           <div id="spinner" class="spinner-border text-info invisible"></div>
           <div id="alert"></div>
@@ -52,7 +55,9 @@
           </select>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"><i
+              class="far fa-times-circle mr-1"></i>Cancel
+          </button>
           <button id="loadTypeButton" type="button" class="btn btn-outline-primary">Load</button>
         </div>
       </div>
@@ -65,7 +70,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="saveNewTypeModalLabel">Save New Type</h5>
+          <h5 class="modal-title" id="saveNewTypeModalLabel"><i class="fab fa-wpforms mr-1"></i>Save New Type</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -84,8 +89,11 @@
         </div>
         <div class="modal-footer">
           <div>
-            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-            <button id="saveTypeButton" type="button" class="btn btn-outline-primary">Save</button>
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"><i
+                class="far fa-times-circle mr-1"></i>Cancel
+            </button>
+            <button id="saveTypeButton" type="button" class="btn btn-outline-primary"><i class="far fa-save mr-1"></i>Save
+            </button>
           </div>
           <div class="w-100"></div>
           <div id="saveNewTypeAlerts" class="alert alert-warning mx-auto d-none" role="alert">

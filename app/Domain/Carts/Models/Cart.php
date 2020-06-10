@@ -36,6 +36,7 @@ use Illuminate\Support\Collection;
  * @property int $luhn
  * @property int $user_id
  * @property string $status
+ * @property \Illuminate\Database\Eloquent\Collection $products
  */
 class Cart extends Model
 {

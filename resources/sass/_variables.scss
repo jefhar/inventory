@@ -53,3 +53,29 @@ $warning:#ff9933;
 $light:#eef0f2;
 $dark:#000633;
 */
+
+// Status Colors
+$cart_invoiced: $success;
+$cart_open: $primary;
+$cart_void: $danger;
+
+$available: $primary;
+$in_cart: $yellow;
+$invoiced: $green;
+
+$theme-colors: (
+  'primary': $primary,
+  'secondary': $secondary,
+  'success': $success,
+  'info': $info,
+  'warning': $warning,
+  'danger': $danger,
+  'light': $light,
+  'dark': $dark,
+  'available': $available,
+  'in_cart': $in_cart,
+  'invoiced': $invoiced,
+  'cart_invoiced': $cart_invoiced,
+  'cart_open': $cart_open,
+  'cart_void': $danger,
+);
