@@ -27,7 +27,7 @@ use Tests\Traits\FullObjects;
  *
  * @package Tests\Feature
  */
-class PendingSalesControllerTest extends TestCase
+class PendingSaleControllerTest extends TestCase
 {
     use FullObjects;
 

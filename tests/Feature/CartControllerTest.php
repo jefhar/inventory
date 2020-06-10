@@ -29,7 +29,7 @@ use Tests\Traits\FullObjects;
  *
  * @package Tests\Feature
  */
-class CartsControllerTest extends TestCase
+class CartControllerTest extends TestCase
 {
     use FullObjects;
 
@@ -297,8 +297,8 @@ class CartsControllerTest extends TestCase
             ->withoutMix()
             ->get(route(CartController::SHOW_NAME, $cart));
         for ($i = 0; $i < 20; ++$i) {
-            $response->assertSeeText($products[$i]->manufacturer->name);
-            $response->assertSeeText($products[$i]->model);
+            $response->assertSee($products[$i]->manufacturer->name);
+            $response->assertSee($products[$i]->model);
         }
     }
 

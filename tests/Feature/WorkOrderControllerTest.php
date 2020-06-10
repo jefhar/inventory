@@ -11,7 +11,7 @@ namespace Tests\Feature;
 use App\Admin\Permissions\UserRoles;
 use App\Support\Luhn;
 use App\User;
-use App\WorkOrders\Controllers\WorkOrdersController;
+use App\WorkOrders\Controllers\WorkOrderController;
 use App\WorkOrders\Requests\WorkOrderStoreRequest;
 use App\WorkOrders\Requests\WorkOrderUpdateRequest;
 use App\WorkOrders\Resources\WorkOrderResource;
@@ -27,7 +27,7 @@ use Tests\Traits\FullObjects;
  *
  * @package Tests\Feature
  */
-class WorkOrdersControllerTest extends TestCase
+class WorkOrderControllerTest extends TestCase
 {
     use FullObjects;
 
@@ -85,17 +85,16 @@ class WorkOrdersControllerTest extends TestCase
         // Create first WorkOrder: id = 1
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->post(
-                route(WorkOrdersController::STORE_NAME),
-                [Client::COMPANY_NAME => self::COMPANY_NAME]
-            )
-            ->assertJson(['created' => true,])
+                route(WorkOrderController::STORE_NAME),
+                [WorkOrderUpdateRequest::CLIENT_COMPANY_NAME => self::COMPANY_NAME]
+            )->assertJson(['created' => true,])
             ->assertCreated()
             ->assertHeader(
                 'Location',
                 url(
                     route(
-                        WorkOrdersController::SHOW_NAME,
-                        [WorkOrdersController::WORKORDER => Luhn::create(1)]
+                        WorkOrderController::SHOW_NAME,
+                        [WorkOrderController::WORKORDER => Luhn::create(1)]
                     )
                 )
             );
@@ -212,7 +211,7 @@ class WorkOrdersControllerTest extends TestCase
         $this
             ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
-                route(WorkOrderController::UPDATE_NAME, [WorkOrdersController::WORKORDER => $workOrder]),
+                route(WorkOrderController::UPDATE_NAME, [WorkOrderController::WORKORDER => $workOrder]),
                 [
                     WorkOrderUpdateRequest::IS_LOCKED => true,
                 ]
@@ -243,7 +242,7 @@ class WorkOrdersControllerTest extends TestCase
         $this
             ->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->patch(
-                route(WorkOrderController::UPDATE_NAME, [WorkOrdersController::WORKORDER => $workOrder]),
+                route(WorkOrderController::UPDATE_NAME, [WorkOrderController::WORKORDER => $workOrder]),
                 [WorkOrderUpdateRequest::IS_LOCKED => false]
             )->assertJson(
                 [
@@ -272,7 +271,7 @@ class WorkOrdersControllerTest extends TestCase
         $this->actingAs($this->createEmployee(UserRoles::TECHNICIAN))
             ->withoutExceptionHandling()
             ->patch(
-                route(WorkOrderController::UPDATE_NAME, [WorkOrdersController::WORKORDER => $workOrder]),
+                route(WorkOrderController::UPDATE_NAME, [WorkOrderController::WORKORDER => $workOrder]),
                 [
                     WorkOrderUpdateRequest::CLIENT_COMPANY_NAME => $newClient->company_name,
                 ]

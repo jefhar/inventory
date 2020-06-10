@@ -20,7 +20,7 @@
           <li class="nav-item dropdown">
             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              {{ Auth::user()->name }}
+              {{ \Auth::user()->name }}
             </a>
 
             <div class="dropdown-menu dropdown-menu" aria-labelledby="navbarDropdown">
@@ -43,7 +43,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="workOrderDropdownMenuLink">
               <a class="dropdown-item"
-                 href="{{ route(\App\WorkOrders\Controllers\WorkOrderController::CREATE_NAME) }}">Create</a>
+                 href="{{ route(\App\WorkOrders\Controllers\WorkOrderController::CREATE_NAME) }}">
                 <svg class="bi bi-receipt-cutoff mr-1" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
                      xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd"
@@ -65,7 +65,7 @@
                    href="{{ route(\App\Products\Controllers\InventoryController::INDEX_NAME) }}"><i
                     class="fas fa-table mr-1"></i>List Inventory</a>
                 <a class="dropdown-item"
-                   href="{{ route(\App\Types\Controllers\TypesController::CREATE_NAME) }}"><i
+                   href="{{ route(\App\Types\Controllers\TypeController::CREATE_NAME) }}"><i
                     class="fab fa-wpforms mr-1"></i>Create and Edit Product
                   Types</a>
               </div>

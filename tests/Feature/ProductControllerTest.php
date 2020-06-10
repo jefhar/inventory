@@ -27,7 +27,7 @@ use Tests\Traits\FullObjects;
  *
  * @package Tests\Feature
  */
-class ProductsControllerTest extends TestCase
+class ProductControllerTest extends TestCase
 {
     use FullObjects;
 
@@ -103,8 +103,7 @@ class ProductsControllerTest extends TestCase
             ->patch(route(ProductController::UPDATE_NAME, $product), [Product::PRICE => $price])
             ->assertJson(
                 [
-                    Product::ID => $product->id,
-                    Product::LUHN => $product->luhn,
+                    Product::ID => $product->luhn,
                     Product::PRICE => $price,
                 ]
             )

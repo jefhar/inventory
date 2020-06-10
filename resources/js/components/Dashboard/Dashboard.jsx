@@ -1,7 +1,6 @@
 import * as React from 'react'
 import ReactDOM from 'react-dom'
 import UserRoles from './UserRoles'
-import WorkOrder from '../WorkOrder'
 import UserPermissions from './UserPermissions'
 import UserChooser from './UserChooser'
 import { Card, CardBody, CardHeader, Container } from 'reactstrap'
@@ -159,7 +158,7 @@ class Dashboard extends React.Component {
   }
 }
 
-export default WorkOrder
+export default Dashboard
 
 if (document.getElementById('dashboard')) {
   console.info('got dashboard')
