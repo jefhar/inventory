@@ -26,10 +26,13 @@ class CartResource extends JsonResource
 
     public function toArray($request): array
     {
-        return [
-            self::CART_ID => $this->luhn,
-            self::CLIENT_COMPANY_NAME => $this->client->company_name,
-            self::STATUS => $this->status,
-        ];
+        $translation =
+            [
+                self::CART_ID => $this->luhn,
+                self::CLIENT_COMPANY_NAME => $this->client->company_name,
+                self::STATUS => $this->status,
+            ];
+
+        return $translation;
     }
 }

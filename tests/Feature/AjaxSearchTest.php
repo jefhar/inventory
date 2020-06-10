@@ -88,10 +88,15 @@ class AjaxSearchTest extends TestCase
     public function unknownFieldIsNotAcceptable(): void
     {
         $this->actingAs($this->createEmployee())
-            ->get(route(AjaxSearchController::SHOW_NAME, [
-                AjaxSearchRequest::FIELD => 'flarp',
-                AjaxSearchRequest::Q => 'q'
-            ]))
+            ->get(
+                route(
+                    AjaxSearchController::SHOW_NAME,
+                    [
+                        AjaxSearchRequest::FIELD => 'flarp',
+                        AjaxSearchRequest::Q => 'q',
+                    ]
+                )
+            )
             ->assertStatus(Response::HTTP_NOT_ACCEPTABLE);
     }
 

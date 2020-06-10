@@ -17,6 +17,7 @@ class Luhn extends \Tdely\Luhn\Luhn
         if (static::isValid($luhn)) {
             return intdiv($luhn, 10);
         }
+
         return -1;
     }
 }

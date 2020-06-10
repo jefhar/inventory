@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\AjaxSearch\Resources;
 
 use Domain\WorkOrders\Models\Client;
+use Domain\WorkOrders\Models\Person;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Collection;
 
@@ -18,7 +19,6 @@ use Illuminate\Support\Collection;
  */
 class AjaxSearchCollectionResource extends ResourceCollection
 {
-
     public const CLIENT_COMPANY_NAME = 'client_company_name';
     public const CLIENT_FIRST_NAME = 'client_first_name';
     public const CLIENT_ID = 'client_id';
@@ -50,10 +50,10 @@ class AjaxSearchCollectionResource extends ResourceCollection
         $response = [];
         foreach ($collection as $element) {
             $response[] = [
-                self::CLIENT_ID => $element['client_id'],
-                self::CLIENT_COMPANY_NAME => $element['company_name'],
-                self::CLIENT_FIRST_NAME => $element['first_name'],
-                self::CLIENT_LAST_NAME => $element['last_name'],
+                self::CLIENT_COMPANY_NAME => $element[Client::COMPANY_NAME],
+                self::CLIENT_FIRST_NAME => $element[Person::FIRST_NAME],
+                self::CLIENT_ID => $element[Person::CLIENT_ID],
+                self::CLIENT_LAST_NAME => $element[Person::LAST_NAME],
             ];
         }
 

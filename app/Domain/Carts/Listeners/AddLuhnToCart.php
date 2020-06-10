@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Domain\Carts\Listeners;
 
-use Domain\Carts\Events\CartCreated;
 use App\Support\Luhn;
+use Domain\Carts\Events\CartCreated;
 
 /**
  * Class AddLuhnToCart
