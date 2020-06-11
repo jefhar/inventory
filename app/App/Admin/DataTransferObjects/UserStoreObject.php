@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace App\Admin\DataTransferObjects;
 
-use App\Admin\Requests\DashboardStoreUserRequest;
+use App\Admin\Requests\StoreUserRequest;
 use Spatie\DataTransferObject\DataTransferObject;
 
-class DashboardUserObject extends DataTransferObject
+class UserStoreObject extends DataTransferObject
 {
     public const USER = 'user';
     public const ROLE = 'role';
@@ -22,13 +22,13 @@ class DashboardUserObject extends DataTransferObject
     public string $role;
     public array $permissions;
 
-    public static function fromRequest(array $validated): DashboardUserObject
+    public static function fromRequest(array $validated): UserStoreObject
     {
         return new self(
             [
-                self::USER => $validated[DashboardStoreUserRequest::USER],
-                self::ROLE => $validated[DashboardStoreUserRequest::ROLE],
-                self::PERMISSIONS => $validated[DashboardStoreUserRequest::PERMISSIONS],
+                self::USER => $validated[StoreUserRequest::USER],
+                self::ROLE => $validated[StoreUserRequest::ROLE],
+                self::PERMISSIONS => $validated[StoreUserRequest::PERMISSIONS],
             ]
         );
     }

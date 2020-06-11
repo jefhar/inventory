@@ -9,14 +9,14 @@ declare(strict_types=1);
 
 namespace Domain\Admin\Actions;
 
-use App\Admin\DataTransferObjects\DashboardUserObject;
+use App\Admin\DataTransferObjects\UserStoreObject;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 
-class DashboardCreateUserAction
+class UserStoreAction
 {
 
-    public static function execute(DashboardUserObject $dashboardUserObject): User
+    public static function execute(UserStoreObject $dashboardUserObject): User
     {
         $user = User::firstOrCreate(
             [

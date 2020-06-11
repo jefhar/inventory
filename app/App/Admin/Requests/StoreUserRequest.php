@@ -11,7 +11,7 @@ namespace App\Admin\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DashboardStoreUserRequest extends FormRequest
+class StoreUserRequest extends FormRequest
 {
     public const EMAIL = 'user.email';
     public const NAME = 'user.name';
@@ -30,5 +30,4 @@ class DashboardStoreUserRequest extends FormRequest
     {
         return self::RULES;
     }
-
 }
