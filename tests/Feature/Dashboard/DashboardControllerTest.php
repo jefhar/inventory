@@ -25,6 +25,7 @@ class DashboardControllerTest extends TestCase
     public function dashboardIndexOnlyVisibleToOwnerAndSuperAdmin(): void
     {
         $this
+            ->withoutMix()
             ->get(route(DashboardController::INDEX_NAME))
             ->assertRedirect();
         /** @var User $employee */
