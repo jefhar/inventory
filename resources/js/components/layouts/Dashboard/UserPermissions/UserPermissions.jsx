@@ -31,12 +31,20 @@ function UserPermissions(props) {
     </Col>
   ))
 
+  let validatorClass = ''
+  let validatorMessage = ''
+  if (props.permissionsSelected.length === 0) {
+    validatorClass = 'is-invalid red small pt-1'
+    validatorMessage = 'You must select one or more permissions.'
+  }
+
   return (
     <div className="border-top border-dark mt-4">
       <p className="lead">Select Permissions:</p>
       <Row className="flex-wrap align-content-end">{permissionItems}</Row>
 
       {props.isLoading && <Spinner color="gray-300" type="grow" />}
+      <div className={validatorClass}>{validatorMessage}</div>
       <p>{JSON.stringify(props.permissionsSelected)}</p>
     </div>
   )
