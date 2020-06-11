@@ -3,6 +3,7 @@ import ProductRow from './ProductRow'
 import PropTypes from 'prop-types'
 
 const propTypes = {
+  disabled: PropTypes.bool.isRequired,
   handleDropClick: PropTypes.func.isRequired,
   handlePriceClick: PropTypes.func.isRequired,
   onClick: PropTypes.func,
@@ -22,6 +23,7 @@ const ProductListBody = (props) => {
           key={product.id}
           padding={props.padding}
           product={product}
+          disabled={props.disabled}
         />
       ))}
     </tbody>

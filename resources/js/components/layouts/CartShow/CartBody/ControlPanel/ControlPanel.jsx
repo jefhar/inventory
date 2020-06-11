@@ -36,7 +36,7 @@ const ControlPanel = (props) => {
         <InvoiceButton
           className="mx-5"
           disabled={disabled}
-          onClick={changeStatusRequest.bind(this, 'invoice')}
+          onClick={changeStatusRequest.bind(this, 'invoiced')}
           {...other}
         >
           Mark Invoiced

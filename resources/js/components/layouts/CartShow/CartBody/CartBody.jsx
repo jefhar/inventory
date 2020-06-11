@@ -9,10 +9,10 @@ const propTypes = {
   cartId: PropTypes.number,
   cartStatus: PropTypes.string,
   changeStatusRequest: PropTypes.func,
-  currentProducts: PropTypes.array,
+  products: PropTypes.array,
+  disabled: PropTypes.bool,
   isOpen: PropTypes.bool,
   padding: PropTypes.number,
-  startingProducts: PropTypes.string,
 }
 const defaultProps = {
   cartStatus: 'void',
@@ -22,8 +22,7 @@ class CartBody extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      currentProducts: JSON.parse(this.props.startingProducts),
-      disabled: this.props.cartStatus !== 'open',
+      currentProducts: this.props.products,
       priceModal: {
         isOpen: false,
         productId: 0,
@@ -63,12 +62,13 @@ class CartBody extends React.Component {
       changeStatusRequest,
       isOpen,
       padding,
+      products,
     } = this.props
-    const { currentProducts } = this.state
+
     if (isOpen) {
-      for (let i = 0; i < currentProducts.length; ++i) {
-        if (currentProducts[i].product_id === this.state.productId) {
-          product = currentProducts[i]
+      for (let i = 0; i < products.length; ++i) {
+        if (products[i].product_id === this.state.productId) {
+          product = products[i]
           break
         }
       }
@@ -81,17 +81,17 @@ class CartBody extends React.Component {
           cartId={cartId}
           cartStatus={cartStatus}
           changeStatusRequest={changeStatusRequest}
-          disabled={this.state.disabled}
+          disabled={this.props.disabled}
           totalCost={totalCost}
         />
         <ProductList
           cartId={cartId}
           cartStatus={cartStatus}
-          disabled={this.state.disabled}
+          disabled={this.props.disabled}
           handleDropClick={this.handleDropClick}
           handlePriceClick={this.toggleModal}
           padding={padding}
-          products={this.state.currentProducts}
+          products={this.props.products}
         />
         <PriceModal
           isOpen={isOpen}
