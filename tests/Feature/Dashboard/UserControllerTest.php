@@ -85,6 +85,52 @@ class UserControllerTest extends TestCase
                 ],
             ]
         )
-            ->assertDontSee(User::PASSWORD);
+            ->assertDontSee(User::PASSWORD)
+            ->assertDontSee(UserRoles::SUPER_ADMIN)
+            ->assertSee(userRoles::EMPLOYEE)
+            ->assertSee(UserRoles::OWNER)
+            ->assertSee(UserRoles::SALES_REP)
+            ->assertSee(UserRoles::TECHNICIAN)
+        ;
+    }
+
+    /**
+     * @test
+     */
+    public function superAdminUserCanOnlyFetchOwnerUsers(): void
+    {
+        $this->actingAs($this->createEmployee(UserRoles::SUPER_ADMIN));
+        for ($i = 0; $i < 5; ++$i) {
+            $this->createEmployee(UserRoles::EMPLOYEE)
+                ->givePermissionTo(UserPermissions::EMPLOYEE_DEFAULT_PERMISSIONS);
+            $this->createEmployee(UserRoles::SALES_REP)
+                ->givePermissionTo(UserPermissions::SALES_REP_DEFAULT_PERMISSIONS);
+            $this->createEmployee(UserRoles::TECHNICIAN)
+                ->givePermissionTo(UserPermissions::TECHNICIAN_DEFAULT_PERMISSIONS);
+            $this->createEmployee(UserRoles::OWNER)
+                ->givePermissionTo(UserPermissions::OWNER_DEFAULT_PERMISSIONS);
+            $this->createEmployee(UserRoles::SUPER_ADMIN)
+                ->givePermissionTo(Permission::all());
+        }
+
+        $this->get(
+            route(UserController::INDEX_NAME)
+        )->assertJsonStructure(
+            [
+                [
+                    UserResource::EMAIL,
+                    UserResource::NAME,
+                    UserResource::PERMISSIONS,
+                    UserResource::ROLE,
+                ],
+            ]
+        )
+            ->assertDontSee(User::PASSWORD)
+            ->assertDontSee('"name":"' . UserRoles::EMPLOYEE)
+            ->assertDontSee(UserRoles::SALES_REP)
+            ->assertDontSee(UserRoles::SUPER_ADMIN)
+            ->assertDontSee(UserRoles::TECHNICIAN)
+            ->assertSee(UserRoles::OWNER)
+        ;
     }
 }

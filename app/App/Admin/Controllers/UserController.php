@@ -19,20 +19,27 @@ use Domain\Admin\Actions\UserStoreAction;
 class UserController extends Controller
 {
     public const INDEX_NAME = 'user.index';
-    public const INDEX_PATH = '/dashboard/user';
+    public const INDEX_PATH = '/dashboard/users';
     public const STORE_NAME = 'user.store';
-    public const STORE_PATH = '/dashboard/user';
+    public const STORE_PATH = '/dashboard/users';
 
     public function index()
     {
         $users = User::with('roles', 'permissions')->get();
-        $nonSuperAdmins = $users->filter(
+        $filteredUsers = $users->filter(
             function ($value) {
                 return $value->roles[0]->name !== UserRoles::SUPER_ADMIN;
             }
         );
+        if (\Auth::user()->hasRole(UserRoles::SUPER_ADMIN)) {
+            $filteredUsers = $users->filter(
+                function ($value) {
+                    return $value->roles[0]->name === UserRoles::OWNER;
+                }
+            );
+        }
 
-        return UserResource::collection($nonSuperAdmins);
+        return UserResource::collection($filteredUsers);
     }
 
     public function store(StoreUserRequest $request)

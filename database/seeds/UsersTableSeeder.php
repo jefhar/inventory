@@ -1,10 +1,12 @@
 <?php
 
+use App\Admin\Permissions\UserPermissions;
 use App\Admin\Permissions\UserRoles;
 use App\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 
 class UsersTableSeeder extends Seeder
 {
@@ -34,6 +36,7 @@ class UsersTableSeeder extends Seeder
             ]
         );
         $superAdmin->assignRole(UserRoles::SUPER_ADMIN);
+        $superAdmin->givePermissionTo(Permission::all());
 
         $owner = User::create(
             [
@@ -43,6 +46,7 @@ class UsersTableSeeder extends Seeder
             ]
         );
         $owner->assignRole(UserRoles::OWNER);
+        $owner->givePermissionTo(UserPermissions::OWNER_DEFAULT_PERMISSIONS);
 
         $salesRep = User::create(
             [
@@ -52,6 +56,7 @@ class UsersTableSeeder extends Seeder
             ]
         );
         $salesRep->assignRole(UserRoles::SALES_REP);
+        $salesRep->givePermissionTo(UserPermissions::SALES_REP_DEFAULT_PERMISSIONS);
 
         $technician = User::create(
             [
@@ -61,6 +66,7 @@ class UsersTableSeeder extends Seeder
             ]
         );
         $technician->assignRole(UserRoles::TECHNICIAN);
+        $technician->givePermissionTo(UserPermissions::TECHNICIAN_DEFAULT_PERMISSIONS);
 
         $employee = User::create(
             [
@@ -70,5 +76,6 @@ class UsersTableSeeder extends Seeder
             ]
         );
         $employee->assignRole(UserRoles::EMPLOYEE);
+        $employee->givePermissionTo(UserPermissions::EMPLOYEE_DEFAULT_PERMISSIONS);
     }
 }
