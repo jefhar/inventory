@@ -45,7 +45,6 @@ function UserPermissions(props) {
 
       {props.isLoading && <Spinner color="gray-300" type="grow" />}
       <div className={validatorClass}>{validatorMessage}</div>
-      <p>{JSON.stringify(props.permissionsSelected)}</p>
     </div>
   )
 }

@@ -18,7 +18,7 @@ class Dashboard extends React.Component {
       isLocked: true,
       isPermissionsLoaded: false,
       isRolesLoaded: false,
-      isSavedLocked: false,
+      isSavedLocked: true,
       isUserLoaded: false,
       name: '',
       permissionsSelected: [],
@@ -27,6 +27,7 @@ class Dashboard extends React.Component {
     }
 
     this.chooseUser = this.chooseUser.bind(this)
+    this.isSavedLocked = this.isSavedLocked.bind(this)
     this.onInputChange = this.onInputChange.bind(this)
     this.saveUser = this.saveUser.bind(this)
     this.setChecked = this.setChecked.bind(this)
@@ -63,6 +64,7 @@ class Dashboard extends React.Component {
       isRolesLoaded: true,
       isRolesLocked: false,
       isUserLoaded: true,
+      isSavedLocked: true,
     })
   }
 
@@ -209,6 +211,18 @@ class Dashboard extends React.Component {
     })
   }
 
+  isSavedLocked() {
+    let bool = this.state.permissionsSelected.length === 0
+    console.info(bool)
+    bool = bool || this.state.roleSelected === ''
+    console.info(bool)
+    bool = bool || this.state.name === ''
+    console.info(bool)
+    bool = bool || this.state.email === ''
+    console.info(bool)
+    return bool
+  }
+
   render() {
     console.info('render()')
     return (
@@ -266,7 +280,8 @@ class Dashboard extends React.Component {
               permissionsSelected={this.state.permissionsSelected}
             />
             <SaveButton
-              isLocked={this.state.isSavedLocked}
+              className="pt-2"
+              isLocked={this.isSavedLocked()}
               onClick={this.saveUser}
             >
               Save User

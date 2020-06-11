@@ -12,19 +12,19 @@ const propTypes = {
 
 function SaveButton(props) {
   // console.info('SaveButton Props:', props)
-  if (props.isLocked) {
+  const { isLocked, onClick, children, ...other } = props
+  if (isLocked) {
     return null
   }
 
   return (
     <>
-      <Button color="success" onClick={props.onClick} outline={true}>
+      <Button color="success" onClick={onClick} outline={true} {...other}>
         <>
           <FontAwesomeIcon className="pr-1" icon={faSave} />
-          {props.children}
+          {children}
         </>
       </Button>
-      <p>{JSON.stringify(props)}</p>
     </>
   )
 }
