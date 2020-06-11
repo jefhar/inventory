@@ -1,10 +1,12 @@
 import * as React from 'react'
 import ReactDOM from 'react-dom'
-import UserRoles from './UserRoles'
-import UserPermissions from './UserPermissions'
-import UserChooser from './UserChooser'
-import { Card, CardBody, CardHeader, Container } from 'reactstrap'
 import SaveButton from '../../Buttons/SaveButton'
+import UserChooser from './UserChooser'
+import UserPermissions from './UserPermissions'
+import UserRoles from './UserRoles'
+
+import { Card, CardBody, CardHeader, Container } from 'reactstrap'
+import AlertModal from '../../Modals/AlertModal'
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -16,67 +18,56 @@ class Dashboard extends React.Component {
       isLocked: true,
       isPermissionsLoaded: false,
       isRolesLoaded: false,
+      isSavedLocked: false,
       isUserLoaded: false,
       name: '',
       permissionsSelected: [],
       roleSelected: '',
+      showUserToast: false,
     }
+
+    this.chooseUser = this.chooseUser.bind(this)
     this.onInputChange = this.onInputChange.bind(this)
+    this.saveUser = this.saveUser.bind(this)
     this.setChecked = this.setChecked.bind(this)
     this.setSelected = this.setSelected.bind(this)
-    this.saveUser = this.saveUser.bind(this)
+    this.toggleAlertModal = this.toggleAlertModal.bind(this)
+    this.toggleEditUserModal = this.toggleEditUserModal.bind(this)
+    this.toggleEditUserModal = this.toggleEditUserModal.bind(this)
+    this.toggleNewUser = this.toggleNewUser.bind(this)
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    console.info('componentDidMount()')
+    this.refreshData()
+  }
+
+  async refreshData() {
+    console.info('refreshData()')
     // Call AJAX, return a set of all Roles. Put it in this.state.allRoles
     const roleUrl = '/dashboard/roles'
     const permissionsUrl = '/dashboard/permissions'
+    const usersUrl = '/dashboard/users'
 
-    axios.get(roleUrl).then((result) => {
-      console.info(result.data)
-      this.setState({
-        allRoles: JSON.stringify(result.data),
-        isRolesLoaded: true,
-        isRolesLocked: false,
-      })
-    })
-    axios.get(permissionsUrl).then((result) => {
-      console.info(result.data)
-      this.setState({
-        allPermissions: JSON.stringify(result.data),
-        isPermissionsLoaded: true,
-        isPermissionsLocked: false,
-      })
-    })
-
-    const sleep = (ms) => {
-      return new Promise((resolve) => setTimeout(resolve, ms))
-    }
-    await sleep(2000)
-    console.info('done sleeping:')
-
-    // Call AJAX, return a set of allPermissions. Put it in
-    // this.state.allPermissions
-
-    // Call AJAX, get list of all users. Put it in this.state.allUsers
-    let allUsers = [
-      {
-        name: 'Owner',
-        email: 'owner@example.com',
-      },
-      {
-        name: 'technician',
-        email: 'technician@example.com',
-      },
-    ]
-    allUsers = JSON.stringify(allUsers)
+    const [roleResponse, permissionResponse, userResponse] = await Promise.all([
+      axios.get(roleUrl),
+      axios.get(permissionsUrl),
+      axios.get(usersUrl),
+    ])
     this.setState({
-      allUsers: allUsers,
+      allPermissions: JSON.stringify(permissionResponse.data),
+      allRoles: JSON.stringify(roleResponse.data),
+      allUsers: userResponse.data,
+      isPermissionsLoaded: true,
+      isPermissionsLocked: false,
+      isRolesLoaded: true,
+      isRolesLocked: false,
       isUserLoaded: true,
     })
   }
 
   setChecked(event) {
+    console.info('setChecked()')
     const permission = event.target.value
     const permissionsSelected = this.state.permissionsSelected
     const index = permissionsSelected.indexOf(permission)
@@ -89,6 +80,7 @@ class Dashboard extends React.Component {
   }
 
   setSelected(event) {
+    console.info('setSelected()')
     this.setState({ roleSelected: event.target.value })
     const roleUrl = `/dashboard/roles/${event.target.value}`
     axios.get(roleUrl).then((result) => {
@@ -102,14 +94,15 @@ class Dashboard extends React.Component {
   }
 
   onInputChange(event) {
+    console.info('onInputChange()')
     const target = event.target
     const name = target.name
     const value = target.type === 'checkbox' ? target.checked : target.value
     console.info('inside onChange. `name`: ', name, ' `value`: ', value)
 
-    // if name === 'email', check that value matches regex for email. (from
-    // https://emailregex.com)
+    // Regex for email from https://emailregex.com
     if (name === 'email') {
+      // eslint-disable-next-line no-useless-escape
       const simpleEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       const validEmail = simpleEmailRegex.test(value)
       console.info(name, value, validEmail)
@@ -128,7 +121,28 @@ class Dashboard extends React.Component {
     })
   }
 
+  chooseUser() {
+    console.info('hello from chooseUser() ')
+    const key = document.getElementById('usersList').options.selectedIndex
+    const user = this.state.allUsers[key]
+    console.info(user)
+    this.setState({
+      email: user.email,
+      isLocked: false,
+      isPermissionsLoaded: true,
+      isRolesLoaded: true,
+      isUserLoaded: true,
+      isValidEmail: true,
+      name: user.name,
+      permissionsSelected: user.permissions,
+      roleSelected: user.role,
+      showEditUser: false,
+      showNewUser: true,
+    })
+  }
+
   saveUser() {
+    console.info('saveUser()')
     const user = {
       email: this.state.email,
       name: this.state.name,
@@ -141,12 +155,62 @@ class Dashboard extends React.Component {
       user: user,
     }
     console.info('data:', data)
-    axios.post('/dashboard', data).then((response) => {
+    axios.post('/dashboard/users', data).then((response) => {
       console.info(response)
+      this.setState({
+        alertModalBody: (
+          <>
+            The selected user has been saved. An email to {user.email} has been
+            queued with instructions for the user.
+          </>
+        ),
+        alertModalHeader: <>User Saved</>,
+        allPermissions: '[{"id":"NONE","name":"NONE"}]',
+        allRoles: '[{"id":"NONE","name":"NONE"}]',
+        email: '',
+        isLocked: true,
+        isPermissionsLoaded: false,
+        isRolesLoaded: false,
+        isUserLoaded: false,
+        name: '',
+        permissionsSelected: [],
+        roleSelected: '',
+        showAlertModal: true,
+        userToast: response.data,
+      })
+      this.refreshData()
+    })
+  }
+
+  toggleNewUser() {
+    console.info('toggleNewUser()')
+    this.setState((state) => {
+      return {
+        showNewUser: !state.showNewUser,
+      }
+    })
+  }
+
+  toggleEditUserModal() {
+    console.info('toggleEditUserModal')
+    this.setState((state) => {
+      return {
+        showEditUser: !state.showEditUser,
+      }
+    })
+  }
+
+  toggleAlertModal() {
+    console.info('toggleAlertModal()')
+    this.setState((state) => {
+      return {
+        showAlertModal: !state.showAlertModal,
+      }
     })
   }
 
   render() {
+    console.info('render()')
     return (
       <Container>
         <Card>
@@ -164,12 +228,13 @@ class Dashboard extends React.Component {
                   fillRule="evenodd"
                   d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"
                 />
-              </svg>
+              </svg>{' '}
               User Dashboard
             </h1>
           </CardHeader>
           <CardBody>
             <UserChooser
+              disabled={!this.state.isUserLoaded}
               className="py-1"
               email={this.state.email}
               isLoaded={this.state.isUserLoaded}
@@ -178,6 +243,11 @@ class Dashboard extends React.Component {
               onChange={this.onInputChange}
               users={this.state.allUsers}
               value={this.state.value}
+              chooseUser={this.chooseUser}
+              toggleUserModal={this.toggleEditUserModal}
+              showEditUser={this.state.showEditUser}
+              toggleNewUser={this.toggleNewUser}
+              showNewUser={this.state.showNewUser}
             />
             <UserRoles
               className="py-1"
@@ -203,6 +273,12 @@ class Dashboard extends React.Component {
             </SaveButton>
           </CardBody>
         </Card>
+        <AlertModal
+          isOpen={this.state.showAlertModal}
+          toggle={this.toggleAlertModal}
+          header={this.state.alertModalHeader}
+          body={this.state.alertModalBody}
+        />
       </Container>
     )
   }

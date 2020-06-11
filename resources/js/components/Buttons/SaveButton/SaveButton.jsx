@@ -11,7 +11,7 @@ const propTypes = {
 }
 
 function SaveButton(props) {
-  console.info('SaveButton Props:', props)
+  // console.info('SaveButton Props:', props)
   if (props.isLocked) {
     return null
   }

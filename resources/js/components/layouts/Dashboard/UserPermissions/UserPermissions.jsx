@@ -2,6 +2,18 @@ import * as React from 'react'
 import PropTypes from 'prop-types'
 import { Col, CustomInput, Row, Spinner } from 'reactstrap'
 
+const propTypes = {
+  isLoading: PropTypes.bool,
+  isLocked: PropTypes.bool,
+  onChange: PropTypes.func,
+  permissions: PropTypes.string,
+  permissionsSelected: PropTypes.array,
+}
+
+const defaultProps = {
+  permissionsSelected: [],
+}
+
 function UserPermissions(props) {
   const permissions = JSON.parse(props.permissions)
   const permissionItems = permissions.map((permission) => (
@@ -30,11 +42,7 @@ function UserPermissions(props) {
   )
 }
 
-UserPermissions.propTypes = {
-  isLoading: PropTypes.bool,
-  isLocked: PropTypes.bool,
-  onChange: PropTypes.func,
-  permissions: PropTypes.string,
-  permissionsSelected: PropTypes.array,
-}
+UserPermissions.propTypes = propTypes
+UserPermissions.defaultProps = defaultProps
+
 export default UserPermissions

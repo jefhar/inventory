@@ -21,7 +21,7 @@
           </button>
         </p>
         <p>You are logged in as a Super Administrator. You may <strong>only</strong> create or edit an Owner User.</p>
-        <p>The Owner User is required to have the <code>Create or Edit Users</code> permission. This cannot be changed
+        <p>The Owner User will also have the <code>Create or Edit Users</code> permission. This cannot be changed
           or disabled.
         </p>
       </div>
