@@ -54,6 +54,8 @@ class RoleController extends Controller
                 return UserPermissions::SALES_REP_DEFAULT_PERMISSIONS;
             case UserRoles::TECHNICIAN:
                 return UserPermissions::TECHNICIAN_DEFAULT_PERMISSIONS;
+            case UserRoles::OWNER:
+                return UserPermissions::OWNER_DEFAULT_PERMISSIONS;
             default:
                 abort(Response::HTTP_UNPROCESSABLE_ENTITY);
         }

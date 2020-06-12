@@ -131,4 +131,21 @@ class RoleControllerTest extends TestCase
                 route(RoleController::SHOW_NAME, UserRoles::EMPLOYEE)
             )->assertJson(UserPermissions::EMPLOYEE_DEFAULT_PERMISSIONS);
     }
+
+    /**
+     * @test
+     */
+    public function rolesReturnPermissions(): void
+    {
+        $this
+            ->actingAs($this->createEmployee(UserRoles::SUPER_ADMIN))
+            ->get(
+                route(RoleController::SHOW_NAME, UserRoles::SALES_REP)
+            )->assertJson(UserPermissions::SALES_REP_DEFAULT_PERMISSIONS);
+        $this
+            ->get(
+                route(RoleController::SHOW_NAME, UserRoles::TECHNICIAN)
+            )
+            ->assertJson(UserPermissions::TECHNICIAN_DEFAULT_PERMISSIONS);
+    }
 }

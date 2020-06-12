@@ -2,6 +2,18 @@ import * as React from 'react'
 import PropTypes from 'prop-types'
 import { Col, CustomInput, Row, Spinner } from 'reactstrap'
 
+const propTypes = {
+  isLoading: PropTypes.bool,
+  isLocked: PropTypes.bool,
+  onChange: PropTypes.func,
+  permissions: PropTypes.string,
+  permissionsSelected: PropTypes.array,
+}
+
+const defaultProps = {
+  permissionsSelected: [],
+}
+
 function UserPermissions(props) {
   const permissions = JSON.parse(props.permissions)
   const permissionItems = permissions.map((permission) => (
@@ -19,22 +31,25 @@ function UserPermissions(props) {
     </Col>
   ))
 
+  let validatorClass = ''
+  let validatorMessage = ''
+  if (props.permissionsSelected.length === 0) {
+    validatorClass = 'is-invalid red small pt-1'
+    validatorMessage = 'You must select one or more permissions.'
+  }
+
   return (
     <div className="border-top border-dark mt-4">
       <p className="lead">Select Permissions:</p>
       <Row className="flex-wrap align-content-end">{permissionItems}</Row>
 
       {props.isLoading && <Spinner color="gray-300" type="grow" />}
-      <p>{JSON.stringify(props.permissionsSelected)}</p>
+      <div className={validatorClass}>{validatorMessage}</div>
     </div>
   )
 }
 
-UserPermissions.propTypes = {
-  isLoading: PropTypes.bool,
-  isLocked: PropTypes.bool,
-  onChange: PropTypes.func,
-  permissions: PropTypes.string,
-  permissionsSelected: PropTypes.array,
-}
+UserPermissions.propTypes = propTypes
+UserPermissions.defaultProps = defaultProps
+
 export default UserPermissions

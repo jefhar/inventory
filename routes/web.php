@@ -14,6 +14,7 @@
 use App\Admin\Controllers\DashboardController;
 use App\Admin\Controllers\PermissionController;
 use App\Admin\Controllers\RoleController;
+use App\Admin\Controllers\UserController;
 use App\Admin\Permissions\UserPermissions;
 use App\AjaxSearch\Controllers\AjaxSearchController;
 use App\Carts\Controllers\CartController;
@@ -74,6 +75,10 @@ Route::group(
                                 ->name(RoleController::SHOW_NAME);
                             Route::get(PermissionController::INDEX_PATH, 'PermissionController@index')
                                 ->name(PermissionController::INDEX_NAME);
+                            Route::get(UserController::INDEX_PATH, 'UserController@index')
+                                ->name(UserController::INDEX_NAME);
+                            Route::post(UserController::STORE_PATH, 'UserController@store')
+                                ->name(UserController::STORE_NAME);
                         }
                     );
             }
