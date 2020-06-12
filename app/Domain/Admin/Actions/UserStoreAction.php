@@ -27,11 +27,10 @@ class UserStoreAction
                 User::PASSWORD => Hash::make(bin2hex(random_bytes(48))),
             ]
         );
-        $user->assignRole($dashboardUserObject->role);
-        $user->givePermissionTo($dashboardUserObject->permissions);
+        $user->syncRoles([$dashboardUserObject->role]);
+        $user->syncPermissions($dashboardUserObject->permissions);
         $user->save();
         // TODO: send email to new user telling them an account has been created and they need to change the password.
-
         return $user;
     }
 }
