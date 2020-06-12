@@ -28,6 +28,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Cart $carts
  * @property int $id
  * @property string $email
+ * @property string $name
  */
 class User extends Authenticatable
 {
