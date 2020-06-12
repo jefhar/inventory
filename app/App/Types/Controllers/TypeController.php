@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package App\Types\Controllers
  */
-class TypesController extends Controller
+class TypeController extends Controller
 {
     public const CREATE_NAME = 'types.create';
     public const CREATE_PATH = '/types/create';

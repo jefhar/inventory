@@ -18,7 +18,7 @@ use Illuminate\View\View;
  *
  * @package App\WorkOrders\Controllers
  */
-class ClientsController extends Controller
+class ClientController extends Controller
 {
     public const SHOW_PATH = '/clients/{client}';
     public const SHOW_NAME = 'clients.show';
