@@ -2,30 +2,41 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 import InfoCircleIcon from '../../Icons/InfoCircleIcon'
+import WarningTriangleIcon from '../../Icons/WarningTriangleIcon'
 
 const propTypes = {
-  isOpen: PropTypes.bool,
-  header: PropTypes.element,
-  toggle: PropTypes.func,
   body: PropTypes.element,
+  header: PropTypes.element,
+  isOpen: PropTypes.bool,
+  toggle: PropTypes.func,
+  type: PropTypes.string,
+}
+
+const defaultProps = {
+  type: 'success',
 }
 
 const AlertModal = (props) => {
-  const { header, isOpen, toggle, body, ...other } = props
+  const { body, header, isOpen, toggle, type, ...other } = props
+
+  let icon
+  if (type === 'success') {
+    icon = <InfoCircleIcon />
+  } else {
+    icon = <WarningTriangleIcon />
+  }
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} {...other}>
       <ModalHeader toggle={toggle}>
         <>
-          <InfoCircleIcon /> {header}
+          {icon} {header}
         </>
       </ModalHeader>
       <ModalBody>{body}</ModalBody>
       <ModalFooter>
-        <Button color="primary" outline={true} onClick={toggle}>
-          <>
-            <InfoCircleIcon /> Confirm
-          </>
+        <Button color={type} outline={true} onClick={toggle}>
+          <>{icon} Confirm</>
         </Button>
       </ModalFooter>
     </Modal>
@@ -33,4 +44,5 @@ const AlertModal = (props) => {
 }
 
 AlertModal.propTypes = propTypes
+AlertModal.defaultProps = defaultProps
 export default AlertModal

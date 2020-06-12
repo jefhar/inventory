@@ -22,8 +22,6 @@ const propTypes = {
 }
 
 function UserChooser(props) {
-  // console.info('UserChooser props: ', props)
-
   return (
     <>
       <Row className="d-flex justify-content-around">

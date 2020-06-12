@@ -20,7 +20,6 @@ const propTypes = {
 }
 
 function NewUser(props) {
-  // console.info('NewUser Props:', props)
   if (!props.show) {
     return null
   }

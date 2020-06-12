@@ -23,7 +23,7 @@ class Dashboard extends React.Component {
       name: '',
       permissionsSelected: [],
       roleSelected: '',
-      showUserToast: false,
+      showAlertModal: false,
     }
 
     this.chooseUser = this.chooseUser.bind(this)
@@ -39,12 +39,10 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    console.info('componentDidMount()')
     this.refreshData()
   }
 
   async refreshData() {
-    console.info('refreshData()')
     // Call AJAX, return a set of all Roles. Put it in this.state.allRoles
     const roleUrl = '/dashboard/roles'
     const permissionsUrl = '/dashboard/permissions'
@@ -69,7 +67,6 @@ class Dashboard extends React.Component {
   }
 
   setChecked(event) {
-    console.info('setChecked()')
     const permission = event.target.value
     const permissionsSelected = this.state.permissionsSelected
     const index = permissionsSelected.indexOf(permission)
@@ -82,13 +79,11 @@ class Dashboard extends React.Component {
   }
 
   setSelected(event) {
-    console.info('setSelected()')
     this.setState({ roleSelected: event.target.value })
     const roleUrl = `/dashboard/roles/${event.target.value}`
     axios.get(roleUrl).then((result) => {
       const permissionsSelected = []
       result.data.forEach((permission) => {
-        console.info('permission', permission[0])
         permissionsSelected.push(permission[0])
       })
       this.setState({ permissionsSelected: permissionsSelected })
@@ -96,18 +91,15 @@ class Dashboard extends React.Component {
   }
 
   onInputChange(event) {
-    console.info('onInputChange()')
     const target = event.target
     const name = target.name
     const value = target.type === 'checkbox' ? target.checked : target.value
-    console.info('inside onChange. `name`: ', name, ' `value`: ', value)
 
     // Regex for email from https://emailregex.com
     if (name === 'email') {
       // eslint-disable-next-line no-useless-escape
       const simpleEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       const validEmail = simpleEmailRegex.test(value)
-      console.info(name, value, validEmail)
       this.setState({
         isValidEmail: validEmail,
       })
@@ -124,10 +116,8 @@ class Dashboard extends React.Component {
   }
 
   chooseUser() {
-    console.info('hello from chooseUser() ')
     const key = document.getElementById('usersList').options.selectedIndex
     const user = this.state.allUsers[key]
-    console.info(user)
     this.setState({
       email: user.email,
       isLocked: false,
@@ -144,7 +134,6 @@ class Dashboard extends React.Component {
   }
 
   saveUser() {
-    console.info('saveUser()')
     const user = {
       email: this.state.email,
       name: this.state.name,
@@ -156,36 +145,64 @@ class Dashboard extends React.Component {
       role: role,
       user: user,
     }
-    console.info('data:', data)
-    axios.post('/dashboard/users', data).then((response) => {
-      console.info(response)
-      this.setState({
-        alertModalBody: (
-          <>
-            The selected user has been saved. An email to {user.email} has been
-            queued with instructions for the user.
-          </>
-        ),
-        alertModalHeader: <>User Saved</>,
-        allPermissions: '[{"id":"NONE","name":"NONE"}]',
-        allRoles: '[{"id":"NONE","name":"NONE"}]',
-        email: '',
-        isLocked: true,
-        isPermissionsLoaded: false,
-        isRolesLoaded: false,
-        isUserLoaded: false,
-        name: '',
-        permissionsSelected: [],
-        roleSelected: '',
-        showAlertModal: true,
-        userToast: response.data,
+    axios
+      .post('/dashboard/users', data)
+      .then((response) => {
+        this.setState({
+          alertModalBody: (
+            <>
+              The selected user has been saved. An email to {user.email} has
+              been queued with instructions for the user.
+            </>
+          ),
+          alertModalHeader: <>User Saved</>,
+          allPermissions: '[{"id":"NONE","name":"NONE"}]',
+          allRoles: '[{"id":"NONE","name":"NONE"}]',
+          email: '',
+          isLocked: true,
+          isPermissionsLoaded: false,
+          isRolesLoaded: false,
+          isUserLoaded: false,
+          name: '',
+          permissionsSelected: [],
+          roleSelected: '',
+          showAlertModal: true,
+          userToast: response.data,
+        })
+        this.refreshData()
       })
-      this.refreshData()
-    })
+      .catch((error) => {
+        const { message } = error.response.data
+        const { errors: errorBag } = error.response.data
+        const keys = Object.keys(errorBag)
+        const errorList = []
+
+        for (let i = 0; i < keys.length; ++i) {
+          const key = keys[i]
+          errorList.push(errorBag[key])
+        }
+        const errors = errorList.map((postError) => (
+          <li key={postError}>{postError}</li>
+        ))
+
+        const alertModalBody = (
+          <>
+            <h5>{message}</h5>
+            <ul>{errors}</ul>
+          </>
+        )
+        const alertModalHeader = <>Error</>
+        const alertModalType = 'warning'
+        this.setState({
+          alertModalBody: alertModalBody,
+          alertModalHeader: alertModalHeader,
+          showAlertModal: true,
+          alertModalType: alertModalType,
+        })
+      })
   }
 
   toggleNewUser() {
-    console.info('toggleNewUser()')
     this.setState((state) => {
       return {
         showNewUser: !state.showNewUser,
@@ -194,7 +211,6 @@ class Dashboard extends React.Component {
   }
 
   toggleEditUserModal() {
-    console.info('toggleEditUserModal')
     this.setState((state) => {
       return {
         showEditUser: !state.showEditUser,
@@ -203,7 +219,6 @@ class Dashboard extends React.Component {
   }
 
   toggleAlertModal() {
-    console.info('toggleAlertModal()')
     this.setState((state) => {
       return {
         showAlertModal: !state.showAlertModal,
@@ -212,19 +227,15 @@ class Dashboard extends React.Component {
   }
 
   isSavedLocked() {
-    let bool = this.state.permissionsSelected.length === 0
-    console.info(bool)
-    bool = bool || this.state.roleSelected === ''
-    console.info(bool)
-    bool = bool || this.state.name === ''
-    console.info(bool)
-    bool = bool || this.state.email === ''
-    console.info(bool)
-    return bool
+    return (
+      this.state.permissionsSelected.length === 0 ||
+      this.state.roleSelected === '' ||
+      this.state.name === '' ||
+      this.state.email === ''
+    )
   }
 
   render() {
-    console.info('render()')
     return (
       <Container>
         <Card>
@@ -280,7 +291,7 @@ class Dashboard extends React.Component {
               permissionsSelected={this.state.permissionsSelected}
             />
             <SaveButton
-              className="pt-2"
+              className="mt-3"
               isLocked={this.isSavedLocked()}
               onClick={this.saveUser}
             >
@@ -293,6 +304,7 @@ class Dashboard extends React.Component {
           toggle={this.toggleAlertModal}
           header={this.state.alertModalHeader}
           body={this.state.alertModalBody}
+          type={this.state.alertModalType}
         />
       </Container>
     )

@@ -30,4 +30,12 @@ class StoreUserRequest extends FormRequest
     {
         return self::RULES;
     }
+
+    public function attributes(): array
+    {
+        return [
+            self::NAME => 'user name',
+            self::EMAIL => 'email'
+        ];
+    }
 }
