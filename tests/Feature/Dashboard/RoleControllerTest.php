@@ -10,14 +10,18 @@ declare(strict_types=1);
 namespace Tests\Feature\Dashboard;
 
 use App\Admin\Controllers\RoleController;
+use App\Admin\Permissions\UserPermissions;
 use App\Admin\Permissions\UserRoles;
 use App\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Str;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 
 class RoleControllerTest extends TestCase
 {
+    use FullObjects;
+
     /**
      * @test
      */
@@ -34,33 +38,25 @@ class RoleControllerTest extends TestCase
      */
     public function rolesIndexOnlyVisibleToOwnerAndSuperAdmin(): void
     {
-        /** @var User $employee */
-        $employee = factory(User::class)->create();
-        $employee->assignRole(UserRoles::EMPLOYEE);
+        $employee = $this->createEmployee(UserRoles::EMPLOYEE);
         $this
             ->actingAs($employee)
             ->get(route(RoleController::INDEX_NAME))
             ->assertForbidden();
 
-        /** @var User $salesRep */
-        $salesRep = factory(User::class)->create();
-        $salesRep->assignRole(UserRoles::SALES_REP);
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
         $this
             ->actingAs($salesRep)
             ->get(route(RoleController::INDEX_NAME))
             ->assertForbidden();
 
-        /**  @var User $technician */
-        $technician = factory(User::class)->create();
-        $technician->assignRole(UserRoles::TECHNICIAN);
+        $technician = $this->createEmployee(UserRoles::TECHNICIAN);
         $this
             ->actingAs($technician)
             ->get(route(RoleController::INDEX_NAME))
             ->assertForbidden();
 
-        /** @var User $owner */
-        $owner = factory(User::class)->create();
-        $owner->assignRole(UserRoles::OWNER);
+        $owner = $this->createEmployee(UserRoles::OWNER);
         $this
             ->withoutExceptionHandling()
             ->actingAs($owner)
@@ -68,8 +64,7 @@ class RoleControllerTest extends TestCase
             ->assertOk();
 
         /** @var User $superAdmin */
-        $superAdmin = factory(User::class)->create();
-        $superAdmin->assignRole(UserRoles::SUPER_ADMIN);
+        $superAdmin = $this->createEmployee(UserRoles::SUPER_ADMIN);
         $this
             ->actingAs($superAdmin)
             ->get(route(RoleController::INDEX_NAME))
@@ -124,5 +119,33 @@ class RoleControllerTest extends TestCase
                     ['id' => UserRoles::EMPLOYEE, 'name' => Str::title(UserRoles::ROLES[UserRoles::EMPLOYEE]),],
                 ]
             );
+    }
+
+    /**
+     * @test
+     */
+    public function roleShowEmployeeReturnsBasicPermission(): void
+    {
+        $this->actingAs($this->createEmployee(UserRoles::OWNER))
+            ->get(
+                route(RoleController::SHOW_NAME, UserRoles::EMPLOYEE)
+            )->assertJson(UserPermissions::EMPLOYEE_DEFAULT_PERMISSIONS);
+    }
+
+    /**
+     * @test
+     */
+    public function rolesReturnPermissions(): void
+    {
+        $this
+            ->actingAs($this->createEmployee(UserRoles::SUPER_ADMIN))
+            ->get(
+                route(RoleController::SHOW_NAME, UserRoles::SALES_REP)
+            )->assertJson(UserPermissions::SALES_REP_DEFAULT_PERMISSIONS);
+        $this
+            ->get(
+                route(RoleController::SHOW_NAME, UserRoles::TECHNICIAN)
+            )
+            ->assertJson(UserPermissions::TECHNICIAN_DEFAULT_PERMISSIONS);
     }
 }

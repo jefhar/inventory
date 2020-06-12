@@ -13,15 +13,19 @@ use App\Admin\Controllers\DashboardController;
 use App\Admin\Permissions\UserRoles;
 use App\User;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 
 class DashboardControllerTest extends TestCase
 {
+    use FullObjects;
+
     /**
      * @test
      */
     public function dashboardIndexOnlyVisibleToOwnerAndSuperAdmin(): void
     {
         $this
+            ->withoutMix()
             ->get(route(DashboardController::INDEX_NAME))
             ->assertRedirect();
         /** @var User $employee */
@@ -52,7 +56,9 @@ class DashboardControllerTest extends TestCase
         $owner = factory(User::class)->create();
         $owner->assignRole(UserRoles::OWNER);
         $this
+            ->withoutExceptionHandling()
             ->actingAs($owner)
+            ->withoutExceptionHandling()
             ->get(route(DashboardController::INDEX_NAME))
             ->assertOk();
 

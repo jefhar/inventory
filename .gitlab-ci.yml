@@ -80,8 +80,7 @@ dusktest:
       - node_modules
       - public
       - vendor
-  except:
-    - ci
+  when: manual
   interruptible: true
   artifacts:
     paths:
@@ -89,7 +88,6 @@ dusktest:
       - ./tests/Browser/screenshots # for Dusk screenshots
       - ./tests/Browser/console
     expire_in: 7 days
-    when: always
 
 deploy_staging:
   stage: stage

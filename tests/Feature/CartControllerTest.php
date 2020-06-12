@@ -85,7 +85,9 @@ class CartControllerTest extends TestCase
      */
     public function ownerCanAccessCart(): void
     {
-        $this->actingAs($this->createEmployee(UserRoles::OWNER))
+        $this
+            ->withoutExceptionHandling()
+            ->actingAs($this->createEmployee(UserRoles::OWNER))
             ->withoutMix()
             ->get(route(CartController::INDEX_NAME))
             ->assertOk();

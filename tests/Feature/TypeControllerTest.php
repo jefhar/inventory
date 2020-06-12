@@ -19,7 +19,7 @@ use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
 /**
- * Class TypesControllerTest
+ * Class TypeControllerTest
  *
  * @package Tests\Feature
  */

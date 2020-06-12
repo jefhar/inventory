@@ -11,6 +11,7 @@ namespace App\Admin\Permissions;
 /**
  * Class UserRoles
  *
+ * @property string $name
  * @package App\Admin\Permissions
  */
 final class UserRoles

@@ -54,6 +54,7 @@ class PermissionControllerTest extends TestCase
         $owner = factory(User::class)->create();
         $owner->assignRole(UserRoles::OWNER);
         $this
+            ->withoutExceptionHandling()
             ->actingAs($owner)
             ->get(route(PermissionController::INDEX_NAME))
             ->assertOk();

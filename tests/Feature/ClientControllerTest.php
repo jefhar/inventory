@@ -16,7 +16,7 @@ use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
 /**
- * Class ClientsControllerTest
+ * Class ClientControllerTest
  *
  * @package Tests\Feature
  */

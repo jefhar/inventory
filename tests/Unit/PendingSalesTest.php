@@ -121,15 +121,16 @@ class PendingSalesTest extends TestCase
      */
     public function canPatchProductPendingSaleToAddPrice(): void
     {
-        $price = rand(0, 999_999_99) / 100;
+        $price = rand(0, 999_999_99);
+        // $price = 31800422;
         $product = $this->createFullProduct();
 
-        PricePatchAction::execute($product, $price);
+        PricePatchAction::execute($product, $price / 100);
         $this->assertDatabaseHas(
             Product::TABLE,
             [
                 Product::ID => $product->id,
-                Product::PRICE => $price * 100,
+                Product::PRICE => $price,
             ]
         );
     }
