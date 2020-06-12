@@ -20,7 +20,7 @@ class StoreUserRequest extends FormRequest
     public const USER = 'user';
     public const RULES = [
         self::EMAIL => ['email:rfc'],
-        self::NAME => ['alpha'],
+        self::NAME => ['string'],
         self::PERMISSIONS => ['array'],
         self::ROLE => ['exists:roles,name'],
         self::USER => ['array'],
