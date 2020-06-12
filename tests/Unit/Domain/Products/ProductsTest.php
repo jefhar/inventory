@@ -225,18 +225,18 @@ class ProductsTest extends TestCase
     public function productPriceSavesAsPennies(): void
     {
         $product = $this->createFullProduct();
-        $price = rand(100, 999_999_99) / 100;
-        $product->price = $price;
+        $price = rand(100, 999_999_99);
+        $product->price = $price / 100;
         $product->save();
         $this->assertDatabaseHas(
             Product::TABLE,
             [
                 Product::ID => $product->id,
-                Product::PRICE => (int)($price * 100),
+                Product::PRICE => (int)($price),
             ]
         );
         $product->refresh();
-        $this->assertEquals($price, $product->price);
+        $this->assertEquals($price, $product->price * 100);
     }
 
     /**
