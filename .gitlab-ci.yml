@@ -25,7 +25,7 @@ refresh_cache:
 
 test:
   stage: test
-  image: c11k/serviceandgoods:xdebug
+  image: c11k/serviceandgoods:pcov
   script:
     - cp .env.testing .env
     - touch database/database.sqlite
