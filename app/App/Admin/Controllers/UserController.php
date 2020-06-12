@@ -25,13 +25,18 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::with('roles', 'permissions')->orderBy(User::NAME)->get();
+        /** @var User $dashboardUser */
+        $dashboardUser = \Auth::user();
+        $users = User::with('roles', 'permissions')
+            ->whereNotIn(User::ID, [$dashboardUser->id])
+            ->orderBy(User::NAME)
+            ->get();
         $filteredUsers = $users->filter(
             function ($value) {
                 return $value->roles[0]->name !== UserRoles::SUPER_ADMIN;
             }
         );
-        if (\Auth::user()->hasRole(UserRoles::SUPER_ADMIN)) {
+        if ($dashboardUser->hasRole(UserRoles::SUPER_ADMIN)) {
             $filteredUsers = $users->filter(
                 function ($value) {
                     return $value->roles[0]->name === UserRoles::OWNER;

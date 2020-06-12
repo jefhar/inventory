@@ -14,6 +14,7 @@ use App\Admin\Permissions\UserPermissions;
 use App\Admin\Permissions\UserRoles;
 use App\Admin\Resources\UserResource;
 use App\User;
+use Illuminate\Support\Arr;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
@@ -34,7 +35,7 @@ class UserControllerTest extends TestCase
         $this
             ->withoutExceptionHandling()
             ->actingAs($this->createEmployee(UserRoles::OWNER))
-            ->post(route(UserController::STORE_NAME), $postDataArray)
+            ->post(route(UserController::STORE_NAME, $postDataArray))
             ->assertJsonMissing([User::PASSWORD])
             ->assertJson(
                 [
@@ -57,9 +58,42 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    public function ownerUserCanFetchAllUsers(): void
+    public function dashboardCanSaveExistingUser(): void
     {
-        $this->actingAs($this->createEmployee(UserRoles::OWNER));
+        $ownerUser = $this->createEmployee(UserRoles::OWNER);
+        $ownerUser->syncPermissions(UserPermissions::OWNER_DEFAULT_PERMISSIONS);
+        $someUser = $this->createEmployee(UserRoles::SALES_REP);
+        $someUser->syncPermissions(UserPermissions::SALES_REP_DEFAULT_PERMISSIONS);
+
+        $postDataArray = [
+            'permissions' => Arr::flatten(UserPermissions::TECHNICIAN_DEFAULT_PERMISSIONS),
+            'role' => UserRoles::TECHNICIAN,
+            'user' => [
+                User::NAME => $someUser->name,
+                User::EMAIL => $someUser->email,
+            ],
+
+        ];
+
+        $this->assertTrue($someUser->hasPermissionTo(UserPermissions::UPDATE_PRODUCT_PRICE));
+        $this
+            ->actingAs($ownerUser)
+            ->post(route(UserController::STORE_NAME, $postDataArray));
+
+        $someUser->refresh();
+        foreach (UserPermissions::TECHNICIAN_DEFAULT_PERMISSIONS as $permission) {
+            $this->assertTrue($someUser->hasPermissionTo($permission[0]));
+        }
+        $this->assertFalse($someUser->hasPermissionTo(UserPermissions::UPDATE_PRODUCT_PRICE));
+    }
+
+    /**
+     * @test
+     */
+    public function ownerUserCanFetchAllUsersExceptSelf(): void
+    {
+        $ownerUser = $this->createEmployee(UserRoles::OWNER);
+        $this->actingAs($ownerUser);
         for ($i = 0; $i < 5; ++$i) {
             $this->createEmployee(UserRoles::EMPLOYEE)
                 ->givePermissionTo(UserPermissions::EMPLOYEE_DEFAULT_PERMISSIONS);
@@ -87,11 +121,12 @@ class UserControllerTest extends TestCase
         )
             ->assertDontSee(User::PASSWORD)
             ->assertDontSee(UserRoles::SUPER_ADMIN)
+            ->assertDontSee($ownerUser->email)
+            ->assertDontSee($ownerUser->name)
             ->assertSee(userRoles::EMPLOYEE)
             ->assertSee(UserRoles::OWNER)
             ->assertSee(UserRoles::SALES_REP)
-            ->assertSee(UserRoles::TECHNICIAN)
-        ;
+            ->assertSee(UserRoles::TECHNICIAN);
     }
 
     /**
@@ -130,7 +165,6 @@ class UserControllerTest extends TestCase
             ->assertDontSee(UserRoles::SALES_REP)
             ->assertDontSee(UserRoles::SUPER_ADMIN)
             ->assertDontSee(UserRoles::TECHNICIAN)
-            ->assertSee(UserRoles::OWNER)
-        ;
+            ->assertSee(UserRoles::OWNER);
     }
 }
