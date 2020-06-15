@@ -3,9 +3,9 @@
     <deployment type="docker-image">
       <settings>
         <option name="imageTag" value="node:14" />
-        <option name="command" value="bash" />
+        <option name="command" value="" />
         <option name="containerName" value="" />
-        <option name="entrypoint" value="" />
+        <option name="entrypoint" value="bash" />
         <option name="commandLineOptions" value="-it --rm" />
         <option name="volumeBindings">
           <list>
