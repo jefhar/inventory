@@ -10,12 +10,12 @@ const propTypes = {
   changeStatusRequest: PropTypes.func,
   className: PropTypes.string,
   disabled: PropTypes.bool,
-  totalCost: PropTypes.number,
+  totalCost: PropTypes.string,
 }
 const defaultProps = {
   cartId: 0,
   disabled: true,
-  totalCost: 0,
+  totalCost: '0.00',
 }
 
 const ControlPanel = (props) => {
@@ -51,7 +51,7 @@ const ControlPanel = (props) => {
         </DropButton>
       </Row>
       <Row className="justify-content-end">
-        <span className="h5">Cart Total: ${totalCost.toFixed(2)}</span>
+        <span className="h5">Cart Total: ${totalCost}</span>
       </Row>
     </>
   )

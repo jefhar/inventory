@@ -71,13 +71,15 @@ class CartBody extends React.Component {
 
   calculateTotalCost() {
     // return 69.96
-
-    const reducer = (product, totalPrice) => product.price + totalPrice
-
-    console.log(this.props.products.reduce(reducer))
-    const totalPrice = this.props.products.reduce(reducer)
-    console.info(typeof parseFloat(totalPrice))
-    return Number.parseFloat(totalPrice)
+    let totalPrice = 0
+    const products = this.props.products
+    console.info('products', products)
+    for (let i = 0; i < products.length; ++i) {
+      console.log(`products[${i}]`, products[i])
+      totalPrice += products[i].price
+    }
+    console.log(totalPrice)
+    return Number.parseFloat(totalPrice).toFixed(2)
   }
 
   render() {
