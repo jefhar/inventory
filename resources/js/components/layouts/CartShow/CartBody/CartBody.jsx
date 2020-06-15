@@ -11,7 +11,6 @@ const propTypes = {
   changeStatusRequest: PropTypes.func,
   products: PropTypes.array,
   disabled: PropTypes.bool,
-  isOpen: PropTypes.bool,
   padding: PropTypes.number,
 }
 const defaultProps = {
@@ -44,6 +43,7 @@ class CartBody extends React.Component {
         },
       }
     })
+    console.info(this.props.products)
   }
 
   handleDropClick(productId) {
@@ -60,12 +60,11 @@ class CartBody extends React.Component {
       cartId,
       cartStatus,
       changeStatusRequest,
-      isOpen,
       padding,
       products,
     } = this.props
 
-    if (isOpen) {
+    if (this.state.priceModal.isOpen) {
       for (let i = 0; i < products.length; ++i) {
         if (products[i].product_id === this.state.productId) {
           product = products[i]
@@ -94,7 +93,7 @@ class CartBody extends React.Component {
           products={this.props.products}
         />
         <PriceModal
-          isOpen={isOpen}
+          isOpen={this.state.priceModal.isOpen}
           product={product}
           toggle={this.toggleModal}
         />
