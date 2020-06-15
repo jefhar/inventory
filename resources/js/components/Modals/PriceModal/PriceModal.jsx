@@ -25,6 +25,15 @@ class PriceModal extends React.Component {
 
   savePrice() {
     console.log(this.props.product)
+    const url = `/products/${this.props.product.id}`
+    const price = this.props.product.price
+    const data = {
+      price: price,
+    }
+    axios.patch(url, data).then((response) => {
+      console.info(response)
+      this.props.toggle()
+    })
   }
 
   render() {
