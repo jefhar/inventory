@@ -56,11 +56,8 @@ class RoleController extends Controller
                 return UserPermissions::TECHNICIAN_DEFAULT_PERMISSIONS;
             case UserRoles::OWNER:
                 return UserPermissions::OWNER_DEFAULT_PERMISSIONS;
-            default:
-                abort(Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        // Not strictly needed, because the switch will abort as default.
-        return null;
+        abort(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }
