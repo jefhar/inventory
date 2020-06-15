@@ -30,7 +30,7 @@ const ProductRow = (props) => {
           onClick={props.handlePriceClick}
           price={props.product.price}
           productId={props.product.id}
-        ></PriceButton>
+        />
       </td>
       <td>
         <DropButton

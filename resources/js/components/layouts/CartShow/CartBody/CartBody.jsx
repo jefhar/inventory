@@ -13,6 +13,7 @@ const propTypes = {
   disabled: PropTypes.bool,
   padding: PropTypes.number,
 }
+
 const defaultProps = {
   cartStatus: 'void',
 }
@@ -35,15 +36,33 @@ class CartBody extends React.Component {
 
   toggleModal(productId) {
     console.info('Requested click of price button for Product ', productId)
+    console.info('products', this.props.products)
+    const product = this.props.products.filter(
+      (product) => product.id === productId
+    )
+    console.info('productId', this.props.products[productId])
+    console.info('product', product)
     this.setState((state) => {
       return {
         priceModal: {
           isOpen: !state.priceModal.isOpen,
-          productId: productId,
+          product: product[0],
         },
       }
     })
-    console.info(this.props.products)
+  }
+
+  changePrice(product, event) {
+    console.log(`changePrice(${product}, ${event}`)
+    console.info('product: ', product)
+    console.info('event', event)
+
+    const target = event.target
+    const value = target.type === 'checkbox' ? target.checked : target.value
+    product.price = parseFloat(value)
+    this.setState({
+      product: product,
+    })
   }
 
   handleDropClick(productId) {
@@ -51,29 +70,21 @@ class CartBody extends React.Component {
   }
 
   calculateTotalCost() {
-    return 69.96
+    // return 69.96
+
+    const reducer = (product, totalPrice) => product.price + totalPrice
+
+    console.log(this.props.products.reduce(reducer))
+    const totalPrice = this.props.products.reduce(reducer)
+    console.info(typeof parseFloat(totalPrice))
+    return Number.parseFloat(totalPrice)
   }
 
   render() {
-    let product = {}
-    const {
-      cartId,
-      cartStatus,
-      changeStatusRequest,
-      padding,
-      products,
-    } = this.props
-
-    if (this.state.priceModal.isOpen) {
-      for (let i = 0; i < products.length; ++i) {
-        if (products[i].product_id === this.state.productId) {
-          product = products[i]
-          break
-        }
-      }
-    }
+    const { cartId, cartStatus, changeStatusRequest, padding } = this.props
 
     const totalCost = this.calculateTotalCost()
+    console.info(typeof totalCost)
     return (
       <CardBody>
         <ControlPanel
@@ -94,8 +105,12 @@ class CartBody extends React.Component {
         />
         <PriceModal
           isOpen={this.state.priceModal.isOpen}
-          product={product}
+          product={this.state.priceModal.product}
           toggle={this.toggleModal}
+          changePrice={this.changePrice.bind(
+            this,
+            this.state.priceModal.product
+          )}
         />
       </CardBody>
     )

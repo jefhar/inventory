@@ -4,7 +4,7 @@
       <settings>
         <option name="imageTag" value="node:14" />
         <option name="command" value="" />
-        <option name="containerName" value="" />
+        <option name="containerName" value="node_shell" />
         <option name="entrypoint" value="bash" />
         <option name="commandLineOptions" value="-it --rm" />
         <option name="volumeBindings">

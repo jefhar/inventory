@@ -2,16 +2,29 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 import CancelButton from '../../Buttons/CancelButton'
+import SaveButton from '../../Buttons/SaveButton'
 
 const propTypes = {
   isOpen: PropTypes.bool,
   product: PropTypes.object,
   toggle: PropTypes.func,
+  changePrice: PropTypes.func,
+}
+
+const defaultProps = {
+  product: {
+    price: 0,
+  },
 }
 
 class PriceModal extends React.Component {
   constructor(props) {
     super(props)
+    this.savePrice = this.savePrice.bind(this)
+  }
+
+  savePrice() {
+    console.log(this.props.product)
   }
 
   render() {
@@ -35,6 +48,8 @@ class PriceModal extends React.Component {
                 required
                 step="0.01"
                 type="number"
+                value={this.props.product.price}
+                onChange={this.props.changePrice}
               />
             </div>
             <div className="invalid-feedback">
@@ -47,14 +62,8 @@ class PriceModal extends React.Component {
         </ModalBody>
         <ModalFooter>
           <br />
-          <button
-            id="costSubmitButton"
-            type="submit"
-            className="btn btn-outline-primary"
-            value="Save"
-          >
-            <i className="far fa-save mr-1"></i>Save
-          </button>
+          <SaveButton onClick={this.savePrice}>Save</SaveButton>
+
           <CancelButton onClick={this.props.toggle} />
         </ModalFooter>
       </Modal>
@@ -63,4 +72,5 @@ class PriceModal extends React.Component {
 }
 
 PriceModal.propTypes = propTypes
+PriceModal.defaultProps = defaultProps
 export default PriceModal

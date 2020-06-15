@@ -10,6 +10,10 @@ const propTypes = {
   onClick: PropTypes.func,
 }
 
+const defaultProps = {
+  isLocked: false,
+}
+
 function SaveButton(props) {
   // console.info('SaveButton Props:', props)
   const { isLocked, onClick, children, ...other } = props
@@ -30,5 +34,6 @@ function SaveButton(props) {
 }
 
 SaveButton.propTypes = propTypes
+SaveButton.defaultProps = defaultProps
 
 export default SaveButton
