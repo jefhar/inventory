@@ -3,8 +3,9 @@
 [Requires](https://github.com/jefhar/inventory/blob/master/composer.json) PHP >= 7.4.
 
 This is the master-release code base for a warehouse inventory application. The application is still in 
-active development (February 2020). As releases are updated on the master branch, they will be pushed to 
-this master-release repo. A live demo version of this release is at https://inventory.jeffharris.us.
+active development (June 2020). As releases are updated on the master branch, they will
+be pushed to this master-release repo. A live demo version of this release is at
+[https://inventory.jeffharris.us](https://inventory.jeffharris.us).
 
 
 ## Table of Contents
@@ -27,9 +28,16 @@ Enter your favorite terminal and run:
 $ git clone https://github.com/jefhar/inventory.git
 $ cd inventory
 $ cp .env.example .env
-$ nano .env # Fill in your secrets. See https://laravel.com/docs/6.x/configuration#environment-configuration
-$ composer install
 $ php artisan key:generate
+
+# Set permissions:
+$ find storage -type d -exec chmod a+w {} \;
+$ find bootstrap/cache -type d -exec chmod a+w {} \;
+
+# Update your secrets: See https://laravel.com/docs/6.x/configuration#environment-configuration
+$ nano .env
+$ composer install --no-dev -q -o
+
 $ yarn install
 $ npm run prod
 $ php artisan migrate

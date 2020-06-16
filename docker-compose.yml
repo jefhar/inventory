@@ -92,7 +92,7 @@ services:
       - 8080:80
 
   php-fpm:
-    build: phpdocker/php-fpm
+    image: c11k/serviceandgoods
     container_name: serviceandgoods-php-fpm
     restart: always
     working_dir: /application
