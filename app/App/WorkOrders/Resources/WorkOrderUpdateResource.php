@@ -54,7 +54,7 @@ class WorkOrderUpdateResource
         }
 
         if (filled($request[Person::PHONE_NUMBER] ?? null)) {
-            $translation[self::CLIENT_PHONE_NUMBER] = $request[Person::PHONE_NUMBER];
+            $translation[self::CLIENT_PHONE_NUMBER] = Person::formatPhoneNumber($request[Person::PHONE_NUMBER]);
         }
 
         if (filled($request[Person::LAST_NAME] ?? null)) {

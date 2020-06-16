@@ -102,7 +102,7 @@ class Person extends Model
      */
     public function getPhoneNumberAttribute(string $phoneNumber): string
     {
-        return static::formatPhoneNumber($phoneNumber);
+        return self::formatPhoneNumber($phoneNumber);
     }
 
     /**
