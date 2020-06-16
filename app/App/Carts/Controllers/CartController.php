@@ -18,6 +18,7 @@ use App\Carts\Requests\CartStoreRequest;
 use App\Carts\Resources\CartResource;
 use App\Products\Resources\ProductResource;
 use App\User;
+use App\WorkOrders\DataTransferObjects\PersonObject;
 use Domain\Carts\Actions\CartDestroyAction;
 use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Actions\CartStoreAction;
@@ -92,10 +93,11 @@ class CartController extends Controller
      */
     public function store(CartStoreRequest $request): CartResource
     {
-        // New Cart is sent with a productId;
-        $cartStoreObject = CartStoreObject::fromRequest($request->validated());
-
-        return new CartResource(CartStoreAction::execute($cartStoreObject));
+        // New Cart is sent with a productId, so can't use CartObject
+        return new CartResource(CartStoreAction::execute(
+            CartStoreObject::fromRequest($request->validated()),
+            PersonObject::fromRequest($request->validated())
+        ));
     }
 
     /**

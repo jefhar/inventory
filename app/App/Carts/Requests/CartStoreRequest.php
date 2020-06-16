@@ -23,11 +23,14 @@ class CartStoreRequest extends FormRequest
 {
     private const RULES = [
         self::PRODUCT_ID => ['required', 'exists:' . Product::TABLE . ',' . Product::LUHN],
-        self::CLIENT_COMPANY_NAME => ['required'],
+        self::CLIENT_COMPANY_NAME => ['required', 'string'],
+        self::FIRST_NAME => ['nullable', 'string'],
+        self::LAST_NAME => ['nullable', 'string'],
     ];
 
     public const CLIENT_COMPANY_NAME = CartStoreObject::CLIENT_COMPANY_NAME;
     public const FIRST_NAME = PersonObject::FIRST_NAME;
+    public const LAST_NAME = PersonObject::LAST_NAME;
     public const PRODUCT_ID = CartStoreObject::PRODUCT_ID;
 
     /**

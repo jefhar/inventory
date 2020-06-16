@@ -19,6 +19,7 @@ use App\Support\Luhn;
 use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
+use Domain\WorkOrders\Models\Person;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
@@ -35,7 +36,7 @@ class CartControllerTest extends TestCase
     /**
      * @test
      */
-    public function salesRepCanCreateCart(): void
+    public function salesRepCanCreateCartWithExistingClient(): void
     {
         $cart = $this->makeFullCart();
         $product = $this->createFullProduct();
@@ -55,6 +56,44 @@ class CartControllerTest extends TestCase
                     CartResource::CART_ID => Luhn::create(1),
                 ]
             );
+    }
+
+    /**
+     * @test
+     */
+    public function salesRepCanCreateCartWithNewClient(): void
+    {
+        $faker = \Faker\Factory::create();
+        $companyName = $faker->company;
+        $firstName = $faker->firstName;
+        $lastName = $faker->lastName;
+        $product = $this->createFullProduct();
+        $this->actingAs($this->createEmployee(UserRoles::SALES_REP))
+            ->post(
+                route(CartController::STORE_NAME),
+                [
+                    CartStoreRequest::PRODUCT_ID => $product->luhn,
+                    CartStoreRequest::CLIENT_COMPANY_NAME => $companyName,
+                    CartStoreRequest::FIRST_NAME => $firstName,
+                    CartStoreRequest::LAST_NAME => $lastName
+                ]
+            )
+            ->assertCreated()
+            ->assertJson(
+                [
+                    CartResource::CLIENT_COMPANY_NAME => $companyName,
+                    CartResource::CART_ID => Luhn::create(1),
+                    CartResource::FIRST_NAME => $firstName,
+                    CartResource::LAST_NAME => $lastName,
+                ]
+            );
+        $this->assertDatabaseHas(
+            Person::TABLE,
+            [
+                Person::FIRST_NAME => $firstName,
+                Person::LAST_NAME => $lastName,
+            ]
+        );
     }
 
     /**
