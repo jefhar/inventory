@@ -5,10 +5,11 @@ import CancelButton from '../../Buttons/CancelButton'
 import SaveButton from '../../Buttons/SaveButton'
 
 const propTypes = {
+  changePrice: PropTypes.func,
   isOpen: PropTypes.bool,
+  originalPrice: PropTypes.number,
   product: PropTypes.object,
   toggle: PropTypes.func,
-  changePrice: PropTypes.func,
 }
 
 const defaultProps = {
@@ -66,7 +67,7 @@ class PriceModal extends React.Component {
             </div>
           </form>
           <small id="originalPriceHelp" className="form-text text-muted">
-            Changing from {this.props.product.price}.
+            Changing from {this.props.originalPrice}.
           </small>
         </ModalBody>
         <ModalFooter>

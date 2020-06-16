@@ -29,27 +29,44 @@ class CartBody extends React.Component {
       },
       totalCost: 0,
     }
-    this.toggleModal = this.toggleModal.bind(this)
+    this.togglePriceModal = this.togglePriceModal.bind(this)
   }
 
   // Manipulate this.state.currentProducts Here
 
-  toggleModal(productId) {
+  togglePriceModal(productId) {
     console.info('Requested click of price button for Product ', productId)
     console.info('products', this.props.products)
-    const product = this.props.products.filter(
-      (product) => product.id === productId
-    )
-    console.info('productId', this.props.products[productId])
-    console.info('product', product)
-    this.setState((state) => {
-      return {
-        priceModal: {
-          isOpen: !state.priceModal.isOpen,
-          product: product[0],
-        },
-      }
-    })
+    console.info('productId is an ', typeof productId)
+    if (typeof productId !== 'number') {
+      console.info('productId not a number branch')
+      this.setState((state) => {
+        return {
+          priceModal: {
+            isOpen: !state.priceModal.isOpen,
+          },
+        }
+      })
+    } else {
+      const product = this.props.products.filter(
+        (product) => product.id === productId
+      )
+
+      console.info(
+        'this.props.products[productId]',
+        this.props.products[productId]
+      )
+      console.info('filtered product', product)
+      this.setState((state) => {
+        return {
+          priceModal: {
+            isOpen: !state.priceModal.isOpen,
+            product: product[0],
+            originalPrice: product[0].price,
+          },
+        }
+      })
+    }
   }
 
   changePrice(product, event) {
@@ -67,6 +84,10 @@ class CartBody extends React.Component {
 
   handleDropClick(productId) {
     console.info('Requested drop of Product ', productId)
+  }
+
+  resetPriceAndClose() {
+    this.this.togglePriceModal()
   }
 
   calculateTotalCost() {
@@ -101,18 +122,19 @@ class CartBody extends React.Component {
           cartStatus={cartStatus}
           disabled={this.props.disabled}
           handleDropClick={this.handleDropClick}
-          handlePriceClick={this.toggleModal}
+          handlePriceClick={this.togglePriceModal}
           padding={padding}
           products={this.props.products}
         />
         <PriceModal
-          isOpen={this.state.priceModal.isOpen}
-          product={this.state.priceModal.product}
-          toggle={this.toggleModal}
           changePrice={this.changePrice.bind(
             this,
             this.state.priceModal.product
           )}
+          isOpen={this.state.priceModal.isOpen}
+          originalPrice={this.state.priceModal.originalPrice}
+          product={this.state.priceModal.product}
+          toggle={this.togglePriceModal}
         />
       </CardBody>
     )
