@@ -1,5 +1,5 @@
 import * as React from 'react'
-import CartIcon from '../../../CartIcon'
+import CartIcon from '../../../Icons/CartIcon'
 import PropTypes from 'prop-types'
 import { CardHeader } from 'reactstrap'
 

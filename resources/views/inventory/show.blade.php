@@ -35,7 +35,7 @@
       <div class="card-body">
         <div id="productView"></div>
       </div>
-      @can(\App\Admin\Permissions\UserPermissions::EDIT_SAVED_PRODUCT)
+      @can(\App\Admin\Permissions\UserPermissions::MUTATE_PRODUCT_VALUES)
         @if($product->status === \Domain\Products\Models\Product::STATUS_AVAILABLE)
           <div class="card-footer" id="cardFooter">
             <div class="dropdown">
@@ -79,7 +79,7 @@
           <div class="card-footer">
             <div id="productAddedAlert" class="alert alert-secondary" role="alert">
               Product is in Cart for <a
-                href="{{ route(\App\Carts\Controllers\CartsController::SHOW_NAME, $product->cart) }}">{{ $product->cart->client->company_name }}
+                href="{{ route(\App\Carts\Controllers\CartController::SHOW_NAME, $product->cart) }}">{{ $product->cart->client->company_name }}
                 .</a><br>
               <button type="button" class="btn btn-outline-danger" id="productInCartButton">
                 <i class="fas fa-trash-alt"></i> Remove product from cart.

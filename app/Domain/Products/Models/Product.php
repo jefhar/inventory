@@ -109,7 +109,7 @@ class Product extends Model
             $price = 0.00;
         }
 
-        $this->attributes[self::PRICE] = floor($price * 100);
+        $this->attributes[self::PRICE] = round($price * 100, 0);
     }
 
     /**

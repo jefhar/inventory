@@ -27,18 +27,35 @@ const defaultProps = {
 class CartShow extends React.Component {
   constructor(props) {
     super(props)
-    console.info('CartShow props', props)
-    this.state = { currentCartStatus: props.cartStatus }
+
+    this.state = {
+      currentCartStatus: props.cartStatus,
+      currentProducts: JSON.parse(this.props.products),
+    }
     this.changeStatus = this.changeStatus.bind(this)
   }
 
   changeStatus(newStatus) {
-    console.info(
-      `User requests to change status of ${this.props.cartId} to '${newStatus}'`
-    )
+    axios
+      .patch(`/carts/${this.props.cartId}`, { status: newStatus })
+      .then(() => {
+        this.setState({
+          currentCartStatus: newStatus,
+        })
+        if (newStatus === 'void') {
+          this.setState({
+            currentProducts: [],
+          })
+        }
+        // Add a toast
+      })
+      .catch((error) => {
+        console.info('error', error)
+      })
   }
 
   render() {
+    const disabled = this.state.currentCartStatus !== 'open'
     return (
       <Container>
         <Card className={`border border-cart_${this.state.currentCartStatus}`}>
@@ -55,8 +72,9 @@ class CartShow extends React.Component {
             cartId={parseInt(this.props.cartId, 10)}
             cartStatus={this.state.currentCartStatus}
             changeStatusRequest={this.changeStatus}
+            disabled={disabled}
             padding={parseInt(this.props.productPadding, 10)}
-            startingProducts={this.props.products}
+            products={this.state.currentProducts}
           ></CartBody>
         </Card>
       </Container>

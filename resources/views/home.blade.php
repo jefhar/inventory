@@ -14,11 +14,38 @@
               </div>
             @endif
 
-            You are logged in, {{ Auth::user()->name }}!
-          <!-- {{ Auth::user()->getRoleNames()->first() }} -->
+            You are logged in, {{ \Auth::user()->name }}!
+          <!-- {{ \Auth::user()->getRoleNames()->first() }} -->
             <br/>
             <br/>
             <div class="row hyphenation">
+              @can(\App\Admin\Permissions\UserPermissions::CREATE_OR_EDIT_USERS)
+                <div class="col-6">
+                  <div class="card mb-4">
+                    <div class="card-body">
+                      <h3 class="card-title">
+                        <svg class="bi bi-people-fill pr-1" width="1em" height="1em" viewBox="0 0 16 16"
+                             fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd"
+                                d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                        </svg>
+                        Dashboard
+                      </h3>
+                      <p class="card-text">
+                        Add and edit users.
+                      </p>
+                      <a href="{{ route(\App\Admin\Controllers\DashboardController::INDEX_NAME) }}"
+                         class="btn btn-outline-primary">
+                        <svg class="bi bi-people-fill pr-1" width="1em" height="1em" viewBox="0 0 16 16"
+                             fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd"
+                                d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                        </svg>
+                        User Dashboard</a>
+                    </div>
+                  </div>
+                </div>
+              @endcan
               <div class="col-6">
                 <div class="card mb-4">
                   <div class="card-body">
@@ -37,13 +64,13 @@
                       Each
                       Work&shy;Order should keep track of one decommission project.
                     </p>
-
-                    <a href="{{ route(\App\WorkOrders\Controllers\WorkOrdersController::CREATE_NAME) }}"
+                    <a href="{{ route(\App\WorkOrders\Controllers\WorkOrderController::CREATE_NAME) }}"
                        class="btn btn-outline-primary">
                       <i class="fas fa-file-invoice-dollar mr-1"></i>Create new WorkOrder</a>
                   </div>
                 </div>
               </div>
+
               <div class="col-6">
                 <div class="card mb-4">
                   <div class="card-body">
@@ -61,12 +88,12 @@
                 <div class="col-6">
                   <div class="card mb-4">
                     <div class="card-body">
-                      <h3 class="card-title">Create a New Product Type</h3>
+                      <h3 class="card-title"><i class="fab fa-wpforms pr-1"></i>Create a New Product Type</h3>
                       <p class="card-text">
                         Create or Edit a new Product Type using the formBuilder.
                       </p>
-                      <a href="{{ route(\App\Types\Controllers\TypesController::CREATE_NAME) }}"
-                         class="btn btn-outline-primary">Edit Product
+                      <a href="{{ route(\App\Types\Controllers\TypeController::CREATE_NAME) }}"
+                         class="btn btn-outline-primary"><i class="fab fa-wpforms pr-1"></i>Edit Product
                         Types</a>
                     </div>
                   </div>
@@ -87,7 +114,7 @@
                       <p class="card-text">
                         View or edit your saved carts.
                       </p>
-                      <a href="{{ route(\App\Carts\Controllers\CartsController::INDEX_NAME) }}"
+                      <a href="{{ route(\App\Carts\Controllers\CartController::INDEX_NAME) }}"
                          class="btn btn-outline-primary">
                         <svg class="bi bi-cart3 mr-1" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
                              xmlns="http://www.w3.org/2000/svg">

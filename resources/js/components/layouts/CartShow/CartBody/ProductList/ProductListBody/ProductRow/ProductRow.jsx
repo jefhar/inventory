@@ -11,7 +11,6 @@ const propTypes = {
   product: PropTypes.object,
 }
 const ProductRow = (props) => {
-  console.info(props)
   return (
     <tr>
       <th scope="row">
@@ -30,12 +29,13 @@ const ProductRow = (props) => {
           onClick={props.handlePriceClick}
           price={props.product.price}
           productId={props.product.id}
-        ></PriceButton>
+        />
       </td>
       <td>
         <DropButton
           disabled={props.disabled}
-          onClick={props.handleDropClick}
+          onClick={props.handleDropClick.bind(props.product)}
+          type="product"
         ></DropButton>
       </td>
     </tr>

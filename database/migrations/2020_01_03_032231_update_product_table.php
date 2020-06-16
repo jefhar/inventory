@@ -41,7 +41,7 @@ class UpdateProductTable extends Migration
             $product->save();
         }
 
-        $editSavedProduct = Permission::create(['name' => UserPermissions::EDIT_SAVED_PRODUCT]);
+        $editSavedProduct = Permission::create(['name' => UserPermissions::MUTATE_PRODUCT_VALUES]);
 
         $owner = Role::findByName(UserRoles::OWNER);
         $superAdmin = Role::findByName(UserRoles::SUPER_ADMIN);

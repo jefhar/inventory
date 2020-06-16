@@ -1,4 +1,4 @@
-image: phpdockerio/php74-fpm:latest
+image: c11k/serviceandgoods:latest
 
 stages:
   - build
@@ -10,9 +10,10 @@ refresh_cache:
   cache:
     key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
     paths:
-      - vendor
-      - node_modules
       - .yarn
+      - node_modules
+      - public
+      - vendor
   script:
     - curl -sL https://deb.nodesource.com/setup_14.x | bash -
     - apt-get install -y nodejs
@@ -20,13 +21,12 @@ refresh_cache:
     - composer install --no-plugins --no-scripts
     - yarn config set cache-folder .yarn
     - yarn install --pure-lockfile
+    - npm run prod
 
 test:
   stage: test
+  image: c11k/serviceandgoods:pcov
   script:
-    - apt-get update
-    - apt-get -y --no-install-recommends install php7.4-dom php7.4-gd php7.4-json php7.4-mbstring php7.4-opcache php7.4-pcov php7.4-pdo php7.4-sqlite3 php7.4-zip sqlite unzip
-    - apt-get install -y --only-upgrade php7.4-cli php7.4-common
     - cp .env.testing .env
     - touch database/database.sqlite
     - composer install --no-plugins --no-scripts
@@ -37,9 +37,8 @@ test:
     key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
     policy: pull
     paths:
-      - vendor
-      - node_modules
       - .yarn
+      - vendor
   artifacts:
     paths:
     - tests/coverage
@@ -77,11 +76,11 @@ dusktest:
     key: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_BRANCH"
     policy: pull
     paths:
-      - vendor
-      - node_modules
       - .yarn
-  except:
-    - ci
+      - node_modules
+      - public
+      - vendor
+  when: manual
   interruptible: true
   artifacts:
     paths:
@@ -89,7 +88,6 @@ dusktest:
       - ./tests/Browser/screenshots # for Dusk screenshots
       - ./tests/Browser/console
     expire_in: 7 days
-    when: always
 
 deploy_staging:
   stage: stage
@@ -103,25 +101,9 @@ deploy_staging:
     - ~/.composer/vendor/bin/envoy run deploy --web_hook=$LOG_SLACK_WEBHOOK_URL --release_url=$CI_ENVIRONMENT_URL
   environment:
     name: staging
-    url: https://c11k.c11k.com
+    url: https://inventory.jeffharris.us
   only:
     - tags
-
-build_images:
-  image: docker:git
-  stage: build
-  services:
-  - docker:dind
-  script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest .
-    - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
-    - docker image tag registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest $CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
-    - docker build -t registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk phpdocker/dusk
-    - docker push registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dusk
-  only:
-    changes:
-      - Dockerfile
 
 pages:
   stage: stage

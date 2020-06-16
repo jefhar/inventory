@@ -11,7 +11,7 @@ $factory->define(
     Product::class,
     function (Faker $faker) {
         if (Manufacturer::count() < 20) {
-            Manufacturer::create([Manufacturer::NAME => $faker->unique()->company]);
+            Manufacturer::firstOrCreate([Manufacturer::NAME => $faker->unique()->company]);
         }
 
         if (Type::count() < 8) {
@@ -26,9 +26,9 @@ $factory->define(
             Product::MODEL => $faker->jobTitle,
             Product::MANUFACTURER_ID => $manufacturer->id,
             Product::TYPE_ID => $type->id,
-            Product::VALUES=> [
-                'serial' => $faker->isbn10
-            ]
+            Product::VALUES => [
+                'serial' => $faker->isbn10,
+            ],
         ];
     }
 );

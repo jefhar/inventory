@@ -43,31 +43,31 @@ class WorkOrdersUpdateAction
         $person = $client->person;
 
         // Override only what is in $wOO. Keep original data. Keep track of changes
-        if (isset($workOrderObject->is_locked)) {
+        if (filled($workOrderObject->is_locked)) {
             $workOrder->is_locked = $workOrderObject->is_locked;
             $changedFields[WorkOrder::IS_LOCKED] = $workOrderObject->is_locked;
         }
-        if (isset($workOrderObject->intake)) {
+        if (filled($workOrderObject->intake)) {
             $workOrder->intake = $workOrderObject->intake;
             $changedFields[WorkOrder::INTAKE] = $workOrderObject->intake;
         }
-        if (isset($clientObject->company_name)) {
+        if (filled($clientObject->company_name)) {
             $client->company_name = $clientObject->company_name;
             $changedFields[Client::COMPANY_NAME] = $clientObject->company_name;
         }
-        if (isset($personObject->first_name)) {
+        if (filled($personObject->first_name)) {
             $person->first_name = $personObject->first_name;
             $changedFields[Person::FIRST_NAME] = $personObject->first_name;
         }
-        if (isset($personObject->last_name)) {
+        if (filled($personObject->last_name)) {
             $person->last_name = $personObject->last_name;
             $changedFields[Person::LAST_NAME] = $personObject->last_name;
         }
-        if (isset($personObject->phone_number)) {
+        if (filled($personObject->phone_number)) {
             $person->phone_number = $personObject->phone_number;
             $changedFields[Person::PHONE_NUMBER] = $personObject->phone_number;
         }
-        if (isset($personObject->email)) {
+        if (filled($personObject->email)) {
             $person->email = $personObject->email;
             $changedFields[Person::EMAIL] = $personObject->email;
         }
@@ -76,7 +76,6 @@ class WorkOrdersUpdateAction
         $client->save();
         $workOrder->client()->associate($client);
         $workOrder->save();
-
         return $changedFields;
     }
 }

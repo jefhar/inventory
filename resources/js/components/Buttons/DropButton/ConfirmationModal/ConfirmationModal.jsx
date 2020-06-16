@@ -8,7 +8,7 @@ const propTypes = {
   isOpen: PropTypes.bool,
   onDestroy: PropTypes.func,
   toggle: PropTypes.func,
-  type: PropTypes.string,
+  type: PropTypes.oneOf(['cart', 'product']),
 }
 const defaultProps = {
   isOpen: false,
@@ -18,6 +18,12 @@ class ConfirmationModal extends React.Component {
   constructor(props) {
     super(props)
     this.state = {}
+    this.closeButton = this.closeButton.bind(this)
+  }
+
+  closeButton() {
+    this.props.toggle()
+    this.props.onDestroy()
   }
 
   render() {
@@ -50,7 +56,7 @@ class ConfirmationModal extends React.Component {
           <Button color="secondary" outline={true} onClick={this.props.toggle}>
             Cancel
           </Button>{' '}
-          <Button color="danger" onClick={this.props.onDestroy}>
+          <Button color="danger" onClick={this.closeButton}>
             Confirm
           </Button>
         </ModalFooter>

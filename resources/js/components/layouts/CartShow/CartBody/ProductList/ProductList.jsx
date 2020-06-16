@@ -34,6 +34,7 @@ class ProductList extends React.Component {
           handlePriceClick={this.props.handlePriceClick}
           padding={this.props.padding}
           products={this.props.products}
+          disabled={this.props.disabled}
         />
       </Table>
     )

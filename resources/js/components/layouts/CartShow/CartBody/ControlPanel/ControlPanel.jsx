@@ -10,12 +10,12 @@ const propTypes = {
   changeStatusRequest: PropTypes.func,
   className: PropTypes.string,
   disabled: PropTypes.bool,
-  totalCost: PropTypes.number,
+  totalCost: PropTypes.string,
 }
 const defaultProps = {
   cartId: 0,
   disabled: true,
-  totalCost: 0,
+  totalCost: '0.00',
 }
 
 const ControlPanel = (props) => {
@@ -36,7 +36,7 @@ const ControlPanel = (props) => {
         <InvoiceButton
           className="mx-5"
           disabled={disabled}
-          onClick={changeStatusRequest.bind(this, 'invoice')}
+          onClick={changeStatusRequest.bind(this, 'invoiced')}
           {...other}
         >
           Mark Invoiced
@@ -45,13 +45,14 @@ const ControlPanel = (props) => {
           className="mx-5"
           disabled={disabled}
           onClick={changeStatusRequest.bind(this, 'void')}
+          type="cart"
           {...other}
         >
           Destroy Cart
         </DropButton>
       </Row>
       <Row className="justify-content-end">
-        <span className="h5">Cart Total: ${totalCost.toFixed(2)}</span>
+        <span className="h5">Cart Total: ${totalCost}</span>
       </Row>
     </>
   )
