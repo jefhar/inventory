@@ -28,7 +28,6 @@ class CartShow extends React.Component {
   constructor(props) {
     super(props)
 
-    console.info('CartShow props', props)
     this.state = {
       currentCartStatus: props.cartStatus,
       currentProducts: JSON.parse(this.props.products),
@@ -37,13 +36,9 @@ class CartShow extends React.Component {
   }
 
   changeStatus(newStatus) {
-    console.info(
-      `User requests to change status of ${this.props.cartId} to '${newStatus}'`
-    )
-    // If newStatus === 'void', remember to remove products from view
     axios
       .patch(`/carts/${this.props.cartId}`, { status: newStatus })
-      .then((result) => {
+      .then(() => {
         this.setState({
           currentCartStatus: newStatus,
         })

@@ -35,11 +35,7 @@ class CartBody extends React.Component {
   // Manipulate this.state.currentProducts Here
 
   togglePriceModal(productId) {
-    console.info('Requested click of price button for Product ', productId)
-    console.info('products', this.props.products)
-    console.info('productId is an ', typeof productId)
     if (typeof productId !== 'number') {
-      console.info('productId not a number branch')
       this.setState((state) => {
         return {
           priceModal: {
@@ -52,11 +48,6 @@ class CartBody extends React.Component {
         (product) => product.id === productId
       )
 
-      console.info(
-        'this.props.products[productId]',
-        this.props.products[productId]
-      )
-      console.info('filtered product', product)
       this.setState((state) => {
         return {
           priceModal: {
@@ -70,10 +61,6 @@ class CartBody extends React.Component {
   }
 
   changePrice(product, event) {
-    console.log(`changePrice(${product}, ${event}`)
-    console.info('product: ', product)
-    console.info('event', event)
-
     const target = event.target
     const value = target.type === 'checkbox' ? target.checked : target.value
     product.price = parseFloat(value)
@@ -83,6 +70,7 @@ class CartBody extends React.Component {
   }
 
   handleDropClick(productId) {
+    // It's already dropped by the time code gets here...
     console.info('Requested drop of Product ', productId)
   }
 
@@ -94,12 +82,10 @@ class CartBody extends React.Component {
     // return 69.96
     let totalPrice = 0
     const products = this.props.products
-    console.info('products', products)
     for (let i = 0; i < products.length; ++i) {
-      console.log(`products[${i}]`, products[i])
       totalPrice += products[i].price
     }
-    console.log(totalPrice)
+
     return Number.parseFloat(totalPrice).toFixed(2)
   }
 
@@ -107,7 +93,7 @@ class CartBody extends React.Component {
     const { cartId, cartStatus, changeStatusRequest, padding } = this.props
 
     const totalCost = this.calculateTotalCost()
-    console.info(typeof totalCost)
+
     return (
       <CardBody>
         <ControlPanel

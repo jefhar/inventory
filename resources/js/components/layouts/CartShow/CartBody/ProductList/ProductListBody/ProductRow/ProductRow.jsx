@@ -11,7 +11,6 @@ const propTypes = {
   product: PropTypes.object,
 }
 const ProductRow = (props) => {
-  console.info(props)
   return (
     <tr>
       <th scope="row">
