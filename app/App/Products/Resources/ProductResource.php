@@ -60,7 +60,7 @@ class ProductResource extends JsonResource
             self::SERIAL => $this->serial,
             self::STATUS => $this->status,
             self::TYPE_NAME => $this->type->name,
-            self::WORK_ORDER_ID => $this->work_order_id,
+            self::WORK_ORDER_ID => $this->workorder->luhn,
         ];
     }
 }

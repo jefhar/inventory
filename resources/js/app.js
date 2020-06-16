@@ -384,7 +384,7 @@ if (document.getElementById('WorkOrdersEdit')) {
           model,
           serial,
         } = response.data
-        const { name: type } = response.data.type
+        const { type_name: typeName } = response.data.type_name
         const productId = _.padStart(response.data.product_id, 6, '0')
         const productForm = document.getElementById('productForm')
         const productsTable = document.getElementById('productsTable')
@@ -395,7 +395,7 @@ if (document.getElementById('WorkOrdersEdit')) {
 <a class="btn btn-info" href="/inventory/${productId}">${productId}</a></th>
 <td>${manufacturerName}</td>
 <td>${model}</td>
-<td>${type}</td>
+<td>${typeName}</td>
 <td>${serial}</td>
 <td>${createdAt}</td>`
         productsTable.appendChild(tr)
@@ -416,7 +416,7 @@ if (document.getElementById('WorkOrdersEdit')) {
   </button>
 </div>
 <div class="toast-body">
-Product ${productId} ${manufacturerName} ${model} ${type} has been added to Work
+Product ${productId} ${manufacturerName} ${model} ${typeName} has been added to Work
 Order ${postData.workorder_id}.
 </div>`
         addedProductToast.id = 'addedProductToast'
@@ -571,7 +571,7 @@ if (document.getElementById('typesCreate')) {
   }
   const fetchTypesList = () => {
     loadFormButton.disabled = true
-    loadFormButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+    loadFormButton.innerHTML = `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>`
     while (typesList.hasChildNodes()) {
       typesList.removeChild(typesList.lastChild)
     }
@@ -1076,191 +1076,4 @@ if (document.getElementById('cartIndex')) {
 
   // Do Stuff
   $('.collapse').collapse({ toggle: false })
-}
-
-if (document.getElementById('cartShow')) {
-  // Definitions
-  const $costModal = $('#productCostModal')
-  let activeProduct = {}
-  const addPriceButtons = document.getElementsByClassName('price-button')
-  const invoiceButton = document.getElementById('invoiceButton')
-  const destroyCartButton = document.getElementById('destroyCartButton')
-
-  // Actions
-  const changeInvoiceStatus = (status) => {
-    // Definitions
-    const cartId = document.getElementById('cartId').dataset.cartId
-
-    // Actions
-    const onPatch = () => {
-      // Definitions
-      const cardBorder = document.getElementById('card-border')
-      const classes = cardBorder.classList
-
-      // Do Stuff
-      classes.remove('border-secondary')
-      classes.add(
-        `border-${status === DropButton.CART_INVOICED ? 'success' : 'danger'}`
-      )
-      document.getElementById('cartStatus').innerHTML = status
-    }
-    // Do Stuff
-    axios
-      .patch(`/carts/${cartId}`, { status: status })
-      .then((result) => {
-        onPatch(result)
-      })
-      .catch((error) => {
-        console.info('error', error)
-      })
-  }
-  const disablePriceButtons = () => {
-    // Do Stuff
-    for (
-      let i = 0, len = addPriceButtons.length | 0;
-      i < len;
-      i = (i + 1) | 0
-    ) {
-      addPriceButtons[i].disabled = true
-    }
-  }
-  const updateTotalPrice = () => {
-    // Definitions
-    let totalPrice = 0
-    const cartTotalPrice = document.getElementById('cartTotalPrice')
-
-    // Do Stuff
-    for (
-      let i = 0, len = addPriceButtons.length | 0;
-      i < len;
-      i = (i + 1) | 0
-    ) {
-      let price = addPriceButtons[i].dataset.productPrice
-      console.info('ProductPrice', price)
-      price = price.replace(/[^\d.-]/g, '')
-      console.info('replaced productPrice')
-      totalPrice += parseFloat(price) * 100 // Because I was getting rounding
-      // errors at under $100
-      console.info('running totalPrice:', totalPrice)
-    }
-    cartTotalPrice.innerText = (totalPrice / 100).toFixed(2)
-  }
-  const productCostPopup = (dataset) => {
-    console.info(dataset)
-    // Definitions
-    activeProduct = dataset
-    const {
-      productId,
-      productModel,
-      productPrice,
-      productManufacturer,
-    } = activeProduct
-    const originalPrice = document.getElementById('originalPrice')
-    const priceToShow = parseFloat(productPrice).toFixed(2)
-    const productModalHeader = document.getElementById('productModalHeader')
-    const productPriceInput = document.getElementById('productPriceInput')
-
-    // Do Stuff
-    originalPrice.innerText = priceToShow
-    productModalHeader.innerText = `${productId} ${productManufacturer} ${productModel}`
-    $costModal.modal('show')
-    productPriceInput.value = priceToShow
-  }
-  const invoiceButtonClick = () => {
-    // Do Stuff
-    invoiceButton.disabled = true
-    destroyCartButton.disabled = true
-    changeInvoiceStatus(window.DTO.CART_INVOICED)
-    disablePriceButtons()
-  }
-  const costModalShown = () => {
-    // Definitions
-    const costSubmitButton = document.getElementById('costSubmitButton')
-
-    // Actions
-    const costSubmitButtonClick = () => {
-      // Definitions
-      const productId = activeProduct.productId
-      const newPrice = document.getElementById('productPriceInput').value
-      const patchData = { price: newPrice }
-
-      // Actions
-      const onPatch = (response) => {
-        console.info(response)
-        // Definitions
-        activeProduct.productPrice = response.data.price
-        const $toast = $('#productPriceToast')
-        const priceText = document.getElementById(
-          `productPriceButtonText_${productId}`
-        )
-
-        // Do Stuff
-        $costModal.modal('hide')
-
-        document.getElementById('toastBody').innerHTML =
-          `Product ${activeProduct.productId} has been updated. ` +
-          `The price is now $${activeProduct.productPrice}.`
-        priceText.innerText = parseFloat(activeProduct.productPrice).toFixed(2)
-
-        $toast.toast()
-        $toast.toast('show')
-      }
-      const patchError = (error) => {
-        // Definitions
-        const $toast = $('productUpdateErrorToast')
-        const toastErrorBody = document.getElementById('toastErrorBody')
-
-        // Do Stuff
-        console.error(error)
-        // display error toast
-        toastErrorBody.innerHTML = `There was an error updating the price of product ${activeProduct.productId}.<br>${error}`
-        $toast.toast()
-        $toast.toast('show')
-      }
-
-      // Do stuff
-      if (newPrice < 0) {
-        return false
-      }
-      axios
-        .patch(`/products/${activeProduct.productId}`, patchData)
-        .then((response) => {
-          onPatch(response)
-        })
-        .catch((error) => {
-          patchError(error)
-        })
-        .finally(() => {
-          updateTotalPrice()
-        })
-    }
-
-    // Attachments
-    costSubmitButton.addEventListener('click', () => {
-      costSubmitButtonClick()
-    })
-    $('#form').bind('keypress', (event) => {
-      formKeyPress(event, costSubmitButton)
-    })
-
-    // Do Stuff
-    $('#productPrice').trigger('focus')
-  }
-
-  // Attachments
-  $costModal.on('shown.bs.modal', () => {
-    costModalShown()
-  })
-  for (let i = 0, len = addPriceButtons.length | 0; i < len; i = (i + 1) | 0) {
-    addPriceButtons[i].addEventListener('click', () => {
-      productCostPopup(addPriceButtons[i].dataset)
-    })
-  }
-
-  invoiceButton.addEventListener('click', function () {
-    invoiceButtonClick()
-  })
-
-  // Do Stuff
-  updateTotalPrice()
 }
