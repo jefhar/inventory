@@ -20,7 +20,6 @@ use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use Tests\TestCase;
 use Tests\Traits\FullObjects;
 
@@ -269,7 +268,7 @@ class CartControllerTest extends TestCase
         $cart->save();
         $this
             ->get(route(CartController::SHOW_NAME, $cart))
-            ->assertSee(Str::title($cart->status));
+            ->assertSee($cart->status);
 
         $cart->status = Cart::STATUS_VOID;
         $cart->save();
@@ -299,7 +298,7 @@ class CartControllerTest extends TestCase
             ->withoutMix()
             ->get(route(CartController::SHOW_NAME, $cart));
         for ($i = 0; $i < 20; ++$i) {
-            $response->assertSee($products[$i]->manufacturer->name);
+            $response->assertSee($products[$i]->manufacturer->name, false);
             $response->assertSee($products[$i]->model);
         }
     }
@@ -341,7 +340,7 @@ class CartControllerTest extends TestCase
                     Product::STATUS => Product::STATUS_INVOICED,
                 ]
             );
-            $response->assertSee($products[$i]->manufacturer->name);
+            $response->assertSee($products[$i]->manufacturer->name, false);
             $response->assertSee($products[$i]->model);
         }
     }
