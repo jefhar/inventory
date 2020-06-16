@@ -46,7 +46,6 @@ class WorkOrdersControllerTest extends TestCase
 
     /**
      * @test
-     * @SE-20 Testing that a locked user cannot access pages.
      */
     public function lockedUserIsUnauthorized(): void
     {
