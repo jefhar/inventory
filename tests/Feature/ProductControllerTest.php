@@ -57,7 +57,7 @@ class ProductControllerTest extends TestCase
         $this->actingAs($this->createEmployee())
             ->postJson(route(ProductController::STORE_NAME), $formRequest)
             ->assertCreated()
-            ->assertSee($manufacturerName)
+            ->assertSee($manufacturerName, false)
             ->assertSee(Product::ID)
             ->assertSee(Product::TYPE)
             ->assertSee(Product::WORK_ORDER_ID);

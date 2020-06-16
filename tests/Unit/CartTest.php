@@ -16,6 +16,7 @@ use App\Carts\Requests\CartPatchRequest;
 use App\Carts\Requests\CartStoreRequest;
 use App\Support\Luhn;
 use App\User;
+use App\WorkOrders\DataTransferObjects\PersonObject;
 use Domain\Carts\Actions\CartDestroyAction;
 use Domain\Carts\Actions\CartPatchAction;
 use Domain\Carts\Actions\CartStoreAction;
@@ -70,7 +71,7 @@ class CartTest extends TestCase
                 CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
-        $cart = CartStoreAction::execute($cartStoreObject);
+        $cart = CartStoreAction::execute($cartStoreObject, PersonObject::fromRequest([]));
         $this->assertEquals($client->company_name, $cart->client->company_name);
     }
 
@@ -148,7 +149,7 @@ class CartTest extends TestCase
             ]
         );
         $this->actingAs($this->createEmployee(UserRoles::SALES_REP));
-        $savedCart = CartStoreAction::execute($cartStoreObject);
+        $savedCart = CartStoreAction::execute($cartStoreObject, PersonObject::fromRequest([]));
 
         $this->assertDatabaseHas(
             Cart::TABLE,
@@ -181,7 +182,7 @@ class CartTest extends TestCase
                 CartStore::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
-        $cart = CartStoreAction::execute($cartStoreObject);
+        $cart = CartStoreAction::execute($cartStoreObject, PersonObject::fromRequest([]));
 
         $this->assertDatabaseHas(
             Product::TABLE,
@@ -230,7 +231,7 @@ class CartTest extends TestCase
             ]
         );
         $this->actingAs($myCartUser);
-        $savedCart = CartStoreAction::execute($cartStoreObject);
+        $savedCart = CartStoreAction::execute($cartStoreObject, PersonObject::fromRequest([]));
         $this->actingAs($notMyCartUser);
         CartDestroyAction::execute($savedCart);
     }
@@ -276,7 +277,7 @@ class CartTest extends TestCase
                 CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
-        CartStoreAction::execute($cartStoreObject);
+        CartStoreAction::execute($cartStoreObject, PersonObject::fromRequest([]));
         $product->refresh();
         $this->assertEquals(Product::STATUS_IN_CART, $product->status);
     }
@@ -297,7 +298,7 @@ class CartTest extends TestCase
                 CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
-        CartStoreAction::execute($cartStoreObject);
+        CartStoreAction::execute($cartStoreObject, PersonObject::fromRequest([]));
     }
 
     /**
@@ -317,7 +318,7 @@ class CartTest extends TestCase
                 CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
-        $cart = CartStoreAction::execute($cartStoreObject);
+        $cart = CartStoreAction::execute($cartStoreObject, PersonObject::fromRequest([]));
 
         $this->assertDatabaseHas(
             Cart::TABLE,
@@ -358,7 +359,7 @@ class CartTest extends TestCase
                 CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
-        $cart = CartStoreAction::execute($cartStoreObject);
+        $cart = CartStoreAction::execute($cartStoreObject, PersonObject::fromRequest([]));
         CartPatchAction::execute(
             $cart,
             CartPatchObject::fromRequest([CartPatchRequest::STATUS => Cart::STATUS_INVOICED])
@@ -390,7 +391,7 @@ class CartTest extends TestCase
                 CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
-        $cart = CartStoreAction::execute($cartStoreObject);
+        $cart = CartStoreAction::execute($cartStoreObject, PersonObject::fromRequest([]));
         CartPatchAction::execute($cart, CartPatchObject::fromRequest([CartPatchRequest::STATUS => 'flarp']));
     }
 
@@ -413,7 +414,7 @@ class CartTest extends TestCase
                 CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
-        $cart = CartStoreAction::execute($cartStoreObject);
+        $cart = CartStoreAction::execute($cartStoreObject, PersonObject::fromRequest([]));
 
         CartPatchAction::execute(
             $cart,

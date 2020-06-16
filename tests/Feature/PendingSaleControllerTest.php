@@ -14,6 +14,7 @@ use App\Carts\DataTransferObjects\CartStoreObject;
 use App\Carts\Requests\CartStoreRequest;
 use App\Carts\Requests\PendingSalesStoreRequest;
 use App\Products\Resources\ProductResource;
+use App\WorkOrders\DataTransferObjects\PersonObject;
 use Domain\Carts\Actions\CartStoreAction;
 use Domain\Carts\Models\Cart;
 use Domain\Products\Models\Product;
@@ -96,7 +97,8 @@ class PendingSaleControllerTest extends TestCase
 
             ]
         );
-        CartStoreAction::execute($cartStoreObject);
+        $personObject = PersonObject::fromRequest([]);
+        CartStoreAction::execute($cartStoreObject, $personObject);
         $product->refresh();
         $this->assertDatabaseMissing(
             Product::TABLE,
@@ -191,7 +193,8 @@ class PendingSaleControllerTest extends TestCase
                     CartStoreRequest::PRODUCT_ID => $product->luhn,
                     CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
                 ]
-            )
+            ),
+            $personObject = PersonObject::fromRequest([])
         );
         $secondProduct = $this->createFullProduct();
         $this->post(

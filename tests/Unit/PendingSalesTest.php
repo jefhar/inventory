@@ -11,6 +11,7 @@ namespace Tests\Unit;
 use App\Admin\Permissions\UserRoles;
 use App\Carts\DataTransferObjects\CartStoreObject;
 use App\Carts\Requests\CartStoreRequest;
+use App\WorkOrders\DataTransferObjects\PersonObject;
 use Domain\Carts\Actions\CartStoreAction;
 use Domain\PendingSales\Actions\PendingSalesDestroyAction;
 use Domain\PendingSales\Actions\PendingSalesStoreAction;
@@ -79,7 +80,8 @@ class PendingSalesTest extends TestCase
                     CartStoreRequest::PRODUCT_ID => $product->luhn,
                     CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
                 ]
-            )
+            ),
+            $personObject = PersonObject::fromRequest([])
         );
         $product->refresh();    // CartStoreAction updated product in database.
         PendingSalesDestroyAction::execute($product);
@@ -109,7 +111,8 @@ class PendingSalesTest extends TestCase
                     CartStoreRequest::PRODUCT_ID => $product->luhn,
                     CartStoreRequest::CLIENT_COMPANY_NAME => $client->company_name,
                 ]
-            )
+            ),
+            $personObject = PersonObject::fromRequest([])
         );
         // this `$product` is STATUS_AVAILABLE. Do not refresh().
         PendingSalesDestroyAction::execute($product);
