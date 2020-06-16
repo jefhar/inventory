@@ -12,11 +12,13 @@ use App\Admin\Permissions\UserRoles;
 use App\User;
 use App\WorkOrders\DataTransferObjects\ClientObject;
 use App\WorkOrders\DataTransferObjects\PersonObject;
+use App\WorkOrders\Requests\WorkOrderStoreRequest;
 use Domain\WorkOrders\Actions\WorkOrdersStoreAction;
 use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Domain\WorkOrders\Models\WorkOrder;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 
 /**
  * Class WorkOrderStoreActionTest
@@ -25,17 +27,18 @@ use Tests\TestCase;
  */
 class WorkOrderStoreActionTest extends TestCase
 {
+    use FullObjects;
+
     private const COMPANY_NAME = 'George Q. Client';
     private ClientObject $clientObject;
     private PersonObject $personObject;
-    private User $user;
+    private User $employee;
 
     /**
      * @test
      */
     public function workOrderStoreActionAddsCompanyNameToStorage(): void
     {
-        $this->actingAs($this->user);
         WorkOrdersStoreAction::execute($this->clientObject, $this->personObject);
         $this->assertDatabaseHas(
             Client::TABLE,
@@ -50,7 +53,6 @@ class WorkOrderStoreActionTest extends TestCase
      */
     public function workOrderStoreActionAddsGivenPersonToClient(): void
     {
-        $this->actingAs($this->user);
         WorkOrdersStoreAction::execute($this->clientObject, $this->personObject);
         $this->assertDatabaseHas(
             Person::TABLE,
@@ -71,7 +73,6 @@ class WorkOrderStoreActionTest extends TestCase
      */
     public function workOrderStoreWithoutPersonCreatesBlankPerson(): void
     {
-        $this->actingAs($this->user);
         $clientObject = $this->clientObject;
         $personObject = PersonObject::fromRequest([]);
         WorkOrdersStoreAction::execute($clientObject, $personObject);
@@ -90,25 +91,23 @@ class WorkOrderStoreActionTest extends TestCase
      */
     public function storingWorkOrderStoresWorkOrderSuccessfullyIfClientAlreadyExists(): void
     {
-        $authorizedUser = factory(User::class)->create();
-        $authorizedUser->assignRole(UserRoles::EMPLOYEE);
-        $this->actingAs($this->user);
-
+        /** @var Client $client */
         $client = factory(Client::class)->create();
+        /** @var Person $person */
         $person = factory(Person::class)->make();
         $client->person()->save($person);
 
-        $clientObject = new ClientObject(
+        $clientObject = ClientObject::fromRequest(
             [
-                Client::COMPANY_NAME => $client->company_name,
+                ClientObject::CLIENT_COMPANY_NAME => $client->company_name,
             ]
         );
-        $personObject = new PersonObject(
+        $personObject = PersonObject::fromRequest(
             [
-                Person::FIRST_NAME => $person->first_name,
-                Person::LAST_NAME => $person->last_name,
-                Person::EMAIL => $person->email,
-                Person::PHONE_NUMBER => $person->phone_number,
+                PersonObject::FIRST_NAME => $person->first_name,
+                PersonObject::LAST_NAME => $person->last_name,
+                PersonObject::EMAIL => $person->email,
+                PersonObject::PHONE_NUMBER => $person->phone_number,
             ]
         );
         WorkOrdersStoreAction::execute(
@@ -124,21 +123,19 @@ class WorkOrderStoreActionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::EMPLOYEE);
-        $user->save();
-        $this->user = $user;
-        $person = factory(Person::class)->make();
-
-        $this->clientObject = new ClientObject(
-            [Client::COMPANY_NAME => self::COMPANY_NAME],
+        $this->actingAs($this->createEmployee(UserRoles::EMPLOYEE));
+        $this->clientObject = ClientObject::fromRequest(
+            [ClientObject::CLIENT_COMPANY_NAME => self::COMPANY_NAME],
         );
+
+        /** @var Person $person */
+        $person = factory(Person::class)->make();
         $this->personObject = PersonObject::fromRequest(
             [
-                Person::EMAIL => $person->email,
-                Person::FIRST_NAME => $person->first_name,
-                Person::LAST_NAME => $person->last_name,
-                Person::PHONE_NUMBER => $person->phone_number,
+                WorkOrderStoreRequest::EMAIL => $person->email,
+                WorkOrderStoreRequest::FIRST_NAME => $person->first_name,
+                WorkOrderStoreRequest::LAST_NAME => $person->last_name,
+                WorkOrderStoreRequest::PHONE_NUMBER => $person->phone_number,
             ]
         );
     }

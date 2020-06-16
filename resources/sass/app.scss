@@ -1,17 +1,17 @@
-// Fonts
-@import url("https://fonts.googleapis.com/css?family=Lato&display=swap");
-
 // Variables
-@import "variables";
+@import 'variables';
+
+// Fonts
+@import url($web-font-path);
 
 // Bootstrap
-@import "~bootstrap/scss/bootstrap";
+@import '~bootstrap/scss/bootstrap';
 
 //Fontawesome
-@import "~@fortawesome/fontawesome-free/css/all.css";
+@import '~@fortawesome/fontawesome-free/css/all.css';
 
 // Autocomplete [in NavBar]
-@import "~autocomplete-js/dist/autocomplete.min.css";
+@import '~autocomplete-js/dist/autocomplete.min.css';
 
 /*
  * Package additions
@@ -83,4 +83,44 @@ body {
 
 .hyphenation {
   hyphens: auto;
+}
+
+.left-warning-border {
+  border-left: $warning 6px solid;
+  padding-left: 12px;
+}
+
+.left-danger-border {
+  border-left: $danger 6px solid;
+  padding-left: 12px;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+/**
+Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+*/
+.cursor-trashcan {
+  cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfkBRsWMw9yhgu5AAABCUlEQVQoz3XRO0pDQRSH8d9VC0FSpFG8IbEIWIgPzMVYiIgiqKUWphAtdAvuwBW4AOtAiiDWGsHSPBALIWtQfBQaOy1yzfWB3ylmOPOd+Q8MCes6Hj3qWE+affGakpZRlpdXlpGW6h4EYFXFk5+kbTvvChNOVNV+CSu2HLgLBCo2XfrLsqpSd9sWigQIjSIQCbWTR7ZEjk1h1x6mHIu0EqGpoKGIQIB5dZHGdyFSN9dLn1MXaX6PmHWt2BOKrs26SYQX716FhsCicQUdz9Afzyy4l3Mn58OwjKwZKRcMxEJTZN+DNiZt2HIW3xez5F4jrltvarKuHH39BYz14tgxaM2pkmn/cujGCJ9a9j19tHLW/QAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMC0wNS0yN1QyMjo1MToxNSswMDowMJrmGlkAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjAtMDUtMjdUMjI6NTE6MTUrMDA6MDDru6LlAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg=='),
+    not-allowed;
+}
+
+/**
+* bi (bootstrap icon) code from https://github.com/twbs/icons/issues/82
+ */
+.bi {
+  vertical-align: -0.125em;
+  margin-bottom: calc(-0.125em / 2);
+  transform: scale(1.5);
+}
+// Make icons slightly larger (aesthetically) in buttons and dropdowns
+.btn,
+.dropdown {
+  .bi {
+    transform: scale(1.5);
+    // reset the bottom margin from above
+    margin-bottom: 0;
+  }
 }

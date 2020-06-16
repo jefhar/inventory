@@ -9,16 +9,22 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Products;
 
+use App\Admin\Exceptions\LockedProductException;
 use App\Admin\Permissions\UserRoles;
-use App\Products\DataTransferObject\ProductUpdateObject;
-use App\User;
+use App\Carts\DataTransferObjects\CartPatchObject;
+use App\Products\DataTransferObject\InventoryProductUpdateObject;
+use Domain\Carts\Actions\CartPatchAction;
+use Domain\Carts\Models\Cart;
+use Domain\PendingSales\Actions\PricePatchAction;
+use Domain\Products\Actions\InventoryProductUpdateAction;
 use Domain\Products\Actions\ProductShowAction;
-use Domain\Products\Actions\ProductUpdateAction;
 use Domain\Products\Models\Manufacturer;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 
 /**
  * Class ProductsTest
@@ -27,6 +33,7 @@ use Tests\TestCase;
  */
 class ProductsTest extends TestCase
 {
+    use FullObjects;
 
     /**
      * @test
@@ -36,6 +43,7 @@ class ProductsTest extends TestCase
         $faker = Factory::create();
         $manufacturerName = $faker->company;
         $workOrder = factory(WorkOrder::class)->create();
+        /** @var Product $product */
         $product = factory(Product::class)->make();
         $manufacturer = Manufacturer::firstOrCreate([Manufacturer::NAME => $manufacturerName]);
         $product->manufacturer()->associate($manufacturer);
@@ -64,10 +72,7 @@ class ProductsTest extends TestCase
      */
     public function createdProductHasLuhn(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
-
+        $this->createFullProduct();
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -82,9 +87,7 @@ class ProductsTest extends TestCase
      */
     public function createdProductIsAvailableForSale(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
+        $this->createFullProduct();
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -96,26 +99,25 @@ class ProductsTest extends TestCase
 
     /**
      * @test
+     * @throws \JsonException
      */
     public function updateProductUpdatesProduct(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
+        $product = $this->createFullProduct();
         $update = factory(Product::class)->make();
-        $productUpdateObject = ProductUpdateObject::fromRequest(
+        $productUpdateObject = InventoryProductUpdateObject::fromRequest(
             [
-                'type' => $update->type->slug,
-                'manufacturer' => $update->manufacturer->name,
-                'model' => $update->model,
-                'values' => [
+                Product::TYPE => $update->type->slug,
+                Product::MANUFACTURER_NAME => $update->manufacturer->name,
+                Product::MODEL => $update->model,
+                Product::VALUES => [
                     'radio-group-1575689472139' => 'option-3',
                     'select-1575689474390' => 'option-2',
                     'textarea-1575689477555' => 'textarea text. Bwahahahahaaaa',
                 ],
             ]
         );
-        ProductUpdateAction::execute($product, $productUpdateObject);
+        InventoryProductUpdateAction::execute($product, $productUpdateObject);
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -141,10 +143,12 @@ class ProductsTest extends TestCase
     {
         $faker = Factory::create();
         $serial = $faker->isbn13;
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
+        /** @var Product $product */
         $product = factory(Product::class)->make(
             [
-                'values' => [
+                Product::VALUES => [
                     'radio-group-1575689472139' => 'option-3',
                     'select-1575689474390' => 'option-2',
                     'text-1575689474910' => 'option-1',
@@ -161,12 +165,12 @@ class ProductsTest extends TestCase
             ]
         );
 
-        $productUpdateObject = ProductUpdateObject::fromRequest(
+        $productUpdateObject = InventoryProductUpdateObject::fromRequest(
             [
-                'type' => $product->type->slug,
-                'manufacturer' => $product->manufacturer->name,
-                'model' => $product->model,
-                'values' => [
+                Product::TYPE => $product->type->slug,
+                Product::MANUFACTURER_NAME => $product->manufacturer->name,
+                Product::MODEL => $product->model,
+                Product::VALUES => [
                     'radio-group-1575689472139' => 'option-3',
                     'select-1575689474390' => 'option-2',
                     'text-1575689474910' => 'option-1',
@@ -174,7 +178,7 @@ class ProductsTest extends TestCase
                 ],
             ]
         );
-        ProductUpdateAction::execute($product, $productUpdateObject);
+        InventoryProductUpdateAction::execute($product, $productUpdateObject);
         $this->assertDatabaseHas(
             Product::TABLE,
             [
@@ -186,16 +190,12 @@ class ProductsTest extends TestCase
 
     /**
      * @test
+     * @throws \JsonException
      */
     public function renderingProductViewCombinesValuesAndType(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
-
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::EMPLOYEE);
-        $this->actingAs($user);
+        $product = $this->createFullProduct();
+        $this->actingAs($this->createEmployee(UserRoles::EMPLOYEE));
 
         $formData = ProductShowAction::execute($product);
         $this->assertArrayHasKey('userData', $formData[2]);
@@ -203,20 +203,76 @@ class ProductsTest extends TestCase
 
     /**
      * @test
+     * @throws \JsonException
      */
     public function renderingProductViewAddsManufacturerAndModelFirst(): void
     {
-        $workOrder = factory(WorkOrder::class)->create();
-        $product = factory(Product::class)->make();
-        $workOrder->products()->save($product);
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::EMPLOYEE);
-        $this->actingAs($user);
+        $product = $this->createFullProduct();
+
+        $this->actingAs($this->createEmployee(UserRoles::EMPLOYEE));
 
         $formData = json_decode($product->type->form, true, 512, JSON_THROW_ON_ERROR);
-        $this->assertArrayNotHasKey('manufacturer', $formData);
+        $this->assertArrayNotHasKey(Product::MANUFACTURER_NAME, $formData);
         $actionFormData = ProductShowAction::execute($product);
-        $this->assertEquals('manufacturer', $actionFormData[0]['name']);
-        $this->assertEquals('model', $actionFormData[1]['name']);
+        $this->assertEquals(Product::MANUFACTURER_NAME, $actionFormData[0]['name']);
+        $this->assertEquals(Product::MODEL, $actionFormData[1]['name']);
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function productPriceSavesAsPennies(): void
+    {
+        $product = $this->createFullProduct();
+        $price = rand(100, 999_999_99);
+        $product->price = $price / 100;
+        $product->save();
+        $this->assertDatabaseHas(
+            Product::TABLE,
+            [
+                Product::ID => $product->id,
+                Product::PRICE => (int)($price),
+            ]
+        );
+        $product->refresh();
+        $this->assertEquals($price, $product->price * 100);
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function productPriceCanNotBeNegative(): void
+    {
+        $product = $this->createFullProduct();
+        $price = rand(-999_999_99, 0);
+        $product->price = $price;
+        $product->save();
+        $product->refresh();
+        $this->assertEquals(0, $product->price);
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function invoicedProductCannotChangePrice(): void
+    {
+        Mail::fake();
+        // Setup
+        $salesRep = $this->createEmployee(UserRoles::SALES_REP);
+        $this->actingAs($salesRep);
+
+        $product = $this->createFullProduct();
+        $cart = $this->makeFullCart();
+        $salesRep->carts()->save($cart);
+        $cart->products()->save($product);
+        CartPatchAction::execute($cart, CartPatchObject::fromRequest([Cart::STATUS => Cart::STATUS_INVOICED]));
+        $product->refresh();
+
+        // Test
+        $this->expectException(LockedProductException::class);
+        PricePatchAction::execute($product, rand(0, 999_999_99) / 100);
     }
 }

@@ -8,18 +8,20 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Admin\Permissions\UserRoles;
 use App\AjaxSearch\Controllers\AjaxSearchController;
+use App\AjaxSearch\Requests\AjaxSearchRequest;
+use App\AjaxSearch\Resources\AjaxSearchCollectionResource;
 use App\Products\DataTransferObject\ProductStoreObject;
-use App\User;
 use Domain\Products\Actions\ProductStoreAction;
 use Domain\Products\Models\Product;
 use Domain\WorkOrders\Models\Client;
 use Domain\WorkOrders\Models\Person;
 use Domain\WorkOrders\Models\WorkOrder;
 use Faker\Factory;
+use Support\Requests\ProductStore;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
+use Tests\Traits\FullObjects;
 
 /**
  * Class AjaxSearchTest
@@ -28,39 +30,17 @@ use Tests\TestCase;
  */
 class AjaxSearchTest extends TestCase
 {
-    private User $guest;
-    private User $user;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $guest = factory(User::class)->make();
-        /** @var User $user */
-        $user = factory(User::class)->create();
-        $user->assignRole(UserRoles::EMPLOYEE);
-        $this->guest = $guest;
-        $this->user = $user;
-    }
+    use FullObjects;
 
     /**
      * @test
      */
-    public function anonymousIsUnauthorized(): void
-    {
-        $this->get(route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME]))->assertRedirect('/login');
-    }
-
-    /**
-     * @test
-     */
-    public function unauthorizedIsUnauthorized(): void
+    public function anonymousOrUnauthorizedIsUnauthorized(): void
     {
         $this->get(
             route(
                 AjaxSearchController::SHOW_NAME,
-                [
-                    'field' => Client::COMPANY_NAME,
-                ]
+                [AjaxSearchRequest::FIELD => AjaxSearchRequest::SEARCH_COMPANY_NAME]
             )
         )
             ->assertRedirect('/login');
@@ -71,13 +51,17 @@ class AjaxSearchTest extends TestCase
      */
     public function authorizedIsOk(): void
     {
-        $this->actingAs($this->user)->withoutExceptionHandling();
-        $this->get(
-            route(
-                AjaxSearchController::SHOW_NAME,
-                ['field' => Client::COMPANY_NAME]
+        $this->actingAs($this->createEmployee())
+            ->get(
+                route(
+                    AjaxSearchController::SHOW_NAME,
+                    [
+                        AjaxSearchRequest::FIELD => AjaxSearchRequest::SEARCH_COMPANY_NAME,
+                        AjaxSearchRequest::Q => 'a',
+                    ]
+                )
             )
-        )->assertOk();
+            ->assertOk();
     }
 
     /**
@@ -85,24 +69,34 @@ class AjaxSearchTest extends TestCase
      */
     public function knownFieldIsOk(): void
     {
-        $this->actingAs($this->user);
-        $this->get(
-            route(
-                AjaxSearchController::SHOW_NAME,
-                [
-                    'field' => Client::COMPANY_NAME,
-                ]
+        $this->actingAs($this->createEmployee())
+            ->get(
+                route(
+                    AjaxSearchController::SHOW_NAME,
+                    [
+                        AjaxSearchRequest::FIELD => AjaxSearchRequest::SEARCH_COMPANY_NAME,
+                        AjaxSearchRequest::Q => 'foo',
+                    ]
+                )
             )
-        )->assertOk();
+            ->assertOk();
     }
 
     /**
      * @test
      */
-    public function unknownFieldIsBad(): void
+    public function unknownFieldIsNotAcceptable(): void
     {
-        $this->actingAs($this->user)
-            ->get(route(AjaxSearchController::SHOW_NAME, ['field' => 'flarp']))
+        $this->actingAs($this->createEmployee())
+            ->get(
+                route(
+                    AjaxSearchController::SHOW_NAME,
+                    [
+                        AjaxSearchRequest::FIELD => 'flarp',
+                        AjaxSearchRequest::Q => 'q',
+                    ]
+                )
+            )
             ->assertStatus(Response::HTTP_NOT_ACCEPTABLE);
     }
 
@@ -113,30 +107,39 @@ class AjaxSearchTest extends TestCase
     {
         $company_name = 'John';
         for ($i = 0; $i < 50; $i++) {
+            /** @var Client $client */
             $client = factory(Client::class)->create();
             $person = factory(Person::class)->make();
             $client->person()->save($person);
         }
+        /** @var Client $client */
         $client = factory(Client::class)->create();
         $client->company_name = $company_name . uniqid('4', false);
         $client->save();
         $person = factory(Person::class)->make();
         $client->person()->save($person);
 
-        $red_herring_client = factory(Client::class)->create();
-        $red_herring_client->company_name = $company_name . uniqid('e', false);
-        $red_herring_client->save();
+        /** @var Client $redHerringClient */
+        $redHerringClient = factory(Client::class)->create();
+        $redHerringClient->company_name = $company_name . uniqid('e', false);
+        $redHerringClient->save();
         $red_herring_person = factory(Person::class)->make();
-        $red_herring_client->person()->save($red_herring_person);
+        $redHerringClient->person()->save($red_herring_person);
 
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->get(
-                route(AjaxSearchController::SHOW_NAME, ['field' => Client::COMPANY_NAME, 'q' => 'J',])
+                route(
+                    AjaxSearchController::SHOW_NAME,
+                    [
+                        AjaxSearchRequest::FIELD => AjaxSearchRequest::SEARCH_COMPANY_NAME,
+                        AjaxSearchRequest::Q => 'J',
+                    ]
+                )
             )->assertJsonFragment(
                 [
-                    Client::COMPANY_NAME => $client->company_name,
-                    Person::FIRST_NAME => $client->person->first_name,
-                    Person::LAST_NAME => $client->person->last_name,
+                    AjaxSearchCollectionResource::CLIENT_COMPANY_NAME => $client->company_name,
+                    AjaxSearchCollectionResource::CLIENT_FIRST_NAME => $client->person->first_name,
+                    AjaxSearchCollectionResource::CLIENT_LAST_NAME => $client->person->last_name,
                 ]
             );
     }
@@ -144,10 +147,11 @@ class AjaxSearchTest extends TestCase
     /**
      * @test
      */
-    public function indexReturnsSomething(): void
+    public function ajaxIndexReturnsDirectMatch(): void
     {
+        /** @var Client $client */
         $client = factory(Client::class)->create();
-        $this->actingAs($this->user)->withoutExceptionHandling()
+        $this->actingAs($this->createEmployee())
             ->get(route(AjaxSearchController::INDEX_NAME, ['q' => $client->company_name]))
             ->assertOk()
             ->assertJsonFragment(['name' => $client->company_name]);
@@ -159,27 +163,29 @@ class AjaxSearchTest extends TestCase
     public function productSerialNumberSearchReturnsJson(): void
     {
         $faker = Factory::create();
+        /** @var WorkOrder $workOrder */
         $workOrder = factory(WorkOrder::class)->create();
         $product = '';
         $serial = '';   // Why? so phpstan doesn't complain.
         for ($i = 0; $i < 15; $i++) {
             $serial = $faker->isbn13;
+            /** @var Product $unsavedProduct */
             $unsavedProduct = factory(Product::class)->make();
             $formRequest = [
-                'values' => [
+                ProductStore::VALUES => [
                     'radio-group-1575689472139' => $faker->word,
                     'select-1575689474390' => $faker->word,
                     'serial' => $serial,
                 ],
-                'manufacturer' => $unsavedProduct->manufacturer->name,
-                'model' => $unsavedProduct->model,
-                'type' => $unsavedProduct->type->slug,
-                'workOrderId' => $workOrder->luhn,
+                ProductStore::MANUFACTURER_NAME => $unsavedProduct->manufacturer->name,
+                ProductStore::MODEL => $unsavedProduct->model,
+                ProductStore::TYPE => $unsavedProduct->type->slug,
+                ProductStore::WORK_ORDER_ID => $workOrder->luhn,
             ];
             $product = ProductStoreAction::execute(ProductStoreObject::fromRequest($formRequest));
         }
 
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->get(route(AjaxSearchController::INDEX_NAME, ['q' => $product->serial]))
             ->assertJsonFragment(
                 [
@@ -187,7 +193,7 @@ class AjaxSearchTest extends TestCase
                     'url' => '/inventory/' . $product->luhn,
                 ]
             );
-        $this->actingAs($this->user)
+        $this->actingAs($this->createEmployee())
             ->get(route(AjaxSearchController::INDEX_NAME, ['q' => substr($product->serial, 1, 2)]))
             ->assertJsonFragment(
                 [

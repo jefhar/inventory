@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Domain\WorkOrders\Listeners;
 
+use App\Support\Luhn;
 use Domain\WorkOrders\Events\WorkOrderCreated;
-use Tdely\Luhn\Luhn;
 
 /**
  * Class AddLuhnToWorkOrder
@@ -24,9 +24,7 @@ class AddLuhnToWorkOrder
      */
     public function handle(WorkOrderCreated $event): void
     {
-        $id = $event->workOrder->id;
-        $luhn = Luhn::create($id);
-        $event->workOrder->luhn = $luhn;
+        $event->workOrder->luhn = Luhn::create($event->workOrder->id);
         $event->workOrder->save();
     }
 }

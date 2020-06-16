@@ -10,10 +10,18 @@ declare(strict_types=1);
 namespace App\AjaxSearch\Controllers;
 
 use App\Admin\Controllers\Controller;
+use App\AjaxSearch\DataTransferObjects\AjaxSearchObject;
+use App\AjaxSearch\Requests\AjaxSearchRequest;
+use App\AjaxSearch\Resources\AjaxSearchCollectionResource;
 use Domain\AjaxSearch\Actions\AjaxSearchAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * Class AjaxSearchController
+ *
+ * @package App\AjaxSearch\Controllers
+ */
 class AjaxSearchController extends Controller
 {
     public const SHOW_NAME = 'ajaxsearch.show';
@@ -22,16 +30,17 @@ class AjaxSearchController extends Controller
     public const INDEX_NAME = 'ajaxsearch.index';
 
     /**
-     * @param Request $request
      * @param string $field
-     * @return JsonResponse
+     * @param AjaxSearchRequest $request
+     * @return AjaxSearchCollectionResource
      */
-    public function show(Request $request, string $field): JsonResponse
+    public function show(string $field, AjaxSearchRequest $request): AjaxSearchCollectionResource
     {
-        $searchString = $request->get('q', '');
-        $options = AjaxSearchAction::findBy($field, $searchString);
+        $ajaxSearchObject = AjaxSearchObject::fromRequest($field, $request->validated());
 
-        return response()->json($options);
+        $results = AjaxSearchAction::findBy($ajaxSearchObject);
+
+        return new AjaxSearchCollectionResource($results);
     }
 
     /**
@@ -40,8 +49,6 @@ class AjaxSearchController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $results = AjaxSearchAction::findAll($request->get('q'));
-
-        return response()->json($results);
+        return response()->json(AjaxSearchAction::findAll($request->get('q')));
     }
 }

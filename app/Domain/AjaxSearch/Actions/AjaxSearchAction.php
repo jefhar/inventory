@@ -9,10 +9,14 @@ declare(strict_types=1);
 
 namespace Domain\AjaxSearch\Actions;
 
-use Domain\Products\Models\Manufacturer;
-use Domain\Products\Models\Product;
-use Domain\WorkOrders\Models\Client;
-use Domain\WorkOrders\Models\Person;
+use App\AjaxSearch\DataTransferObjects\AjaxSearchObject;
+use App\AjaxSearch\Requests\AjaxSearchRequest;
+use Domain\AjaxSearch\Actions\SearchResults\ClientsByCompanyName;
+use Domain\AjaxSearch\Actions\SearchResults\ClientsWithPersonByCompanyName;
+use Domain\AjaxSearch\Actions\SearchResults\ManufacturersByManufacturerName;
+use Domain\AjaxSearch\Actions\SearchResults\PeopleByName;
+use Domain\AjaxSearch\Actions\SearchResults\ProductsByModel;
+use Domain\AjaxSearch\Actions\SearchResults\ProductsBySerial;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -24,84 +28,29 @@ use Symfony\Component\HttpFoundation\Response;
 class AjaxSearchAction
 {
     /**
-     * @param string $field ENUM {Client::COMPANY_NAME|manufacturer}
-     * @param string $searchString
+     * @param AjaxSearchObject $ajaxSearchObject
      * @return Collection
      */
-    public static function findBy(string $field, string $searchString): Collection
+    public static function findBy(AjaxSearchObject $ajaxSearchObject): Collection
     {
-        $availableFields = [
-            'manufacturer' => 'manufacturer',
-            Client::COMPANY_NAME => Client::COMPANY_NAME,
-            Product::MODEL => Product::MODEL,
-        ];
-        if (!array_key_exists($field, $availableFields)) {
-            abort(Response::HTTP_NOT_ACCEPTABLE);
-        }
-
+        $field = $ajaxSearchObject->field;
+        $searchString = $ajaxSearchObject->q;
         $searchResults = null;
         switch ($field) {
-            case Client::COMPANY_NAME:
-                $searchResults = self::clientsAndPeopleByCompanyName($searchString);
+            case AjaxSearchRequest::SEARCH_COMPANY_NAME:
+                $searchResults = ClientsWithPersonByCompanyName::getInstance();
                 break;
-            case 'manufacturer':
-                $searchResults = self::manufacturersByManufacturerName($searchString);
+            case AjaxSearchRequest::SEARCH_MANUFACTURER:
+                $searchResults = ManufacturersByManufacturerName::getInstance();
                 break;
-            case Product::MODEL:
-                $searchResults = self::productsByModel($searchString);
+            case AjaxSearchRequest::SEARCH_MODEL:
+                $searchResults = ProductsByModel::getInstance();
                 break;
+            default:
+                abort(Response::HTTP_NOT_ACCEPTABLE);
         }
 
-        return $searchResults;
-    }
-
-    /**
-     * @param string $searchString
-     * @return Collection
-     */
-    private static function clientsAndPeopleByCompanyName(string $searchString): Collection
-    {
-        $client_ids = Client::findByCompanyName($searchString);
-        $clients = Client::whereIn(Client::ID, $client_ids)->with('person')->get();
-
-        return $clients->map(
-            fn($item) => [
-                Person::CLIENT_ID => $item->id,
-                Client::COMPANY_NAME => $item->company_name,
-                Person::FIRST_NAME => $item->person->first_name,
-                Person::LAST_NAME => $item->person->last_name,
-            ]
-        );
-    }
-
-    /**
-     * @param string $searchString
-     * @return Collection
-     */
-    private static function manufacturersByManufacturerName(string $searchString): Collection
-    {
-        $searchString = "%{$searchString}%";
-
-        return Manufacturer::where(Manufacturer::NAME, 'like', $searchString)
-            ->get()
-            ->pluck(Manufacturer::NAME)
-            ->unique()
-            ->values();
-    }
-
-    /**
-     * @param string $searchString
-     * @return Collection
-     */
-    private static function productsByModel(string $searchString): Collection
-    {
-        $searchString = "%{$searchString}%";
-
-        return Product::where(Product::MODEL, 'like', $searchString)
-            ->get()
-            ->pluck(Product::MODEL)
-            ->unique()
-            ->values();
+        return $searchResults->search($searchString);
     }
 
     /**
@@ -110,40 +59,10 @@ class AjaxSearchAction
      */
     public static function findAll(string $searchString): Collection
     {
-        $client_ids = Client::findByCompanyName($searchString);
-        $clients = Client::whereIn(Client::ID, $client_ids)
-            ->get()
-            ->map(
-                fn($client) => [
-                    'name' => $client->company_name,
-                    'url' => '/clients/' . $client->id,
-                ]
-            );
-
-        $people_ids = Person::findByName($searchString);
-        $people = Person::whereIn(Person::ID, $people_ids)
-            ->get()
-            ->map(
-                fn($person) => [
-                    'name' => $person->first_name . ' ' . $person->last_name,
-                    'url' => '/clients/' . $person->client_id,
-                ]
-            );
-
-        $product_ids = Product::findBySerial($searchString);
-        $products = Product::whereIn(Product::ID, $product_ids)
-            ->get()
-            ->map(
-                fn($product) => [
-                    'name' => $product->serial,
-                    'url' => '/inventory/' . $product->luhn,
-                ]
-            );
-
         $collection = collect();
-        $collection = $collection->concat($clients);
-        $collection = $collection->concat($people);
-        $collection = $collection->concat($products);
+        $collection = $collection->concat(ClientsByCompanyName::getInstance()->search($searchString));
+        $collection = $collection->concat(PeopleByName::getInstance()->search($searchString));
+        $collection = $collection->concat(ProductsBySerial::getInstance()->search($searchString));
 
         return $collection;
     }

@@ -227,5 +227,13 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
     ],
-
+    /**
+     * This is the width to pad inventory and cart numbers
+     */
+    'padding' => [
+        'carts' => 7,
+        'clients' => 6,
+        'products' => 7,
+        'workorders' => 6,
+    ],
 ];

@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Domain\Products\Listeners;
 
+use App\Support\Luhn;
 use Domain\Products\Events\ProductCreated;
-use Tdely\Luhn\Luhn;
 
 /**
  * Class AddLuhnToProduct
@@ -24,9 +24,7 @@ class AddLuhnToProduct
      */
     public function handle(ProductCreated $event): void
     {
-        $id = $event->product->id;
-        $luhn = Luhn::create($id);
-        $event->product->luhn = $luhn;
+        $event->product->luhn = Luhn::create($event->product->id);
         $event->product->save();
     }
 }

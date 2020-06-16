@@ -23,6 +23,7 @@ use Illuminate\Support\Str;
  * @method static Builder inRandomOrder()
  * @method static Builder orderBy(string $slug)
  * @method static int count()
+ * @method static Type firstOrNew(array $attributes, array $values = [])
  * @method static Type select(?mixed $columns = null, ?mixed $column = null)
  * @method static Type updateOrCreate(array $attributes, array $values = [])
  * @method static Type where(mixed $field, ?mixed $value = null, ?mixed $value = null)
@@ -42,6 +43,7 @@ class Type extends Model
     public const NAME = 'name';
     public const SLUG = 'slug';
     public const TABLE = 'types';
+    public const TYPE = 'type';
 
     protected $table = self::TABLE;
 
@@ -61,7 +63,6 @@ class Type extends Model
     {
         $this->attributes[self::SLUG] = Str::slug($name);
         $this->attributes[self::NAME] = Str::title($name);
-        parent::select();
     }
 
     /**

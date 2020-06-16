@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App;
 
+use Closure;
+use Domain\Carts\Models\Cart;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -12,11 +16,19 @@ use Spatie\Permission\Traits\HasRoles;
  * Class User
  *
  * @package App
- * @method hasPermissionTo($permission, $guardName = null) : bool
- * @method assignRole(...$roles) : User
- * @method givePermissionTo(...$permissions) : User
- * @method revokePermissionTo($permission) : User
+ * @method bool hasPermissionTo($permission, $guardName = null)
+ * @method static Builder inRandomOrder()
  * @method static User create(array $array)
+ * @method static User firstOrCreate(array $array, array $values = [])
+ * @method static User where(Closure|string|array $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method User assignRole(...$roles)
+ * @method User first()
+ * @method User givePermissionTo(...$permissions)
+ * @method User revokePermissionTo($permission)
+ * @property Cart $carts
+ * @property int $id
+ * @property string $email
+ * @property string $name
  */
 class User extends Authenticatable
 {
@@ -60,4 +72,12 @@ class User extends Authenticatable
     ];
 
     protected $table = self::TABLE;
+
+    /**
+     * @return HasMany
+     */
+    public function carts(): HasMany
+    {
+        return $this->hasMany(Cart::class);
+    }
 }

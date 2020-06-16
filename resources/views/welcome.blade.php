@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 
     <!-- Styles -->
+    <link href="/css/app.css" rel="stylesheet">
     <style>
         html, body {
             background-color: #fff;
@@ -18,31 +19,17 @@
             font-weight: 200;
             height: 100vh;
             margin: 0;
+            padding-top: 0;
         }
 
-        th, td {
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-
-        .half-height {
-            height: 49vh;
-        }
-
-        .third-height {
-            height: 32vh;
-        }
-
-        .quarter-height {
-            height: 24vh;
+        .full-height {
+            height: 100vh;
         }
 
         .flex-center {
             align-items: center;
             display: flex;
             justify-content: center;
-            margin-left: 2%;
-            margin-right: 2%;
         }
 
         .position-ref {
@@ -79,7 +66,7 @@
     </style>
 </head>
 <body>
-<div class="flex-center position-ref half-height">
+<div class="flex-center position-ref full-height">
     @if (Route::has('login'))
         <div class="top-right links">
             @auth
@@ -96,73 +83,27 @@
 
     <div class="content">
         <div class="title m-b-md">
-            Inventory System
+            {{ config('app.name', 'C11K') }}
+        </div>
+
+        <div class="links">
+            <a href="https://laravel.com/docs">Docs</a>
+            <a href="https://laracasts.com">Laracasts</a>
+            <a href="https://laravel-news.com">News</a>
+            <a href="https://blog.laravel.com">Blog</a>
+            <a href="https://nova.laravel.com">Nova</a>
+            <a href="https://forge.laravel.com">Forge</a>
+            <a href="https://vapor.laravel.com">Vapor</a>
+            <a href="https://github.com/laravel/laravel">GitHub</a>
         </div>
     </div>
 </div>
-<div class="flex-center position-ref quarter-height">
-    <div>
-        Hit the login button in the upper right hand corner and login as one of the demo users.
-        Note that this demo system will not send nor receive emails. This demo system also resets
-        the database every 2 hours. If some knucklehead messed up the database or changed the
-        passwords and you can't login, please wait 2 hours and try again. If the issue persists,
-        please&nbsp;<a href="https://github.com/jefhar/inventory/issues/new">start a new issue</a>
-        at github, and I'll fix it as soon as I am able.
+<div class="footer navbar-fixed-bottom navbar-dark bg-dark text-light">
+    <div class="container">
+        <br>
+        &copy; 2018, 2019, 2020, C11K Development, Union City, CA. <br>
+        <br>
     </div>
-
 </div>
-<div class="flex-center position-ref">
-    <table>
-        <thead>
-        <tr>
-            <th>User Name</th>
-            <th>User E-mail</th>
-            <th>User Password</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>Default SuperAdmin</td>
-            <td>superadmin@example.com</td>
-            <td>password</td>
-        </tr>
-        <tr>
-            <td>Default Owner</td>
-            <td>owner@example.com</td>
-            <td>password</td>
-        </tr>
-        <tr>
-            <td>Default Sales Rep</td>
-            <td>salesrep@example.com</td>
-            <td>password</td>
-        </tr>
-        <tr>
-            <td>Default Technician</td>
-            <td>technician@example.com</td>
-            <td>password</td>
-        </tr>
-        <tr>
-            <td>Default Employee</td>
-            <td>employee@example.com</td>
-            <td>password</td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
-<script>
-(function(f, a, t, h, o, m){
-	a[h]=a[h]||function(){
-		(a[h].q=a[h].q||[]).push(arguments)
-	};
-	o=f.createElement('script'),
-	m=f.getElementsByTagName('script')[0];
-	o.async=1; o.src=t; o.id='fathom-script';
-	m.parentNode.insertBefore(o,m)
-})(document, window, '//fathom.jeffharris.us/tracker.js', 'fathom');
-fathom('set', 'siteId', 'LQYAT');
-fathom('trackPageview');
-</script>
-<!-- / Fathom -->
 </body>
 </html>

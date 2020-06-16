@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Products\Middleware;
 
+use App\Products\Requests\ProductStoreRequest;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -22,15 +23,26 @@ class ProductStoreMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
+     * Adds all request variables except for those listed to the 'values' key.
+     * The 'values' key is used to add variable
+     *
+     * @param Request $request
      * @param \Closure $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
-        $values = $request->except('manufacturer', 'model', 'type', 'workorderId');
-        $request = $request->merge(['values' => $values]);
-
-        return $next($request);
+        return $next(
+            $request->merge(
+                [
+                    ProductStoreRequest::VALUES => $request->except(
+                        ProductStoreRequest::MANUFACTURER_NAME,
+                        ProductStoreRequest::MODEL,
+                        ProductStoreRequest::TYPE,
+                        ProductStoreRequest::WORK_ORDER_ID
+                    ),
+                ]
+            )
+        );
     }
 }

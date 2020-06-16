@@ -18,10 +18,14 @@ use Spatie\DataTransferObject\DataTransferObject;
  */
 class PersonObject extends DataTransferObject
 {
-    public string $email;
-    public string $first_name;
-    public string $last_name;
-    public string $phone_number;
+    public const EMAIL = Person::EMAIL;
+    public const FIRST_NAME = Person::FIRST_NAME;
+    public const LAST_NAME = Person::LAST_NAME;
+    public const PHONE_NUMBER = Person::PHONE_NUMBER;
+    public string $email = '';
+    public string $first_name = '';
+    public string $last_name = '';
+    public string $phone_number = '';
 
     /**
      * @param array $validated
@@ -31,10 +35,10 @@ class PersonObject extends DataTransferObject
     {
         return new self(
             [
-                Person::EMAIL => $validated[Person::EMAIL] ?? Person::DEFAULT_EMAIL,
-                Person::FIRST_NAME => $validated[Person::FIRST_NAME] ?? Person::DEFAULT_FIRST_NAME,
-                Person::LAST_NAME => $validated[Person::LAST_NAME] ?? Person::DEFAULT_LAST_NAME,
-                Person::PHONE_NUMBER => $validated[Person::PHONE_NUMBER] ?? Person::DEFAULT_PHONE_NUMBER,
+                self::EMAIL => $validated[self::EMAIL] ?? '',
+                self::FIRST_NAME => $validated[self::FIRST_NAME] ?? '',
+                self::LAST_NAME => $validated[self::LAST_NAME] ?? '',
+                self::PHONE_NUMBER => $validated[self::PHONE_NUMBER] ?? '',
             ]
         );
     }

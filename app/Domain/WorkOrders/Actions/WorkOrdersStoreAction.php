@@ -30,23 +30,23 @@ class WorkOrdersStoreAction
      */
     public static function execute(ClientObject $clientObject, PersonObject $personObject): WorkOrder
     {
-        /** @var Client $client */
+        // Find/Create Client and Person
         $client = Client::firstOrCreate([Client::COMPANY_NAME => $clientObject->company_name]);
-
-        $client->person()->save(
-            new Person(
-                [
-                    Person::FIRST_NAME => $personObject->first_name,
-                    Person::LAST_NAME => $personObject->last_name,
-                    Person::EMAIL => $personObject->email,
-                    Person::PHONE_NUMBER => $personObject->phone_number,
-                ]
-            )
+        $person = Person::firstOrNew(
+            [
+                Person::FIRST_NAME => $personObject->first_name ?: Person::DEFAULT_FIRST_NAME,
+                Person::LAST_NAME => $personObject->last_name ?: Person::DEFAULT_LAST_NAME,
+                Person::EMAIL => $personObject->email ?: date('U') . Person::DEFAULT_EMAIL,
+                Person::PHONE_NUMBER => $personObject->phone_number ?: Person::DEFAULT_PHONE_NUMBER,
+            ]
         );
+
+        $client->person()->save($person);
+
         $workOrder = new WorkOrder();
         $workOrder->client()->associate($client);
         $workOrder->user()->associate(Auth::user());
-        $workOrder->save();
+        $workOrder->push();
 
         return $workOrder;
     }
