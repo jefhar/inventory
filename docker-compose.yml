@@ -13,7 +13,7 @@ networks:
 services:
   mailhog:
     image: mailhog/mailhog:latest
-    container_name: serviceandgoods-mailhog
+    container_name: inventory-mailhog
     restart: unless-stopped
     ports:
       - "8025:8025"
@@ -24,7 +24,7 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: serviceandgoods-redis
+    container_name: inventory-redis
     restart: unless-stopped
     labels:
       - traefik.enable=false
@@ -33,7 +33,7 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: serviceandgoods-mysql
+    container_name: inventory-mysql
     restart: unless-stopped
     working_dir: /application
     volumes:
@@ -56,20 +56,9 @@ services:
     ports:
       - 13306:3306
 
-  selenium:
-    image: selenium/standalone-chrome
-    restart: unless-stopped
-    container_name: serviceandgoods-selenium
-    ports:
-      - 4444:4444
-    labels:
-      - traefik.enable=false
-    networks:
-      - internal
-
   webserver:
     image: nginx:alpine
-    container_name: serviceandgoods-webserver
+    container_name: inventory-webserver
     restart: always
     working_dir: /application
     volumes:
@@ -84,16 +73,24 @@ services:
       - internal
       - web
     labels:
-      - traefik.backend=serviceandgoods
-      - traefik.frontend.rule=Host:serviceandgoods.c11k.com
+      - traefik.backend=inventory
+      - traefik.frontend.rule=Host:inventory.jeffharris.us
       - traefik.docker.network=web
-      - trafik.port=80
+      - traefik.port=80
+      - traefik.enable=true
+      - "traefik.http.routers.inventory-secure.entrypoints=https"
+      - "traefik.http.routers.inventory-secure.rule=Host(`inventory.jeffharris.us`)"
+      - "traefik.http.routers.inventory-secure.middlewares=httpd-security"
+      - "traefik.http.routers.inventory-secure.tls.certresolver=myhttpchallenge"
+      - "traefik.http.middlewares.httpd-security.headers.frameDeny=true"
+      - "traefik.http.middlewares.httpd-security.headers.SSLHost=inventory.jeffharris.us"
+      - "traefik.http.middlewares.httpd-security.headers.SSLRedirect=true"
     ports:
       - 8080:80
 
   php-fpm:
     image: c11k/serviceandgoods
-    container_name: serviceandgoods-php-fpm
+    container_name: inventory-php-fpm
     restart: always
     working_dir: /application
     volumes:
