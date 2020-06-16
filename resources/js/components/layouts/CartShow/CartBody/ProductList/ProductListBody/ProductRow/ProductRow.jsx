@@ -35,7 +35,8 @@ const ProductRow = (props) => {
       <td>
         <DropButton
           disabled={props.disabled}
-          onClick={props.handleDropClick}
+          onClick={props.handleDropClick.bind(props.product)}
+          type="product"
         ></DropButton>
       </td>
     </tr>

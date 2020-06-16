@@ -45,6 +45,7 @@ const ControlPanel = (props) => {
           className="mx-5"
           disabled={disabled}
           onClick={changeStatusRequest.bind(this, 'void')}
+          type="cart"
           {...other}
         >
           Destroy Cart

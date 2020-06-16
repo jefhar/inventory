@@ -8,7 +8,7 @@ const propTypes = {
   isOpen: PropTypes.bool,
   onDestroy: PropTypes.func,
   toggle: PropTypes.func,
-  type: PropTypes.string,
+  type: PropTypes.oneOf(['cart', 'product']),
 }
 const defaultProps = {
   isOpen: false,
